@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "shadcn-htmx",
+  "homepage": "https://github.com/productdevbook/shadcn-htmx",
+  "items": [
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn() utility",
+      "description": "Minimal class-name joiner. Drop-in replacement for clsx in the small surface this library uses.",
+      "files": [
+        {
+          "path": "registry/lib/cn.ts",
+          "type": "registry:lib",
+          "target": "lib/cn.ts"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A native <button> element with shadcn variants, sized for htmx v4. Follows the WAI-ARIA APG button pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/ui/button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button.tsx"
+        }
+      ]
+    }
+  ]
+}

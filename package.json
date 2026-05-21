@@ -7,10 +7,13 @@
     "dev": "concurrently -k -n server,css -c blue,green \"bun run dev:server\" \"bun run dev:css\"",
     "dev:server": "bun run --hot app/server.tsx",
     "dev:css": "tailwindcss -i app/styles/input.css -o public/styles.css --watch",
-    "build:css": "tailwindcss -i app/styles/input.css -o public/styles.css --minify"
+    "build:css": "tailwindcss -i app/styles/input.css -o public/styles.css --minify",
+    "build:registry": "bun run scripts/build-registry.ts",
+    "build": "bun run build:registry && bun run build:css"
   },
   "dependencies": {
-    "hono": "^4.6.14"
+    "hono": "^4.6.14",
+    "shiki": "^4.1.0"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.0.0",

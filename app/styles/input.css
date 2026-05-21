@@ -88,4 +88,33 @@
   .htmx-request.htmx-indicator {
     opacity: 1;
   }
+
+  /* Docs preview/code tabs (see app/components/docs-tabs.tsx). Hard-wired to
+     the two radio values "preview" and "code" so we can author the selectors
+     statically — Tailwind's peer/group syntax doesn't reach sibling subtrees. */
+  .docs-tabs:has(input[value="preview"]:checked) .docs-tab-code {
+    display: none;
+  }
+  .docs-tabs:has(input[value="preview"]:checked) .docs-tab-preview {
+    display: block;
+  }
+  .docs-tabs:has(input[value="code"]:checked) .docs-tab-preview {
+    display: none;
+  }
+  .docs-tabs:has(input[value="code"]:checked) .docs-tab-code {
+    display: block;
+  }
+
+  /* Shiki dual-theme: switch CSS variables when .dark is present.
+     We set defaultColor:false in CodeBlock, so light=default, dark via class. */
+  .shiki-host .shiki,
+  .shiki-host .shiki span {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+  }
+  .dark .shiki-host .shiki,
+  .dark .shiki-host .shiki span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
 }

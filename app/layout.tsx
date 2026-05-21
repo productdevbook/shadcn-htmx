@@ -12,6 +12,7 @@ export function Layout(props: PropsWithChildren<{ title: string }>) {
         <title>{props.title}</title>
         <link rel="stylesheet" href="/styles.css" />
         <script src="/htmx.min.js" defer></script>
+        <script src="/copy-code.js" defer></script>
       </head>
       <body class="min-h-svh">{props.children}</body>
     </html>

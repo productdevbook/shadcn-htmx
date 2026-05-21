@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "utils",
+  "type": "registry:lib",
+  "title": "cn() utility",
+  "description": "Minimal class-name joiner. Drop-in replacement for clsx in the small surface this library uses.",
+  "files": [
+    {
+      "path": "registry/lib/cn.ts",
+      "type": "registry:lib",
+      "target": "lib/cn.ts",
+      "content": "// Minimal class-name joiner. Drops falsy values; flattens arrays.\n// Equivalent to clsx for the subset we need. No tailwind-merge — author\n// the variants so they don't collide, the way shadcn does for cva-defined classes.\nexport type ClassValue = string | number | null | undefined | false | ClassValue[]\n\nexport function cn(...inputs: ClassValue[]): string {\n  const out: string[] = []\n  const walk = (v: ClassValue) => {\n    if (!v && v !== 0) return\n    if (Array.isArray(v)) {\n      for (const x of v) walk(x)\n    } else {\n      out.push(String(v))\n    }\n  }\n  for (const v of inputs) walk(v)\n  return out.join(\" \")\n}\n"
+    }
+  ]
+}

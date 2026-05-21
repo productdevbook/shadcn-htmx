@@ -12,6 +12,8 @@ app.get("/favicon.ico", (c) => c.body(null, 204))
 
 app.use("/styles.css", serveStatic({ path: "./public/styles.css" }))
 app.use("/htmx.min.js", serveStatic({ path: "./public/htmx.min.js" }))
+app.use("/copy-code.js", serveStatic({ path: "./public/copy-code.js" }))
+app.use("/r/*", serveStatic({ root: "./public" }))
 
 app.route("/docs/button", buttonRoutes)
 // /button/* alias for the htmx demo endpoints inside buttonRoutes (they use
