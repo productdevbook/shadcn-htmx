@@ -1,0 +1,8 @@
+tasks:
+  - init: npm install
+    command: npm start
+
+ports:
+  - port: 5042
+    visibility: private
+    onOpen: open-browser

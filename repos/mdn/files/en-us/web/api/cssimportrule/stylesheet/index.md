@@ -1,0 +1,44 @@
+---
+title: "CSSImportRule: styleSheet property"
+short-title: styleSheet
+slug: Web/API/CSSImportRule/styleSheet
+page-type: web-api-instance-property
+browser-compat: api.CSSImportRule.styleSheet
+---
+
+{{APIRef("CSSOM")}}
+
+The read-only **`styleSheet`** property of the
+{{domxref("CSSImportRule")}} interface returns the CSS Stylesheet specified by the
+{{cssxref("@import")}} [at-rule](/en-US/docs/Web/CSS/Guides/Syntax/At-rules). This will be
+in the form of a {{domxref("CSSStyleSheet")}} object.
+
+An {{cssxref("@import")}} [at-rule](/en-US/docs/Web/CSS/Guides/Syntax/At-rules) always has
+an associated stylesheet.
+
+## Value
+
+A {{domxref("CSSStyleSheet")}}.
+
+## Examples
+
+The following stylesheet includes a single {{cssxref("@import")}} rule. Therefore the
+first item in the list of CSS rules will be a `CSSImportRule`. The
+`styleSheet` property returns the imported stylesheet.
+
+```css
+@import "style.css" screen;
+```
+
+```js
+const myRules = document.styleSheets[0].cssRules;
+console.log(myRules[0].styleSheet); // A CSSStyleSheet
+```
+
+## Specifications
+
+{{Specifications}}
+
+## Browser compatibility
+
+{{Compat}}
