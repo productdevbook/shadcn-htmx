@@ -1,15 +1,15 @@
 /** @jsxImportSource hono/jsx */
 import type { Child } from "hono/jsx"
 import { CodeBlock } from "@/app/components/code-block"
-import { DocsTabs } from "@/app/components/docs-tabs"
 import { LangTabs, type LangKey, LANG_SHIKI } from "@/app/components/lang-tabs"
 import { formatHtml } from "@/app/lib/format-html"
 
-// One example with a live preview and a Code tab. The Code tab itself has a
-// secondary set of language tabs — JSX, Jinja2, Go template, Phoenix LiveView,
-// raw HTML — so a user picks their own ecosystem. The JSX panel is what you'd
-// write on our docs site; the others are how the same call would look in your
-// template engine of choice.
+// One example. Preview sits on top in its own bordered box; underneath, a row
+// of language tabs (Hono JSX / Jinja2 / Go template / Phoenix LiveView /
+// optionally raw HTML) shows how the same call reads in each ecosystem.
+//
+// No Preview/Code toggle — both live side-by-side vertically so the reader
+// scrolls instead of clicks.
 
 type Snippet = { lang: LangKey; code: string }
 
@@ -40,7 +40,6 @@ export async function Example(props: Props) {
     snippets.push({ lang: "html", code: html })
   }
 
-  // Render every snippet's CodeBlock up front (they're async).
   const panels = await Promise.all(
     snippets.map(async (s) => ({
       lang: s.lang,
@@ -59,13 +58,8 @@ export async function Example(props: Props) {
           <p class="text-sm text-muted-foreground">{props.description}</p>
         )}
       </div>
-      <DocsTabs
-        id={props.id}
-        preview={
-          <div class="rounded-lg border bg-background p-6">{props.preview}</div>
-        }
-        code={<LangTabs id={`${props.id}-lang`} panels={panels} />}
-      />
+      <div class="rounded-lg border bg-background p-6">{props.preview}</div>
+      <LangTabs id={`${props.id}-lang`} panels={panels} />
     </section>
   )
 }
