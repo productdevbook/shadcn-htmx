@@ -2,26 +2,54 @@
 import type { Child } from "hono/jsx"
 import { CodeBlock } from "@/app/components/code-block"
 import { DocsTabs } from "@/app/components/docs-tabs"
+import { LangTabs, type LangKey, LANG_SHIKI } from "@/app/components/lang-tabs"
 import { formatHtml } from "@/app/lib/format-html"
 
-// Render the same JSX as both preview and HTML source. The HTML in the Code
-// tab is what htmx users will literally paste into their template engine of
-// choice — Jinja2, Go's html/template, Twig, ERB, etc. There is no JSX in the
-// output, which is the whole point: htmx ships HTML, not components.
+// One example with a live preview and a Code tab. The Code tab itself has a
+// secondary set of language tabs — JSX, Jinja2, Go template, Phoenix LiveView,
+// raw HTML — so a user picks their own ecosystem. The JSX panel is what you'd
+// write on our docs site; the others are how the same call would look in your
+// template engine of choice.
+
+type Snippet = { lang: LangKey; code: string }
 
 type Props = {
   id: string
   title: string
   description?: string
-  children: Child
+  preview: Child
+  // The "JSX" snippet is required because it doubles as the canonical form;
+  // other languages are optional — if missing, that tab just isn't shown.
+  jsx: string
+  jinja?: string
+  go?: string
+  phoenix?: string
+  // If true, also show a "rendered HTML" panel built from the preview JSX.
+  // Off by default because it tends to be visually noisy.
+  showHtml?: boolean
 }
 
 export async function Example(props: Props) {
-  // Hono JSX renders to an HtmlEscapedString — coercing to string gives us
-  // the literal HTML we'll show in the Code tab. Trim because top-level
-  // whitespace makes the formatter's output ugly.
-  const rendered = String(props.children).trim()
-  const formatted = formatHtml(rendered)
+  const snippets: Snippet[] = [{ lang: "jsx", code: props.jsx }]
+  if (props.jinja) snippets.push({ lang: "jinja", code: props.jinja })
+  if (props.go) snippets.push({ lang: "go", code: props.go })
+  if (props.phoenix) snippets.push({ lang: "phoenix", code: props.phoenix })
+
+  if (props.showHtml) {
+    const html = formatHtml(String(props.preview).trim())
+    snippets.push({ lang: "html", code: html })
+  }
+
+  // Render every snippet's CodeBlock up front (they're async).
+  const panels = await Promise.all(
+    snippets.map(async (s) => ({
+      lang: s.lang,
+      node: await CodeBlock({
+        code: s.code,
+        lang: LANG_SHIKI[s.lang] as any,
+      }),
+    })),
+  )
 
   return (
     <section class="space-y-3">
@@ -34,9 +62,9 @@ export async function Example(props: Props) {
       <DocsTabs
         id={props.id}
         preview={
-          <div class="rounded-lg border bg-background p-6">{props.children}</div>
+          <div class="rounded-lg border bg-background p-6">{props.preview}</div>
         }
-        code={await CodeBlock({ code: formatted, lang: "html" })}
+        code={<LangTabs id={`${props.id}-lang`} panels={panels} />}
       />
     </section>
   )

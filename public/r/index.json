@@ -7,13 +7,13 @@
       "name": "utils",
       "type": "registry:lib",
       "title": "cn() utility",
-      "description": "Minimal class-name joiner. Drop-in replacement for clsx in the small surface this library uses."
+      "description": "Minimal class-name joiner. Drop-in replacement for clsx in the small surface this library uses. JSX projects only."
     },
     {
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A native <button> element with shadcn variants, sized for htmx v4. Follows the WAI-ARIA APG button pattern."
+      "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
     }
   ]
 }

@@ -105,6 +105,30 @@
     display: block;
   }
 
+  /* Per-language code tabs (see app/components/lang-tabs.tsx). The supported
+     language values are listed here so we don't have to author a selector
+     for every theoretical language — adding one means adding a clause here. */
+  .lang-tabs .lang-panel {
+    display: none;
+  }
+  .lang-tabs:has(input[value="jsx"]:checked) .lang-panel[data-lang="jsx"],
+  .lang-tabs:has(input[value="jinja"]:checked) .lang-panel[data-lang="jinja"],
+  .lang-tabs:has(input[value="go"]:checked) .lang-panel[data-lang="go"],
+  .lang-tabs:has(input[value="phoenix"]:checked) .lang-panel[data-lang="phoenix"],
+  .lang-tabs:has(input[value="html"]:checked) .lang-panel[data-lang="html"] {
+    display: block;
+  }
+  /* Same trick for the labels — light up the one whose radio is checked. */
+  .lang-tabs:has(input[value="jsx"]:checked) label[data-lang-label="jsx"],
+  .lang-tabs:has(input[value="jinja"]:checked) label[data-lang-label="jinja"],
+  .lang-tabs:has(input[value="go"]:checked) label[data-lang-label="go"],
+  .lang-tabs:has(input[value="phoenix"]:checked) label[data-lang-label="phoenix"],
+  .lang-tabs:has(input[value="html"]:checked) label[data-lang-label="html"] {
+    background-color: var(--background);
+    color: var(--foreground);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+
   /* Shiki dual-theme: switch CSS variables when .dark is present.
      We set defaultColor:false in CodeBlock, so light=default, dark via class. */
   .shiki-host .shiki,

@@ -9,14 +9,14 @@ let highlighterPromise: Promise<Highlighter> | null = null
 function getHighlighter() {
   highlighterPromise ??= createHighlighter({
     themes: ["github-light", "github-dark"],
-    langs: ["tsx", "ts", "html", "css", "json", "bash"],
+    langs: ["tsx", "ts", "html", "css", "json", "bash", "elixir"],
   })
   return highlighterPromise
 }
 
 type CodeBlockProps = {
   code: string
-  lang?: "tsx" | "ts" | "html" | "css" | "json" | "bash"
+  lang?: "tsx" | "ts" | "html" | "css" | "json" | "bash" | "elixir"
   // Filename label shown above the code (e.g. "components/ui/button.tsx").
   filename?: string
   copy?: boolean
