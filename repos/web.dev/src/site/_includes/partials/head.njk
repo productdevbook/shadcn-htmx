@@ -1,0 +1,71 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+{% include "partials/theme-script.njk" %}
+<link rel="stylesheet" href="{{ helpers.hashForProd('/css/next.css') }}">
+<link rel="preload" as="font" crossorigin="anonymous" href="/fonts/material-icons/regular.woff2">
+
+<link rel="preload" as="font" crossorigin="anonymous" href="/fonts/google-sans/regular/latin.woff2">
+<link rel="preload" as="font" crossorigin="anonymous" href="/fonts/google-sans/bold/latin.woff2">
+<link rel="preconnect" href="https://{{site.imgixDomain}}">
+
+<meta name="theme-color" content="#fff"/>
+
+{% if (noindex and noindex != "false") or draft -%}
+  <meta name="robots" content="noindex" />
+{%- endif %}
+{% if offline %}
+  <meta name="offline" content="true" />
+{%- endif %}
+
+{% Meta locale, page, renderData %}
+
+<link rel="manifest" href="/manifest.webmanifest" />
+{# Include default icon even though we have a manifest #}
+<link rel="shortcut icon" href="/images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="mask-icon" color="#0054ff" href="/images/safari-pinned-tab.svg">
+
+{# Script loader for sourced scripts, as they cannot be authorized by a CSP hash. #}
+{% include 'partials/script-loader.njk' %}
+
+{# Private Aggregation API testing script #}
+{# The testing will run until mid-April 2023 #}
+{% set paaScript %}
+  loadScript('https://shared-storage-demo-content-producer.web.app/paa/scripts/private-aggregation-test.js', null);
+{% endset %}
+<script>{{ paaScript | minifyJs | cspHash | safe }}</script>
+
+{% include 'partials/analytics.njk' %}
+
+{# Dogfood document speculation rules origin trial #}
+<!-- web.dev speculation rules origin trial -->
+<meta http-equiv="origin-trial" content="AuLV+OPMY8vBf0KOuf+wa79CbvuL8StRjFn/uhNIe3iLaFNrTmpm3CkNoi7piGlUFOwiAId206QJVoty89TsiQsAAABfeyJvcmlnaW4iOiJodHRwczovL3dlYi5kZXY6NDQzIiwiZmVhdHVyZSI6IlNwZWN1bGF0aW9uUnVsZXNQcmVmZXRjaEZ1dHVyZSIsImV4cGlyeSI6MTcwOTY4MzE5OX0=">
+{# Exclude the /patterns/ section as a control #}
+{% set speculationRules %}
+{
+  "prerender": [
+   {
+      "source": "document",
+      "where": {
+        "and": [
+          {
+            "href_matches": "/*\\?*#*", "relative_to": "document"
+          },
+          {
+            "not": {
+              "href_matches": "/patterns/*\\?*#*",
+              "relative_to": "document"
+            }
+          }
+        ]
+      },
+      "eagerness": "moderate"
+    }
+  ]
+}
+{% endset %}
+<script type="speculationrules">{{ speculationRules | minifyJSON | cspHash | safe }}</script>
+

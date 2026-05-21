@@ -1,0 +1,34 @@
+{
+  "slug": "notifications",
+  "cover": "",
+  "title": "i18n.paths.notifications.title",
+  "updated": "May 24, 2018",
+  "description": "i18n.paths.notifications.description",
+  "overview": "i18n.paths.notifications.overview",
+  "topics": [
+    {
+      "title": "i18n.paths.notifications.topics.notifications",
+      "pathItems": [
+        "push-notifications-overview",
+        "push-notifications-how-push-works",
+        "push-notifications-subscribing-a-user",
+        "push-notifications-permissions-ux",
+        "sending-messages-with-web-push-libraries",
+        "push-notifications-web-push-protocol",
+        "push-notifications-handling-messages",
+        "push-notifications-display-a-notification",
+        "push-notifications-notification-behaviour",
+        "push-notifications-common-notification-patterns",
+        "push-notifications-faq",
+        "push-notifications-common-issues-and-reporting-bugs"
+      ]
+    },
+    {
+      "title": "i18n.paths.notifications.topics.codelabs",
+      "pathItems": [
+        "push-notifications-client-codelab",
+        "push-notifications-server-codelab"
+      ]
+    }
+  ]
+}

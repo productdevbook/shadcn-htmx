@@ -1,0 +1,20 @@
+version: 2
+snapshot:
+  widths:
+    - 375
+    - 865
+    - 1280
+  percy-css: |
+    iframe {
+      display: none !important;
+    }
+    img.shows-card {
+      display: none !important;
+    }
+    video {
+      visibility: hidden !important;
+    }
+discovery:
+  network-idle-timeout: 250
+  disable-cache: true
+  concurrency: 20

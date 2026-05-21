@@ -1,0 +1,31 @@
+---
+layout: default
+title: Newsletter
+description: Stay up to date with the latest about web platform.
+date: 2020-03-13
+eleventyComputed:
+  noindex: "{{ paged.index > 0 }}"
+pageScripts:
+  - '/js/newsletter.js'
+pagination:
+  data: collections.newsletters
+  size: 1
+  alias: paged
+  addAllPagesToCollections: true
+---
+<div class="landing-page">
+  {% include 'partials/subscribe.njk' %}
+
+  {# Hero starts #}
+  <header class="region bg-mid-bg">
+    <div class="wrapper">
+      <div class="headline all-center flow">
+        <h2 class="headline__title">Past Editions</h2>
+        <p>Read past editions of the monthly newsletter for web developers.</p>
+      </div>
+    </div>
+  </header>
+  {# Hero ends #}
+
+  {% include 'partials/paged.njk' %}
+</div>

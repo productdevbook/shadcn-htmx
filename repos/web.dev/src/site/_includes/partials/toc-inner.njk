@@ -1,0 +1,16 @@
+{#
+  This is used inline with body contents as the TOC on small screens.
+  Set `tocTitle` to ovverride default title of ToC.
+#}
+{% if tocContents %}
+  {% from 'macros/icon.njk' import icon with context %}
+
+  <div class="lg:hidden-yes flow-space-size-1">
+    <details data-type="inner" role="navigation" aria-label="{{ tocTitle if tocTitle else 'i18n.toc.toc' | i18n(locale) }}">
+      <summary>
+        {{ tocTitle if tocTitle else 'i18n.toc.toc' | i18n(locale) }}
+      </summary>
+      <div class="toc">{{ tocContents | safe }}</div>
+    </details>
+  </div>
+{% endif %}
