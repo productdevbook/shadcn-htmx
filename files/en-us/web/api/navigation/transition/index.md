@@ -1,0 +1,42 @@
+---
+title: "Navigation: transition property"
+short-title: transition
+slug: Web/API/Navigation/transition
+page-type: web-api-instance-property
+browser-compat: api.Navigation.transition
+---
+
+{{APIRef("Navigation API")}}
+
+The **`transition`** read-only property of the {{domxref("Navigation")}} interface returns a {{domxref("NavigationTransition")}} object representing the status of an in-progress navigation, which can be used to track it.
+
+`Navigation.transition` is only populated while the [`intercept()`](/en-US/docs/Web/API/NavigateEvent/intercept) handler is unresolved (i.e., during a [navigation interception](/en-US/docs/Web/API/Navigation/navigate_event#handling_a_navigation_using_intercept)), and is otherwise `null`.
+
+## Value
+
+A {{domxref("NavigationTransition")}} object, or `null` if no navigation is currently in progress.
+
+## Examples
+
+```js
+async function handleTransition() {
+  if (navigation.transition) {
+    showLoadingSpinner();
+    await navigation.transition.finished;
+    hideLoadingSpinner();
+  }
+}
+```
+
+## Specifications
+
+{{Specifications}}
+
+## Browser compatibility
+
+{{Compat}}
+
+## See also
+
+- [Modern client-side routing: the Navigation API](https://developer.chrome.com/docs/web-platform/navigation-api/)
+- [Navigation API explainer](https://github.com/WICG/navigation-api/blob/main/README.md)
