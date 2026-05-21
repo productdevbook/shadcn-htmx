@@ -1,0 +1,17 @@
+[build]
+base    = "www"
+publish = "dist"
+command = "bun install && bun run build"
+
+[build.environment]
+NODE_VERSION = "22"
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+
+[context.deploy-preview]
+command = "bun install && bun run build"
+
+[build.processing]
+skip_processing = false
+
+[build.processing.html]
+pretty_urls = false

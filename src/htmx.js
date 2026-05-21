@@ -1,0 +1,2280 @@
+var htmx = (() => {
+
+    class ReqQ {
+        #c = null
+        #q = []
+
+        issue(ctx, queueStrategy) {
+            ctx.queueStrategy = queueStrategy
+            if (!this.#c) {
+                this.#c = ctx
+                return true
+            } else {
+                // Replace strategy OR current is abortable: abort current and issue new
+                if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
+                    this.#q.forEach(value => value.status = "dropped");
+                    this.#q = []
+                    this.#c.request?.abort?.();
+                    this.#c = ctx
+                    return true
+                } else if (queueStrategy === "queue all") {
+                    this.#q.push(ctx)
+                    ctx.status = "queued";
+                } else if (queueStrategy === "drop") {
+                    // ignore the request
+                    ctx.status = "dropped";
+                } else if (queueStrategy === "queue last") {
+                    this.#q.forEach(value => value.status = "dropped");
+                    this.#q = [ctx]
+                    ctx.status = "queued";
+                } else if (this.#q.length === 0 && queueStrategy !== "abort") {
+                    // default queue first
+                    this.#q.push(ctx)
+                    ctx.status = "queued";
+                } else {
+                    ctx.status = "dropped";
+                }
+                return false
+            }
+        }
+
+        finish() {
+            this.#c = null
+        }
+
+        next() {
+            return this.#q.shift()
+        }
+
+        abort() {
+            this.#c?.request?.abort?.()
+        }
+
+        more() {
+            return this.#q?.length
+        }
+    }
+
+    class Htmx {
+
+        __extMethods = new Map();
+        __approvedExt = '';
+        __registeredExt = new Set();
+        #internalAPI;
+        #Function = Function;
+        #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        #ttPolicy = { createHTML: s => s, createScript: s => s };
+        #actionSelector
+        #boostSelector = "a,form";
+        #verbs = ["get", "post", "put", "patch", "delete"];
+        #hxOnQuery
+        #transitionQueue
+        #historyAbort
+        #processingTransition
+
+        constructor() {
+            this.__initHtmxConfig();
+            this.__initRequestIndicatorCss();
+            this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
+            this.#internalAPI = {
+                attributeValue: this.__attributeValue.bind(this),
+                parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
+                determineMethodAndAction: this.__determineMethodAndAction.bind(this),
+                createRequestContext: this.__createRequestContext.bind(this),
+                collectFormData: this.__collectFormData.bind(this),
+                getAttributeObject: this.__getAttributeObject.bind(this),
+                insertContent: this.__insertContent.bind(this),
+                morph: this.__morph.bind(this),
+                isSoftMatch: this.__isSoftMatch.bind(this),
+                initSecurity: (ttPolicy, syncFn, asyncFn) => {
+                    if (ttPolicy) this.#ttPolicy = ttPolicy;
+                    if (syncFn) this.#Function = syncFn;
+                    if (asyncFn) this.#AsyncFunction = asyncFn;
+                },
+                onTrigger: this.__onTrigger.bind(this),
+                htmxProp: this.__htmxProp.bind(this),
+                triggerHtmxEvent: this.__trigger.bind(this),
+                executeJavaScript: this.__executeJavaScript.bind(this)
+            };
+            let init = () => {
+                this.__initHistoryHandling()
+                this.process(document.body)
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener("DOMContentLoaded", init)
+            } else {
+                // wait a tick so extensions can register
+                setTimeout(init)
+            }
+        }
+
+        __initHtmxConfig() {
+            this.version = '4.0.0-beta4'
+            this.config = {
+                logAll: false,
+                prefix: "data-hx-",
+                transitions: false,
+                history: true,
+                mode: 'same-origin',
+                defaultSwap: "innerHTML",
+                defaultFocusScroll: false,
+                indicatorClass: "htmx-indicator",
+                requestClass: "htmx-request",
+                includeIndicatorCSS: true,
+                defaultTimeout: 60000, /* 60 second default timeout */
+                extensions: '',
+                morphIgnore: ["data-htmx-powered"],
+                morphScanLimit: 10,
+                noSwap: [204, 304],
+                implicitInheritance: false,
+                defaultSettleDelay: 1
+            }
+            let metaConfig = document.querySelector('meta[name="htmx-config"]');
+            if (metaConfig) {
+                this.__mergeConfig(metaConfig.content, this.config);
+            }
+            this.__approvedExt = this.config.extensions;
+        }
+
+        __initRequestIndicatorCss() {
+            if (this.config.includeIndicatorCSS !== false) {
+                let indicator = this.config.indicatorClass;
+                let request = this.config.requestClass;
+                let sheet = new CSSStyleSheet();
+                sheet.replaceSync(
+                    `.${indicator}{opacity:0;visibility: hidden} ` +
+                    `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
+                );
+                document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+            }
+        }
+
+        registerExtension(name, extension) {
+            if (this.__approvedExt && !this.__approvedExt.split(/,\s*/).includes(name)) return false;
+            if (this.__registeredExt.has(name)) return false;
+            this.__registeredExt.add(name);
+            if (extension.init) extension.init(this.#internalAPI);
+            Object.entries(extension).forEach(([key, value]) => {
+                if(!this.__extMethods.get(key)?.push(value)) this.__extMethods.set(key, [value]);
+            });
+        }
+
+        __ignore(elt) {
+            let p = this.config.prefix;
+            return !elt.closest || elt.closest('[hx-ignore]') != null || (p && elt.closest(`[${p}ignore]`) != null);
+        }
+
+        __attr(elt, name) {
+            let p = this.config.prefix;
+            return elt.getAttribute(name) ?? (p ? elt.getAttribute(name.replace('hx-', p)) : null);
+        }
+
+        __attrName(elt, name) {
+            let p = this.config.prefix && name.replace('hx-', this.config.prefix);
+            return elt.hasAttribute(name) ? name : (p && elt.hasAttribute(p) ? p : null);
+        }
+
+        __prefixSelector(s) {
+            return this.__prefixes(s).join(',');
+        }
+
+        __prefixes(s) {
+            let result = [s];
+            if (this.config.prefix) result.push(s.replaceAll('hx-', this.config.prefix));
+            return result;
+        }
+
+        __queryEltAndDescendants(elt, selector) {
+            let results = [...(elt.querySelectorAll?.(selector) ?? [])];
+            if (elt.matches?.(selector)) {
+                results.unshift(elt);
+            }
+            return results;
+        }
+
+        __normalizeSwapStyle(style) {
+            return style === 'before' ? 'beforebegin' :
+                   style === 'after' ? 'afterend' :
+                   style === 'prepend' ? 'afterbegin' :
+                   style === 'append' ? 'beforeend' : style;
+        }
+
+        __findThisElements(elt, attrName) {
+            let result = [];
+            this.__attributeValue(elt, attrName, undefined, (val, elt) => {
+                if (val?.split(/\s*[,:]\s*/).includes('this')) result.push(elt);
+            });
+            return result;
+        }
+
+        __attributeValue(elt, name, defaultVal, eltCollector) {
+            name = this.__maybeAdjustMetaCharacter(name);
+            let inherited = this.__maybeAdjustMetaCharacter(":inherited");
+            let append = this.__maybeAdjustMetaCharacter(":append");
+
+            let val = this.__attr(elt, name) ?? this.__attr(elt, name + inherited);
+            if (val != null) return eltCollector ? eltCollector(val, elt) : val;
+
+            let n1 = CSS.escape(this.config.implicitInheritance ? name : name + inherited);
+            let n2 = CSS.escape(name + inherited + append);
+            let inheritSelector = this.__prefixSelector(`[${n1}],[${n2}]`);
+            let appendName = this.__attrName(elt, name + append) ?? this.__attrName(elt, name + inherited + append);
+            if (appendName) {
+                let appendValue = elt.getAttribute(appendName);
+                let parent = elt.parentNode?.closest?.(inheritSelector);
+                if (eltCollector) eltCollector(appendValue, elt);
+                if (parent) {
+                    let parentVal = this.__attributeValue(parent, name, undefined, eltCollector);
+                    return parentVal ? (parentVal + "," + appendValue).replace(/[{}]/g, '') : appendValue;
+                }
+                return appendValue;
+            }
+
+            let parent = elt.parentNode?.closest?.(inheritSelector);
+            if (parent) {
+                val = this.__attributeValue(parent, name, undefined, eltCollector);
+                if (!eltCollector && val && this.config.implicitInheritance) {
+                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
+                }
+                return val;
+            }
+            return defaultVal;
+        }
+
+        __parseConfig(configString) {
+            if (!configString) return {};
+            if (configString[0] === '{') return JSON.parse(configString);
+            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            return [...configString.matchAll(configPattern)].reduce((result, match) => {
+                let keyPath = (match[1] ?? match[2]).split('.');
+                let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
+                if (value === 'true') value = true;
+                else if (value === 'false') value = false;
+                else if (/^\d+$/.test(value)) value = parseInt(value);
+                if (keyPath.some(k => this.__internalField(k))) return result;
+                keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
+                return result;
+            }, {});
+        }
+
+        __internalField(k) {
+            return k === '__proto__' || k === 'constructor' || k === 'prototype';
+        }
+
+        __mergeConfig(configString, target) {
+            let parsed = this.__parseConfig(configString);
+            for (let key in parsed) {
+                if (this.__internalField(key)) continue;
+                let val = parsed[key];
+                if (val && typeof val === 'object' && !Array.isArray(val) && target[key]) {
+                    Object.assign(target[key], val);
+                } else {
+                    target[key] = val;
+                }
+            }
+            return target;
+        }
+
+        __parseTriggerSpecs(spec) {
+            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
+            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
+                let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
+                if (!name) return [];  // skip empty/whitespace-only tokens
+                if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
+                return [{name, ...this.__parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
+            });
+        }
+
+        __determineMethodAndAction(elt, evt) {
+            if (this.__isBoosted(elt)) {
+                return this.__boostedMethodAndAction(elt, evt)
+            } else {
+                let method = this.__attributeValue(elt, "hx-method") || "GET"
+                let action = this.__attributeValue(elt, "hx-action");
+                if (!action) {
+                    for (let verb of this.#verbs) {
+                        let verbAction = this.__attributeValue(elt, "hx-" + verb);
+                        if (verbAction != null) {
+                            action = verbAction;
+                            method = verb;
+                            break;
+                        }
+                    }
+                }
+                method = method.toUpperCase()
+                return {action, method}
+            }
+        }
+
+        __boostedMethodAndAction(elt, evt) {
+            if (elt.matches("a")) {
+                return {action: elt.getAttribute("href"), method: "GET"}
+            } else {
+                let action = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
+                let method = evt.submitter?.getAttribute?.("formMethod") || elt.getAttribute("method") || "GET";
+                return {action, method: method.toUpperCase()}
+            }
+        }
+
+        __htmxProp(elt) {
+            if (!elt._htmx) {
+                elt._htmx = { listeners: [], triggerSpecs: [] };
+                elt.setAttribute('data-htmx-powered', 'true');
+            }
+            return elt._htmx;
+        }
+
+        __initializeElement(elt) {
+            if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
+                let htmxProp = this.__htmxProp(elt);
+                htmxProp.initialized = true;
+                htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
+                this.__initializeTriggers(elt);
+                this.__initializeAbortListener(elt)
+                this.__trigger(elt, "htmx:after:init", {}, true)
+            }
+        }
+
+        __createHtmxEventHandler(elt) {
+            return async (evt) => {
+                try {
+                    let ctx = this.__createRequestContext(elt, evt);
+                    await this.__handleTriggerEvent(ctx);
+                } catch (e) {
+                    this.__trigger(elt, 'htmx:error', { error: e });
+                }
+            };
+        }
+
+        __createRequestContext(sourceElement, sourceEvent) {
+            let {action, method} = this.__determineMethodAndAction(sourceElement, sourceEvent);
+            let [fullAction, anchor] = (action || '').split('#');
+            let ac = new AbortController();
+            let ctx = {
+                sourceElement,
+                sourceEvent,
+                status: "created",
+                select: this.__attributeValue(sourceElement, "hx-select"),
+                selectOOB: this.__attributeValue(sourceElement, "hx-select-oob"),
+                target: this.__attributeValue(sourceElement, "hx-target"),
+                swap: this.__attributeValue(sourceElement, "hx-swap") ?? this.config.defaultSwap,
+                push: this.__attributeValue(sourceElement, "hx-push-url"),
+                replace: this.__attributeValue(sourceElement, "hx-replace-url"),
+                transition: this.config.transitions,
+                confirm: this.__attributeValue(sourceElement, "hx-confirm"),
+                request: {
+                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') && !sourceElement.noValidate && !sourceEvent.submitter?.formNoValidate ? "true" : "false"),
+                    action: fullAction,
+                    anchor,
+                    method,
+                    headers: this.__createCoreHeaders(sourceElement),
+                    abort: ac.abort.bind(ac),
+                    credentials: "same-origin",
+                    signal: ac.signal,
+                    mode: this.config.mode
+                }
+            };
+            // Apply boost config overrides
+            if (sourceElement._htmx?.boosted) {
+                this.__mergeConfig(sourceElement._htmx.boosted, ctx);
+            }
+            ctx.target = this.__resolveTarget(sourceElement, ctx.target);
+            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+            if (ctx.target) {
+                ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
+            }
+
+            // Apply hx-config overrides
+            let configAttr = this.__attributeValue(sourceElement, "hx-config");
+            if (configAttr) {
+                this.__mergeConfig(configAttr, ctx.request);
+                ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
+            }
+            return ctx;
+        }
+
+        __buildIdentifier(elt) {
+            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + encodeURI(elt.id) : ''}`;
+        }
+
+        __createCoreHeaders(elt) {
+            let headers = {
+                "HX-Request": "true",
+                "HX-Source": this.__buildIdentifier(elt),
+                "HX-Current-URL": location.href,
+                "Accept": "text/html"
+            };
+            if (this.__isBoosted(elt)) {
+                headers["HX-Boosted"] = "true"
+            }
+            return headers;
+        }
+
+        __handleHxHeaders(elt, headers) {
+            return this.__getAttributeObject(elt, "hx-headers", obj => {
+                for (let key in obj) headers[key] = String(obj[key]);
+            });
+        }
+
+        __resolveTarget(elt, selector) {
+            if (selector instanceof Element) {
+                return selector;
+            } else if (selector != null) {
+                return this.__findOrWarn(elt, selector, "hx-target");
+            } else if (this.__isBoosted(elt)) {
+                return document.body
+            } else {
+                return elt;
+            }
+        }
+
+        __isBoosted(elt) {
+            return elt?._htmx?.boosted;
+        }
+
+        async __handleTriggerEvent(ctx) {
+            let elt = ctx.sourceElement
+            let evt = ctx.sourceEvent
+            if (!elt.isConnected) return
+
+            if (this.__isModifierKeyClick(evt)) return
+
+            if (this.__shouldCancel(evt)) evt.preventDefault()
+
+            // determine if request uses query params
+            let usesQueryParams = /GET|DELETE/.test(ctx.request.method);
+
+            // Only include *enclosing* form info for request types that do not use
+            // query parameters (can still be included explicitly with hx-include)
+            let form = usesQueryParams
+                ? (elt.matches('form') ? elt : null)
+                : (elt.form || elt.closest("form"))
+
+            // Build request body
+            let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate, usesQueryParams)
+            if (!body) return  // Validation failed
+            let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
+                ctx.vals = obj; // make available for json extensions
+                for (let key in obj) body.set(key, obj[key]);
+            });
+            if (valsResult) await valsResult; // Only await if it returned a promise
+            if (ctx.values) {
+                for (let k in ctx.values) {
+                    body.delete(k);
+                    body.append(k, ctx.values[k]);
+                }
+            }
+
+            // Handle dynamic headers
+            let headersResult = this.__handleHxHeaders(elt, ctx.request.headers)
+            if (headersResult) await headersResult  // Only await if it returned a promise
+
+            // Setup event-dependent request details
+            Object.assign(ctx.request, {
+                form,
+                submitter: evt.submitter,
+                body
+            })
+
+            if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
+            if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
+
+            let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
+            if (javascriptContent != null) {
+                let data = Object.fromEntries(ctx.request.body);
+                await this.__executeJavaScript(ctx.sourceElement, data, javascriptContent, false);
+                return
+            } else if (usesQueryParams) {
+                let url = new URL(ctx.request.action, document.baseURI);
+
+                for (let key of ctx.request.body.keys()) {
+                    url.searchParams.delete(key);
+                }
+                for (let [key, value] of ctx.request.body) {
+                    url.searchParams.append(key, value);
+                }
+
+                // Keep relative if same origin, otherwise use full URL
+                if (url.origin === location.origin) {
+                    ctx.request.action = url.pathname + url.search;
+                } else {
+                    ctx.request.action = url.href;
+                }
+                ctx.request.body = null;
+            } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+                ctx.request.body = new URLSearchParams(ctx.request.body);
+            }
+
+            await this.__issueRequest(ctx);
+        }
+
+        async __issueRequest(ctx) {
+            let elt = ctx.sourceElement
+            let syncStrategy = this.__determineSyncStrategy(elt);
+            let requestQueue = this.__getRequestQueue(elt);
+
+            if (!requestQueue.issue(ctx, syncStrategy)) return
+
+            ctx.status = "issuing"
+
+            let indicators = [];
+            let disableElements = [];
+            try {
+                // Handle confirmation
+                if (ctx.confirm) {
+                    let confirmed = await new Promise(resolve => {
+                        let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
+                        if (this.__trigger(elt, "htmx:confirm", detail)) {
+                            let js = this.__extractJavascriptContent(ctx.confirm);
+                            resolve(js ? this.__executeJavaScript(elt, {}, js, true) : window.confirm(ctx.confirm));
+                        }
+                    });
+                    if (!confirmed) return;
+                }
+
+                // initialize timeout & indicators after confirmation
+                this.__initTimeout(ctx);
+                indicators = this.__showIndicators(elt);
+                disableElements = this.__disableElements(elt);
+
+                ctx.fetch ||= window.fetch.bind(window)
+                if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
+
+                let response = await ctx.fetch(ctx.request.action, ctx.request);
+
+                ctx.response = {
+                    raw: response,
+                    status: response.status,
+                    headers: response.headers,
+                }
+                this.__extractHxHeaders(ctx);
+                if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
+                ctx.text = await response.text();
+                if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
+
+                if (ctx.response.status >= 400) {
+                    this.__trigger(elt, "htmx:response:error", {ctx})
+                }
+
+                if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
+                    ctx.keepIndicators = true;
+                    return
+                }
+
+                if (ctx.status === "issuing") {
+                    if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;   // HX-Retarget
+                    if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;       // HX-Reswap
+                    if (ctx.hx.reselect) ctx.select = ctx.hx.reselect; // HX-Reselect
+                    ctx.status = "response received";
+                    this.__handleStatusCodes(ctx);
+                    await this.swap(ctx);
+                    ctx.status = "swapped";
+                }
+
+            } catch (error) {
+                ctx.status = "error: " + error;
+                this.__trigger(elt, "htmx:error", {ctx, error})
+            } finally {
+                clearTimeout(ctx.requestTimeout);
+                this.__trigger(elt, "htmx:finally:request", {ctx})
+                if (!ctx.keepIndicators) {
+                    this.__hideIndicators(indicators);
+                    this.__enableElements(disableElements);
+                }
+
+                requestQueue.finish()
+                if (requestQueue.more()) {
+                    // intentionally not awaited — __issueRequest has its own try/catch
+                    this.__issueRequest(requestQueue.next())
+                }
+            }
+        }
+
+        // Extract HX-* response headers into ctx.hx
+        // Maps: HX-Trigger → ctx.hx.trigger, HX-Push-Url → ctx.hx.pushurl, etc.
+        __extractHxHeaders(ctx) {
+            ctx.hx = {}
+            for (let [k, v] of ctx.response.raw.headers) {
+                if (k.toLowerCase().startsWith('hx-')) {
+                    ctx.hx[k.slice(3).toLowerCase().replace(/-/g, '')] = v
+                }
+            }
+        }
+
+        // Handle response headers that abort normal swap processing.
+        // Returns true if the response was fully handled by a header.
+        __handleHeadersAndMaybeReturnEarly(ctx) {
+            if (ctx.hx.trigger) { // HX-Trigger
+                this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
+            }
+            if (ctx.hx.refresh === 'true') { // HX-Refresh
+                location.reload();
+                return true
+            }
+            if (ctx.hx.redirect) { // HX-Redirect
+                location.href = ctx.hx.redirect;
+                return true
+            }
+            if (ctx.hx.location) { // HX-Location
+                let path = ctx.hx.location, opts = {};
+                if (path[0] === '{' || /[\s,]/.test(path)) {
+                    opts = this.__parseConfig(path);
+                    path = opts.path;
+                    delete opts.path;
+                }
+                opts.push ??= 'true';
+                this.ajax('GET', path, opts);
+                return true
+            }
+        }
+
+        __initTimeout(ctx) {
+            let timeout = ctx.request.timeout != null
+                ? this.parseInterval(ctx.request.timeout)
+                : this.config.defaultTimeout;
+            if (timeout) {
+                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
+            }
+        }
+
+        __determineSyncStrategy(elt) {
+            let syncValue = this.__attributeValue(elt, "hx-sync");
+            if (!syncValue) return "queue first";
+            let strategy = syncValue.split(":").pop().trim();
+            return /^(drop|abort|replace|queue)/.test(strategy) ? strategy : "queue first";
+        }
+
+        __getRequestQueue(elt) {
+            let syncValue = this.__attributeValue(elt, "hx-sync");
+            let syncElt = elt
+            if (syncValue) {
+                let selector = syncValue.includes(":")
+                    ? syncValue.slice(0, syncValue.lastIndexOf(":")).trim()
+                    : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
+                if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
+            }
+            return this.__htmxProp(syncElt).rq ||= new ReqQ()
+        }
+
+        __isModifierKeyClick(evt) {
+            return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
+        }
+
+        __shouldCancel(evt) {
+            let elt = evt.currentTarget
+            let isSubmit = evt.type === 'submit' && elt?.tagName === 'FORM'
+            if (isSubmit) return true
+
+            let isClick = evt.type === 'click' && evt.button === 0
+            if (!isClick) return false
+
+            let btn = elt?.closest?.('button, input[type="submit"], input[type="image"]')
+            let form = btn?.form || btn?.closest('form')
+            let isSubmitButton = btn && !btn.disabled && form &&
+                (btn.type === 'submit' || btn.type === 'image' || (!btn.type && btn.tagName === 'BUTTON'))
+            if (isSubmitButton) return true
+
+            let link = elt?.closest?.('a')
+            if (!link || !link.href) return false
+
+            let href = link.getAttribute('href')
+            let isFragmentOnly = href && href.startsWith('#') && href.length > 1
+            return !isFragmentOnly
+        }
+
+        __initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
+            let specString = this.__attributeValue(elt, "hx-trigger");
+            if (!specString) {
+                specString = elt.matches("form") ? "submit" :
+                    elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
+                        "click";
+            }
+            this.__onTrigger(elt, specString, initialHandler)
+        }
+
+        // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
+        __onTrigger(elt, specString, handler) {
+            let specs = this.__parseTriggerSpecs(specString)
+            this.__htmxProp(elt).triggerSpecs.push(...specs)
+
+            for (let spec of specs) {
+                spec.handler = handler
+                spec.listeners = []
+                spec.values = new WeakMap()
+
+                let [eventName, filter] = this.__extractFilter(spec.name);
+
+                // should be first so logic is called only when all other filters pass
+                if (spec.once) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        original(evt)
+                        for (let listenerInfo of spec.listeners) {
+                            listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler)
+                        }
+                    }
+                }
+
+                if (eventName === 'intersect' || eventName === "revealed") {
+                    let observerOptions = {}
+                    if (spec.root) observerOptions.root = this.__findOrWarn(elt, spec.root)
+                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold)
+                    let isRevealed = eventName === "revealed"
+                    spec.observer = new IntersectionObserver((entries) => {
+                        for (let i = 0; i < entries.length; i++) {
+                            let entry = entries[i]
+                            if (entry.isIntersecting) {
+                                this.trigger(elt, 'intersect', {}, false)
+                                if (isRevealed) {
+                                    spec.observer.disconnect()
+                                }
+                                break;
+                            }
+                        }
+                    }, observerOptions)
+                    eventName = "intersect"
+                    spec.observer.observe(elt)
+                }
+
+                if (spec.delay) {
+                    let original = spec.handler
+                    spec.handler = evt => {
+                        clearTimeout(spec.timeout)
+                        spec.timeout = setTimeout(() => original(evt),
+                            this.parseInterval(spec.delay));
+                    }
+                }
+
+                if (spec.throttle) {
+                    let original = spec.handler
+                    spec.handler = evt => {
+                        if (spec.throttled) {
+                            spec.throttledEvent = evt
+                        } else {
+                            spec.throttled = true
+                            original(evt);
+                            spec.throttleTimeout = setTimeout(() => {
+                                spec.throttled = false
+                                if (spec.throttledEvent) {
+                                    // implement trailing-edge throttling
+                                    let throttledEvent = spec.throttledEvent;
+                                    spec.throttledEvent = null
+                                    spec.handler(throttledEvent);
+                                }
+                            }, this.parseInterval(spec.throttle))
+                        }
+                    }
+                }
+
+                if (spec.target) {
+                    let original = spec.handler
+                    spec.handler = evt => {
+                        if (evt.target?.matches?.(spec.target)) {
+                            original(evt)
+                        }
+                    }
+                }
+
+                if (eventName === "every") {
+                    let interval = Object.keys(spec).find(k => k !== 'name');
+                    spec.interval = setInterval(() => {
+                        if (elt.isConnected) {
+                            this.__trigger(elt, 'every', {}, false);
+                        } else {
+                            clearInterval(spec.interval)
+                        }
+                    }, this.parseInterval(interval));
+                }
+
+                if (spec.consume) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        evt.stopPropagation()
+                        original(evt)
+                    }
+                }
+
+                if (filter) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        if (this.__shouldCancel(evt)) evt.preventDefault()
+                        let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
+                        if (this.__executeJavaScript(elt, evtArgs, filter, true, false)) {
+                            original(evt)
+                        }
+                    }
+                }
+
+                let fromElts = [elt];
+                if (spec.from) {
+                    fromElts = this.__findAllExt(elt, spec.from)
+                }
+
+                if (spec.changed) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        let trigger = false
+                        for (let fromElt of fromElts) {
+                            if (spec.values.get(fromElt) !== fromElt.value) {
+                                trigger = true
+                                spec.values.set(fromElt, fromElt.value);
+                            }
+                        }
+                        if (trigger) {
+                            original(evt)
+                        }
+                    }
+                }
+
+                // load: fire handler directly (no listener needed)
+                if (eventName === 'load') {
+                    spec.handler(new CustomEvent('load'))
+                    continue
+                }
+
+                for (let fromElt of fromElts) {
+                    let listenerInfo = {fromElt, eventName, handler: spec.handler};
+                    elt._htmx.listeners.push(listenerInfo)
+                    spec.listeners.push(listenerInfo)
+                    fromElt.addEventListener(eventName, spec.handler);
+                }
+            }
+        }
+
+        __extractFilter(str) {
+            let match = str.match(/^([^\[]*)\[([^\]]*)]/);
+            if (!match) return [str, null];
+            return [match[1], match[2]];
+        }
+
+        __handleTriggerHeader(value, elt) {
+            if (value[0] === '{') {
+                let triggers = this.__parseConfig(value);
+                for (let name in triggers) {
+                    let detail = triggers[name];
+                    let target = elt;
+                    if (detail?.target) {
+                        target = this.find(detail.target);
+                    }
+                    this.trigger(target, name, typeof detail === 'object' ? detail : {value: detail});
+                }
+            } else {
+                value.split(',').forEach(name => this.trigger(elt, name.trim(), {}));
+            }
+        }
+
+        __apiMethods(thisArg) {
+            let bound = {};
+            let proto = Object.getPrototypeOf(this);
+            for (let name of Object.getOwnPropertyNames(proto)) {
+                if (name !== 'constructor' && typeof this[name] === 'function') {
+                    if (["find", "findAll"].includes(name)) {
+                        bound[name] = (arg1, arg2) => {
+                            if (arg2 === undefined) {
+                                return this[name](thisArg, arg1)
+                            } else {
+                                return this[name](arg1, arg2)
+                            }
+                        }
+                    } else {
+                        bound[name] = this[name].bind(this);
+                    }
+                }
+            }
+            return bound;
+        }
+
+        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true) {
+            let args = {}
+            Object.assign(args, this.__apiMethods(thisArg))
+            let scope = {};
+            this.__triggerExtensions(thisArg, "htmx:scope", { scope });
+            Object.assign(args, scope);
+            Object.assign(args, obj)
+            let keys = Object.keys(args);
+            let values = Object.values(args);
+            let FunctionConstructor = isAsync ? this.#AsyncFunction : this.#Function;
+            let func = new FunctionConstructor(...keys, expression ? `return (${code})` : code);
+            return func.call(thisArg, ...values);
+        }
+
+        process(elt) {
+            if (!elt) return;
+            if (!(elt instanceof Element)) {
+                for (let child of elt.children || []) this.process(child);
+                return;
+            }
+            if (this.__ignore(elt)) return;
+            if (!this.__trigger(elt, "htmx:before:process")) return
+            let hxOnNodes = [elt];
+            let iter = this.#hxOnQuery.evaluate(elt)
+            let node = null
+            while (node = iter.iterateNext()) hxOnNodes.push(node)
+            for (let hxOnNode of hxOnNodes) {
+                if (!this.__ignore(hxOnNode) && this.__trigger(hxOnNode, "htmx:before:on:init", {}, true)) {
+                    this.__handleHxOnAttributes(hxOnNode);
+                }
+            }
+            for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
+                this.__initializeElement(child);
+            }
+            for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
+                this.__maybeBoost(child);
+            }
+            this.__trigger(elt, "htmx:after:process");
+        }
+
+        __maybeBoost(elt) {
+            let boostValue = this.__attributeValue(elt, "hx-boost");
+            if (boostValue && boostValue !== "false" && this.__shouldBoost(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
+                let htmxProp = this.__htmxProp(elt);
+                htmxProp.initialized = true;
+                htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
+                htmxProp.boosted = boostValue;
+                let eventName = elt.matches('a') ? 'click' : 'submit';
+                elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
+                elt.addEventListener(eventName, elt._htmx.eventHandler);
+                this.__trigger(elt, "htmx:after:init", {}, true)
+            }
+        }
+
+        __shouldBoost(elt) {
+            if (this.__shouldInitialize(elt)) {
+                if (elt.tagName === "A") {
+                    if (elt.target === '' || elt.target === '_self') {
+                        return !elt.getAttribute('href')?.startsWith?.("#") && this.__isSameOrigin(elt.href)
+                    }
+                } else if (elt.tagName === "FORM") {
+                    return elt.method !== 'dialog' &&  this.__isSameOrigin(elt.action);
+                }
+            }
+        }
+
+        __isSameOrigin(url) {
+            try {
+                // URL constructor handles both relative and absolute URLs
+                const parsed = new URL(url, window.location.href);
+                return parsed.origin === window.location.origin;
+            } catch (e) {
+                // If URL parsing fails, assume not same-origin
+                return false;
+            }
+        }
+
+        __shouldInitialize(elt) {
+            return !elt._htmx?.initialized && !this.__ignore(elt);
+        }
+
+        __cleanup(elt) {
+            if (elt._htmx) {
+                this.__trigger(elt, "htmx:before:cleanup")
+                for (let spec of elt._htmx.triggerSpecs || []) {
+                    if (spec.interval) clearInterval(spec.interval);
+                    if (spec.timeout) clearTimeout(spec.timeout);
+                    if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
+                    spec.observer?.disconnect()
+                }
+                for (let listenerInfo of elt._htmx.listeners || []) {
+                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
+                }
+                this.__trigger(elt, "htmx:after:cleanup")
+            }
+            if (elt.firstChild) {
+                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
+                    this.__cleanup(child);
+                }
+            }
+        }
+
+        __handlePreservedElements(fragment) {
+            let pantry = document.createElement('div');
+            pantry.hidden = true;
+            document.body.insertAdjacentElement('afterend', pantry);
+            let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('[hx-preserve]')) || [];
+            for (let preservedElt of newPreservedElts) {
+                let currentElt = document.getElementById(preservedElt.id);
+                if (currentElt) {
+                    this.__moveBefore(pantry, currentElt, null);
+                }
+            }
+            return pantry
+        }
+
+        __restorePreservedElements(pantry) {
+            for (let preservedElt of [...pantry.children]) {
+                let newElt = document.getElementById(preservedElt.id);
+                if (newElt) {
+                    this.__moveBefore(newElt.parentNode, preservedElt, newElt);
+                    this.__cleanup(newElt)
+                    newElt.remove()
+                }
+            }
+            pantry.remove();
+        }
+
+        __parseHTML(resp) {
+            let trusted = this.#ttPolicy.createHTML(resp);
+            return Document.parseHTMLUnsafe?.(trusted) || new DOMParser().parseFromString(trusted, 'text/html');
+        }
+
+        __makeFragment(text) {
+            // Convert <hx-*> tags (e.g. <hx-partial>, <hx-oob>) to <template hx type="*">
+            let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
+            let title = '';
+            response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, m => (title = this.__parseHTML(m).title, ''));
+            let startTag = response.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
+
+            let doc, fragment;
+            if (startTag === 'html' || startTag === 'body') {
+                doc = this.__parseHTML(response);
+                fragment = document.createDocumentFragment();
+                fragment.append(doc.body);
+            } else {
+                doc = this.__parseHTML(`<template>${response}</template>`);
+                fragment = doc.querySelector('template').content;
+            }
+
+            if (!title) {
+                let titleElt = fragment.querySelector('title:not(svg title)');
+                if (titleElt) {
+                    title = titleElt.textContent;
+                    titleElt.remove();
+                }
+            }
+
+            this.__processScripts(fragment);
+
+            return {
+                fragment,
+                title
+            };
+        }
+
+        __createOOBTask(tasks, elt, oobValue, sourceElement) {
+            let targetSelector = elt.id ? '#' + CSS.escape(elt.id) : null;
+            if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
+                [oobValue, targetSelector = targetSelector] = oobValue.split(/:(.*)/);
+            }
+            if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
+
+            let swapSpec = this.__parseSwapSpec(oobValue);
+            targetSelector = swapSpec.target || targetSelector;
+            swapSpec.strip ??= !swapSpec.style.startsWith('outer');
+            if (!targetSelector) return;
+            let targets = [...document.querySelectorAll(targetSelector)];
+            for (let target of targets) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(elt.cloneNode(true));
+                tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
+            }
+            elt.remove();
+        }
+
+        __processOOB(fragment, sourceElement, selectOOB) {
+            let tasks = [];
+
+            // Process hx-select-oob first (select elements from response)
+            if (selectOOB) {
+                for (let spec of selectOOB.split(',')) {
+                    let [selector, oobValue = 'true'] = spec.split(/:(.*)/);
+                    for (let elt of fragment.querySelectorAll(selector)) {
+                        this.__createOOBTask(tasks, elt, oobValue, sourceElement);
+                    }
+                }
+            }
+
+            // Process elements with hx-swap-oob attribute
+            for (let oobElt of fragment.querySelectorAll(this.__prefixSelector('[hx-swap-oob]'))) {
+                let oobAttr = this.__attrName(oobElt, 'hx-swap-oob');
+                let oobValue = oobElt.getAttribute(oobAttr);
+                oobElt.removeAttribute(oobAttr);
+                this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
+            }
+            return tasks;
+        }
+
+        __insertNodes(parent, before, fragment) {
+            if (before) {
+                before.before(...fragment.childNodes);
+            } else {
+                parent.append(...fragment.childNodes);
+            }
+        }
+
+        __parseSwapSpec(swapStr) {
+            swapStr = swapStr.trim();
+            let style = this.config.defaultSwap
+            if (swapStr && !/^\S*:/.test(swapStr)) {
+                let m = swapStr.match(/^(\S+)\s*(.*)$/);
+                style = m[1];
+                swapStr = m[2];
+            }
+            return {style: this.__normalizeSwapStyle(style), ...this.__parseConfig(swapStr)};
+        }
+
+        __processPartials(fragment, ctx) {
+            let tasks = [];
+
+            for (let templateElt of fragment.querySelectorAll('template[hx]')) {
+                let type = templateElt.getAttribute('type');
+                
+                if (type === 'partial') {
+                    let targetSelector = this.__attr(templateElt, 'hx-target') || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
+                    if (targetSelector) {
+                        this.__processScripts(templateElt.content);
+                        let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
+                        for (let target of document.querySelectorAll(targetSelector)) {
+                            tasks.push({
+                                type: 'partial',
+                                fragment: templateElt.content.cloneNode(true),
+                                target,
+                                swapSpec,
+                                sourceElement: ctx.sourceElement
+                            });
+                        }
+                    }
+                } else {
+                    this.__triggerExtensions(templateElt, 'htmx:process:' + type, { ctx, tasks });
+                }
+                templateElt.remove();
+            }
+
+            return tasks;
+        }
+
+        __setFocus(elt, options, start, end) {
+            try {
+                if (start != null && elt.setSelectionRange) {
+                    elt.setSelectionRange(start, end);
+                }
+                elt.focus(options);
+            } catch (e) {
+                // setSelectionRange or Web component focus may fail so ignore
+            }
+        }
+
+        __handleAutoFocus(elt) {
+            let autofocus = this.__queryEltAndDescendants(elt, '[autofocus]')[0];
+            if (autofocus) {
+                this.__setFocus(autofocus);
+            }
+        }
+
+        __handleScroll(swapSpec, target) {
+            if (swapSpec.scroll) {
+                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(swapSpec.scrollTarget) : target;
+                if (scrollTarget) {
+                    if (swapSpec.scroll === 'top') {
+                        scrollTarget.scrollTop = 0;
+                    } else if (swapSpec.scroll === 'bottom'){
+                        scrollTarget.scrollTop = scrollTarget.scrollHeight;
+                    }
+                }
+            }
+            if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
+                let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
+                showTarget?.scrollIntoView(swapSpec.show === 'top')
+            }
+        }
+
+        __handleAnchorScroll(ctx) {
+            if (ctx.request?.anchor) {
+                document.getElementById(ctx.request.anchor)?.scrollIntoView({block: 'start', behavior: 'auto'});
+            }
+        }
+
+        __processScripts(container) {
+            let scripts = this.__queryEltAndDescendants(container, 'script');
+            for (let oldScript of scripts) {
+                let newScript = document.createElement('script');
+                for (let attr of oldScript.attributes) {
+                    newScript.setAttribute(attr.name, attr.value);
+                }
+                if (this.config.inlineScriptNonce) {
+                    newScript.nonce = this.config.inlineScriptNonce;
+                }
+                newScript.textContent = this.#ttPolicy.createScript(oldScript.textContent);
+                oldScript.replaceWith(newScript);
+            }
+        }
+
+        //============================================================================================
+        // Public JS API
+        //============================================================================================
+
+        async swap(ctx) {
+            try {
+                this.__handleHistoryUpdate(ctx);
+                let {fragment, title} = this.__makeFragment(ctx.text);
+                ctx.title = title;
+                let tasks = [];
+
+                // Process OOB and partials
+                let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
+                let partialTasks = this.__processPartials(fragment, ctx);
+                tasks.push(...oobTasks, ...partialTasks);
+
+                // Process main swap first
+                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                if (mainSwap) {
+                    tasks.unshift(mainSwap);
+                }
+
+                if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
+                    return
+                }
+
+                let swapPromises = [];
+                let transitionTasks = [];
+                for (let task of tasks) {
+                    if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
+                        transitionTasks.push(task);
+                    } else {
+                        swapPromises.push(this.__insertContent(task));
+                    }
+                }
+
+                // submit all transition tasks in the transition queue w/no CSS transitions
+                if (transitionTasks.length > 0) {
+                    let tasksWrapper = async ()=> {
+                        for (let task of transitionTasks) {
+                            await this.__insertContent(task, false)
+                        }
+                    }
+                    swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+                }
+
+                await Promise.all(swapPromises);
+
+                this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
+                if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                this.__handleAnchorScroll(ctx);
+            } finally {
+                this.__trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
+            }
+        }
+
+        __processMainSwap(ctx, fragment, partialTasks) {
+            // Create main task if needed
+            let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
+            // skip creating main swap if extracting partials resulted in empty response except for delete style
+            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
+                if (ctx.select) {
+                    let selected = fragment.querySelectorAll(ctx.select);
+                    fragment = document.createDocumentFragment();
+                    fragment.append(...selected);
+                }
+                if (this.__isBoosted(ctx.sourceElement)) {
+                    swapSpec.show ||= 'top';
+                }
+                let mainSwap = {
+                    type: 'main',
+                    fragment,
+                    target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
+                    swapSpec,
+                    sourceElement: ctx.sourceElement,
+                    transition: ctx.transition && swapSpec.transition !== false
+                };
+                return mainSwap;
+            }
+        }
+
+        async __insertContent(task, cssTransition = true) {
+            let {target, swapSpec, fragment} = task;
+            if (typeof target === 'string') {
+                target = document.querySelector(target);
+            }
+            if (!target) return;
+            if (typeof swapSpec === 'string') {
+                swapSpec = this.__parseSwapSpec(swapSpec);
+            }
+            let swapStyle = swapSpec.style;
+            if (swapStyle === 'none') return;
+            // full-page response: fragment has a <body> wrapper — upgrade outerHTML to outerSync, strip for everything else
+            if (fragment.firstElementChild?.tagName === 'BODY') {
+                if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
+                else if (!swapStyle.startsWith('outer')) swapSpec.strip = true;
+            }
+            if (swapSpec.strip && fragment.firstElementChild) {
+                fragment = document.createDocumentFragment();
+                fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
+            }
+
+            this.__addClass(target, "htmx-swapping")
+            if (cssTransition && task.swapSpec?.swap) {
+                await this.timeout(task.swapSpec?.swap)
+            }
+
+            if (swapStyle === 'delete') {
+                if (target.parentNode) {
+                    this.__cleanup(target);
+                    target.parentNode.removeChild(target);
+                }
+                return;
+            }
+
+            // innerHTML/outerHTML swaps backup focus and handle CSS transitions
+            let focusInfo;
+            let settleTasks = []
+            let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
+            let parentNode = target.parentNode;
+            if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
+                let activeElt = document.activeElement;
+                if (activeElt?.id) {
+                    let start, end;
+                    try { start = activeElt.selectionStart; end = activeElt.selectionEnd; } catch (e) {}
+                    focusInfo = { elt: activeElt, start, end };
+                }
+                settleTasks = cssTransition && settleDelay ? this.__startCSSTransitions(fragment, target) : []
+            }
+
+            let pantry = this.__handlePreservedElements(fragment);
+            let newContent = [...fragment.childNodes]
+            try {
+                if (swapStyle === 'innerHTML') {
+                    for (const child of target.children) {
+                        this.__cleanup(child)
+                    }
+                    target.replaceChildren(...fragment.childNodes);
+                } else if (swapStyle === 'textContent') {
+                    for (const child of target.querySelectorAll('[data-htmx-powered]')) {
+                        this.__cleanup(child)
+                    }
+                    target.textContent = fragment.textContent;
+                } else if (swapStyle === 'outerHTML') {
+                    if (parentNode) {
+                        this.__insertNodes(parentNode, target, fragment);
+                        this.__cleanup(target)
+                        parentNode.removeChild(target);
+                        target = newContent[0] || parentNode
+                    }
+                } else if (swapStyle === 'outerSync') {
+                    this.__copyAttributes(target, fragment.firstElementChild);
+                    for (const child of target.children) {
+                        this.__cleanup(child)
+                    }
+                    target.replaceChildren(...fragment.firstElementChild.childNodes);
+                } else if (swapStyle === 'innerMorph') {
+                    this.__morph(target, fragment, true);
+                    newContent = [...target.childNodes];
+                } else if (swapStyle === 'outerMorph') {
+                    this.__morph(target, fragment, false);
+                    newContent.push(target);
+                } else if (swapStyle === 'beforebegin') {
+                    if (parentNode) {
+                        this.__insertNodes(parentNode, target, fragment);
+                    }
+                } else if (swapStyle === 'afterbegin') {
+                    this.__insertNodes(target, target.firstChild, fragment);
+                } else if (swapStyle === 'beforeend') {
+                    this.__insertNodes(target, null, fragment);
+                } else if (swapStyle === 'afterend') {
+                    if (parentNode) {
+                        this.__insertNodes(parentNode, target.nextSibling, fragment);
+                    }
+                } else {
+                    let methods = this.__extMethods.get('handle_swap') || []
+                    let handled = false;
+                    for (const method of methods) {
+                        let result = method(swapStyle, target, fragment, swapSpec);
+                        if (result) {
+                            handled = true;
+                            if (Array.isArray(result)) {
+                                newContent = result;
+                            }
+                            break;
+                        }
+                    }
+                    if (!handled) {
+                        throw new Error(`Unknown swap style: ${swapStyle}`);
+                    }
+                }
+            } finally {
+                this.__removeClass(target, "htmx-swapping")
+            }
+            this.__restorePreservedElements(pantry);
+            if (focusInfo && !focusInfo.elt.matches(':focus')) {
+                let newElt = document.getElementById(focusInfo.elt.id);
+                if (newElt) {
+                    let focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !this.config.defaultFocusScroll };
+                    this.__setFocus(newElt, focusOptions, focusInfo.start, focusInfo.end);
+                }
+            }
+
+            this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks})
+
+            for (const elt of newContent) {
+                this.__addClass(elt, "htmx-added")
+            }
+
+            if (cssTransition && settleTasks.length > 0) {
+                this.__addClass(target, "htmx-settling")
+                await this.timeout(settleDelay);
+                // invoke settle tasks
+                for (let settleTask of settleTasks) {
+                    settleTask()
+                }
+                this.__removeClass(target, "htmx-settling")
+            }
+
+            this.__trigger(target, "htmx:after:settle", {task, newContent, settleTasks})
+
+            for (const elt of newContent) {
+                this.__removeClass(elt, "htmx-added")
+                this.process(elt);
+                this.__handleAutoFocus(elt);
+            }
+            
+            this.__handleScroll(swapSpec, target);
+        }
+
+        __trigger(on, eventName, detail = {}, bubbles = true) {
+            // Convention: events with detail.error log at error level, detail.warn at warn level,
+            // otherwise at event level (gated by config.logAll). One emit per event.
+            if (detail.error) {
+                let prefix = `htmx: ${eventName}: ${detail.error.message ?? detail.error}`;
+                if (detail.error instanceof Error) console.error(prefix, detail.error, { elt: on, detail });
+                else console.error(prefix, { elt: on, detail });
+            } else if (detail.warn) {
+                console.warn(`htmx: ${eventName}: ${detail.warn}`, { elt: on, detail });
+            } else if (this.config.logAll) {
+                console.log(`htmx: ${eventName}`, { elt: on, detail });
+            }
+            on = this.__normalizeElement(on)
+            this.__triggerExtensions(on, eventName, detail);
+            return this.trigger(on, this.__maybeAdjustMetaCharacter(eventName), detail, bubbles)
+        }
+
+        __triggerExtensions(elt, eventName, detail = {}) {
+            let methods = this.__extMethods.get(eventName.replace(/:/g, '_'))
+            if (methods) {
+                detail.cancelled = false;
+                for (const fn of methods) {
+                    if (fn(elt, detail) === false || detail.cancelled) {
+                        detail.cancelled = true;
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        timeout(time) {
+            time = this.parseInterval(time);
+            if (time > 0) {
+                return new Promise(resolve => setTimeout(resolve, time));
+            }
+        }
+
+        onLoad(callback) {
+            this.on(this.__maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
+                callback(evt.target)
+            })
+        }
+
+        on(eventOrElt, eventOrCallback, callback) {
+            let event;
+            let elt = document;
+            if (callback === undefined) {
+                event = eventOrElt;
+                callback =  eventOrCallback
+            } else {
+                elt = this.__normalizeElement(eventOrElt);
+                event = eventOrCallback;
+            }
+            elt.addEventListener(event, callback);
+            return callback;
+        }
+
+        find(selectorOrElt, selector) {
+            return this.__findExt(selectorOrElt, selector)
+        }
+
+        findAll(selectorOrElt, selector) {
+            return this.__findAllExt(selectorOrElt, selector)
+        }
+
+        parseInterval(str) {
+            if (typeof str === 'number') return str;
+            let m = {ms: 1, s: 1000, m: 60000};
+            let [, n, u] = str?.match(/^([\d.]+)(ms|s|m)?$/) || [];
+            let v = parseFloat(n) * (m[u] || 1);
+            return isNaN(v) ? undefined : v;
+        }
+
+        trigger(on, eventName, detail = {}, bubbles = true) {
+            on = this.__normalizeElement(on)
+            let evt = new CustomEvent(eventName, {
+                detail,
+                cancelable: true,
+                bubbles,
+                composed: true
+            });
+            let target = on?.isConnected ? on : document;
+            let result = !detail.cancelled && target.dispatchEvent(evt);
+            return result
+        }
+        ajax(verb, path, context) {
+            // Normalize context to object
+            if (!context || context instanceof Element || typeof context === 'string') {
+                context = {target: context};
+            }
+
+            let sourceElt = typeof context.source === 'string' ?
+                document.querySelector(context.source) : context.source;
+
+            // If source selector was provided but didn't match, reject
+            if (typeof context.source === 'string' && !sourceElt) {
+                return Promise.reject(new Error('Source not found'));
+            }
+
+            // Resolve explicit target if provided; otherwise __createRequestContext
+            // will resolve from hx-target on the source element
+            if (context.target) {
+                let target = this.__resolveTarget(document.body, context.target);
+                if (!target) {
+                    return Promise.reject(new Error('Target not found'));
+                }
+                sourceElt ||= target;
+            }
+            sourceElt ||= document.body;
+
+            let ctx = this.__createRequestContext(sourceElt, context.event || {});
+            Object.assign(ctx, context);
+            if (context.target) ctx.target = this.__resolveTarget(document.body, context.target);
+            Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
+            if (context.headers) Object.assign(ctx.request.headers, context.headers);
+
+            return this.__handleTriggerEvent(ctx);
+        }
+
+        //============================================================================================
+        // History Support
+        //============================================================================================
+
+        __initHistoryHandling() {
+            if (!this.config.history) return;
+            if (!history.state) {
+                history.replaceState({htmx: true}, '', location.href);
+            }
+            window.addEventListener('popstate', (event) => {
+                if (event.state && event.state.htmx) {
+                    this.#historyAbort?.abort();
+                    this.__restoreHistory();
+                }
+            });
+        }
+
+        __pushUrlIntoHistory(path) {
+            if (!this.config.history) return;
+            history.pushState({htmx: true}, '', path);
+            this.__trigger(document, "htmx:after:history:push", {path});
+        }
+
+        __replaceUrlInHistory(path) {
+            if (!this.config.history) return;
+            history.replaceState({htmx: true}, '', path);
+            this.__trigger(document, "htmx:after:history:replace", {path});
+        }
+
+        __restoreHistory(path) {
+            path = path || location.pathname + location.search;
+            let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
+            if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
+                if (this.config.history === "reload") {
+                    location.reload();
+                } else {
+                    this.#historyAbort = new AbortController();
+                    this.ajax('GET', path, {
+                        target: historyElt,
+                        swap: 'outerSync',
+                        select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,
+                        request: {
+                            headers: {'HX-History-Restore-Request': 'true'},
+                            signal: this.#historyAbort.signal
+                        }
+                    });
+                }
+            }
+        }
+
+        __resolveHistoryAction(ctx) {
+            let {sourceElement, push, replace, hx, response} = ctx;
+
+            // allow response headers to override history action
+            if (hx?.pushurl || hx?.replaceurl) { // HX-Push-Url, HX-Replace-Url
+                push = hx.pushurl;
+                replace = hx.replaceurl;
+            }
+
+            // if this is a boosted element, default to pushing
+            if (push == null && replace == null && this.__isBoosted(sourceElement)) {
+                push = 'true';
+            }
+            
+            // normalize "false" to null
+            if (push === 'false' || push === false) push = null;
+            if (replace === 'false' || replace === false) replace = null;
+
+            if (!push && !replace) return null;
+
+            let path = push || replace;
+            // if the path is simply "true" normalize to the current path
+            if (path === 'true') {
+                let finalUrl = response?.raw?.url || ctx.request.action;
+                let url = new URL(finalUrl, location.href);
+                path = url.pathname + url.search + (ctx.request.anchor ? '#' + ctx.request.anchor : '');
+            }
+
+            let type = push ? 'push' : 'replace';
+            return {type, path};
+        }
+
+        __handleHistoryUpdate(ctx) {
+            let action = this.__resolveHistoryAction(ctx);
+            if (!action) return;
+
+            let historyDetail = {
+                history: action,
+                sourceElement: ctx.sourceElement,
+                response: ctx.response
+            };
+            if (!this.__trigger(document, "htmx:before:history:update", historyDetail)) return;
+            if (action.type === 'push') {
+                this.__pushUrlIntoHistory(action.path);
+            } else {
+                this.__replaceUrlInHistory(action.path);
+            }
+            this.__trigger(document, "htmx:after:history:update", historyDetail);
+        }
+
+        // hx-on:<event> binds to <event> directly
+        // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
+        // Modifiers (dot-separated): .prevent .stop .halt .once .self .outside .capture .passive .cc
+        __handleHxOnAttributes(node) {
+            let searchStrings = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p));
+            let mc = this.config.metaCharacter || ':';
+            for (let attr of node.getAttributeNames()) {
+                let searchString = searchStrings.find(s => attr.startsWith(s));
+                if (!searchString) continue;
+                let [evtName, ...mods] = attr.substring(searchString.length).split('.');
+                let has = m => mods.includes(m);
+                if (evtName.startsWith(mc)) evtName = 'htmx' + evtName;
+                if (has('cc')) evtName = evtName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                let code = node.getAttribute(attr);
+                let target = has('outside') ? document : node;
+                let opts = { capture: has('capture'), passive: has('passive') };
+                let halt = has('halt');
+                let handler = async (evt) => {
+                    if (has('self') && evt.target !== node) return;
+                    if (has('outside') && node.contains(evt.target)) return;
+                    if (halt || has('prevent')) evt.preventDefault();
+                    if (halt || has('stop')) evt.stopPropagation();
+                    if (has('once')) target.removeEventListener(evtName, handler, opts);
+                    try {
+                        await this.__executeJavaScript(node, { event: evt },
+                            `with(event?.detail||{}){${code}}`, false);
+                    } catch (e) {
+                        if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
+                    }
+                };
+                target.addEventListener(evtName, handler, opts);
+                this.__htmxProp(node).listeners.push({fromElt: target, eventName: evtName, handler});
+            }
+        }
+
+        __showIndicators(elt) {
+            let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
+            let indicatorElements;
+            if (!indicatorsSelector) {
+                indicatorElements = [elt]
+            } else {
+                indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
+            }
+            for (const indicator of indicatorElements) {
+                let p = this.__htmxProp(indicator);
+                p.rc = (p.rc || 0) + 1;
+                this.__addClass(indicator, this.config.requestClass)
+            }
+            return indicatorElements
+        }
+
+        __hideIndicators(indicatorElements) {
+            for (let indicator of indicatorElements) {
+                let p = this.__htmxProp(indicator);
+                if (p.rc && --p.rc <= 0) {
+                    this.__removeClass(indicator, this.config.requestClass);
+                    delete p.rc;
+                }
+            }
+        }
+
+        __disableElements(elt) {
+            let disabledSelector = this.__attributeValue(elt, "hx-disable");
+            let disabledElements = []
+            if (disabledSelector) {
+                disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
+                for (let indicator of disabledElements) {
+                    let p = this.__htmxProp(indicator);
+                    p.dc = (p.dc || 0) + 1;
+                    indicator.disabled = true
+                }
+            }
+            return disabledElements
+        }
+
+        __enableElements(disabledElements) {
+            for (const indicator of disabledElements) {
+                let p = this.__htmxProp(indicator);
+                if (p.dc && --p.dc <= 0) {
+                    indicator.disabled = false
+                    delete p.dc;
+                }
+            }
+        }
+
+        __collectFormData(elt, form, submitter, validate, isGet) {
+            if (validate && form && !form.reportValidity()) return
+            
+            let formData = form ? new FormData(form) : new FormData()
+            let included = form ? new Set(form.elements) : new Set()
+            if (!form) {
+                if (validate && elt.reportValidity && !elt.reportValidity()) return
+                this.__addInputValues(elt, included, formData, isGet);
+            }
+            if (submitter && submitter.name) {
+                formData.append(submitter.name, submitter.value)
+                included.add(submitter);
+            }
+            let includeSelector = this.__attributeValue(elt, "hx-include");
+            if (includeSelector) {
+                for (let node of this.__findAllExt(elt, includeSelector)) {
+                    if (validate && node.reportValidity && !node.reportValidity()) return
+                    this.__addInputValues(node, included, formData);
+                }
+            }
+            return formData
+        }
+
+        __addInputValues(elt, included, formData, isGet) {
+            let tag = elt.tagName;
+            let inputs = [];
+            if (tag === 'BUTTON') {
+                inputs = [elt]; // buttons only send own value, never collect children
+            } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
+                inputs = this.__queryEltAndDescendants(elt, 'input, select, textarea');
+            }
+            // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
+
+            for (let input of inputs) {
+                if (!input.name || input.matches(':disabled') || included.has(input)) continue;
+                included.add(input);
+
+                let type = input.type;
+                if (type === 'checkbox' || type === 'radio') {
+                    // Only add if checked
+                    if (input.checked) {
+                        formData.append(input.name, input.value);
+                    }
+                } else if (type === 'file') {
+                    // Add all selected files
+                    for (let file of input.files) {
+                        formData.append(input.name, file);
+                    }
+                } else if (type === 'select-multiple') {
+                    // Add all selected options
+                    for (let option of input.selectedOptions) {
+                        formData.append(input.name, option.value);
+                    }
+                } else {
+                    formData.append(input.name, input.value);
+                }
+            }
+        }
+
+        __getAttributeObject(elt, attrName, callback) {
+            let attrValue = this.__attributeValue(elt, attrName);
+            if (!attrValue) return null;
+
+            let javascriptContent = this.__extractJavascriptContent(attrValue);
+            if (javascriptContent) {
+                // Wrap in braces if not already wrapped (for htmx 2.x compatibility)
+                if (javascriptContent.indexOf('{') !== 0) {
+                    javascriptContent = '{' + javascriptContent + '}';
+                }
+                // Return promise for async evaluation
+                return this.__executeJavaScript(elt, {}, javascriptContent, true).then(obj => {
+                    callback(obj);
+                });
+            } else {
+                // Synchronous path - return the parsed object directly
+                callback(this.__parseConfig(attrValue));
+            }
+        }
+
+        __stringHyperscriptStyleSelector(selector) {
+            let s = selector.trim();
+            return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
+        }
+
+        __findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
+            let selector = maybeSelector ?? eltOrSelector;
+            let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
+            if (selector.startsWith('global ')) {
+                return this.__findAllExt(elt, selector.slice(7), thisAttr, true);
+            }
+            let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
+                .split(',').map(p => p.replace(/%2C/g, ',')) : [];
+            let result = []
+            let unprocessedParts = []
+            for (const part of parts) {
+                let selector = this.__stringHyperscriptStyleSelector(part)
+                let item
+                if (selector.startsWith('closest ')) {
+                    item = elt.closest(selector.slice(8))
+                } else if (selector.startsWith('find ')) {
+                    item = elt.querySelector(selector.slice(5))
+                } else if (selector.startsWith('findAll ')) {
+                    result.push(...elt.querySelectorAll(selector.slice(8)))
+                } else if (selector === 'next' || selector === 'nextElementSibling') {
+                    item = elt.nextElementSibling
+                } else if (selector.startsWith('next ')) {
+                    item = this.__scanForwardQuery(elt, selector.slice(5), !!global)
+                } else if (selector === 'previous' || selector === 'previousElementSibling') {
+                    item = elt.previousElementSibling
+                } else if (selector.startsWith('previous ')) {
+                    item = this.__scanBackwardsQuery(elt, selector.slice(9), !!global)
+                } else if (selector === 'document') {
+                    item = document
+                } else if (selector === 'window') {
+                    item = window
+                } else if (selector === 'body') {
+                    item = document.body
+                } else if (selector === 'host') {
+                    item = (elt.getRootNode()).host
+                } else if (selector === 'this') {
+                    if (thisAttr) {
+                        result.push(...this.__findThisElements(elt, thisAttr));
+                        continue;
+                    }
+                    item = elt
+                } else {
+                    unprocessedParts.push(selector)
+                }
+
+                if (item) {
+                    result.push(item)
+                }
+            }
+
+            if (unprocessedParts.length > 0) {
+                let standardSelector = unprocessedParts.join(',')
+                let rootNode = this.__getRootNode(elt, !!global)
+                result.push(...rootNode.querySelectorAll(standardSelector))
+            }
+
+            return [...new Set(result)]
+        }
+
+        __scanForwardQuery(start, match, global) {
+            return this.__scanUntilComparison(this.__getRootNode(start, global).querySelectorAll(match), start, Node.DOCUMENT_POSITION_PRECEDING);
+        }
+
+        __scanBackwardsQuery(start, match, global) {
+            let results = [...this.__getRootNode(start, global).querySelectorAll(match)].reverse()
+            return this.__scanUntilComparison(results, start, Node.DOCUMENT_POSITION_FOLLOWING);
+        }
+
+        __scanUntilComparison(results, start, comparison) {
+            for (const elt of results) {
+                if (elt.compareDocumentPosition(start) === comparison) {
+                    return elt
+                }
+            }
+        }
+
+        __getRootNode(elt, global) {
+            if (elt.isConnected && elt.getRootNode) {
+                return elt.getRootNode?.({composed: global})
+            } else {
+                return document
+            }
+        }
+
+        __findOrWarn(elt, selector, thisAttr) {
+            let result = this.__findAllExt(elt, selector, thisAttr)[0]
+            if (!result) {
+                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`,
+                    { elt, selector, attr: thisAttr });
+            }
+            return result
+        }
+
+        __findExt(eltOrSelector, selector, thisAttr) {
+            return this.__findAllExt(eltOrSelector, selector, thisAttr)[0]
+        }
+
+        __extractJavascriptContent(string) {
+            if (string != null) {
+                if (string.startsWith("js:")) {
+                    return string.substring(3);
+                } else if (string.startsWith("javascript:")) {
+                    return string.substring(11);
+                }
+            }
+        }
+
+        __initializeAbortListener(elt) {
+            let handler = () => {
+                let requestQueue = this.__getRequestQueue(elt);
+                requestQueue.abort();
+            };
+            elt.addEventListener("htmx:abort", handler);
+            elt._htmx.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
+        }
+
+        __morph(oldNode, fragment, innerHTML) {
+            let {persistentIds, idMap} = this.__createIdMaps(oldNode, fragment);
+            let pantry = document.createElement("div");
+            pantry.hidden = true;
+            document.body.after( pantry);
+            let ctx = {target: oldNode, idMap, persistentIds, pantry, futureMatches: new WeakSet()};
+
+            if (innerHTML) {
+                this.__morphChildren(ctx, oldNode, fragment);
+            } else {
+                this.__morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
+            }
+            this.__cleanup(pantry)
+            pantry.remove();
+        }
+
+        __morphChildren(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
+            if (oldParent instanceof HTMLTemplateElement && newParent instanceof HTMLTemplateElement) {
+                oldParent = oldParent.content;
+                newParent = newParent.content;
+            }
+            insertionPoint ||= oldParent.firstChild;
+
+            let newChild = newParent.firstChild;
+            while (newChild) {
+                let matchedNode;
+                if (insertionPoint && insertionPoint != endPoint) {
+                    matchedNode = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    if (matchedNode) {
+                        if (matchedNode !== insertionPoint) {
+                            let cursor = insertionPoint;
+                            while (cursor && cursor !== matchedNode) {
+                                let tempNode = cursor;
+                                cursor = cursor.nextSibling;
+                                // remove nodes unless they match upcoming content in which case move them to end for later use
+                                if (tempNode instanceof Element && (ctx.idMap.has(tempNode) || this.__matchesUpcomingSibling(ctx, tempNode, newChild))) {
+                                    this.__moveBefore(oldParent, tempNode, endPoint);
+                                } else {
+                                    this.__removeNode(ctx, tempNode);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!matchedNode && newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                    let escapedId = CSS.escape(newChild.id);
+                    matchedNode = (ctx.target.id === newChild.id && ctx.target) ||
+                        ctx.target.querySelector(`[id="${escapedId}"]`) ||
+                        ctx.pantry.querySelector(`[id="${escapedId}"]`);
+                    let element = matchedNode;
+                    while ((element = element.parentNode)) {
+                        let idSet = ctx.idMap.get(element);
+                        if (idSet) {
+                            idSet.delete(matchedNode.id);
+                            if (!idSet.size) ctx.idMap.delete(element);
+                        }
+                    }
+                    this.__moveBefore(oldParent, matchedNode, insertionPoint);
+                }
+
+                if (matchedNode) {
+                    this.__morphNode(matchedNode, newChild, ctx);
+                    insertionPoint = matchedNode.nextSibling;
+                    newChild = newChild.nextSibling;
+                    continue;
+                }
+
+                let nextNewChild = newChild.nextSibling;
+                if (ctx.idMap.has(newChild)) {
+                    let placeholder = document.createElement(newChild.tagName);
+                    oldParent.insertBefore(placeholder, insertionPoint);
+                    this.__morphNode(placeholder, newChild, ctx);
+                    insertionPoint = placeholder.nextSibling;
+                } else {
+                    oldParent.insertBefore(newChild, insertionPoint);
+                    insertionPoint = newChild.nextSibling;
+                }
+                newChild = nextNewChild;
+            }
+
+            while (insertionPoint && insertionPoint != endPoint) {
+                let tempNode = insertionPoint;
+                insertionPoint = insertionPoint.nextSibling;
+                this.__removeNode(ctx, tempNode);
+            }
+        }
+
+        __matchesUpcomingSibling(ctx, oldElt, startNode) {
+            if (ctx.futureMatches.has(oldElt)) return true;
+            for (let sibling = startNode.nextSibling, i = 0; sibling && i < this.config.morphScanLimit; sibling = sibling.nextSibling, i++) {
+                if (sibling instanceof Element && oldElt.isEqualNode(sibling)) {
+                    ctx.futureMatches.add(oldElt);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        __findBestMatch(ctx, node, startPoint, endPoint) {
+            if (!(node instanceof Element)) return null;
+            let softMatch = null, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
+            let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+            // If node has a non-persistent ID, insert instead of soft matching
+            if (node.id && !newSet) return null;
+            let cursor = startPoint;
+            while (cursor && cursor != endPoint) {
+                let oldSet = ctx.idMap.get(cursor);
+                if (this.#internalAPI.isSoftMatch(cursor, node)) {
+                    // Hard match: matching IDs found in both nodes
+                    if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
+                    if (!oldSet) {
+                        // Exact match: nodes are identical
+                        if (scanLimit > 0 && cursor.isEqualNode(node)) return cursor;
+                        // Soft match: same tag/type, save as fallback
+                        if (!softMatch) softMatch = cursor;
+                    }
+                }
+                // Stop if too many ID elements would be displaced
+                displaceMatchCount += oldSet?.size || 0;
+                if (displaceMatchCount > nodeMatchCount) break;
+                // Don't move elements containing focus
+                if (cursor.contains(document.activeElement)) break;
+                // Stop scanning if limit reached and no IDs to match
+                if (--scanLimit < 1 && nodeMatchCount === 0) break;
+                cursor = cursor.nextSibling;
+            }
+            // Only return fallback softMatch if it does not match upcoming content
+            if (softMatch && this.__matchesUpcomingSibling(ctx, softMatch, node)) return null;
+            return softMatch;
+        }
+
+        __isSoftMatch(oldNode, newNode) {
+            if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
+                return false;
+            }
+            // Script tags must be identical to match - never patch a script with different content
+            if (oldNode.tagName === 'SCRIPT' && !oldNode.isEqualNode(newNode)) return false;
+            // If both have Alpine reactive ID bindings, ignore ID mismatch
+            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                return true;
+            }
+            return !oldNode.id || oldNode.id === newNode.id;
+        }
+
+        __removeNode(ctx, node) {
+            if (ctx.idMap.has(node)) {
+                this.__moveBefore(ctx.pantry, node, null);
+            } else {
+                this.__cleanup(node)
+                node.remove();
+            }
+        }
+
+        __moveBefore(parentNode, element, after) {
+            if (parentNode.moveBefore) {
+                try {
+                    parentNode.moveBefore(element, after);
+                    return
+                } catch (e) {
+                    // ignore and insertBefore instead
+                }
+            }
+            parentNode.insertBefore(element, after);
+        }
+
+        __morphNode(oldNode, newNode, ctx) {
+            if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
+                
+            // Trigger extension hook - if returns false, skip morphing this node
+            if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
+                
+            this.__copyAttributes(oldNode, newNode);
+            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+                oldNode.value = newNode.value;
+            }
+            let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
+            // isEqualNode does not detect template content diff so always morph templates
+            if (!skipChildren && (!oldNode.isEqualNode(newNode) || newNode.tagName === 'TEMPLATE' || newNode.querySelector?.('template'))) {
+                this.__morphChildren(ctx, oldNode, newNode);
+            }
+        }
+
+        __copyAttributes(destination, source) {
+            let attributesToIgnore = this.config.morphIgnore || [];
+            for (const attr of source.attributes) {
+                if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
+                    destination.setAttribute(attr.name, attr.value);
+                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
+                        destination.value = attr.value;
+                    }
+                }
+            }
+            for (let i = destination.attributes.length - 1; i >= 0; i--) {
+                let attr = destination.attributes[i];
+                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.includes(attr.name)) {
+                    destination.removeAttribute(attr.name);
+                }
+            }
+        }
+
+        __populateIdMapWithTree(idMap, persistentIds, root, elements) {
+            for (const elt of elements) {
+                if (persistentIds.has(elt.id)) {
+                    let current = elt;
+                    while (current && current !== root) {
+                        let idSet = idMap.get(current);
+                        if (idSet == null) {
+                            idSet = new Set();
+                            idMap.set(current, idSet);
+                        }
+                        idSet.add(elt.id);
+                        current = current.parentElement;
+                    }
+                }
+            }
+        }
+
+        __createIdMaps(oldNode, newContent) {
+            let oldIdElements = this.__queryEltAndDescendants(oldNode, "[id]");
+            let newIdElements = newContent.querySelectorAll("[id]");
+            let persistentIds = this.__createPersistentIds(oldIdElements, newIdElements);
+            let idMap = new Map();
+            this.__populateIdMapWithTree(idMap, persistentIds, oldNode.parentElement, oldIdElements);
+            this.__populateIdMapWithTree(idMap, persistentIds, newContent, newIdElements);
+            return {persistentIds, idMap};
+        }
+
+        __createPersistentIds(oldIdElements, newIdElements) {
+            let duplicateIds = new Set(), oldIdTagNameMap = new Map();
+            for (const {id, tagName} of oldIdElements) {
+                if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
+                else if (id) oldIdTagNameMap.set(id, tagName);
+            }
+            let persistentIds = new Set();
+            for (const {id, tagName} of newIdElements) {
+                if (persistentIds.has(id)) duplicateIds.add(id);
+                else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
+            }
+            for (const id of duplicateIds) persistentIds.delete(id);
+            return persistentIds;
+        }
+
+        __handleStatusCodes(ctx) {
+            let status = ctx.response.raw.status;
+            let noSwapStrings = this.config.noSwap.map(x => x + "");
+            let str = status + ""
+            for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
+                if (noSwapStrings.includes(pattern)) {
+                    ctx.swap = "none";
+                    return
+                }
+                let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
+                if (statusValue) {
+                    this.__mergeConfig(statusValue, ctx);
+                    return;
+                }
+            }
+        }
+
+        __submitTransitionTask(task) {
+            return new Promise((resolve) => {
+                this.#transitionQueue ||= [];
+                this.#transitionQueue.push({ task, resolve });
+                if (!this.#processingTransition) {
+                    this.__processTransitionQueue();
+                }
+            });
+        }
+
+        async __processTransitionQueue() {
+            if (this.#transitionQueue.length === 0 || this.#processingTransition) {
+                return;
+            }
+
+            this.#processingTransition = true;
+            let { task, resolve } = this.#transitionQueue.shift();
+
+            try {
+                if (document.startViewTransition) {
+                    this.__trigger(document, "htmx:before:viewTransition", {task})
+                    await document.startViewTransition(task).finished;
+                    this.__trigger(document, "htmx:after:viewTransition", {task})
+                } else {
+                    await task();
+                }
+            } catch (e) {
+                // Transitions can be skipped/aborted - this is normal
+            } finally {
+                this.#processingTransition = false;
+                resolve();
+                this.__processTransitionQueue();
+            }
+        }
+
+        __startCSSTransitions(fragment, root) {
+            let idElements = root.querySelectorAll("[id]");
+            let existingElementsById = Object.fromEntries([...idElements].map(e => [e.id, e]));
+            let newElementsWithIds = fragment.querySelectorAll("[id]");
+            let restoreTasks = []
+            for (let elt of newElementsWithIds) {
+                let existing = existingElementsById[elt.id];
+                if (existing?.tagName === elt.tagName) {
+                    let clone = elt.cloneNode(false); // shallow clone node
+                    this.__copyAttributes(elt, existing)
+                    restoreTasks.push(()=>{
+                        this.__copyAttributes(elt, clone)
+                    })
+                }
+            }
+            return restoreTasks;
+        }
+
+        __addClass(elt, cls) {
+            elt?.classList?.add?.(cls);
+        }
+
+        __removeClass(elt, cls) {
+            elt?.classList?.remove?.(cls);
+            if (elt?.classList?.length === 0) elt.removeAttribute('class');
+        }
+
+        __normalizeElement(cssOrElement) {
+            if (typeof cssOrElement === "string") {
+                return this.find(cssOrElement);
+            } else {
+                return cssOrElement
+            }
+        }
+
+        __maybeAdjustMetaCharacter(string) {
+            if (this.config.metaCharacter) {
+                return string.replace(/:/g, this.config.metaCharacter);
+            } else {
+                return string;
+            }
+        }
+
+    }
+
+    return new Htmx()
+})()
+
+;
