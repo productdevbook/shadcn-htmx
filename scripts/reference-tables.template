@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Index</title>
+  <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css">
+  <link rel="stylesheet" href="../shared/css/core.css">
+  <script src="../shared/js/examples.js"></script>
+  <script src="../shared/js/highlight.pack.js"></script>
+  <script src="../shared/js/app.js"></script>
+  <script data-skipto="colorTheme:aria; displayOption:popup; containerElement:div" src="../shared/js/skipto.js"></script>
+</head>
+<body>
+  <main>
+    <h1>Index</h1>
+    <h2>About the Index</h2>
+    <p>
+      This page includes a list of all ARIA design pattern examples indexed
+      either by role or by ARIA properties and states.
+    </p>
+    <ul>
+      <li><a href="#examples_by_role_label">Examples by Role</a></li>
+      <li><a href="#examples_by_props_label">Examples by Properties and States</a></li>
+      <li><a href="#examples_experimental_label">Experimental Examples</a></li>
+    </ul>
+    <section id="examples_by_roles">
+      <h2 id="examples_by_role_label">Examples by Role</h2>
+      <div><strong>NOTE:</strong> The HC abbreviation means example has High Contrast support.</div>
+      <table aria-labelledby="examples_by_role_label" class="data attributes">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody id="examples_by_role_tbody">
+        </tbody>
+      </table>
+    </section>
+    <section id="examples_by_props">
+      <h2 id="examples_by_props_label">Examples By Properties and States</h2>
+      <div><strong>NOTE:</strong> The HC abbreviation means example has High Contrast support.</div>
+      <table aria-labelledby="examples_by_props_label" class="data attributes">
+        <thead>
+          <tr>
+            <th>Property or State</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody id="examples_by_props_tbody">
+
+        </tbody>
+      </table>
+    </section>
+    <section id="examples_experimental">
+      <h2 id="examples_experimental_label">Experimental Examples</h2>
+      <div><strong>NOTE:</strong> The HC abbreviation means example has High Contrast support.</div>
+      <ul id="examples_experimental_ul">
+
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
