@@ -1,0 +1,21 @@
+{
+  "name": "shadcn-htmx",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n server,css -c blue,green \"bun run dev:server\" \"bun run dev:css\"",
+    "dev:server": "bun run --hot app/server.tsx",
+    "dev:css": "tailwindcss -i app/styles/input.css -o public/styles.css --watch",
+    "build:css": "tailwindcss -i app/styles/input.css -o public/styles.css --minify"
+  },
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "@types/bun": "latest",
+    "concurrently": "^9.1.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
