@@ -1,0 +1,13 @@
+---
+layout: blog
+title: Blog
+permalink: /{{lang}}{{ paged.href }}{% if paged.index > 0 %}{{ paged.index + 1 }}/{% endif %}index.html
+override:tags: []
+description: Our latest news, updates, and stories for developers
+date: 2018-11-05
+pagination:
+  data: collections.blogPosts
+  size: 1
+  alias: paged
+  addAllPagesToCollections: true
+---

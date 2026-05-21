@@ -1,0 +1,10 @@
+<label for="{{ data.id }}" class="visually-hidden">{{ data.label }}</label>
+<select
+  id="{{ data.id }}"
+  name="{{ data.name }}"
+  required=""
+>
+  {% for item in data.items %}
+  <option value="{{ item.value }}">{{ item.text }}</option>
+  {% endfor %}
+</select>

@@ -1,0 +1,53 @@
+{
+  "name": "web.dev",
+  "short_name": "web.dev",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3740ff",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/android-chrome-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "description": "Get the web's modern capabilities on your own sites and apps with useful guidance and analysis from web.dev.",
+  "lang": "en",
+  "categories": ["education", "news"],
+  "screenshots": [
+    {
+      "src": "/images/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/screenshot2.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/screenshot3.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Measure",
+      "url": "/measure/"
+    }
+  ]
+}
