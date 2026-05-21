@@ -1,0 +1,13 @@
+.idea
+*.iml
+/node_modules
+_site
+test/scratch/scratch.html
+.DS_Store
+.vscode
+/coverage
+/tmp
+.syncthing.*
+__pycache__/
+# Override global gitignore: lib/ directories are part of this project
+!**/lib/

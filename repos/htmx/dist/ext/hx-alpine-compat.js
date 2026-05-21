@@ -1,0 +1,110 @@
+//==========================================================
+// hx-alpine-compat.js
+//
+// Alpine.js compatibility extension for htmx
+// Initializes Alpine on fragments before swap
+// and preserves Alpine state during morph operations
+//==========================================================
+(() => {
+    let api;
+    let deferCount = 0;
+
+    function maybeFlush() {
+        if (deferCount > 0) deferCount--;
+        if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+            window.Alpine.flushAndStopDeferringMutations();
+        }
+    }
+
+    htmx.registerExtension('alpine-compat', {
+        init: (internalAPI) => {
+            api = internalAPI;
+            
+            // Override isSoftMatch to handle Alpine reactive IDs
+            let originalIsSoftMatch = api.isSoftMatch;
+            api.isSoftMatch = function(oldNode, newNode) {
+                // If both have Alpine reactive ID bindings, ignore ID mismatch
+                if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                    return oldNode instanceof Element && oldNode.tagName === newNode.tagName;
+                }
+                return originalIsSoftMatch(oldNode, newNode);
+            };
+        },
+        
+        htmx_before_swap: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode || !window.Alpine?.deferMutations) {
+                return;
+            }
+            if (deferCount === 0) {
+                window.Alpine.deferMutations();
+            }
+            deferCount++;
+            
+            let {tasks} = detail;
+            for (let task of tasks) {
+                if (task.swapSpec.style === 'innerMorph' || task.swapSpec.style === 'outerMorph') {
+                    if (!task.fragment || !task.target) continue;
+                    
+                    let target = typeof task.target === 'string' 
+                        ? document.querySelector(task.target) 
+                        : task.target;
+                    if (!target) continue;
+                }
+            }
+        },
+        
+        htmx_before_morph_node: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode) {
+                return;
+            }
+            let {oldNode, newNode} = detail;
+            
+            let oldDataStack = window.Alpine.closestDataStack(oldNode);
+            newNode._x_dataStack = oldDataStack;
+            
+            // skip cloneNode for template children that will have errors as they can not have reactive content 
+            if (!oldNode.isConnected) return;
+            
+            window.Alpine.cloneNode(oldNode, newNode);
+            
+            // If both have _x_teleport, morph the teleport target
+            if (oldNode._x_teleport && newNode._x_teleport) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(newNode._x_teleport);
+                api.morph(oldNode._x_teleport, fragment, false);
+            }
+        },
+
+        htmx_history_cache_before_save: (elt, detail) => {
+            if (!window.Alpine?.destroyTree) return;
+            detail.target.querySelectorAll('[x-data]').forEach(el => {
+                if (el._x_dataStack) {
+                    el.setAttribute('data-alpine-state', JSON.stringify(el._x_dataStack[0]));
+                }
+            });
+            window.Alpine.destroyTree(detail.target);
+        },
+
+        htmx_history_cache_after_restore: (elt, detail) => {
+            if (!window.Alpine) return;
+            document.querySelectorAll('[data-alpine-state]').forEach(el => {
+                let saved = JSON.parse(el.getAttribute('data-alpine-state'));
+                el.removeAttribute('data-alpine-state');
+                if (el._x_dataStack) {
+                    for (let key in saved) {
+                        try { el._x_dataStack[0][key] = saved[key]; } catch {}
+                    }
+                }
+            });
+        },
+
+        htmx_after_swap: (elt, detail) => {
+            detail.ctx._alpineFlushed = true;
+            maybeFlush();
+        },
+
+        htmx_finally_request: (elt, detail) => {
+            if (!detail.ctx._alpineFlushed) maybeFlush();
+        }
+    });
+})();
