@@ -20,18 +20,33 @@ focus management, and ARIA roles checked against the spec, not guessed.
 
 ## Install
 
-Three ways to get a component into your project — pick whichever fits your stack.
+Four ways to get a component into your project — pick whichever fits your stack.
 
-**1. shadcn CLI** (for JSX/TSX projects). Each item is served as a
+**1. The `shadcn-htmx` CLI** (recommended — flavour-aware). Unlike the stock
+shadcn CLI, this copies **only your chosen framework's file** to the right path,
+reusing the same registry. Pick a flavour once with `init`, then `add`:
+
+```sh
+npx shadcn-htmx init --flavour jinja        # or jsx | go | phoenix | html
+npx shadcn-htmx add button input dialog     # writes only the Jinja2 files
+npx shadcn-htmx list                         # see every component
+```
+
+Flags: `-f/--flavour`, `-r/--registry <url|dir>`, `-o/--out <dir>`, `--dry`,
+`--overwrite`. Point `--registry` (or the `registry` field in `shadcn-htmx.json`)
+at your docs host's `/r` endpoint. For JSX, registry dependencies (the `cn()`
+util) are resolved automatically; the template flavours pull just their one file.
+
+**2. shadcn CLI** (JSX/TSX projects). Each item is served as a
 [shadcn registry item](https://ui.shadcn.com/docs/registry) at
-`<docs-host>/r/<name>.json`:
+`<docs-host>/r/<name>.json` (note: this copies *all five* flavours' files):
 
 ```sh
 # against your deployed docs host, or http://localhost:3000 when running locally
 npx shadcn@latest add https://<docs-host>/r/button.json
 ```
 
-**2. curl the source** straight into your templates folder (any stack). The raw
+**3. curl the source** straight into your templates folder (any stack). The raw
 flavour files live in the repo, and every flavour's contents are also inlined in
 the registry item at `<docs-host>/r/<name>.json`:
 
@@ -40,7 +55,7 @@ curl -o templates/components/button.html \
   https://raw.githubusercontent.com/productdevbook/shadcn-htmx/main/registry/jinja2/button.html
 ```
 
-**3. Copy-paste.** Open the component's docs page, switch the framework selector
+**4. Copy-paste.** Open the component's docs page, switch the framework selector
 to your stack, and copy the source. Your code, your repo, no runtime dependency.
 
 ## Components

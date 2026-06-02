@@ -4,7 +4,12 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+  "bin": {
+    "shadcn-htmx": "scripts/cli.mjs"
+  },
   "scripts": {
+    "cli": "node scripts/cli.mjs",
+    "test:cli": "bun test scripts/cli.test.ts",
     "dev": "concurrently -k -n server,css -c blue,green \"bun run dev:server\" \"bun run dev:css\"",
     "dev:server": "bun run --hot app/server.tsx",
     "dev:css": "tailwindcss -i app/styles/input.css -o public/styles.css --watch",
