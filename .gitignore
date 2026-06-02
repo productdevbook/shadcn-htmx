@@ -5,3 +5,13 @@ dist/
 .env
 .env.local
 /.tmp-screenshots/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# WHATWG HTML standard is ~1GB and NOT vendored (see AGENTS.md); fetched locally
+# as read-only reference only, never committed.
+/repos/whatwg-html/

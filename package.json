@@ -2,6 +2,7 @@
   "name": "shadcn-htmx",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n server,css -c blue,green \"bun run dev:server\" \"bun run dev:css\"",
@@ -9,16 +10,25 @@
     "dev:css": "tailwindcss -i app/styles/input.css -o public/styles.css --watch",
     "build:css": "tailwindcss -i app/styles/input.css -o public/styles.css --minify",
     "build:registry": "bun run scripts/build-registry.ts",
-    "build": "bun run build:registry && bun run build:css"
+    "build": "bun run build:registry && bun run build:css",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:a11y": "playwright test tests/a11y.spec.ts",
+    "test:geom": "playwright test tests/geometry.spec.ts",
+    "test:kbd": "playwright test tests/keyboard.spec.ts"
   },
   "dependencies": {
     "hono": "^4.6.14",
     "shiki": "^4.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/cli": "^4.0.0",
     "@types/bun": "latest",
     "concurrently": "^9.1.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
   }
 }
