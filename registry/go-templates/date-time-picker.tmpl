@@ -1,0 +1,52 @@
+{{/*
+  Date Time Picker template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/date-time-picker.tsx for Go projects using html/template.
+
+  The control is a native <input type="date|time|datetime-local|month|week">.
+  The browser ships the picker UI, segment editing, locale-aware display and
+  constraint validation; the submitted value is always normalised
+  (date → yyyy-mm-dd, time → HH:mm[:ss], month → YYYY-MM, week → yyyy-Www).
+  No JS — this is a zero-script component.
+
+  Args (via dict):
+      Type    string  // date | time | datetime-local | month | week
+      ID, Name, Value string
+      Required, Disabled, Readonly, Autofocus bool
+      Form, List      string
+      Min, Max, Step  string  // temporal constraints, in the value's format
+      AriaLabel, AriaLabelledby, AriaDescribedby string
+      AriaInvalid, AriaRequired string  // "true" | "false"
+      Attrs   map[string]string // hx-*, data-*, …
+
+      {{template "date-time-picker" (dict "Name" "bday" "Type" "date" "Min" "1900-01-01")}}
+
+  See repos/mdn/files/en-us/web/html/reference/elements/input/ for native
+  attribute semantics.
+*/}}
+
+{{define "date-time-picker"}}
+{{- $type := or .Type "date" -}}
+{{- $base := "flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0" -}}
+<input type="{{$type}}"
+       class="{{$base}}"
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       {{- if .Name}} name="{{.Name}}"{{end}}
+       {{- if .Value}} value="{{.Value}}"{{end}}
+       {{- if .Required}} required{{end}}
+       {{- if .Disabled}} disabled{{end}}
+       {{- if .Readonly}} readonly{{end}}
+       {{- if .Autofocus}} autofocus{{end}}
+       {{- if .Form}} form="{{.Form}}"{{end}}
+       {{- if .List}} list="{{.List}}"{{end}}
+       {{- if .Min}} min="{{.Min}}"{{end}}
+       {{- if .Max}} max="{{.Max}}"{{end}}
+       {{- if .Step}} step="{{.Step}}"{{end}}
+       {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+       {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+       {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+       {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+       data-slot="date-time-picker"
+       {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+{{end}}

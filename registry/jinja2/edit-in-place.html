@@ -1,0 +1,84 @@
+{# Edit In Place macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/edit-in-place.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   The canonical htmx editable record: a read-only view with an Edit button
+   that swaps in a pre-filled form. Save = PUT, Cancel re-GETs the view.
+   No modal, no custom JS — the whole thing rides on outerHTML swaps over REST.
+   See repos/htmx/www/src/content/patterns/03-records/04-edit-in-place.md.
+
+   Usage:
+       {% from "components/edit-in-place.html" import edit_in_place, edit_in_place_form %}
+
+       {# View — GET /users/1 returns this #}
+       {{ edit_in_place(edit_href="/users/1/edit", id="user", fields=[
+            {"label": "Name",  "value": user.name},
+            {"label": "Email", "value": user.email, "type": "email"},
+       ]) }}
+
+       {# Editor — GET /users/1/edit returns this #}
+       {{ edit_in_place_form(put_href="/users/1", cancel_href="/users/1", id="user", fields=[
+            {"label": "Name",  "value": user.name},
+            {"label": "Email", "value": user.email, "type": "email"},
+       ]) }}
+
+   hx-target="this" + hx-swap="outerHTML" on each root mean every descendant
+   request replaces the whole element in place. #}
+
+{%- set _container = "flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm" -%}
+{%- set _term = "text-xs font-medium tracking-wide text-muted-foreground uppercase" -%}
+{%- set _value = "mt-0.5 text-sm font-medium text-foreground" -%}
+{%- set _edit_btn = "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -%}
+{%- set _save_btn = "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-primary text-primary-foreground hover:bg-primary/90 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -%}
+{%- set _cancel_btn = "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -%}
+{%- set _input = "flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70" -%}
+{%- set _label = "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-medium tracking-wide text-muted-foreground uppercase" -%}
+
+{# View — read-only record + Edit button. #}
+{% macro edit_in_place(edit_href, fields=none, edit_label="Edit", id=none, extra_class="", caller=none) %}
+<div data-slot="edit-in-place" data-mode="view"
+     {%- if id %} id="{{ id }}"{% endif %}
+     hx-target="this" hx-swap="outerHTML"
+     class="{{ _container }} {{ extra_class }}">
+  {%- if fields %}
+  <dl class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    {%- for f in fields %}
+    <div>
+      <dt class="{{ _term }}">{{ f.label }}</dt>
+      <dd class="{{ _value }}">{{ f.value }}</dd>
+    </div>
+    {%- endfor %}
+  </dl>
+  {%- elif caller %}{{ caller() }}{% endif %}
+  <div class="flex">
+    <button type="button" data-slot="edit-in-place-edit" hx-get="{{ edit_href }}" hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML" class="{{ _edit_btn }}">{{ edit_label }}</button>
+  </div>
+</div>
+{% endmacro %}
+
+{# Editor — pre-filled form. Save submits the PUT; Cancel re-GETs the view. #}
+{% macro edit_in_place_form(put_href, cancel_href, fields=none, save_label="Save", cancel_label="Cancel", id=none, extra_class="", caller=none) %}
+<form data-slot="edit-in-place" data-mode="edit"
+      {%- if id %} id="{{ id }}"{% endif %}
+      hx-put="{{ put_href }}" hx-target="this" hx-swap="outerHTML"
+      class="{{ _container }} {{ extra_class }}">
+  {%- if fields %}
+  <div class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    {%- for f in fields %}
+    {%- set name = f.name if f.name else f.label|lower %}
+    {%- set field_id = (id if id else "field") ~ "-" ~ name %}
+    <div class="grid gap-1.5">
+      <label for="{{ field_id }}" class="{{ _label }}">{{ f.label }}</label>
+      <input id="{{ field_id }}" name="{{ name }}" type="{{ f.type if f.type else 'text' }}"
+             {%- if f.value is not none %} value="{{ f.value }}"{% endif %}
+             {%- if f.required %} required{% endif %}
+             data-slot="input" class="{{ _input }}">
+    </div>
+    {%- endfor %}
+  </div>
+  {%- elif caller %}{{ caller() }}{% endif %}
+  <div class="flex gap-2">
+    <button type="submit" data-slot="edit-in-place-save" class="{{ _save_btn }}">{{ save_label }}</button>
+    <button type="button" data-slot="edit-in-place-cancel" hx-get="{{ cancel_href }}" hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML" class="{{ _cancel_btn }}">{{ cancel_label }}</button>
+  </div>
+</form>
+{% endmacro %}

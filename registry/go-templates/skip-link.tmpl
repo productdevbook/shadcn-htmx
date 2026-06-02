@@ -1,0 +1,41 @@
+{{/*
+  Skip Link template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/skip-link.tsx for Go projects using html/template.
+
+  A "Skip to main content" link: the FIRST focusable element in the document,
+  visually hidden until keyboard focus, that jumps focus to the page's main
+  landmark. Pure platform — a native <a href="#main"> with a CSS focus reveal,
+  zero JavaScript.
+
+  Place it as the very first child of <body>, before the header/nav, and give
+  your main landmark the matching id (<main id="main">).
+
+  Usage in your code:
+
+      type SkipLinkArgs struct {
+          Label string            // default "Skip to main content"
+          Href  string            // default "#main"
+          ID    string
+          Class string            // extra Tailwind classes
+          Attrs map[string]string // hx-boost, data-*, aria-*, …
+      }
+
+      tpl := template.Must(template.New("").ParseFiles("components/skip-link.tmpl"))
+      tpl.ExecuteTemplate(w, "skip-link", SkipLinkArgs{})
+
+  Accessibility contract — WAI-ARIA APG Landmark Regions practice:
+  repos/aria-practices/content/practices/landmark-regions/landmark-regions-practice.html
+  The <a href> gives the link role + Enter-to-activate + focus-jump for free.
+*/}}
+
+{{define "skip-link"}}
+{{- $label := or .Label "Skip to main content" -}}
+{{- $href := or .Href "#main" -}}
+{{- $base := "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:inline-flex focus:items-center focus:gap-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-md focus:no-underline focus:outline-none focus:ring-[3px] focus:ring-ring/50" -}}
+<a href="{{$href}}"
+   {{- if .ID}} id="{{.ID}}"{{end}}
+   data-slot="skip-link"
+   class="{{$base}}{{if .Class}} {{.Class}}{{end}}"
+   {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{$label}}</a>
+{{end}}

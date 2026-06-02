@@ -1,0 +1,61 @@
+<!--
+  shadcn-htmx — raw HTML skip-link snippet.
+
+  A "Skip to main content" link: the FIRST focusable element in the document,
+  visually hidden until keyboard focus, that jumps focus past the repeated
+  banner/nav to the page's main landmark. Pure platform — a native
+  <a href="#main"> with a CSS-only focus reveal. NO JavaScript.
+
+  How it works (no framework, no script):
+    - At rest the link carries `sr-only`: position:absolute, a clipped 1px box.
+      A pointer can't land on a 1px clipped box, so the only way it gains focus
+      is a keyboard Tab — exactly who a skip link is for.
+    - On :focus the `focus:not-sr-only focus:absolute …` utilities undo the clip
+      and pin it to the top-left as a visible pill.
+    - The native <a href="#main"> gives the link role, Enter-to-activate, and
+      focus-jump to the target for free (MDN <a> element).
+
+  Place it as the VERY FIRST child of <body>, before the header/nav, and give
+  your main landmark the matching id:
+
+      <body>
+        <!-- skip link here, first -->
+        <header>…</header>
+        <main id="main" tabindex="-1">…</main>
+      </body>
+
+  tabindex="-1" on <main> is optional but recommended: some browsers move the
+  caret to the fragment target but not keyboard focus; -1 lets the link move
+  focus into the landmark reliably without adding <main> to the normal tab order.
+
+  Accessibility contract — WAI-ARIA APG Landmark Regions practice:
+  repos/aria-practices/content/practices/landmark-regions/landmark-regions-practice.html
+
+  Requirements:
+    1. Tailwind CSS v4 (or the Play CDN for quick experiments):
+         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    2. The shadcn CSS variables (--primary, --primary-foreground, --ring, …) —
+       copy the :root / .dark blocks from app/styles/input.css.
+-->
+
+<!-- ─── Default: "Skip to main content" → #main ──────────────────────── -->
+<a href="#main" data-slot="skip-link"
+  class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:inline-flex focus:items-center focus:gap-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-md focus:no-underline focus:outline-none focus:ring-[3px] focus:ring-ring/50">
+  Skip to main content
+</a>
+
+<!-- ─── Custom target + label ───────────────────────────────────────── -->
+<a href="#content" data-slot="skip-link"
+  class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:inline-flex focus:items-center focus:gap-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-md focus:no-underline focus:outline-none focus:ring-[3px] focus:ring-ring/50">
+  Skip to content
+</a>
+
+<!-- ─── Full page shell showing where it goes ───────────────────────── -->
+<body>
+  <a href="#main" data-slot="skip-link"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:inline-flex focus:items-center focus:gap-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-md focus:no-underline focus:outline-none focus:ring-[3px] focus:ring-ring/50">
+    Skip to main content
+  </a>
+  <header>Site banner + navigation…</header>
+  <main id="main" tabindex="-1">Main content starts here.</main>
+</body>

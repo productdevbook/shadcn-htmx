@@ -1659,4 +1659,148 @@
       })
   })();
 
+
+  // ===== New components (tier-1) =====
+
+  ;(function () {
+    // (see siteJsBlock field)
+  })();
+
+  ;(function () {
+    // Copy Button (registry/ui/copy-button.tsx).
+      //
+      // Click-to-copy via the Async Clipboard API. navigator.clipboard.writeText()
+      // returns a Promise and works only in a secure context (HTTPS / localhost)
+      // from a focused window — repos/mdn/files/en-us/web/api/clipboard/writetext/.
+      // When the API is missing we fall back to web.dev's recipe: a throwaway,
+      // off-screen <textarea> + document.execCommand('copy') —
+      // repos/web.dev/src/site/content/en/patterns/clipboard/copy-text/.
+      // On success we set data-copied="true" for a beat (CSS swaps the glyph for a
+      // check) and write the copied label into the EMPTY aria-live region so AT
+      // announces it without moving focus —
+      // repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-live/.
+      // Delegated on document so htmx-swapped copy buttons work with zero rebinding.
+      ;(function () {
+        var COPIED_MS = 2000
+        var copyTextFor = function (btn) {
+          var targetId = btn.getAttribute('data-copy-target')
+          if (targetId) {
+            var el = document.getElementById(targetId)
+            if (el) {
+              return 'value' in el && el.value != null ? el.value : (el.textContent || '')
+            }
+          }
+          return btn.getAttribute('data-copy-text') || ''
+        }
+        var legacyCopy = function (text) {
+          var ta = document.createElement('textarea')
+          ta.value = text
+          ta.setAttribute('readonly', '')
+          ta.style.position = 'fixed'
+          ta.style.top = '0'
+          ta.style.opacity = '0'
+          document.body.appendChild(ta)
+          ta.focus()
+          ta.select()
+          var ok = false
+          try { ok = document.execCommand('copy') } catch (e) { ok = false }
+          document.body.removeChild(ta)
+          return ok
+        }
+        var flashCopied = function (btn) {
+          var copied = btn.getAttribute('data-copied-label') || 'Copied'
+          var status = btn.querySelector('[data-copy-status]')
+          var label = btn.querySelector('[data-copy-label]')
+          var prevLabel = label ? label.textContent : null
+          btn.setAttribute('data-copied', 'true')
+          if (label) label.textContent = copied
+          // Write into the empty live region so it is announced as a change.
+          if (status) status.textContent = copied
+          if (btn._scnCopyTimer) clearTimeout(btn._scnCopyTimer)
+          btn._scnCopyTimer = setTimeout(function () {
+            btn.removeAttribute('data-copied')
+            if (label && prevLabel != null) label.textContent = prevLabel
+            if (status) status.textContent = ''
+          }, COPIED_MS)
+        }
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest && e.target.closest('[data-slot="copy-button"]')
+          if (!btn || btn.disabled) return
+          var text = copyTextFor(btn)
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(
+              function () { flashCopied(btn) },
+              function () { if (legacyCopy(text)) flashCopied(btn) },
+            )
+          } else if (legacyCopy(text)) {
+            flashCopied(btn)
+          }
+        })
+      })();
+  })();
+
+  ;(function () {
+    /* NONE — Sheet needs no new site.js. It reuses the existing Dialog wiring in public/site.js verbatim: [data-dialog-trigger]/[data-dialog-target] -> .showModal(), [data-dialog-close] -> .requestClose()/.close(), the htmx after:swap promote-to-modal listener, and the dialog[data-close-on-backdrop="true"] handler (which already skips when closedby="any"). A Sheet is a <dialog data-slot="sheet" data-side="..."> — light dismiss is the native closedby="any" attribute, not JS. */
+  })();
+
+  ;(function () {
+    /* No site.js needed — Hover Card is zero-JS. The Popover API interest-invoker
+       mechanism (interestfor + popover="hint") provides hover/focus reveal, ESC
+       dismissal, and implicit-anchor positioning natively. Nothing to add to
+       public/site.js. */
+  })();
+
+  ;(function () {
+    undefined
+  })();
+
+  ;(function () {
+    // No site.js needed. The skip link is pure platform: a native <a href="#main">
+    // revealed on :focus with CSS only (sr-only -> focus:not-sr-only). The browser
+    // supplies the link role, Enter-to-activate, and the focus jump to the target.
+  })();
+
+  ;(function () {
+    // Theme Toggle — shared behaviour for [data-slot="theme-toggle"].
+    // Reads/writes the `theme` cookie ("system" | "light" | "dark"), toggles the
+    // class-based `.dark` on <html>, and keeps "system" tracking the OS live.
+    // The synchronous pre-paint script in app/layout.tsx applies the cookie value
+    // BEFORE first paint (no flash); this block only handles interaction after.
+    // Adapted from (not copied from) the web.dev theming patterns
+    // (repos/web.dev/.../patterns/theming/theme-switch + .../color-schemes) —
+    // those use localStorage; an SSR/htmx app uses a cookie so the *server* can
+    // read it. Native <input type="radio"> means keyboard + selection are free.
+    (function () {
+      var root = document.documentElement
+      var media = window.matchMedia('(prefers-color-scheme: dark)')
+    
+      function applyTheme(choice) {
+        var dark = choice === 'dark' || (choice === 'system' && media.matches)
+        root.classList.toggle('dark', dark)
+        root.style.colorScheme = dark ? 'dark' : 'light'
+      }
+      function setCookie(choice) {
+        document.cookie = 'theme=' + choice + ';path=/;max-age=31536000;samesite=lax'
+      }
+    
+      document.querySelectorAll('[data-slot="theme-toggle"]').forEach(function (group) {
+        // On change of any radio in this group, persist + reflect the new choice.
+        group.addEventListener('change', function (e) {
+          var t = e.target
+          if (!t || t.getAttribute('data-slot') !== 'theme-toggle-item') return
+          group.setAttribute('data-value', t.value)
+          setCookie(t.value)
+          applyTheme(t.value)
+        })
+      })
+    
+      // When the OS scheme flips, follow it only while a group is on "system".
+      media.addEventListener('change', function () {
+        document.querySelectorAll('[data-slot="theme-toggle"]').forEach(function (group) {
+          if (group.getAttribute('data-value') === 'system') applyTheme('system')
+        })
+      })
+    })()
+  })();
+
 })()

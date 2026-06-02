@@ -1,0 +1,83 @@
+{{/*
+  Theme Toggle template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/theme-toggle.tsx EXACTLY.
+
+  Light / dark / system colour-scheme switcher. The "system" default honours
+  prefers-color-scheme; an explicit choice is persisted in a cookie so the
+  server can re-render the right theme with no flash. The three states are a
+  native radio group (one <input type="radio"> per choice, grouped by name).
+
+  Built on web standards (modelled on, NOT copied from):
+    - prefers-color-scheme media feature (the "system" default).
+    - color-scheme property (native controls follow the theme).
+    - cookie persistence + pre-paint boot script, adapted from web.dev:
+        repos/web.dev/.../patterns/theming/theme-switch
+        repos/web.dev/.../patterns/theming/color-schemes
+  APG radio group: repos/aria-practices/content/patterns/radio/
+
+  Usage:
+
+      type ThemeToggleArgs struct {
+          Value          string // system | light | dark (from the cookie)
+          Name           string // radio group name + cookie key (default "theme")
+          ID             string // id prefix (default "theme-toggle")
+          Disabled       bool
+          AriaLabel      string // default "Colour theme"
+          AriaLabelledby string
+          AriaDescribedby string
+          Attrs          map[string]string // hx-* etc.
+      }
+
+      tpl.ExecuteTemplate(w, "theme-toggle", ThemeToggleArgs{
+          Value: r.CookieValue("theme"), // "" → renders "system"
+      })
+
+  Pair with the boot script (see the docs site.js block) so the cookie is
+  read/written and `.dark` is toggled on <html> with no flash.
+*/}}
+
+{{define "theme-toggle"}}
+{{- $value := or .Value "system" -}}
+{{- $name := or .Name "theme" -}}
+{{- $id := or .ID "theme-toggle" -}}
+{{- $ariaLabel := or .AriaLabel "Colour theme" -}}
+{{- $groupBase := "inline-flex items-center gap-0.5 rounded-md border bg-muted p-0.5 text-muted-foreground shadow-xs aria-disabled:pointer-events-none aria-disabled:opacity-50" -}}
+{{- $itemBase := "relative inline-flex size-7 cursor-pointer items-center justify-center rounded-[5px] outline-none transition-colors peer-hover:bg-background/60 peer-hover:text-foreground peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-xs peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0" -}}
+{{- $icons := dict
+    "system" (htmlSafe `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>`)
+    "light" (htmlSafe `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`)
+    "dark" (htmlSafe `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`) -}}
+{{- $labels := dict "system" "System" "light" "Light" "dark" "Dark" -}}
+<div role="radiogroup"
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{else}} aria-label="{{$ariaLabel}}"{{end}}
+     {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     {{- if .Disabled}} aria-disabled="true"{{end}}
+     data-slot="theme-toggle"
+     data-name="{{$name}}"
+     data-value="{{$value}}"
+     class="{{$groupBase}}"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}>
+{{- range $choice := list "system" "light" "dark"}}
+  <span class="relative inline-flex">
+    <input type="radio"
+           id="{{$id}}-{{$choice}}"
+           name="{{$name}}"
+           value="{{$choice}}"
+           {{- if eq $choice $value}} checked{{end}}
+           {{- if $.Disabled}} disabled{{end}}
+           class="peer sr-only"
+           data-slot="theme-toggle-item">
+    <label for="{{$id}}-{{$choice}}" class="{{$itemBase}}" data-slot="theme-toggle-label" title="{{index $labels $choice}}">
+      {{index $icons $choice}}
+      <span class="sr-only">{{index $labels $choice}}</span>
+    </label>
+  </span>
+{{- end}}
+</div>
+{{end}}
+
+{{/*
+  Note: uses sprig helpers `dict`, `list`, and `htmlSafe`. Without sprig,
+  hard-code the inline SVGs and the label/icon lookups directly in the range
+  body instead of building the maps.
+*/}}

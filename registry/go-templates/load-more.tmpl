@@ -1,0 +1,39 @@
+{{/* Load More template — shadcn-htmx, htmx v4 + Tailwind v4.
+     Mirrors registry/ui/load-more.tsx.
+
+     A self-replacing pagination trigger. It appends the next page and swaps a
+     fresh trigger into its place (hx-swap="outerHTML"); when the server omits
+     the trigger, the chain ends. Trigger "click" renders a real <button>
+     (works with no JS); "intersect"/"revealed" renders a scroll sentinel
+     (htmx infinite scroll, IntersectionObserver under the hood).
+
+     Sources cited in load-more.tsx:
+       repos/htmx/.../patterns/01-loading/01-click-to-load.md
+       repos/htmx/.../patterns/01-loading/02-infinite-scroll.md
+       repos/htmx/.../reference/01-attributes/{06-hx-trigger,07-hx-swap,19-hx-indicator}.md
+       repos/mdn/.../web/api/intersection_observer_api/index.md
+
+     Usage:
+       {{template "load_more" (dict "Href" "/comments?page=2" "Label" "Show more comments")}}
+       {{template "load_more" (dict "Href" "/contacts?page=2" "Trigger" "intersect")}} */}}
+
+{{define "load_more"}}
+{{- $trigger := or .Trigger "click" -}}
+{{- $label := or .Label "Load more" -}}
+{{- if or (eq $trigger "intersect") (eq $trigger "revealed") -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="load-more" data-trigger="{{$trigger}}"
+     role="status" aria-label="{{or .AriaLabel "Loading more"}}"
+     {{if .Href}}hx-get="{{.Href}}"{{end}}
+     hx-trigger="{{if eq $trigger "intersect"}}intersect once{{else}}revealed{{end}}" hx-swap="outerHTML"
+     class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{.Class}}">{{if .Body}}{{.Body}}{{else}}<span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>Loading more…{{end}}</div>
+{{- else -}}
+<button type="button" {{if .ID}}id="{{.ID}}"{{end}}
+        data-slot="load-more" data-trigger="click"
+        {{if .Disabled}}disabled{{end}}
+        {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+        {{if .Href}}hx-get="{{.Href}}"{{end}}
+        hx-trigger="click" hx-target="this" hx-swap="outerHTML"
+        class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap outline-none transition-all text-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 {{.Class}}"><span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>{{if .Body}}{{.Body}}{{else}}{{$label}}{{end}}</button>
+{{- end -}}
+{{end}}

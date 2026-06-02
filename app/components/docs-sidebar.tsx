@@ -18,6 +18,11 @@ const sections: Section[] = [
   {
     title: "Forms",
     items: [
+      { label: "Form Field", href: "/docs/form-field" },
+      { label: "File Upload", href: "/docs/file-upload" },
+      { label: "Date Time Picker", href: "/docs/date-time-picker" },
+      { label: "Active Search", href: "/docs/active-search" },
+      { label: "Edit In Place", href: "/docs/edit-in-place" },
       { label: "Button", href: "/docs/button" },
       { label: "Input", href: "/docs/input" },
       { label: "Textarea", href: "/docs/textarea" },
@@ -49,6 +54,7 @@ const sections: Section[] = [
   {
     title: "Display",
     items: [
+      { label: "Copy Button", href: "/docs/copy-button" },
       { label: "Avatar", href: "/docs/avatar" },
       { label: "Badge", href: "/docs/badge" },
       { label: "Separator", href: "/docs/separator" },
@@ -69,6 +75,8 @@ const sections: Section[] = [
   {
     title: "Overlays",
     items: [
+      { label: "Sheet", href: "/docs/sheet" },
+      { label: "Hover Card", href: "/docs/hover-card" },
       { label: "Dialog", href: "/docs/dialog" },
       { label: "Dropdown Menu", href: "/docs/dropdown-menu" },
       { label: "Popover", href: "/docs/popover" },
@@ -79,6 +87,9 @@ const sections: Section[] = [
   {
     title: "Navigation",
     items: [
+      { label: "Load More", href: "/docs/load-more" },
+      { label: "Skip Link", href: "/docs/skip-link" },
+      { label: "Theme Toggle", href: "/docs/theme-toggle" },
       { label: "Accordion", href: "/docs/accordion" },
       { label: "Pagination", href: "/docs/pagination" },
       { label: "Tabs", href: "/docs/tabs" },

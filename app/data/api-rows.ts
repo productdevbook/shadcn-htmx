@@ -1052,3 +1052,546 @@ export const LANDMARKS_PROPS: ApiRow[] = [
   { prop: "ariaLabelledby", type: "string", description: "Id of a visible heading that names the landmark. Preferred over ariaLabel when a title is on screen.", source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" } },
   CLASS_ROW,
 ]
+
+// ---- New components (tier-1) ----
+
+export const FORM_FIELD_PROPS: ApiRow[] = [
+  {
+    prop: "children",
+    type: "Child",
+    description: "The single control to wire up (an <Input>, <Textarea>, <Select>, …). It is cloned to inject id, aria-describedby, and aria-invalid.",
+  },
+  {
+    prop: "label",
+    type: "Child",
+    description: "Visible label text. Rendered in a <label for> linked to the control. Omit to render no label (e.g. a self-labelled control).",
+    source: { badge: "MDN", label: "<label>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label" },
+  },
+  {
+    prop: "for",
+    type: "string",
+    description: "The control's id. The label points at it, and the description/error ids are derived as {id}-description and {id}-error.",
+  },
+  {
+    prop: "description",
+    type: "Child",
+    description: "Helper text under the label. Its id is folded into the control's aria-describedby so screen readers announce it after the name.",
+    source: { badge: "MDN", label: "aria-describedby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-describedby" },
+  },
+  {
+    prop: "error",
+    type: "Child",
+    description: "Error message. When set, the field marks aria-invalid, renders a role=alert message, and wires it into aria-describedby. Defaults invalid to true.",
+    source: { badge: "WCAG", label: "3.3.1 Error Identification", href: "https://www.w3.org/WAI/WCAG21/Understanding/error-identification.html" },
+  },
+  {
+    prop: "invalid",
+    type: "boolean",
+    description: "Force the invalid state. Defaults to true when error is provided.",
+    source: { badge: "MDN", label: "aria-invalid", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" },
+  },
+  {
+    prop: "required",
+    type: "boolean",
+    default: "false",
+    description: "Adds a * indicator to the label and forwards aria-required onto the control.",
+  },
+  {
+    prop: "labelClass",
+    type: "string",
+    description: "Extra Tailwind classes appended to the label element.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// <FormFieldset> — group variant for radios/checkboxes under one <legend>.
+export const FORM_FIELDSET_PROPS: ApiRow[] = [
+  {
+    prop: "legend",
+    type: "Child",
+    description: "The <legend> caption for the group; becomes its accessible name.",
+    source: { badge: "MDN", label: "<legend>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend" },
+  },
+  {
+    prop: "id",
+    type: "string",
+    description: "Base id for the group. Description/error ids are derived ({id}-description, {id}-error) and referenced from the fieldset's aria-describedby.",
+  },
+  {
+    prop: "description",
+    type: "Child",
+    description: "Helper text under the controls, linked via the fieldset's aria-describedby.",
+  },
+  {
+    prop: "error",
+    type: "Child",
+    description: "Error message for the whole group. Sets aria-invalid on the fieldset and renders a role=alert message.",
+  },
+  {
+    prop: "invalid",
+    type: "boolean",
+    description: "Force the invalid state. Defaults to true when error is provided.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disables every descendant control in one go via the native fieldset disabled attribute.",
+    source: { badge: "MDN", label: "<fieldset disabled>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset" },
+  },
+  {
+    prop: "required",
+    type: "boolean",
+    default: "false",
+    description: "Adds a * to the legend and forwards aria-required onto the fieldset.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const FILE_UPLOAD_PROPS: ApiRow[] = [
+  {
+    prop: "name",
+    type: "string",
+    description: "Form field name. Required to submit; with multiple, one entry per file is sent under this name.",
+    source: { badge: "MDN", label: "<input type=\"file\">", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file" },
+  },
+  {
+    prop: "accept",
+    type: "string",
+    description: "Comma-separated unique file type specifiers (e.g. \".pdf,image/*\"). Pre-filters the OS picker; the drop enhancement re-checks it.",
+    source: { badge: "MDN", label: "accept", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept" },
+  },
+  {
+    prop: "multiple",
+    type: "boolean",
+    default: "false",
+    description: "Allow choosing or dropping more than one file. The picker returns a FileList.",
+    source: { badge: "MDN", label: "multiple", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/multiple" },
+  },
+  {
+    prop: "capture",
+    type: ['"user"', '"environment"', "boolean"],
+    description: "With an image/video accept, request the OS camera — user (front) or environment (rear).",
+    source: { badge: "MDN", label: "capture", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/capture" },
+  },
+  { prop: "required", type: "boolean", default: "false", description: "Native constraint — the form won't submit until a file is chosen." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable the picker and dim the zone; not submitted with the form." },
+  {
+    prop: "preserve",
+    type: "boolean",
+    default: "false",
+    description: "Emit hx-preserve=\"true\" on the input so the chosen file survives when the form re-renders with validation errors during an htmx swap.",
+    source: { badge: "htmx", label: "hx-preserve (file upload)", href: "https://htmx.org/examples/file-upload/" },
+  },
+  {
+    prop: "form",
+    type: "string",
+    description: "Associate the input with a <form> by id. Placing the input outside the swap target is an alternative to preserve for keeping the selection.",
+    source: { badge: "MDN", label: "input form", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#form" },
+  },
+  {
+    prop: "label",
+    type: "string",
+    default: '"Drop files here, or click to upload"',
+    description: "Visible prompt inside the zone. Also becomes the input's aria-label when no other accessible name is set.",
+  },
+  { prop: "hint", type: "string", description: "Secondary sub-label under the prompt (e.g. accepted types / size limit)." },
+  {
+    prop: "showProgress",
+    type: "boolean",
+    default: "false",
+    description: "Render a native-style progressbar under the list. Drive it from XHR upload progress; htmx 4.x's fetch transport exposes upload progress only in some browsers.",
+    source: { badge: "MDN", label: "XMLHttpRequest.upload", href: "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload" },
+  },
+  { prop: "progress", type: "number", description: "0–100 makes the bar determinate; omit (with showProgress) for the indeterminate animation." },
+  {
+    prop: "ariaInvalid",
+    type: ["boolean", '"grammar"', '"spelling"'],
+    description: "Mark the field invalid — red border + ring on the zone. Pair with a visible error via ariaDescribedby.",
+    source: { badge: "MDN", label: "aria-invalid", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" },
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const COPY_BUTTON_PROPS: ApiRow[] = [
+  {
+    prop: "value",
+    type: "string",
+    description: "The string written to the clipboard. Pass this OR copyTarget; if both are set, copyTarget wins.",
+    source: { badge: "MDN", label: "Clipboard.writeText()", href: "https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/writeText" },
+  },
+  {
+    prop: "copyTarget",
+    type: "string",
+    description: "Id of an element whose live value (form fields) or textContent is copied at click time. Lets the source of truth live elsewhere (e.g. a read-only input or code block).",
+    source: { badge: "MDN", label: "Node.textContent", href: "https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" },
+  },
+  {
+    prop: "variant",
+    type: ['"outline"', '"ghost"', '"secondary"'],
+    default: '"outline"',
+    description: "Visual style. All three are understated since a copy button is auxiliary chrome.",
+  },
+  {
+    prop: "size",
+    type: ['"default"', '"sm"', '"icon"'],
+    default: '"default"',
+    description: "Size variant. icon is square with no visible label — pass ariaLabel for an accessible name.",
+  },
+  {
+    prop: "label",
+    type: "string",
+    default: '"Copy"',
+    description: "Visible label next to the icon. Dropped for size=\"icon\".",
+  },
+  {
+    prop: "copiedLabel",
+    type: "string",
+    default: '"Copied"',
+    description: "Label + announcement shown for two seconds after a successful copy.",
+  },
+  {
+    prop: "live",
+    type: ['"polite"', '"assertive"'],
+    default: '"polite"',
+    description: "Politeness of the success announcement written into the empty aria-live region. polite waits for a graceful pause; assertive interrupts.",
+    source: { badge: "MDN", label: "aria-live", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the button — skipped from tab order, no copy on click.",
+  },
+  ...COMMON_ARIA.slice(0, 1),
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const DATE_TIME_PICKER_PROPS: ApiRow[] = [
+  {
+    prop: "type",
+    type: ['"date"', '"time"', '"datetime-local"', '"month"', '"week"'],
+    default: '"date"',
+    description:
+      "Which native temporal control to render. Drives the picker UI, the normalised value format and the units of min/max/step.",
+    source: { badge: "MDN", label: "<input type>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#input_types" },
+  },
+  {
+    prop: "value",
+    type: "string",
+    description:
+      "Initial value in the variant's normalised, locale-independent format — date yyyy-mm-dd, time HH:mm[:ss], datetime-local yyyy-mm-ddTHH:mm, month YYYY-MM, week yyyy-Www.",
+    source: { badge: "MDN", label: "Date and time formats", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Date_and_time_formats" },
+  },
+  {
+    prop: "min",
+    type: "string",
+    description:
+      "Earliest accepted value, in the value's format. For time the domain is periodic, so a min later than max is valid and the range crosses midnight.",
+    source: { badge: "MDN", label: "min", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/min" },
+  },
+  {
+    prop: "max",
+    type: "string",
+    description: "Latest accepted value, in the value's format. The browser fails constraint validation when the value falls outside [min, max].",
+    source: { badge: "MDN", label: "max", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/max" },
+  },
+  {
+    prop: "step",
+    type: ["number", "string"],
+    description:
+      'Granularity. date: days (default 1); time / datetime-local: seconds (default 60 → minutes, "1" reveals a seconds segment); month: months; week: weeks. "any" removes stepping.',
+    source: { badge: "MDN", label: "step", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/step" },
+  },
+  {
+    prop: "list",
+    type: "string",
+    description: "Id of a <datalist> of suggested values shown alongside the picker.",
+    source: { badge: "MDN", label: "<datalist>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist" },
+  },
+  {
+    prop: "readonly",
+    type: "boolean",
+    default: "false",
+    description: "Read-only — focusable but not editable. Per MDN, required has no effect on a readonly field.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the field — unfocusable, not submitted with the form.",
+  },
+  {
+    prop: "required",
+    type: "boolean",
+    default: "false",
+    description: "Native HTML required for form validation — submit is blocked while the field is empty.",
+  },
+  {
+    prop: "autofocus",
+    type: "boolean",
+    default: "false",
+    description: "Focus this field on initial page load (one per document).",
+  },
+  {
+    prop: "form",
+    type: "string",
+    description: "Associate the field with a <form> elsewhere in the document by id.",
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SHEET_PROPS: ApiRow[] = [
+  { prop: "id", type: "string", required: true, description: "Used by SheetTrigger's sheetFor prop to open this sheet. Also seeds the title/description ids (`{id}-title`, `{id}-description`)." },
+  { prop: "side", type: ['"top"', '"right"', '"bottom"', '"left"'], default: '"right"', description: "Viewport edge the drawer slides in from. Side drawers fill the cross-axis; top/bottom sheets size to content.",
+    source: { badge: "MDN", label: "inset / inset-x / inset-y", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/inset" } },
+  { prop: "open", type: "boolean", default: "false", description: "Pre-open at initial render (for htmx-fetched sheets; site.js promotes <dialog open> to .showModal())." },
+  { prop: "closedby", type: ['"any"', '"closerequest"', '"none"'], default: '"any"', description: "Native HTML attribute. \"any\" = ESC + backdrop light dismiss, \"closerequest\" = ESC + code only, \"none\" = code only. When not \"any\", a data-close-on-backdrop hook keeps backdrop-click dismissal.",
+    source: { badge: "MDN", label: "<dialog closedby>", href: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy" } },
+  { prop: "showCloseButton", type: "boolean", default: "true", description: "Render the X button in the top-right corner." },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+]
+
+export const HOVER_CARD_PROPS: ApiRow[] = [
+  { prop: "id", type: "string", required: true, description: "Required on <HoverCard>. Referenced by the trigger's cardFor (rendered as interestfor)." },
+  { prop: "cardFor", type: "string", required: true, description: "On <HoverCardTrigger>. Id of the HoverCard to reveal; rendered as the interestfor attribute on the trigger.",
+    source: { badge: "MDN", label: "interestfor", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#interestfor" } },
+  { prop: "side", type: ['"top"', '"right"', '"bottom"', '"left"'], default: '"bottom"', description: "Placement relative to the trigger. Drives CSS position-area off the implicit anchor reference, with a centred fallback in browsers without anchor positioning.",
+    source: { badge: "MDN", label: "position-area", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/position-area" } },
+  { prop: "href", type: "string", default: '"#"', description: "On <HoverCardTrigger>. Click destination for the default <a>. Interest invokers reveal on hover/focus, but the trigger still navigates on click — keeping it useful and functional in non-supporting browsers." },
+  { prop: "asChild", type: "boolean", default: "false", description: "On <HoverCardTrigger>. Merge the interest-invoker wiring onto the single child element (e.g. an existing <a> or <button>) instead of rendering a wrapper anchor, so no extra element enters the accessibility tree." },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const ACTIVE_SEARCH_PROPS: ApiRow[] = [
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description: "Input id. The loading indicator gets id=\"{id}-indicator\" and hx-indicator points at it.",
+  },
+  {
+    prop: "name",
+    type: "string",
+    default: '"q"',
+    description: "Form field name submitted on Enter and sent as the query param to the server.",
+  },
+  {
+    prop: "action",
+    type: "string",
+    description: "URL the native <form> navigates to on Enter when JS is off, and the htmx GET URL when hx-get isn't passed explicitly.",
+    source: { badge: "MDN", label: "<form action>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#action" },
+  },
+  {
+    prop: "method",
+    type: ['"get"', '"post"'],
+    default: '"get"',
+    description: "Form method for the no-JS fallback. GET keeps the search idempotent and the result URL shareable.",
+  },
+  {
+    prop: "delay",
+    type: "number",
+    default: "300",
+    description: "Debounce window in ms for the input trigger (hx-trigger=\"input changed delay:{delay}ms, search\").",
+    source: { badge: "htmx", label: "hx-trigger delay", href: "https://htmx.org/attributes/hx-trigger/" },
+  },
+  {
+    prop: "placeholder",
+    type: "string",
+    default: '"Search…"',
+    description: "Placeholder hint shown when the field is empty.",
+  },
+  {
+    prop: "value",
+    type: "string",
+    description: "Initial value (e.g. to reflect a server-rendered query).",
+  },
+  {
+    prop: "required",
+    type: "boolean",
+    default: "false",
+    description: "Native HTML required constraint for the no-JS form submit.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the input — skipped from tab order, no requests.",
+  },
+  {
+    prop: "autofocus",
+    type: "boolean",
+    default: "false",
+    description: "Focus the search field on initial page load (one per document).",
+  },
+  {
+    prop: "loadingLabel",
+    type: "string",
+    default: '"Searching…"',
+    description: "Visually-hidden text inside the role=\"status\" indicator, announced to assistive tech while a request is in flight.",
+    source: { badge: "MDN", label: "role=status", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role" },
+  },
+  {
+    prop: "inputClass",
+    type: "string",
+    description: "Extra Tailwind classes appended to the <input> (the root <form> uses class).",
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const EDIT_IN_PLACE_PROPS: ApiRow[] = [
+  {
+    prop: "editHref",
+    type: "string",
+    required: true,
+    description: "GET endpoint that returns the editor form fragment. Set on EditInPlace (the view); wired to the Edit button's hx-get.",
+    source: { badge: "htmx", label: "hx-get", href: "https://htmx.org/attributes/hx-get/" },
+  },
+  {
+    prop: "putHref",
+    type: "string",
+    required: true,
+    description: "PUT endpoint hit when Save is pressed. Set on EditInPlaceForm (the editor); the response (the updated view) replaces the form in place.",
+    source: { badge: "htmx", label: "hx-put", href: "https://htmx.org/attributes/hx-put/" },
+  },
+  {
+    prop: "cancelHref",
+    type: "string",
+    required: true,
+    description: "GET endpoint that restores the read-only view on Cancel, discarding edits. Set on EditInPlaceForm.",
+  },
+  {
+    prop: "fields",
+    type: "EditInPlaceField[]",
+    description: "Record fields: { label, value, name?, type?, inputValue?, required? }. Rendered as a <dl> of term/value pairs in the view and as pre-filled native inputs in the editor. Omit to pass custom children instead.",
+    source: { badge: "MDN", label: "<dl> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl" },
+  },
+  {
+    prop: "editLabel",
+    type: "string",
+    default: '"Edit"',
+    description: "Text on the Edit button in the view.",
+  },
+  {
+    prop: "saveLabel",
+    type: "string",
+    default: '"Save"',
+    description: "Text on the Save submit button in the editor.",
+  },
+  {
+    prop: "cancelLabel",
+    type: "string",
+    default: '"Cancel"',
+    description: "Text on the Cancel button in the editor.",
+  },
+  {
+    prop: "id",
+    type: "string",
+    description: "Root id. Reused across the view<->editor swap so the element keeps its identity; also seeds each editor input id as {id}-{name}.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const LOAD_MORE_PROPS: ApiRow[] = [
+  {
+    prop: "href",
+    type: "string",
+    description: "Next-page URL. Sets hx-get on the trigger.",
+    source: { badge: "htmx", label: "hx-get", href: "https://htmx.org/attributes/hx-get/" },
+  },
+  {
+    prop: "trigger",
+    type: ['"click"', '"intersect"', '"revealed"'],
+    default: '"click"',
+    description:
+      "How the load fires. \"click\" renders a real <button>; \"intersect\" / \"revealed\" render a scroll sentinel that fires when it enters the viewport. Use \"intersect\" inside an overflow-y:scroll container, \"revealed\" for the page viewport.",
+    source: { badge: "htmx", label: "hx-trigger (intersect / revealed)", href: "https://htmx.org/reference/#trigger-modifiers" },
+  },
+  {
+    prop: "label",
+    type: "string",
+    default: '"Load more"',
+    description: "Visible text for the click button. Ignored by the sentinel modes, which use their children or the default spinner.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the click trigger — skipped from tab order, no request. No effect on the sentinel modes.",
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name. On the sentinel modes the visible text is decorative, so set this to keep AT announcements meaningful (defaults to \"Loading more\").",
+    source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SKIP_LINK_PROPS: ApiRow[] = [
+  {
+    prop: "href",
+    type: "string",
+    default: '"#main"',
+    description:
+      "Fragment of the target landmark. Must match the id of the element focus should jump to (typically <main id=\"main\">). The native <a href> gives the link role, Enter-to-activate and the focus-jump for free.",
+    source: { badge: "MDN", label: "<a href>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#href" },
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description:
+      "Visible label, revealed on focus. Defaults to \"Skip to main content\".",
+  },
+  {
+    prop: "id",
+    type: "string",
+    description: "Set when another control needs to reference this link.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const THEME_TOGGLE_PROPS: ApiRow[] = [
+  {
+    prop: "value",
+    type: ['"system"', '"light"', '"dark"'],
+    default: '"system"',
+    description: "Server-resolved current choice (read from the `theme` cookie). Drives which radio renders checked + the .dark class, so there is no flash on first paint.",
+    source: { badge: "MDN", label: "prefers-color-scheme", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme" },
+  },
+  {
+    prop: "name",
+    type: "string",
+    default: '"theme"',
+    description: "Radio group name and the cookie key the boot script reads/writes. All three radios share it so the browser groups them.",
+  },
+  {
+    prop: "id",
+    type: "string",
+    default: '"theme-toggle"',
+    description: "Id prefix for the inputs and their labels, so multiple toggles can coexist on one page.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the whole group — sets aria-disabled on the root and disabled on every radio.",
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]

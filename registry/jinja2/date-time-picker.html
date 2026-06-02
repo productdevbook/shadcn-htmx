@@ -1,0 +1,66 @@
+{# Date Time Picker macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/date-time-picker.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   The control is a native <input type="date|time|datetime-local|month|week">.
+   The browser ships the picker UI, segment editing, locale-aware display and
+   constraint validation; the submitted value is always normalised
+   (date → yyyy-mm-dd, time → HH:mm[:ss], month → YYYY-MM, week → yyyy-Www).
+   No JS — this is a zero-script component.
+
+   Usage:
+       {% from "components/date-time-picker.html" import date_time_picker %}
+       {{ date_time_picker(name="bday", type="date", min="1900-01-01") }}
+       {{ date_time_picker(name="slot", type="time", min="09:00", max="18:00", step=900) }}
+
+   All hx-* attributes pass through via **attrs (underscores become dashes).
+   See repos/mdn/files/en-us/web/html/reference/elements/input/ for native
+   attribute semantics. #}
+
+{% macro date_time_picker(
+    type="date",
+    id=none,
+    name=none,
+    value=none,
+    required=false,
+    disabled=false,
+    readonly=false,
+    autofocus=false,
+    form=none,
+    list=none,
+    min=none,
+    max=none,
+    step=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    aria_invalid=none,
+    aria_required=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0
+{%- endset -%}
+<input type="{{ type }}"
+       class="{{ base }} {{ extra_class }}"
+       {%- if id %} id="{{ id }}"{% endif %}
+       {%- if name %} name="{{ name }}"{% endif %}
+       {%- if value is not none %} value="{{ value }}"{% endif %}
+       {%- if required %} required{% endif %}
+       {%- if disabled %} disabled{% endif %}
+       {%- if readonly %} readonly{% endif %}
+       {%- if autofocus %} autofocus{% endif %}
+       {%- if form %} form="{{ form }}"{% endif %}
+       {%- if list %} list="{{ list }}"{% endif %}
+       {%- if min is not none %} min="{{ min }}"{% endif %}
+       {%- if max is not none %} max="{{ max }}"{% endif %}
+       {%- if step is not none %} step="{{ step }}"{% endif %}
+       {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+       {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+       {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+       {%- if aria_invalid is not none %} aria-invalid="{{ aria_invalid|string|lower }}"{% endif %}
+       {%- if aria_required is not none %} aria-required="{{ aria_required|string|lower }}"{% endif %}
+       data-slot="date-time-picker"
+       {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{% endmacro %}

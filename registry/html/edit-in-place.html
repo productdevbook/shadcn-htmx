@@ -1,0 +1,66 @@
+<!--
+  shadcn-htmx — raw HTML Edit In Place snippet.
+
+  Mirrors registry/ui/edit-in-place.tsx. Drop onto any page that loads
+  htmx v4 + Tailwind CSS v4 and the shadcn theme variables (card, border,
+  ring, primary, secondary, muted, foreground). Relies only on theme tokens.
+
+  The canonical htmx editable record: a read-only VIEW with an Edit button
+  that GETs the EDITOR form; Save issues the PUT; Cancel re-GETs the view.
+  No modal, no custom JS — the whole thing rides on outerHTML swaps over REST.
+  See repos/htmx/www/src/content/patterns/03-records/04-edit-in-place.md.
+
+  REST endpoints (the URL is the resource, the method is the action):
+    GET  /users/1        → the view fragment below
+    GET  /users/1/edit   → the editor fragment below
+    PUT  /users/1        → updates, then returns the view fragment
+
+  hx-target="this" + hx-swap="outerHTML" on each root mean every descendant
+  request (Edit / Save / Cancel) replaces the whole element in place.
+-->
+
+<!-- ─── VIEW (GET /users/1) ─────────────────────────────────────────── -->
+<div data-slot="edit-in-place" data-mode="view" id="user"
+     hx-target="this" hx-swap="outerHTML"
+     class="flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
+  <dl class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    <div>
+      <dt class="text-xs font-medium tracking-wide text-muted-foreground uppercase">Name</dt>
+      <dd class="mt-0.5 text-sm font-medium text-foreground">Joe Smith</dd>
+    </div>
+    <div>
+      <dt class="text-xs font-medium tracking-wide text-muted-foreground uppercase">Email</dt>
+      <dd class="mt-0.5 text-sm font-medium text-foreground">joe@smith.org</dd>
+    </div>
+  </dl>
+  <div class="flex">
+    <button type="button" data-slot="edit-in-place-edit" hx-get="/users/1/edit"
+            hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML"
+            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5">Edit</button>
+  </div>
+</div>
+
+<!-- ─── EDITOR (GET /users/1/edit) ──────────────────────────────────── -->
+<form data-slot="edit-in-place" data-mode="edit" id="user"
+      hx-put="/users/1" hx-target="this" hx-swap="outerHTML"
+      class="flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
+  <div class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    <div class="grid gap-1.5">
+      <label for="user-name" class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-medium tracking-wide text-muted-foreground uppercase">Name</label>
+      <input id="user-name" name="name" type="text" value="Joe Smith" data-slot="input"
+             class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70">
+    </div>
+    <div class="grid gap-1.5">
+      <label for="user-email" class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-medium tracking-wide text-muted-foreground uppercase">Email</label>
+      <input id="user-email" name="email" type="email" value="joe@smith.org" data-slot="input"
+             class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70">
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <button type="submit" data-slot="edit-in-place-save"
+            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-primary text-primary-foreground hover:bg-primary/90 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5">Save</button>
+    <button type="button" data-slot="edit-in-place-cancel" hx-get="/users/1"
+            hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML"
+            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5">Cancel</button>
+  </div>
+</form>

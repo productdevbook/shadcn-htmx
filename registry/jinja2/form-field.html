@@ -1,0 +1,116 @@
+{# Form Field macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/form-field.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   A field row composes a <label>, a control slot, an optional description and
+   an optional error. The label's `for`, the control's aria-describedby and
+   aria-invalid are wired from the id you pass. Error styling rides on the
+   native :user-invalid pseudo-class (no JS, no premature errors).
+
+   Usage (block form — you place the control yourself so its id matches):
+
+       {% from "components/form-field.html" import form_field, form_fieldset %}
+       {% from "components/input.html" import input %}
+
+       {% call form_field(for_="email", label="Email",
+                          description="We'll never share it.",
+                          error=errors.email, required=true) %}
+         {{ input(id="email", name="email", type="email",
+                  aria_describedby="email-description email-error",
+                  aria_invalid=(errors.email is not none)) }}
+       {% endcall %}
+
+   Group form (multiple controls under one <legend>):
+
+       {% call form_fieldset(id="plan", legend="Plan", error=errors.plan) %}
+         …radios / checkboxes…
+       {% endcall %}
+
+   Built on <fieldset>/<legend>, Constraint Validation + :user-invalid, and
+   aria-describedby. See:
+     repos/mdn/files/en-us/web/html/reference/elements/fieldset/index.md
+     repos/mdn/files/en-us/web/css/reference/selectors/_colon_user-invalid/index.md
+     repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-describedby/index.md
+   htmx attrs pass through via **attrs (underscores become dashes). #}
+
+{% macro form_field(
+    for_=none,
+    label=none,
+    description=none,
+    error=none,
+    invalid=none,
+    required=false,
+    extra_class="",
+    label_class="",
+    **attrs
+) %}
+{%- set is_invalid = invalid if invalid is not none else (error is not none) -%}
+{%- set base -%}
+grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive
+{%- endset -%}
+<div class="{{ base }} {{ extra_class }}"
+     data-slot="form-field"
+     {%- if is_invalid %} data-invalid="true"{% endif %}
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+  {%- if label is not none %}
+  <label class="flex items-center gap-2 text-sm leading-none font-medium select-none data-[invalid=true]:text-destructive peer-disabled:cursor-not-allowed peer-disabled:opacity-50 {{ label_class }}"
+         {%- if for_ %} for="{{ for_ }}"{% endif %}
+         data-slot="form-field-label"
+         {%- if is_invalid %} data-invalid="true"{% endif %}
+         {%- if required %} data-required="true"{% endif %}
+  >{{ label }}{% if required %}<span class="text-destructive" aria-hidden="true">*</span>{% endif %}</label>
+  {%- endif %}
+  {{ caller() }}
+  {%- if description is not none %}
+  <p {% if for_ %}id="{{ for_ }}-description" {% endif %}class="text-sm text-muted-foreground" data-slot="form-field-description">{{ description }}</p>
+  {%- endif %}
+  {%- if is_invalid and error is not none %}
+  <p {% if for_ %}id="{{ for_ }}-error" {% endif %}role="alert" aria-live="assertive" class="text-sm font-medium text-destructive" data-slot="form-field-error">{{ error }}</p>
+  {%- endif %}
+</div>
+{% endmacro %}
+
+{% macro form_fieldset(
+    id=none,
+    legend=none,
+    description=none,
+    error=none,
+    invalid=none,
+    disabled=false,
+    required=false,
+    extra_class="",
+    legend_class="",
+    **attrs
+) %}
+{%- set is_invalid = invalid if invalid is not none else (error is not none) -%}
+{%- set described = [] -%}
+{%- if id and description is not none %}{% set _ = described.append(id ~ "-description") %}{% endif -%}
+{%- if id and is_invalid and error is not none %}{% set _ = described.append(id ~ "-error") %}{% endif -%}
+{%- set base -%}
+grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive min-w-0 border-0 p-0
+{%- endset -%}
+<fieldset class="{{ base }} {{ extra_class }}"
+          data-slot="form-field"
+          {%- if is_invalid %} data-invalid="true"{% endif %}
+          {%- if disabled %} disabled{% endif %}
+          {%- if described %} aria-describedby="{{ described|join(' ') }}"{% endif %}
+          {%- if is_invalid %} aria-invalid="true"{% endif %}
+          {%- if required %} aria-required="true"{% endif %}
+          {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+  {%- if legend is not none %}
+  <legend class="text-sm leading-none font-medium select-none float-none mb-1 data-[invalid=true]:text-destructive {{ legend_class }}"
+          data-slot="form-field-legend"
+          {%- if is_invalid %} data-invalid="true"{% endif %}
+          {%- if required %} data-required="true"{% endif %}
+  >{{ legend }}{% if required %}<span class="text-destructive" aria-hidden="true"> *</span>{% endif %}</legend>
+  {%- endif %}
+  {{ caller() }}
+  {%- if description is not none %}
+  <p {% if id %}id="{{ id }}-description" {% endif %}class="text-sm text-muted-foreground" data-slot="form-field-description">{{ description }}</p>
+  {%- endif %}
+  {%- if is_invalid and error is not none %}
+  <p {% if id %}id="{{ id }}-error" {% endif %}role="alert" aria-live="assertive" class="text-sm font-medium text-destructive" data-slot="form-field-error">{{ error }}</p>
+  {%- endif %}
+</fieldset>
+{% endmacro %}

@@ -1,0 +1,41 @@
+<!--
+  shadcn-htmx — raw HTML hover-card snippet.
+
+  A rich preview surface revealed on INTEREST (hover / focus / long-press) of a
+  trigger. Unlike a tooltip it MAY hold interactive content (links, buttons).
+  Built on the native Popover API interest-invoker mechanism — NO JS required:
+    - the trigger <a> carries `interestfor` pointing at the card's id;
+    - the card is `popover="hint"` — shows on interest, ESC-closeable, and does
+      not light-dismiss `auto` popovers. It falls back to `popover="manual"`
+      (stays hidden) in browsers without interest-invoker support, so the link
+      still works — pure progressive enhancement.
+    - the implicit anchor reference lets CSS `position-area` (anchor-hovercard-*)
+      place the card relative to the trigger.
+
+  Relies only on theme tokens + the anchor-hovercard-* utilities in styles.css.
+-->
+
+<p>
+  Built by
+  <a href="/u/productdevbook" interestfor="user-card"
+     data-slot="hover-card-trigger"
+     class="font-medium text-primary underline-offset-4 hover:underline">@productdevbook</a>.
+</p>
+
+<div id="user-card" popover="hint" data-slot="hover-card" data-side="bottom"
+  class="z-50 m-0 w-64 rounded-md border bg-popover p-4 text-sm text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-hovercard-bottom">
+  <div class="flex gap-3">
+    <span data-slot="avatar"
+      class="relative inline-flex size-10 shrink-0 overflow-hidden rounded-full bg-muted">
+      <span class="flex size-full items-center justify-center text-sm font-medium text-muted-foreground">PD</span>
+    </span>
+    <div class="space-y-1">
+      <p class="font-semibold">@productdevbook</p>
+      <p class="text-muted-foreground">Building shadcn-htmx. Web standards first.</p>
+      <button type="button"
+        class="mt-1 inline-flex h-7 items-center rounded-md bg-primary px-2.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
+        Follow
+      </button>
+    </div>
+  </div>
+</div>

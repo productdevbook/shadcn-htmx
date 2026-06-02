@@ -349,3 +349,35 @@
   [data-slot="treegrid"] tr[aria-expanded="true"] [data-slot="treegrid-chevron"] {
     transform: rotate(90deg);
   }
+
+/* ===== New components (tier-1) ===== */
+None. The component reuses only existing theme tokens (border, border-input, bg-transparent, dark:bg-input/30, ring-ring/50, border-ring, bg-accent, text-foreground, text-muted-foreground, bg-card, bg-primary, bg-primary/20, text-primary-foreground, border-destructive, ring-destructive/20) and the existing scn-progress-indeterminate keyframes already defined in app/styles/input.css for Progress. No additions to app/styles/input.css are required.
+None. The component uses only existing theme tokens already shipped in app/styles/input.css: bg-background, border, bg-secondary, text-secondary-foreground, bg-accent, text-accent-foreground, border-input, bg-input, border-ring, ring-ring/50, plus the project's existing sr-only utility (already used by link.tsx / breadcrumb.tsx / skip-link.tsx). The transient success tint uses Tailwind's built-in palette utilities text-emerald-600 / dark:text-emerald-400 (same approach the api-table badges use for sky/amber/emerald), so no @theme additions are required.
+/* ===== Sheet (registry/ui/sheet.tsx) — add inside an @layer utilities block in app/styles/input.css ===== */
+@layer utilities {
+  /* Sheet — edge-anchored <dialog>. The element enters the top layer via
+     showModal(); we slide its box in from its anchored edge (data-side) and
+     fade the ::backdrop. Pure CSS, keyed off data-slot + data-side. Verified
+     live: a right sheet slides in from translateX(100%) -> 0. */
+  @keyframes scn-sheet-in-right  { from { transform: translateX(100%); }  to { transform: translateX(0); } }
+  @keyframes scn-sheet-in-left   { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+  @keyframes scn-sheet-in-top    { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  @keyframes scn-sheet-in-bottom { from { transform: translateY(100%); }  to { transform: translateY(0); } }
+  @keyframes scn-sheet-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+
+  [data-slot="sheet"][open][data-side="right"]  { animation: scn-sheet-in-right  0.3s ease-out; }
+  [data-slot="sheet"][open][data-side="left"]   { animation: scn-sheet-in-left   0.3s ease-out; }
+  [data-slot="sheet"][open][data-side="top"]    { animation: scn-sheet-in-top    0.3s ease-out; }
+  [data-slot="sheet"][open][data-side="bottom"] { animation: scn-sheet-in-bottom 0.3s ease-out; }
+  [data-slot="sheet"][open]::backdrop           { animation: scn-sheet-backdrop-in 0.2s ease-out; }
+
+  /* Respect reduced-motion: no slide, just appear. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="sheet"][open],
+    [data-slot="sheet"][open]::backdrop { animation: none; }
+  }
+}
+/* see above */
+// None. Uses only existing theme tokens: bg-primary, text-primary-foreground,
+// ring-ring/50, plus the sr-only / not-sr-only Tailwind utilities.
+None. The component uses only existing theme tokens: bg-muted, text-muted-foreground, bg-background, text-foreground, border, ring-ring/50, shadow-xs.

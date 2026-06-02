@@ -532,3 +532,568 @@ test.describe("Landmarks", () => {
     await expect(shell.locator('footer[data-slot="landmark-contentinfo"]')).toHaveCount(1)
   })
 })
+
+test.describe("New components — tier-1", () => {
+
+  // tests/components/forms.spec.ts (append). Exercises the htmx blur-validate
+  // demo on the Form Field docs page: an invalid email, on blur, swaps the whole
+  // field via outerHTML so the server returns aria-invalid + a role=alert error.
+  test.describe("Form Field (deep)", () => {
+    test("blur validation swaps in aria-invalid + error message", async ({ page }) => {
+      await gotoDoc(page, "form-field")
+  
+      // Scope to the htmx demo field's root, not the heading id.
+      const field = page.locator('[data-slot="form-field"]').filter({
+        has: page.locator('input[hx-trigger="blur"]'),
+      })
+      const input = field.locator('input[type="email"]')
+  
+      // Pre-state: not yet invalid, no error message rendered.
+      await expect(input).not.toHaveAttribute("aria-invalid", "true")
+      await expect(field.locator('[data-slot="form-field-error"]')).toHaveCount(0)
+  
+      // Type an invalid value and blur to fire hx-trigger="blur".
+      await input.fill("not-an-email")
+      await input.blur()
+  
+      // The field is replaced (outerHTML swap). Re-resolve and assert post-state.
+      const swapped = page.locator('[data-slot="form-field"]').filter({
+        has: page.locator('input[hx-trigger="blur"]'),
+      })
+      const errorEl = swapped.locator('[data-slot="form-field-error"]')
+      await expect(errorEl).toBeVisible()
+      await expect(errorEl).toHaveAttribute("role", "alert")
+      await expect(swapped.locator('input[type="email"]')).toHaveAttribute("aria-invalid", "true")
+  
+      // aria-describedby points the control at the rendered error.
+      const swappedInput = swapped.locator('input[type="email"]')
+      const describedby = await swappedInput.getAttribute("aria-describedby")
+      const errId = await errorEl.getAttribute("id")
+      expect(errId).toBeTruthy()
+      expect(describedby ?? "").toContain(errId as string)
+    })
+  
+    test("valid email clears the error on re-blur", async ({ page }) => {
+      await gotoDoc(page, "form-field")
+      const sel = '[data-slot="form-field"]'
+      const input = page.locator(sel).filter({ has: page.locator('input[hx-trigger="blur"]') }).locator('input[type="email"]')
+      await input.fill("user@example.com")
+      await input.blur()
+      const swapped = page.locator(sel).filter({ has: page.locator('input[hx-trigger="blur"]') })
+      await expect(swapped.locator('[data-slot="form-field-error"]')).toHaveCount(0)
+      await expect(swapped.locator('input[type="email"]')).not.toHaveAttribute("aria-invalid", "true")
+    })
+  })
+
+  
+  // File Upload — styled <label> wrapping a native <input type="file">.
+  //
+  // The upload itself is platform-native: selecting a file populates
+  // input.files, and the form submits it as multipart. The drag-drop +
+  // filename-list enhancement lives in public/site.js, but the core contract
+  // (a real file input that accepts a selection) works with zero JS. We assert
+  // that real post-state here, scoped to [data-slot="file-upload"].
+  
+  test.describe("File Upload", () => {
+    test("route renders with the file-upload slot + native input", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "file-upload")
+      await expect(page.locator("h1", { hasText: "File Upload" })).toBeVisible()
+      const root = page.locator('[data-slot="file-upload"]').first()
+      await expect(root).toHaveCount(1)
+      // The visible zone is a <label> wrapping the real input — clicking it
+      // opens the OS picker (platform behaviour, no JS).
+      await expect(
+        root.locator('label[data-slot="file-upload-zone"]'),
+      ).toHaveCount(1)
+      await expect(
+        root.locator('input[type="file"][data-slot="file-upload-input"]'),
+      ).toHaveCount(1)
+    })
+  
+    test("selecting a file populates the native input (post-state)", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "file-upload")
+      const root = page.locator('[data-slot="file-upload"]').first()
+      const input = root.locator(
+        'input[type="file"][data-slot="file-upload-input"]',
+      )
+  
+      // Drive the native picker the way a user would, with an in-memory file.
+      await input.setInputFiles({
+        name: "report.pdf",
+        mimeType: "application/pdf",
+        buffer: Buffer.from("%PDF-1.4 test"),
+      })
+  
+      // Capture the element and assert the platform recorded the selection:
+      // files[0].name is the real, JS-visible post-state of the upload control.
+      const handle = await input.elementHandle()
+      expect(handle).not.toBeNull()
+      const selected = await handle!.evaluate((el) => {
+        const i = el as HTMLInputElement
+        return { count: i.files?.length ?? 0, first: i.files?.[0]?.name ?? "" }
+      })
+      expect(selected.count).toBe(1)
+      expect(selected.first).toBe("report.pdf")
+    })
+  
+    test("API Reference lists File Upload props", async ({ page }) => {
+      await gotoDoc(page, "file-upload")
+      await expect(page.locator('[data-slot="api-table"]').first()).toBeVisible()
+    })
+  })
+
+  
+  // Copy Button — click-to-copy via the Async Clipboard API, then a transient
+  // aria-live "Copied" state. We grant clipboard-write so the secure-context
+  // API succeeds, click the first copy button, and assert the post-state on a
+  // captured element handle (data-copied="true" + the live region announces
+  // "Copied"). Finally we confirm the system clipboard actually received the
+  // component's data-copy-text.
+  
+  test.describe("Copy Button", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "copy-button")
+      await expect(page.locator("h1", { hasText: "Copy Button" })).toBeVisible()
+    })
+  
+    test("click copies the value and flips to a transient Copied state", async ({
+      page,
+      context,
+    }) => {
+      await context.grantPermissions(["clipboard-read", "clipboard-write"])
+      await gotoDoc(page, "copy-button")
+  
+      const btn = page.locator('[data-slot="copy-button"]').first()
+      await expect(btn).toBeVisible()
+      const expected = await btn.getAttribute("data-copy-text")
+      expect(expected && expected.length > 0).toBeTruthy()
+  
+      // Capture the handle so the state assertion is scoped to this element.
+      const handle = await btn.elementHandle()
+      await btn.click()
+  
+      // Post-state: data-copied flips to "true" and the empty aria-live region
+      // is populated with the success label.
+      await expect(btn).toHaveAttribute("data-copied", "true", { timeout: 2000 })
+      const status = btn.locator("[data-copy-status]")
+      await expect(status).toHaveText("Copied")
+  
+      // The system clipboard actually received the component's text.
+      const clip = await page.evaluate(() => navigator.clipboard.readText())
+      expect(clip).toBe(expected)
+  
+      // And it resets: after the 2s window the success state clears.
+      await expect(btn).not.toHaveAttribute("data-copied", "true", {
+        timeout: 4000,
+      })
+      expect(handle).not.toBeNull()
+    })
+  })
+
+  
+  // Date Time Picker — smoke. The control is a native <input type="date">; assert
+  // a committed value round-trips in the normalised yyyy-mm-dd format AND that the
+  // browser enforces the min constraint (out-of-range value is invalid).
+  test.describe("Date Time Picker (smoke)", () => {
+    test("date field normalises value and enforces min", async ({ page }) => {
+      await gotoDoc(page, "date-time-picker")
+  
+      const field = page
+        .locator('[data-slot="date-time-picker"][type="date"]:not([disabled])')
+        .first()
+      await expect(field).toBeVisible()
+  
+      // Capture a live handle for state-dependent assertions after we mutate it.
+      const handle = await field.elementHandle()
+      if (!handle) throw new Error("no date field handle")
+  
+      // A real interaction: set a value via the DOM (the picker commits values
+      // the same way) and confirm the normalised string the server would receive.
+      await handle.evaluate((el: HTMLInputElement) => {
+        el.min = "2026-01-01"
+        el.value = "2026-07-22"
+        el.dispatchEvent(new Event("change", { bubbles: true }))
+      })
+      expect(await field.inputValue()).toBe("2026-07-22")
+      expect(
+        await handle.evaluate((el: HTMLInputElement) => el.checkValidity()),
+      ).toBe(true)
+  
+      // Below min → the browser reports the value invalid (rangeUnderflow).
+      await handle.evaluate((el: HTMLInputElement) => {
+        el.value = "2025-12-31"
+      })
+      expect(
+        await handle.evaluate((el: HTMLInputElement) => el.validity.rangeUnderflow),
+      ).toBe(true)
+    })
+  })
+
+  
+  // Sheet — edge-anchored slide-in drawer built on the native <dialog> +
+  // showModal(). Verifies it opens as a real modal (browser-set :modal pseudo),
+  // is pinned to the right edge (data-side="right"), and light-dismisses via the
+  // native closedby="any" backdrop click.
+  
+  test.describe("Sheet", () => {
+    test("trigger opens a right-anchored modal; backdrop click closes it", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "sheet")
+  
+      // Open the basic demo sheet via its trigger.
+      const trigger = page
+        .locator('[data-dialog-trigger][data-dialog-target="ex-basic-sheet"]')
+        .first()
+      await trigger.click()
+  
+      // Scope to the sheet itself, not the #ex-basic heading.
+      const sheet = page.locator('[data-slot="sheet"]#ex-basic-sheet')
+      await expect(sheet).toBeVisible()
+  
+      // Browser-set :modal only matches when showModal() actually ran — proves
+      // we got the native top-layer + focus trap, not just a visible <dialog>.
+      const handle = await sheet.elementHandle()
+      expect(
+        await handle!.evaluate((d: HTMLDialogElement) => d.matches(":modal")),
+      ).toBe(true)
+  
+      // Edge anchoring: a right-side sheet is pinned to the right edge. Read the
+      // resolved style (the slide-in animation transforms the box, so the live
+      // bounding box is unreliable mid-animation — `right: 0px` is not).
+      expect(await sheet.getAttribute("data-side")).toBe("right")
+      const right = await handle!.evaluate(
+        (d) => getComputedStyle(d).right,
+      )
+      expect(right).toBe("0px")
+  
+      // closedby="any" → clicking the dim backdrop (top-left corner, outside the
+      // right-anchored box) light-dismisses natively, with no backdrop JS.
+      await page.mouse.click(5, 5)
+      await expect(sheet).not.toBeVisible()
+    })
+  })
+
+  test("hover-card reveals on interest and is dismissed on ESC", async ({ page }) => {
+    await gotoDoc(page, "hover-card")
+  
+    // Scope to the component, not the #ex-basic heading id.
+    const card = page.locator('[data-slot="hover-card"]').first()
+    const handle = await card.elementHandle()
+    if (!handle) throw new Error("no hover-card element")
+  
+    const trigger = page
+      .locator('[data-slot="hover-card-trigger"][interestfor="hc-user"]')
+      .first()
+  
+    // Interest invokers are progressive enhancement. Where supported, drive the
+    // real hover path; otherwise exercise the same contract via the hint popover
+    // the `interest` event maps onto (showPopover). Either way we assert the
+    // post-state from a captured elementHandle (state-dependent assertion).
+    const supported = await page.evaluate(() =>
+      Object.hasOwn(HTMLAnchorElement.prototype, "interestForElement"),
+    )
+  
+    if (supported) {
+      await trigger.hover()
+      await page.waitForFunction(
+        (el) => (el as HTMLElement).matches(":popover-open"),
+        handle,
+        { timeout: 2000 },
+      )
+    } else {
+      await handle.evaluate((el) => (el as HTMLElement & { showPopover(): void }).showPopover())
+    }
+    expect(
+      await handle.evaluate((el) => (el as HTMLElement).matches(":popover-open")),
+    ).toBe(true)
+  
+    // The card holds interactive content the tooltip forbids (a Follow button).
+    await expect(
+      page.locator('[data-slot="hover-card"] [data-slot="button"]').first(),
+    ).toHaveCount(1)
+  
+    // ESC cancels interest / closes the hint popover.
+    await page.keyboard.press("Escape")
+    await page.waitForFunction(
+      (el) => !(el as HTMLElement).matches(":popover-open"),
+      handle,
+      { timeout: 2000 },
+    )
+    expect(
+      await handle.evaluate((el) => (el as HTMLElement).matches(":popover-open")),
+    ).toBe(false)
+  })
+
+  
+  // Active Search — native <form role="search"> + <input type="search"> driven
+  // by htmx (hx-trigger debounce + hx-sync cancellation + hx-indicator).
+  // We can only assert the DOM contract Playwright can observe:
+  //   - the search input lives inside [data-slot="active-search"]
+  //   - typing a debounced query swaps matching <tr> rows into the target tbody
+  //   - the no-JS fallback is a real <form action> with method=get
+  
+  test.describe("Active Search", () => {
+    test("route exists and renders the search form", async ({ page }) => {
+      await gotoDoc(page, "active-search")
+      await expect(page.locator("h1", { hasText: "Active Search" })).toBeVisible()
+      const root = page.locator('[data-slot="active-search"]').first()
+      await expect(root).toBeVisible()
+      // Native progressive-enhancement contract: it's a real search form.
+      expect(await root.evaluate((el) => el.tagName)).toBe("FORM")
+      await expect(root).toHaveAttribute("role", "search")
+      await expect(root).toHaveAttribute("method", "get")
+    })
+  
+    test("typing debounced query filters the results table", async ({ page }) => {
+      await gotoDoc(page, "active-search")
+      const root = page.locator('[data-slot="active-search"]').first()
+      const input = root.locator('input[type="search"]')
+      await expect(input).toBeVisible()
+  
+      const rows = page.locator("#ex-as-rows tr")
+      // Initial state: the demo seeds the full contact list.
+      const initialCount = await rows.count()
+      expect(initialCount).toBeGreaterThan(1)
+  
+      // Capture a handle so we can assert against post-swap state reliably.
+      const tbody = await page.locator("#ex-as-rows").elementHandle()
+      expect(tbody).not.toBeNull()
+  
+      // Type a query that matches a single contact ("wynne"). Debounce is 300ms.
+      await input.fill("wynne")
+      await expect
+        .poll(async () => page.locator("#ex-as-rows tr").count(), { timeout: 3000 })
+        .toBeLessThan(initialCount)
+  
+      const text = (await page.locator("#ex-as-rows").innerText()).toLowerCase()
+      expect(text).toContain("wynne")
+      expect(text).not.toContain("venus")
+    })
+  
+    test("indicator is wired to the input via hx-indicator", async ({ page }) => {
+      await gotoDoc(page, "active-search")
+      const root = page.locator('[data-slot="active-search"]').first()
+      const input = root.locator('input[type="search"]')
+      const indicatorSel = await input.getAttribute("hx-indicator")
+      expect(indicatorSel).toBeTruthy()
+      // hx-indicator points at the role=status spinner we render.
+      const indicator = root.locator('[data-slot="active-search-indicator"]')
+      await expect(indicator).toHaveAttribute("role", "status")
+      await expect(indicator).toHaveAttribute("aria-live", "polite")
+      expect(`#${await indicator.getAttribute("id")}`).toBe(indicatorSel)
+    })
+  
+    test("API Reference lists Active Search props", async ({ page }) => {
+      await gotoDoc(page, "active-search")
+      await expect(page.locator('[data-slot="api-table"]').first()).toBeVisible()
+      for (const prop of ["id", "name", "action", "delay"]) {
+        await expect(
+          page.locator(`[data-slot="api-row"][data-prop="${prop}"]`).first(),
+        ).toHaveCount(1)
+      }
+    })
+  })
+
+  
+  // Edit In Place — the canonical htmx view<->edit outerHTML swap over REST.
+  // We can verify the full contract: the view carries data-mode="view", Edit
+  // GETs the editor (a <form> with data-mode="edit"), and Save PUTs and swaps
+  // in a fresh view with the new value. The live demo on the page is scoped by
+  // its stable id #ex-eip-user, which survives every outerHTML swap.
+  
+  test.describe("Edit In Place", () => {
+    test("route exists and renders the view", async ({ page }) => {
+      await gotoDoc(page, "edit-in-place")
+      await expect(page.locator("h1", { hasText: "Edit In Place" })).toBeVisible()
+      const root = page.locator('[data-slot="edit-in-place"]').first()
+      await expect(root).toHaveAttribute("data-mode", "view")
+    })
+  
+    test("Edit swaps to the editor, Save PUTs and returns the updated view", async ({ page }) => {
+      await gotoDoc(page, "edit-in-place")
+      // Scope to the live demo by its stable id (it survives the outerHTML swap).
+      const live = page.locator("#ex-eip-user")
+      await expect(live).toHaveAttribute("data-mode", "view")
+  
+      // Click Edit -> htmx GETs the editor and replaces the element with a <form>.
+      await live.locator('[data-slot="edit-in-place-edit"]').click()
+      await expect(page.locator("#ex-eip-user")).toHaveAttribute("data-mode", "edit")
+  
+      const nameInput = page.locator("#ex-eip-user input[name='name']")
+      await expect(nameInput).toBeVisible()
+      await nameInput.fill("Grace Hopper")
+  
+      // Capture the editor handle so we can prove it was swapped out on Save.
+      const editorHandle = await page.locator("#ex-eip-user").elementHandle()
+      await page.locator('#ex-eip-user [data-slot="edit-in-place-save"]').click()
+  
+      // After the PUT the editor element is detached and a fresh view shows the
+      // new value at the same id.
+      await expect
+        .poll(async () => editorHandle && (await editorHandle.evaluate((el) => el.isConnected)))
+        .toBeFalsy()
+      await expect(page.locator("#ex-eip-user")).toHaveAttribute("data-mode", "view")
+      await expect(page.locator("#ex-eip-user")).toContainText("Grace Hopper")
+    })
+  
+    test("API Reference lists the required Edit In Place props", async ({ page }) => {
+      await gotoDoc(page, "edit-in-place")
+      const section = page.locator('[data-slot="api-table"]')
+      await expect(section.first()).toBeVisible()
+      for (const prop of ["editHref", "putHref", "cancelHref", "fields"]) {
+        const row = page.locator(`[data-slot="api-row"][data-prop="${prop}"]`)
+        await expect(row.first()).toHaveCount(1)
+      }
+    })
+  })
+
+  
+  // Load More — htmx click-to-load self-replace. The trigger is a real <button>
+  // (data-slot="load-more", data-trigger="click") with hx-target="this" +
+  // hx-swap="outerHTML": clicking it requests the next page and the response
+  // (more items + a fresh trigger) replaces it in place. The chain ends when the
+  // server omits the trigger on the last page.
+  
+  test.describe("Load More", () => {
+    test("route exists and renders", async ({ page }) => {
+      await gotoDoc(page, "load-more")
+      await expect(page.locator("h1", { hasText: "Load More" })).toBeVisible()
+    })
+  
+    test("click trigger is a real button that self-replaces and ends the chain", async ({ page }) => {
+      await gotoDoc(page, "load-more")
+      // Scope to the click example host (live preview region).
+      const host = page.locator("#ex-click-host")
+  
+      // Initial state: 3 comments + one click trigger.
+      await expect(host.locator('[data-test^="comment-"]')).toHaveCount(3)
+      const trigger = host.locator('[data-slot="load-more"][data-trigger="click"]')
+      await expect(trigger).toBeVisible()
+      // It must be a native <button> for the no-JS path.
+      expect(await trigger.evaluate((el) => el.tagName)).toBe("BUTTON")
+  
+      // Capture the live element so we can assert it gets detached by the swap.
+      const handle = await trigger.elementHandle()
+  
+      // Click → htmx appends page 2 and replaces the trigger with a fresh one.
+      await trigger.click()
+      await expect(host.locator('[data-test^="comment-"]')).toHaveCount(6)
+      // The original trigger element was swapped out (outerHTML self-replace).
+      expect(await handle!.evaluate((el) => el.isConnected)).toBe(false)
+  
+      // Click the new trigger → page 3 (last page); the server omits the
+      // trigger, so the chain ends.
+      await host.locator('[data-slot="load-more"][data-trigger="click"]').click()
+      await expect(host.locator('[data-test^="comment-"]')).toHaveCount(9)
+      await expect(host.locator('[data-slot="load-more"]')).toHaveCount(0)
+    })
+  })
+
+  
+  // Skip Link — visually hidden until focused, then jumps focus to a landmark.
+  // We test the real contract:
+  //   - it is a native <a href> (link role + platform activation),
+  //   - it is hidden at rest (sr-only: a clipped ~1px box),
+  //   - focusing it reveals it (not-sr-only → real size),
+  //   - activating it moves focus to the target region.
+  
+  test.describe("Skip Link", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "skip-link")
+      await expect(page.locator("h1", { hasText: "Skip Link" })).toBeVisible()
+    })
+  
+    test("is a native anchor, hidden at rest, revealed on focus", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "skip-link")
+      const link = page.locator('[data-slot="skip-link"]').first()
+  
+      // Native <a href> — gives the link role + activation for free.
+      await expect(link).toHaveJSProperty("tagName", "A")
+      const href = await link.getAttribute("href")
+      expect(href && href.startsWith("#"), "skip link targets a fragment").toBeTruthy()
+  
+      // sr-only at rest: clipped to a ~1px box.
+      const hidden = await link.boundingBox()
+      if (!hidden) throw new Error("skip link has no box")
+      expect(hidden.width).toBeLessThanOrEqual(2)
+      expect(hidden.height).toBeLessThanOrEqual(2)
+  
+      // Focus reveals it (focus:not-sr-only flips it to a real pill).
+      await link.focus()
+      await expect(link).toBeFocused()
+      const shown = await link.boundingBox()
+      if (!shown) throw new Error("revealed skip link has no box")
+      expect(shown.width).toBeGreaterThan(40)
+      expect(shown.height).toBeGreaterThan(10)
+    })
+  
+    test("activating it moves focus into the target region", async ({ page }) => {
+      await gotoDoc(page, "skip-link")
+      const link = page.locator('[data-slot="skip-link"]').first()
+      const targetId = (await link.getAttribute("href"))!.slice(1)
+  
+      // Capture the destination element handle for the post-state assertion.
+      const target = await page.evaluateHandle(
+        (id) => document.getElementById(id),
+        targetId,
+      )
+      expect(await target.evaluate((el) => !!el), "target landmark exists").toBeTruthy()
+  
+      await link.focus()
+      await page.keyboard.press("Enter")
+  
+      // Focus (or at least the active element) lands on the target region.
+      const focusedTarget = await target.evaluate(
+        (el) => el === document.activeElement,
+      )
+      expect(focusedTarget, "focus jumped to the target region").toBeTruthy()
+    })
+  })
+
+  
+  // Theme Toggle — selecting "Dark" must add the class-based `.dark` to <html>,
+  // update the group's data-value, check the native radio, and persist the
+  // `theme` cookie. The boot script (shipped in site.js) wires this; we drive a
+  // real click and assert the post-state. We scope to [data-slot="theme-toggle"]
+  // (NOT the #ex-basic heading id) and capture an element handle for the
+  // state-dependent <html>.dark assertion.
+  test.describe("Theme Toggle", () => {
+    test("selecting Dark toggles .dark on <html>, updates data-value + cookie", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "theme-toggle")
+  
+      const group = page.locator('[data-slot="theme-toggle"]').first()
+      await expect(group).toBeVisible()
+  
+      // The input is sr-only; the visible label is the real click target.
+      const darkLabel = group.locator(
+        'label[data-slot="theme-toggle-label"][title="Dark"]',
+      )
+      await darkLabel.click()
+  
+      // Capture a handle so we can poll state that depends on the click.
+      const htmlHandle = await page.locator("html").elementHandle()
+      await expect
+        .poll(() => htmlHandle!.evaluate((el) => el.classList.contains("dark")))
+        .toBe(true)
+  
+      // Group reflects the new choice; the native radio is checked.
+      await expect(group).toHaveAttribute("data-value", "dark")
+      await expect(group.locator('input[value="dark"]')).toBeChecked()
+  
+      // Cookie persists the explicit override.
+      const cookie = (await page.context().cookies()).find(
+        (ck) => ck.name === "theme",
+      )
+      expect(cookie?.value).toBe("dark")
+    })
+  })
+})

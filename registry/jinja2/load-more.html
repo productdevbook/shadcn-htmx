@@ -1,0 +1,45 @@
+{# Load More macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/load-more.tsx.
+
+   A self-replacing pagination trigger. It appends the next page and swaps a
+   fresh trigger into its place (hx-swap="outerHTML"); when the server omits
+   the trigger, the chain ends. trigger="click" renders a real <button>
+   (works with no JS); trigger="intersect"/"revealed" renders a scroll
+   sentinel (htmx infinite scroll, IntersectionObserver under the hood).
+
+   Sources cited in load-more.tsx:
+     repos/htmx/.../patterns/01-loading/01-click-to-load.md
+     repos/htmx/.../patterns/01-loading/02-infinite-scroll.md
+     repos/htmx/.../reference/01-attributes/{06-hx-trigger,07-hx-swap,19-hx-indicator}.md
+     repos/mdn/.../web/api/intersection_observer_api/index.md
+
+   Usage:
+     {% from "components/load-more.html" import load_more %}
+
+     {{ load_more(href="/comments?page=2", label="Show more comments") }}
+     {{ load_more(href="/contacts?page=2", trigger="intersect") }} #}
+
+{% macro load_more(href=none, trigger="click", label="Load more", aria_label=none, disabled=false, id=none, extra_class="", **attrs) %}
+{% if trigger in ("intersect", "revealed") %}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="load-more" data-trigger="{{ trigger }}"
+  role="status" aria-label="{{ aria_label or 'Loading more' }}"
+  {% if href %}hx-get="{{ href }}"{% endif %}
+  hx-trigger="{{ 'intersect once' if trigger == 'intersect' else 'revealed' }}" hx-swap="outerHTML"
+  class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{% if caller %}{{ caller() }}{% else %}<span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>Loading more…{% endif %}</div>
+{% else %}
+<button type="button"
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="load-more" data-trigger="click"
+  {% if disabled %}disabled{% endif %}
+  {% if aria_label %}aria-label="{{ aria_label }}"{% endif %}
+  {% if href %}hx-get="{{ href }}"{% endif %}
+  hx-trigger="click" hx-target="this" hx-swap="outerHTML"
+  class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap outline-none transition-all text-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+><span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>{% if caller %}{{ caller() }}{% else %}{{ label }}{% endif %}</button>
+{% endif %}
+{% endmacro %}

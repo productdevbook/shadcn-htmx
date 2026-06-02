@@ -266,6 +266,72 @@
       "type": "registry:ui",
       "title": "Landmarks",
       "description": "An accessible page-shell from the native HTML landmark elements (header, nav, search, main, aside, section, footer). Thin semantic wrappers that expose the matching ARIA landmark role, with aria-label/aria-labelledby where the APG Landmarks practice requires a unique name. Zero JS."
+    },
+    {
+      "name": "form-field",
+      "type": "registry:ui",
+      "title": "Form Field",
+      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in five flavours; zero JS."
+    },
+    {
+      "name": "file-upload",
+      "type": "registry:ui",
+      "title": "File Upload",
+      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in five flavours."
+    },
+    {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy Button",
+      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
+    },
+    {
+      "name": "date-time-picker",
+      "type": "registry:ui",
+      "title": "Date Time Picker",
+      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in five flavours."
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Edge-anchored slide-in drawer (left/right/top/bottom) built on the native <dialog> + showModal(): focus trap, ESC, ::backdrop and aria-modal from the platform. Light dismiss via the native closedby=\"any\" attribute. Reuses Dialog's trigger/close wiring — zero new JS — and can stream its body in via htmx."
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "A rich interactive preview surface revealed when the user shows interest in a trigger (hover, keyboard focus, or long-press) — the interactive-content primitive Tooltip explicitly defers to. Built entirely on the native Popover API interest-invoker mechanism: the trigger carries interestfor and the card is popover=\"hint\", so the browser owns hover/focus reveal, ESC dismissal, and implicit-anchor positioning with zero JavaScript. Progressive enhancement: in browsers without interest invokers the trigger stays a working link/button and the card (falling back to popover=\"manual\") simply doesn't appear."
+    },
+    {
+      "name": "active-search",
+      "type": "registry:ui",
+      "title": "Active Search",
+      "description": "A debounced live-search box (native <form role=\"search\"> + <input type=\"search\">) that filters an external results list/table as you type, with an inline loading indicator and stale-request cancellation. Submits as a normal GET search on Enter with zero JS."
+    },
+    {
+      "name": "edit-in-place",
+      "type": "registry:ui",
+      "title": "Edit In Place",
+      "description": "A read-only record view with an Edit affordance that swaps in a pre-filled form. Save issues a PUT and the server returns the updated view; Cancel re-fetches the view. The canonical htmx editable primitive — built entirely on outerHTML swaps over REST, no modal, no custom JS."
+    },
+    {
+      "name": "load-more",
+      "type": "registry:ui",
+      "title": "Load More",
+      "description": "A self-replacing pagination trigger. Click a button or scroll a sentinel into view; htmx appends the next page and swaps in a fresh trigger via hx-swap=\"outerHTML\". When the server omits the trigger, the chain ends. The click mode is a real <button> so it works without JavaScript."
+    },
+    {
+      "name": "skip-link",
+      "type": "registry:ui",
+      "title": "Skip Link",
+      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice."
+    },
+    {
+      "name": "theme-toggle",
+      "type": "registry:ui",
+      "title": "Theme Toggle",
+      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern."
     }
   ]
 }

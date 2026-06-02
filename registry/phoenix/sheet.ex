@@ -1,0 +1,118 @@
+defmodule ShadcnHtmx.Components.Sheet do
+  @moduledoc """
+  Sheet — shadcn-htmx, htmx v4 + Tailwind v4 for Phoenix.
+
+  Mirrors registry/ui/sheet.tsx. An edge-anchored slide-in drawer (left /
+  right / top / bottom) built on the native <dialog> element + .showModal().
+  Reuses the trigger/close wiring in public/site.js (data-dialog-trigger /
+  data-dialog-close). Light dismiss is the native `closedby="any"` attribute
+  (HTML Living Standard) — no JS.
+  See repos/mdn/files/en-us/web/api/htmldialogelement/closedby/index.md.
+
+  ## Examples
+
+      <.sheet_trigger sheet_for="nav" class="…btn-classes…">
+        Open menu
+      </.sheet_trigger>
+
+      <.sheet id="nav" side="left" title="Navigation"
+              description="Jump to a section.">
+        <div data-slot="sheet-body" class="flex-1 overflow-y-auto text-sm text-foreground">
+          <!-- body content -->
+        </div>
+        <div data-slot="sheet-footer" class="mt-auto flex flex-col gap-2">
+          <button type="button" data-dialog-close="true">Close</button>
+        </div>
+      </.sheet>
+  """
+
+  use Phoenix.Component
+
+  @sheet_base "fixed z-50 m-0 flex flex-col gap-4 bg-background p-6 text-foreground shadow-lg outline-none " <>
+                "hidden open:flex " <>
+                "backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+
+  # Cross-axis inset reset to `auto` so the UA modal rule `inset: 0` doesn't
+  # over-constrain a side-anchored <dialog> (both left:0 and right:0 → box hugs
+  # the wrong edge and covers the backdrop, breaking closedby="any" light
+  # dismiss). Pin only the anchored edge.
+  @sides %{
+    "right" => "inset-y-0 right-0 left-auto h-full w-3/4 max-w-sm border-l",
+    "left" => "inset-y-0 left-0 right-auto h-full w-3/4 max-w-sm border-r",
+    "top" => "inset-x-0 top-0 bottom-auto w-full border-b",
+    "bottom" => "inset-x-0 bottom-0 top-auto w-full border-t"
+  }
+
+  attr :id, :string, required: true
+  attr :side, :string, default: "right", values: ~w(top right bottom left)
+  attr :title, :string, default: nil
+  attr :description, :string, default: nil
+  attr :show_close_button, :boolean, default: true
+  attr :open, :boolean, default: false
+  # Native HTML `closedby` attribute (HTML Living Standard). Defaults to "any"
+  # so a backdrop click light-dismisses the drawer.
+  # See repos/mdn/files/en-us/web/api/htmldialogelement/closedby/index.md.
+  attr :closedby, :string, default: "any", values: ~w(any closerequest none)
+  attr :class, :string, default: nil
+
+  slot :inner_block, required: true
+
+  def sheet(assigns) do
+    assigns =
+      assigns
+      |> assign(:base, @sheet_base)
+      |> assign(:side_class, @sides[assigns.side])
+
+    ~H"""
+    <dialog
+      id={@id}
+      open={@open}
+      closedby={@closedby}
+      class={[@base, @side_class, @class]}
+      data-slot="sheet"
+      data-side={@side}
+      data-close-on-backdrop={@closedby != "any" && "true"}
+      aria-labelledby={"#{@id}-title"}
+      aria-describedby={"#{@id}-description"}
+    >
+      <div :if={@title || @description} data-slot="sheet-header" class="flex flex-col gap-1.5 text-left">
+        <h2 :if={@title} id={"#{@id}-title"} data-slot="sheet-title" class="text-lg leading-none font-semibold">{@title}</h2>
+        <p :if={@description} id={"#{@id}-description"} data-slot="sheet-description" class="text-sm text-muted-foreground">{@description}</p>
+      </div>
+      {render_slot(@inner_block)}
+      <button
+        :if={@show_close_button}
+        type="button"
+        data-dialog-close="true"
+        aria-label="Close"
+        class="absolute top-4 right-4 inline-flex size-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+          <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+        </svg>
+      </button>
+    </dialog>
+    """
+  end
+
+  attr :sheet_for, :string, required: true
+  attr :type, :string, default: "button"
+  attr :class, :string, default: nil
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def sheet_trigger(assigns) do
+    ~H"""
+    <button
+      type={@type}
+      class={@class}
+      data-dialog-trigger="true"
+      data-dialog-target={@sheet_for}
+      aria-haspopup="dialog"
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
+end

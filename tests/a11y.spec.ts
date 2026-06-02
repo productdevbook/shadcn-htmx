@@ -54,6 +54,18 @@ const SLUGS = [
   "treegrid",
   "splitter",
   "landmarks",
+  // tier-1
+  "form-field",
+  "file-upload",
+  "copy-button",
+  "date-time-picker",
+  "sheet",
+  "hover-card",
+  "active-search",
+  "edit-in-place",
+  "load-more",
+  "skip-link",
+  "theme-toggle",
 ]
 
 for (const slug of SLUGS) {

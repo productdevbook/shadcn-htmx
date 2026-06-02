@@ -1,0 +1,82 @@
+<!--
+  shadcn-htmx — raw Form Field snippets.
+
+  Mirrors registry/ui/form-field.tsx. Drop these onto any page that loads
+  Tailwind CSS v4 and the shadcn theme variables (foreground, muted-foreground,
+  input, ring, destructive). The label's `for`, the control's
+  aria-describedby, and aria-invalid are wired by hand here — keep the ids in
+  sync. Error styling rides on the native :user-invalid pseudo so the field
+  only turns red AFTER the user interacts + attempts submit. No JS required.
+
+  Built on <fieldset>/<legend>, Constraint Validation + :user-invalid, and
+  aria-describedby. See:
+    repos/mdn/files/en-us/web/html/reference/elements/fieldset/index.md
+    repos/mdn/files/en-us/web/css/reference/selectors/_colon_user-invalid/index.md
+    repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-describedby/index.md
+
+  The :user-invalid hook (drives the label red, pure CSS):
+    [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive
+-->
+
+<!-- ─── Single field — label + input + description ─────────────────────── -->
+<div data-slot="form-field"
+     class="grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive">
+  <label for="ff-email" data-slot="form-field-label"
+         class="flex items-center gap-2 text-sm leading-none font-medium select-none data-[invalid=true]:text-destructive peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+    Email
+  </label>
+  <input id="ff-email" name="email" type="email" required autocomplete="email"
+         placeholder="you@example.com" data-slot="input"
+         aria-describedby="ff-email-description"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 user-invalid:border-destructive">
+  <p id="ff-email-description" class="text-sm text-muted-foreground" data-slot="form-field-description">
+    We'll never share it.
+  </p>
+</div>
+
+<!-- ─── Invalid field — server-known error (data-invalid + role=alert) ──── -->
+<div data-slot="form-field" data-invalid="true"
+     class="grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive">
+  <label for="ff-name" data-slot="form-field-label" data-invalid="true" data-required="true"
+         class="flex items-center gap-2 text-sm leading-none font-medium select-none data-[invalid=true]:text-destructive peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+    Full name<span class="text-destructive" aria-hidden="true">*</span>
+  </label>
+  <input id="ff-name" name="name" type="text" value="" aria-invalid="true" aria-required="true"
+         aria-describedby="ff-name-error" data-slot="input"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40">
+  <p id="ff-name-error" role="alert" aria-live="assertive" class="text-sm font-medium text-destructive" data-slot="form-field-error">
+    Name is required.
+  </p>
+</div>
+
+<!-- ─── Fieldset group — multiple controls under one legend ────────────── -->
+<fieldset data-slot="form-field"
+          class="grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive min-w-0 border-0 p-0">
+  <legend data-slot="form-field-legend"
+          class="text-sm leading-none font-medium select-none float-none mb-1 data-[invalid=true]:text-destructive">
+    Notification method
+  </legend>
+  <label class="flex items-center gap-2 text-sm font-medium">
+    <input type="radio" name="notify" value="email" class="size-4" required> Email
+  </label>
+  <label class="flex items-center gap-2 text-sm font-medium">
+    <input type="radio" name="notify" value="sms" class="size-4"> SMS
+  </label>
+  <p class="text-sm text-muted-foreground" data-slot="form-field-description">
+    Choose how we reach you.
+  </p>
+</fieldset>
+
+<!-- ─── htmx — validate on blur, swap the whole field ──────────────────── -->
+<!-- The server returns the same field markup, flipping aria-invalid + the
+     error <p> in one outerHTML swap. -->
+<div id="ff-htmx" data-slot="form-field"
+     class="grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive">
+  <label for="ff-htmx-email" data-slot="form-field-label"
+         class="flex items-center gap-2 text-sm leading-none font-medium select-none data-[invalid=true]:text-destructive">
+    Email (checked on blur)
+  </label>
+  <input id="ff-htmx-email" name="email" type="email" placeholder="you@example.com" data-slot="input"
+         hx-post="/api/validate-email" hx-trigger="blur" hx-target="#ff-htmx" hx-swap="outerHTML"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 [&.htmx-request]:opacity-70">
+</div>

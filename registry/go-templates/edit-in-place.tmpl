@@ -1,0 +1,110 @@
+{{/*
+  Edit In Place templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/edit-in-place.tsx for Go projects using html/template.
+
+  The canonical htmx editable record: a read-only view with an Edit button
+  that swaps in a pre-filled form. Save = PUT, Cancel re-GETs the view. No
+  modal, no custom JS — the whole thing rides on outerHTML swaps over REST.
+  See repos/htmx/www/src/content/patterns/03-records/04-edit-in-place.md.
+
+  Two templates:
+    - "edit_in_place"      — the read-only view (GET /users/1 returns this).
+    - "edit_in_place_form" — the pre-filled editor (GET /users/1/edit).
+
+  Field struct shared by both:
+
+      type EipField struct {
+          Label    string // "Email"
+          Value    string // current value (shown in view, prefilled in editor)
+          Name     string // form field name (required in the editor)
+          Type     string // input type (default "text")
+          Required bool
+      }
+
+  View args:
+
+      type EipArgs struct {
+          ID        string
+          EditHref  string       // GET endpoint returning the editor
+          EditLabel string       // default "Edit"
+          Fields    []EipField
+      }
+      tpl.ExecuteTemplate(w, "edit_in_place", EipArgs{
+          ID: "user", EditHref: "/users/1/edit",
+          Fields: []EipField{
+              {Label: "Name", Value: "Joe Smith"},
+              {Label: "Email", Value: "joe@smith.org", Type: "email"},
+          },
+      })
+
+  Editor args:
+
+      type EipFormArgs struct {
+          ID          string
+          PutHref     string     // PUT endpoint hit on Save
+          CancelHref  string     // GET endpoint restoring the view on Cancel
+          SaveLabel   string     // default "Save"
+          CancelLabel string     // default "Cancel"
+          Fields      []EipField
+      }
+
+  hx-target="this" + hx-swap="outerHTML" on each root mean every descendant
+  request replaces the whole element in place.
+*/}}
+
+{{define "edit_in_place"}}
+{{- $container := "flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm" -}}
+{{- $term := "text-xs font-medium tracking-wide text-muted-foreground uppercase" -}}
+{{- $value := "mt-0.5 text-sm font-medium text-foreground" -}}
+{{- $editBtn := "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -}}
+{{- $editLabel := or .EditLabel "Edit" -}}
+<div data-slot="edit-in-place" data-mode="view"
+     {{- if .ID}} id="{{.ID}}"{{end}}
+     hx-target="this" hx-swap="outerHTML"
+     class="{{$container}}">
+  <dl class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    {{- range .Fields}}
+    <div>
+      <dt class="{{$term}}">{{.Label}}</dt>
+      <dd class="{{$value}}">{{.Value}}</dd>
+    </div>
+    {{- end}}
+  </dl>
+  <div class="flex">
+    <button type="button" data-slot="edit-in-place-edit" hx-get="{{.EditHref}}" hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML" class="{{$editBtn}}">{{$editLabel}}</button>
+  </div>
+</div>
+{{end}}
+
+{{define "edit_in_place_form"}}
+{{- $container := "flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-5 text-card-foreground shadow-sm" -}}
+{{- $label := "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-xs font-medium tracking-wide text-muted-foreground uppercase" -}}
+{{- $input := "flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70" -}}
+{{- $saveBtn := "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-primary text-primary-foreground hover:bg-primary/90 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -}}
+{{- $cancelBtn := "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5" -}}
+{{- $saveLabel := or .SaveLabel "Save" -}}
+{{- $cancelLabel := or .CancelLabel "Cancel" -}}
+{{- $id := or .ID "field" -}}
+<form data-slot="edit-in-place" data-mode="edit"
+      {{- if .ID}} id="{{.ID}}"{{end}}
+      hx-put="{{.PutHref}}" hx-target="this" hx-swap="outerHTML"
+      class="{{$container}}">
+  <div class="flex flex-col gap-3" data-slot="edit-in-place-fields">
+    {{- range .Fields}}
+    {{- $name := .Name}}
+    {{- $fieldId := printf "%s-%s" $id $name}}
+    <div class="grid gap-1.5">
+      <label for="{{$fieldId}}" class="{{$label}}">{{.Label}}</label>
+      <input id="{{$fieldId}}" name="{{$name}}" type="{{or .Type "text"}}"
+             value="{{.Value}}"
+             {{- if .Required}} required{{end}}
+             data-slot="input" class="{{$input}}">
+    </div>
+    {{- end}}
+  </div>
+  <div class="flex gap-2">
+    <button type="submit" data-slot="edit-in-place-save" class="{{$saveBtn}}">{{$saveLabel}}</button>
+    <button type="button" data-slot="edit-in-place-cancel" hx-get="{{.CancelHref}}" hx-target="closest [data-slot='edit-in-place']" hx-swap="outerHTML" class="{{$cancelBtn}}">{{$cancelLabel}}</button>
+  </div>
+</form>
+{{end}}

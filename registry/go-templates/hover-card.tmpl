@@ -1,0 +1,41 @@
+{{/*
+  Hover Card templates — shadcn-htmx, htmx v4 + Tailwind v4.
+
+  A rich preview surface revealed on INTEREST (hover / focus / long-press) of a
+  trigger. Unlike Tooltip it MAY hold interactive content. Built on the native
+  Popover API interest-invoker mechanism — zero JS:
+    - the trigger carries `interestfor` pointing at the card's id;
+    - the card is `popover="hint"` (shows on interest, ESC-closeable, does not
+      light-dismiss `auto` popovers; falls back to `manual` when unsupported);
+    - the implicit anchor reference lets CSS `position-area` place the card.
+
+  Refs:
+    repos/mdn/files/en-us/web/api/popover_api/using_interest_invokers/index.md
+    repos/mdn/files/en-us/web/api/popover_api/index.md  (popover="hint")
+    repos/mdn/files/en-us/web/css/reference/properties/position-area/index.md
+
+      type HoverCardArgs struct {
+          ID, Side string
+          Body     template.HTML
+      }
+      type HoverCardTriggerArgs struct {
+          Label, CardFor, Href, Class, ID string
+      }
+*/}}
+
+{{define "hover_card"}}
+{{- $side := or .Side "bottom" -}}
+{{- $sides := dict "top" "anchor-hovercard-top" "bottom" "anchor-hovercard-bottom" "left" "anchor-hovercard-left" "right" "anchor-hovercard-right" -}}
+<div id="{{.ID}}" popover="hint" data-slot="hover-card" data-side="{{$side}}"
+     class="z-50 m-0 w-64 rounded-md border bg-popover p-4 text-sm text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{index $sides $side}}">
+  {{.Body}}
+</div>
+{{end}}
+
+{{define "hover_card_trigger"}}
+<a {{if .ID}}id="{{.ID}}"{{end}}
+   href="{{or .Href "#"}}"
+   interestfor="{{.CardFor}}"
+   data-slot="hover-card-trigger"
+   class="{{.Class}}">{{.Label}}</a>
+{{end}}

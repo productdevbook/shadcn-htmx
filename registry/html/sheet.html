@@ -1,0 +1,78 @@
+<!--
+  shadcn-htmx — raw HTML sheet snippet.
+
+  An edge-anchored slide-in drawer (left / right / top / bottom) built on the
+  native <dialog> element + .showModal(). Open/close is JS-driven because
+  <dialog> has no built-in trigger attribute; we lean on the same tiny script
+  that drives Dialog (see public/site.js), which listens for
+  data-dialog-trigger / data-dialog-close clicks.
+
+  Light dismiss (click the dim backdrop to close) is the NATIVE closedby="any"
+  attribute from the HTML Living Standard — no JS for that part. The browser
+  also handles ESC, focus trap, focus restoration and aria-modal.
+  See https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy
+
+  Minimal inline JS to copy alongside this snippet (open + close only; the
+  backdrop click is handled natively by closedby="any"):
+
+    <script>
+      document.addEventListener('click', (e) => {
+        const t = e.target.closest('[data-dialog-trigger]')
+        if (t) document.getElementById(t.dataset.dialogTarget)?.showModal()
+        const c = e.target.closest('[data-dialog-close]')
+        if (c) (c.closest('dialog')?.requestClose?.() ?? c.closest('dialog')?.close())
+      })
+    </script>
+-->
+
+<!-- Trigger button -->
+<button type="button"
+        data-dialog-trigger="true"
+        data-dialog-target="nav-sheet"
+        aria-haspopup="dialog"
+        class="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+  Open menu
+</button>
+
+<!-- The sheet itself (left-anchored drawer) -->
+<dialog id="nav-sheet"
+        data-slot="sheet"
+        data-side="left"
+        closedby="any"
+        aria-labelledby="nav-sheet-title"
+        aria-describedby="nav-sheet-description"
+        class="fixed z-50 m-0 flex flex-col gap-4 bg-background p-6 text-foreground shadow-lg outline-none hidden open:flex backdrop:bg-black/60 backdrop:backdrop-blur-sm inset-y-0 left-0 right-auto h-full w-3/4 max-w-sm border-r">
+
+  <div data-slot="sheet-header" class="flex flex-col gap-1.5 text-left">
+    <h2 id="nav-sheet-title" data-slot="sheet-title"
+        class="text-lg leading-none font-semibold">
+      Navigation
+    </h2>
+    <p id="nav-sheet-description" data-slot="sheet-description"
+       class="text-sm text-muted-foreground">
+      Jump to a section. Click outside or press Esc to close.
+    </p>
+  </div>
+
+  <div data-slot="sheet-body" class="flex-1 overflow-y-auto text-sm text-foreground">
+    <nav class="grid gap-1">
+      <a href="#overview" class="rounded-md px-2 py-1.5 hover:bg-accent">Overview</a>
+      <a href="#install" class="rounded-md px-2 py-1.5 hover:bg-accent">Installation</a>
+      <a href="#usage" class="rounded-md px-2 py-1.5 hover:bg-accent">Usage</a>
+    </nav>
+  </div>
+
+  <div data-slot="sheet-footer" class="mt-auto flex flex-col gap-2">
+    <button type="button" data-dialog-close="true"
+            class="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+      Close
+    </button>
+  </div>
+
+  <button type="button" data-dialog-close="true" aria-label="Close"
+          class="absolute top-4 right-4 inline-flex size-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </svg>
+  </button>
+</dialog>

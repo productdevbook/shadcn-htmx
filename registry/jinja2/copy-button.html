@@ -1,0 +1,73 @@
+{# Copy Button macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/copy-button.tsx so a Python/Flask/FastAPI/Django project
+   renders the same markup our docs site renders.
+
+   Click-to-copy: writes `value` (or the text of the element named by
+   copy_target) to the clipboard via the Async Clipboard API, then flips to a
+   transient "Copied" state announced through an empty aria-live region.
+
+   Built on navigator.clipboard.writeText() with a progressive-enhancement
+   fallback — see the shared behaviour shipped in site.js. Sources:
+     repos/mdn/files/en-us/web/api/clipboard/writetext/index.md
+     repos/web.dev/src/site/content/en/patterns/clipboard/copy-text/index.md
+     repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-live/index.md
+
+   Usage:
+       {% from "components/copy-button.html" import copy_button %}
+       {{ copy_button("npm i shadcn-htmx") }}
+       {{ copy_button(copy_target="api-key", size="icon", aria_label="Copy API key") }}
+
+   All hx-* attributes pass through via **attrs (underscores become dashes). #}
+
+{% macro copy_button(
+    value=none,
+    copy_target=none,
+    variant="outline",
+    size="default",
+    label="Copy",
+    copied_label="Copied",
+    aria_label=none,
+    live="polite",
+    disabled=false,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 [&[data-copied=true]]:text-emerald-600 dark:[&[data-copied=true]]:text-emerald-400 [&_[data-copy-check]]:hidden [&[data-copied=true]_[data-copy-icon]]:hidden [&[data-copied=true]_[data-copy-check]]:inline-flex
+{%- endset -%}
+
+{%- set variants = {
+    "outline": "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+    "ghost": "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+    "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+} -%}
+
+{%- set sizes = {
+    "default": "h-8 px-2.5",
+    "sm": "h-7 gap-1 px-2 text-xs [&_svg:not([class*='size-'])]:size-3",
+    "icon": "size-8 [&]:px-0"
+} -%}
+
+{%- set icon_only = (size == "icon") -%}
+
+<button type="button"
+        data-slot="copy-button" data-variant="{{ variant }}" data-size="{{ size }}"
+        {%- if value is not none %} data-copy-text="{{ value }}"{% endif %}
+        {%- if copy_target %} data-copy-target="{{ copy_target }}"{% endif %}
+        data-copied-label="{{ copied_label }}"
+        class="{{ base }} {{ variants[variant] }} {{ sizes[size] }} {{ extra_class }}"
+        {%- if disabled %} disabled{% endif %}
+        {%- if aria_label %} aria-label="{{ aria_label }}"{% elif icon_only %} aria-label="{{ label }}"{% endif %}
+        {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+  <svg data-copy-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+  </svg>
+  <svg data-copy-check xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+  {%- if not icon_only %}<span data-copy-label>{{ label }}</span>{% endif %}
+  <span class="sr-only" aria-live="{{ live }}" data-copy-status></span>
+</button>
+{% endmacro %}

@@ -812,6 +812,160 @@
         { "path": "registry/phoenix/landmarks.ex", "type": "registry:file", "target": "lib/my_app_web/components/landmarks.ex" },
         { "path": "registry/html/landmarks.html", "type": "registry:file", "target": "snippets/landmarks.html" }
       ]
+    },
+    {
+      "name": "form-field",
+      "type": "registry:ui",
+      "title": "Form Field",
+      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in five flavours; zero JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/form-field.tsx", "type": "registry:ui", "target": "components/ui/form-field.tsx" },
+        { "path": "registry/jinja2/form-field.html", "type": "registry:file", "target": "templates/components/form-field.html" },
+        { "path": "registry/go-templates/form-field.tmpl", "type": "registry:file", "target": "components/form-field.tmpl" },
+        { "path": "registry/phoenix/form_field.ex", "type": "registry:file", "target": "lib/my_app_web/components/form_field.ex" },
+        { "path": "registry/html/form-field.html", "type": "registry:file", "target": "snippets/form-field.html" }
+      ]
+    },
+    {
+      "name": "file-upload",
+      "type": "registry:ui",
+      "title": "File Upload",
+      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in five flavours.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/file-upload.tsx", "type": "registry:ui", "target": "components/ui/file-upload.tsx" },
+        { "path": "registry/jinja2/file-upload.html", "type": "registry:file", "target": "templates/components/file-upload.html" },
+        { "path": "registry/go-templates/file-upload.tmpl", "type": "registry:file", "target": "components/file-upload.tmpl" },
+        { "path": "registry/phoenix/file_upload.ex", "type": "registry:file", "target": "lib/my_app_web/components/file_upload.ex" },
+        { "path": "registry/html/file-upload.html", "type": "registry:file", "target": "snippets/file-upload.html" }
+      ]
+    },
+    {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy Button",
+      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/copy-button.tsx", "type": "registry:ui", "target": "components/ui/copy-button.tsx" },
+        { "path": "registry/jinja2/copy-button.html", "type": "registry:file", "target": "templates/components/copy-button.html" },
+        { "path": "registry/go-templates/copy-button.tmpl", "type": "registry:file", "target": "components/copy-button.tmpl" },
+        { "path": "registry/phoenix/copy_button.ex", "type": "registry:file", "target": "lib/my_app_web/components/copy_button.ex" },
+        { "path": "registry/html/copy-button.html", "type": "registry:file", "target": "snippets/copy-button.html" }
+      ]
+    },
+    {
+      "name": "date-time-picker",
+      "type": "registry:ui",
+      "title": "Date Time Picker",
+      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in five flavours.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/date-time-picker.tsx", "type": "registry:ui", "target": "components/ui/date-time-picker.tsx" },
+        { "path": "registry/jinja2/date-time-picker.html", "type": "registry:file", "target": "templates/components/date-time-picker.html" },
+        { "path": "registry/go-templates/date-time-picker.tmpl", "type": "registry:file", "target": "components/date-time-picker.tmpl" },
+        { "path": "registry/phoenix/date_time_picker.ex", "type": "registry:file", "target": "lib/my_app_web/components/date_time_picker.ex" },
+        { "path": "registry/html/date-time-picker.html", "type": "registry:file", "target": "snippets/date-time-picker.html" }
+      ]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Edge-anchored slide-in drawer (left/right/top/bottom) built on the native <dialog> + showModal(): focus trap, ESC, ::backdrop and aria-modal from the platform. Light dismiss via the native closedby=\"any\" attribute. Reuses Dialog's trigger/close wiring — zero new JS — and can stream its body in via htmx.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/sheet.tsx", "type": "registry:ui", "target": "components/ui/sheet.tsx" },
+        { "path": "registry/jinja2/sheet.html", "type": "registry:file", "target": "templates/components/sheet.html" },
+        { "path": "registry/go-templates/sheet.tmpl", "type": "registry:file", "target": "components/sheet.tmpl" },
+        { "path": "registry/phoenix/sheet.ex", "type": "registry:file", "target": "lib/my_app_web/components/sheet.ex" },
+        { "path": "registry/html/sheet.html", "type": "registry:file", "target": "snippets/sheet.html" }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "A rich interactive preview surface revealed when the user shows interest in a trigger (hover, keyboard focus, or long-press) — the interactive-content primitive Tooltip explicitly defers to. Built entirely on the native Popover API interest-invoker mechanism: the trigger carries interestfor and the card is popover=\"hint\", so the browser owns hover/focus reveal, ESC dismissal, and implicit-anchor positioning with zero JavaScript. Progressive enhancement: in browsers without interest invokers the trigger stays a working link/button and the card (falling back to popover=\"manual\") simply doesn't appear.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/hover-card.tsx", "type": "registry:ui", "target": "components/ui/hover-card.tsx" },
+        { "path": "registry/jinja2/hover-card.html", "type": "registry:file", "target": "templates/components/hover-card.html" },
+        { "path": "registry/go-templates/hover-card.tmpl", "type": "registry:file", "target": "components/hover-card.tmpl" },
+        { "path": "registry/phoenix/hover_card.ex", "type": "registry:file", "target": "lib/my_app_web/components/hover_card.ex" },
+        { "path": "registry/html/hover-card.html", "type": "registry:file", "target": "snippets/hover-card.html" }
+      ]
+    },
+    {
+      "name": "active-search",
+      "type": "registry:ui",
+      "title": "Active Search",
+      "description": "A debounced live-search box (native <form role=\"search\"> + <input type=\"search\">) that filters an external results list/table as you type, with an inline loading indicator and stale-request cancellation. Submits as a normal GET search on Enter with zero JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/active-search.tsx", "type": "registry:ui", "target": "components/ui/active-search.tsx" },
+        { "path": "registry/jinja2/active-search.html", "type": "registry:file", "target": "templates/components/active-search.html" },
+        { "path": "registry/go-templates/active-search.tmpl", "type": "registry:file", "target": "components/active-search.tmpl" },
+        { "path": "registry/phoenix/active_search.ex", "type": "registry:file", "target": "lib/my_app_web/components/active_search.ex" },
+        { "path": "registry/html/active-search.html", "type": "registry:file", "target": "snippets/active-search.html" }
+      ]
+    },
+    {
+      "name": "edit-in-place",
+      "type": "registry:ui",
+      "title": "Edit In Place",
+      "description": "A read-only record view with an Edit affordance that swaps in a pre-filled form. Save issues a PUT and the server returns the updated view; Cancel re-fetches the view. The canonical htmx editable primitive — built entirely on outerHTML swaps over REST, no modal, no custom JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/edit-in-place.tsx", "type": "registry:ui", "target": "components/ui/edit-in-place.tsx" },
+        { "path": "registry/jinja2/edit-in-place.html", "type": "registry:file", "target": "templates/components/edit-in-place.html" },
+        { "path": "registry/go-templates/edit-in-place.tmpl", "type": "registry:file", "target": "components/edit-in-place.tmpl" },
+        { "path": "registry/phoenix/edit_in_place.ex", "type": "registry:file", "target": "lib/my_app_web/components/edit_in_place.ex" },
+        { "path": "registry/html/edit-in-place.html", "type": "registry:file", "target": "snippets/edit-in-place.html" }
+      ]
+    },
+    {
+      "name": "load-more",
+      "type": "registry:ui",
+      "title": "Load More",
+      "description": "A self-replacing pagination trigger. Click a button or scroll a sentinel into view; htmx appends the next page and swaps in a fresh trigger via hx-swap=\"outerHTML\". When the server omits the trigger, the chain ends. The click mode is a real <button> so it works without JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/load-more.tsx", "type": "registry:ui", "target": "components/ui/load-more.tsx" },
+        { "path": "registry/jinja2/load-more.html", "type": "registry:file", "target": "templates/components/load-more.html" },
+        { "path": "registry/go-templates/load-more.tmpl", "type": "registry:file", "target": "components/load-more.tmpl" },
+        { "path": "registry/phoenix/load_more.ex", "type": "registry:file", "target": "lib/my_app_web/components/load_more.ex" },
+        { "path": "registry/html/load-more.html", "type": "registry:file", "target": "snippets/load-more.html" }
+      ]
+    },
+    {
+      "name": "skip-link",
+      "type": "registry:ui",
+      "title": "Skip Link",
+      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/skip-link.tsx", "type": "registry:ui", "target": "components/ui/skip-link.tsx" },
+        { "path": "registry/jinja2/skip-link.html", "type": "registry:file", "target": "templates/components/skip-link.html" },
+        { "path": "registry/go-templates/skip-link.tmpl", "type": "registry:file", "target": "components/skip-link.tmpl" },
+        { "path": "registry/phoenix/skip_link.ex", "type": "registry:file", "target": "lib/my_app_web/components/skip_link.ex" },
+        { "path": "registry/html/skip-link.html", "type": "registry:file", "target": "snippets/skip-link.html" }
+      ]
+    },
+    {
+      "name": "theme-toggle",
+      "type": "registry:ui",
+      "title": "Theme Toggle",
+      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/theme-toggle.tsx", "type": "registry:ui", "target": "components/ui/theme-toggle.tsx" },
+        { "path": "registry/jinja2/theme-toggle.html", "type": "registry:file", "target": "templates/components/theme-toggle.html" },
+        { "path": "registry/go-templates/theme-toggle.tmpl", "type": "registry:file", "target": "components/theme-toggle.tmpl" },
+        { "path": "registry/phoenix/theme_toggle.ex", "type": "registry:file", "target": "lib/my_app_web/components/theme_toggle.ex" },
+        { "path": "registry/html/theme-toggle.html", "type": "registry:file", "target": "snippets/theme-toggle.html" }
+      ]
     }
   ]
 }

@@ -46,6 +46,18 @@ import { treegridRoutes } from "@/app/routes/treegrid"
 import { splitterRoutes } from "@/app/routes/splitter"
 import { landmarksRoutes } from "@/app/routes/landmarks"
 
+import { formFieldRoutes } from "@/app/routes/form-field"
+import { fileUploadRoutes } from "@/app/routes/file-upload"
+import { copyButtonRoutes } from "@/app/routes/copy-button"
+import { dateTimePickerRoutes } from "@/app/routes/date-time-picker"
+import { sheetRoutes } from "@/app/routes/sheet"
+import { hoverCardRoutes } from "@/app/routes/hover-card"
+import { activeSearchRoutes } from "@/app/routes/active-search"
+import { editInPlaceRoutes } from "@/app/routes/edit-in-place"
+import { loadMoreRoutes } from "@/app/routes/load-more"
+import { skipLinkRoutes } from "@/app/routes/skip-link"
+import { themeToggleRoutes } from "@/app/routes/theme-toggle"
+
 const app = new Hono()
 
 // Default 404 for /favicon.ico so it doesn't show as a noisy console error
@@ -101,6 +113,17 @@ app.route("/docs/grid", gridRoutes)
 app.route("/docs/treegrid", treegridRoutes)
 app.route("/docs/splitter", splitterRoutes)
 app.route("/docs/landmarks", landmarksRoutes)
+app.route("/docs/form-field", formFieldRoutes)
+app.route("/docs/file-upload", fileUploadRoutes)
+app.route("/docs/copy-button", copyButtonRoutes)
+app.route("/docs/date-time-picker", dateTimePickerRoutes)
+app.route("/docs/sheet", sheetRoutes)
+app.route("/docs/hover-card", hoverCardRoutes)
+app.route("/docs/active-search", activeSearchRoutes)
+app.route("/docs/edit-in-place", editInPlaceRoutes)
+app.route("/docs/load-more", loadMoreRoutes)
+app.route("/docs/skip-link", skipLinkRoutes)
+app.route("/docs/theme-toggle", themeToggleRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -148,6 +171,18 @@ app.route("/treegrid", treegridRoutes)
 app.route("/splitter", splitterRoutes)
 app.route("/landmarks", landmarksRoutes)
 
+app.route("/form-field", formFieldRoutes)
+app.route("/file-upload", fileUploadRoutes)
+app.route("/copy-button", copyButtonRoutes)
+app.route("/date-time-picker", dateTimePickerRoutes)
+app.route("/sheet", sheetRoutes)
+app.route("/hover-card", hoverCardRoutes)
+app.route("/active-search", activeSearchRoutes)
+app.route("/edit-in-place", editInPlaceRoutes)
+app.route("/load-more", loadMoreRoutes)
+app.route("/skip-link", skipLinkRoutes)
+app.route("/theme-toggle", themeToggleRoutes)
+
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
 // Homepage component index. Mirrors the categories in app/components/docs-sidebar.tsx —
@@ -156,6 +191,11 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Forms",
     items: [
+      { label: "Form Field", href: "/docs/form-field", blurb: "Field-row wrapper composing label, control, description, and error — auto-wiring aria-describedby and a native :user-invalid styling hook. Plus a fieldset/legend group variant. Zero JS." },
+      { label: "File Upload", href: "/docs/file-upload", blurb: "Drag-and-drop or click to pick files — a native file input with previews and a multipart upload bar." },
+      { label: "Date Time Picker", href: "/docs/date-time-picker", blurb: "Native date, time, datetime-local, month and week fields with min/max/step constraints and normalized values — a web-standards date/time picker with no JS calendar library." },
+      { label: "Active Search", href: "/docs/active-search", blurb: "Debounced live-search box that filters a results list as you type — inline spinner, stale-request cancellation, and a no-JS Enter fallback." },
+      { label: "Edit In Place", href: "/docs/edit-in-place", blurb: "Read-only record that swaps to a pre-filled form; Save PUTs, Cancel re-fetches." },
       { label: "Button", href: "/docs/button", blurb: "Six variants, four sizes, toggle + htmx hooks." },
       { label: "Input", href: "/docs/input", blurb: "Native types, ARIA-invalid, htmx live search." },
       { label: "Textarea", href: "/docs/textarea", blurb: "Auto-resize via field-sizing, htmx autosave." },
@@ -187,6 +227,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Display",
     items: [
+      { label: "Copy Button", href: "/docs/copy-button", blurb: "Click-to-copy button built on the Async Clipboard API with a progressive-enhancement fallback. Flips to a transient aria-live \"Copied\" state. The docs code-block is a consumer." },
       { label: "Avatar", href: "/docs/avatar", blurb: "Image with text/icon fallback on 404." },
       { label: "Badge", href: "/docs/badge", blurb: "Six variants; renders span or anchor." },
       { label: "Separator", href: "/docs/separator", blurb: "Decorative or semantic divider." },
@@ -207,6 +248,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Overlays",
     items: [
+      { label: "Sheet", href: "/docs/sheet", blurb: "Edge-anchored drawer on native <dialog> — focus trap, ESC, light dismiss." },
+      { label: "Hover Card", href: "/docs/hover-card", blurb: "Rich preview card on hover/focus — interactive content, zero JS, native interest invokers." },
       { label: "Dialog", href: "/docs/dialog", blurb: "Native <dialog>: focus trap, ESC, backdrop." },
       { label: "Dropdown Menu", href: "/docs/dropdown-menu", blurb: "Popover API + APG menu keyboard contract." },
       { label: "Popover", href: "/docs/popover", blurb: "Native Popover API, light dismiss + ESC." },
@@ -217,6 +260,9 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Navigation",
     items: [
+      { label: "Load More", href: "/docs/load-more", blurb: "Self-replacing pagination — button or scroll sentinel, zero JS." },
+      { label: "Skip Link", href: "/docs/skip-link", blurb: "Skip Link — a visually-hidden-until-focused \"Skip to main content\" link, the first focusable element on the page, jumping keyboard focus to the main landmark. Native <a href=\"#main\"> + CSS focus reveal, zero JS." },
+      { label: "Theme Toggle", href: "/docs/theme-toggle", blurb: "Theme Toggle — light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default, persists an explicit override in a cookie for a no-flash server render, and ships as a native radiogroup with full keyboard support." },
       { label: "Accordion", href: "/docs/accordion", blurb: "Native details/summary, exclusive via name." },
       { label: "Pagination", href: "/docs/pagination", blurb: "nav landmark, aria-current on active page." },
       { label: "Tabs", href: "/docs/tabs", blurb: "role=tab, arrow / Home / End contract." },

@@ -1,0 +1,66 @@
+<!--
+  shadcn-htmx — raw Date Time Picker snippets.
+
+  Mirrors registry/ui/date-time-picker.tsx. Drop onto any page that loads
+  Tailwind CSS v4 and the shadcn theme variables (background, foreground, input,
+  ring, destructive, primary). See app/styles/input.css for the defaults.
+
+  The control is a native <input type="date|time|datetime-local|month|week">.
+  The browser ships the picker UI, segment editing, locale-aware display and
+  constraint validation (min/max/step/required). The submitted value is always
+  normalised regardless of how it is displayed:
+    date           → yyyy-mm-dd
+    time           → HH:mm or HH:mm:ss
+    datetime-local → yyyy-mm-ddTHH:mm
+    month          → YYYY-MM
+    week           → yyyy-Www  (ISO 8601 week number)
+  No JavaScript — this is a zero-script component.
+
+  BASE (shared by every variant):
+    flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent
+    px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none
+    selection:bg-primary selection:text-primary-foreground
+    placeholder:text-muted-foreground
+    disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50
+    md:text-sm dark:bg-input/30
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70
+    [&::-webkit-calendar-picker-indicator]:cursor-pointer
+    [&::-webkit-calendar-picker-indicator]:opacity-60
+    [&::-webkit-calendar-picker-indicator]:hover:opacity-100
+    dark:[&::-webkit-calendar-picker-indicator]:invert
+    [&::-webkit-datetime-edit]:px-0
+    [&::-webkit-datetime-edit-fields-wrapper]:px-0
+-->
+
+<!-- ─── Date — value normalises to yyyy-mm-dd ───────────────────────── -->
+<input type="date" name="bday" min="1900-01-01" max="2026-12-31" data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0">
+
+<!-- ─── Time — step="900" snaps to 15-minute slots (seconds units) ──── -->
+<input type="time" name="slot" min="09:00" max="18:00" step="900" required data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0">
+
+<!-- ─── Datetime-local — value normalises to yyyy-mm-ddTHH:mm ───────── -->
+<input type="datetime-local" name="start" data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0">
+
+<!-- ─── Month — value normalises to YYYY-MM ─────────────────────────── -->
+<input type="month" name="period" data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0">
+
+<!-- ─── Week — value normalises to yyyy-Www (ISO 8601) ──────────────── -->
+<input type="week" name="reporting-week" data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-datetime-edit]:px-0 [&::-webkit-datetime-edit-fields-wrapper]:px-0">
+
+<!-- ─── Invalid — pair with an error message via aria-describedby ───── -->
+<div>
+  <input type="date" name="bday" aria-invalid="true" aria-describedby="bday-error" data-slot="date-time-picker"
+    class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert">
+  <p id="bday-error" class="mt-1 text-sm text-destructive">Choose a date in the past.</p>
+</div>
+
+<!-- ─── Disabled — also removes from tab order ──────────────────────── -->
+<input type="date" value="2026-06-02" disabled data-slot="date-time-picker"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30">

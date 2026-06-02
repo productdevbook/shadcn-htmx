@@ -1,0 +1,131 @@
+<!--
+  shadcn-htmx — raw HTML theme-toggle snippet.
+
+  Mirrors registry/ui/theme-toggle.tsx. A light / dark / system colour-scheme
+  switcher rendered as a native radio group (one <input type="radio"> per
+  choice, grouped by name). Native arrow-key roving focus, single selection,
+  and aria-checked come for free.
+
+  Built on web standards (modelled on, NOT copied from):
+    - prefers-color-scheme media feature — the "system" default:
+        https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
+    - color-scheme property — native controls + scrollbars follow the theme.
+    - cookie persistence + a synchronous pre-paint boot script so there's no
+      flash of the wrong colours, adapted from the web.dev theming patterns
+      (theme-switch / color-schemes — those use localStorage; we use a cookie
+      so a server can read it and render `.dark` up front).
+
+  Requirements:
+    1. Tailwind CSS v4 with class-based dark mode (`.dark` on <html>):
+         @custom-variant dark (&:is(.dark *));
+    2. The shadcn CSS variables (:root + .dark blocks) from
+       app/styles/input.css.
+
+  GROUP base:
+    inline-flex items-center gap-0.5 rounded-md border bg-muted p-0.5
+    text-muted-foreground shadow-xs
+    aria-disabled:pointer-events-none aria-disabled:opacity-50
+  ITEM base (the visible chip — the real radio is a visually-hidden peer):
+    relative inline-flex size-7 cursor-pointer items-center justify-center
+    rounded-[5px] outline-none transition-colors
+    peer-hover:bg-background/60 peer-hover:text-foreground
+    peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-xs
+    peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50
+    peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+    [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0
+
+  NO-FLASH: put this snippet in <head>, BEFORE your stylesheet, so the cookie
+  is read and `.dark` is applied before the first paint.
+-->
+
+<!--
+  1. Pre-paint boot — runs synchronously in <head>. Reads the `theme` cookie
+     ("system" | "light" | "dark"; default "system") and applies `.dark` to
+     <html> so the page never flashes the wrong colours.
+-->
+<script>
+  (function () {
+    try {
+      var m = document.cookie.match(/(?:^|;\s*)theme=(system|light|dark)/)
+      var choice = m ? m[1] : 'system'
+      var dark =
+        choice === 'dark' ||
+        (choice === 'system' &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.classList.toggle('dark', dark)
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+    } catch (e) {}
+  })()
+</script>
+
+<!-- 2. The control. data-value is the server-resolved current choice. -->
+<div role="radiogroup" aria-label="Colour theme"
+     data-slot="theme-toggle" data-name="theme" data-value="system"
+     class="inline-flex items-center gap-0.5 rounded-md border bg-muted p-0.5 text-muted-foreground shadow-xs aria-disabled:pointer-events-none aria-disabled:opacity-50">
+
+  <span class="relative inline-flex">
+    <input type="radio" id="theme-toggle-system" name="theme" value="system" checked
+           class="peer sr-only" data-slot="theme-toggle-item">
+    <label for="theme-toggle-system" data-slot="theme-toggle-label" title="System"
+           class="relative inline-flex size-7 cursor-pointer items-center justify-center rounded-[5px] outline-none transition-colors peer-hover:bg-background/60 peer-hover:text-foreground peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-xs peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+      <span class="sr-only">System</span>
+    </label>
+  </span>
+
+  <span class="relative inline-flex">
+    <input type="radio" id="theme-toggle-light" name="theme" value="light"
+           class="peer sr-only" data-slot="theme-toggle-item">
+    <label for="theme-toggle-light" data-slot="theme-toggle-label" title="Light"
+           class="relative inline-flex size-7 cursor-pointer items-center justify-center rounded-[5px] outline-none transition-colors peer-hover:bg-background/60 peer-hover:text-foreground peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-xs peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      <span class="sr-only">Light</span>
+    </label>
+  </span>
+
+  <span class="relative inline-flex">
+    <input type="radio" id="theme-toggle-dark" name="theme" value="dark"
+           class="peer sr-only" data-slot="theme-toggle-item">
+    <label for="theme-toggle-dark" data-slot="theme-toggle-label" title="Dark"
+           class="relative inline-flex size-7 cursor-pointer items-center justify-center rounded-[5px] outline-none transition-colors peer-hover:bg-background/60 peer-hover:text-foreground peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-xs peer-focus-visible:ring-[3px] peer-focus-visible:ring-ring/50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      <span class="sr-only">Dark</span>
+    </label>
+  </span>
+</div>
+
+<!--
+  3. Behaviour — on change, write the cookie and re-apply the theme. Keeps a
+     "system" listener so the page tracks the OS when no explicit override is
+     chosen. (In the docs site this lives in a shared site.js; inlined here so
+     the snippet is self-contained.)
+-->
+<script>
+  (function () {
+    var root = document.querySelector('[data-slot="theme-toggle"]')
+    if (!root) return
+    var media = window.matchMedia('(prefers-color-scheme: dark)')
+
+    function apply(choice) {
+      var dark = choice === 'dark' || (choice === 'system' && media.matches)
+      document.documentElement.classList.toggle('dark', dark)
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+    }
+    function setCookie(choice) {
+      document.cookie =
+        'theme=' + choice + ';path=/;max-age=31536000;samesite=lax'
+    }
+
+    root.addEventListener('change', function (e) {
+      var t = e.target
+      if (!t || t.getAttribute('data-slot') !== 'theme-toggle-item') return
+      root.setAttribute('data-value', t.value)
+      setCookie(t.value)
+      apply(t.value)
+    })
+
+    media.addEventListener('change', function () {
+      if (root.getAttribute('data-value') === 'system') apply('system')
+    })
+  })()
+</script>

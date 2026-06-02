@@ -1,0 +1,81 @@
+{{/*
+  Copy Button template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/copy-button.tsx for Go projects using html/template.
+
+  Click-to-copy: writes Value (or the text of the element named by CopyTarget)
+  to the clipboard via the Async Clipboard API, then flips to a transient
+  "Copied" state announced through an empty aria-live region. The shared
+  behaviour ships in site.js. Sources:
+    repos/mdn/files/en-us/web/api/clipboard/writetext/index.md
+    repos/web.dev/src/site/content/en/patterns/clipboard/copy-text/index.md
+    repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-live/index.md
+
+  Usage:
+
+      type CopyButtonArgs struct {
+          Value       string            // text written to the clipboard
+          CopyTarget  string            // OR: id of element whose text to copy
+          Variant     string            // outline | ghost | secondary
+          Size        string            // default | sm | icon
+          Label       string            // visible label (default "Copy")
+          CopiedLabel string            // success label (default "Copied")
+          AriaLabel   string            // required for size="icon"
+          Live        string            // polite | assertive
+          Disabled    bool
+          Attrs       map[string]string // hx-*, data-*, …
+      }
+
+      tpl.ExecuteTemplate(w, "copy-button", CopyButtonArgs{
+          Value: "npm i shadcn-htmx",
+      })
+
+  Native <button> → role + Space/Enter activation come for free.
+  See repos/aria-practices/content/patterns/button/.
+*/}}
+
+{{define "copy-button"}}
+{{- $variants := dict
+    "outline" "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
+    "ghost" "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
+    "secondary" "bg-secondary text-secondary-foreground hover:bg-secondary/80" -}}
+{{- $sizes := dict
+    "default" "h-8 px-2.5"
+    "sm" "h-7 gap-1 px-2 text-xs [&_svg:not([class*='size-'])]:size-3"
+    "icon" "size-8 [&]:px-0" -}}
+{{- $variant := or .Variant "outline" -}}
+{{- $size := or .Size "default" -}}
+{{- $label := or .Label "Copy" -}}
+{{- $copiedLabel := or .CopiedLabel "Copied" -}}
+{{- $live := or .Live "polite" -}}
+{{- $iconOnly := eq $size "icon" -}}
+{{- $base := "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 [&[data-copied=true]]:text-emerald-600 dark:[&[data-copied=true]]:text-emerald-400 [&_[data-copy-check]]:hidden [&[data-copied=true]_[data-copy-icon]]:hidden [&[data-copied=true]_[data-copy-check]]:inline-flex" -}}
+<button type="button"
+        data-slot="copy-button" data-variant="{{$variant}}" data-size="{{$size}}"
+        {{- if .Value}} data-copy-text="{{.Value}}"{{end}}
+        {{- if .CopyTarget}} data-copy-target="{{.CopyTarget}}"{{end}}
+        data-copied-label="{{$copiedLabel}}"
+        class="{{$base}} {{index $variants $variant}} {{index $sizes $size}}"
+        {{- if .Disabled}} disabled{{end}}
+        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{else if $iconOnly}} aria-label="{{$label}}"{{end}}
+        {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+  <svg data-copy-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+  </svg>
+  <svg data-copy-check xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+  {{- if not $iconOnly}}<span data-copy-label>{{$label}}</span>{{end}}
+  <span class="sr-only" aria-live="{{$live}}" data-copy-status></span>
+</button>
+{{end}}
+
+{{/*
+  Note: this template uses sprig's `dict` helper. If you don't use sprig,
+  hard-code the class lookup or pass the class string from Go:
+
+      args.Class = computeCopyButtonClass(args.Variant, args.Size)
+
+  and reference {{.Class}} directly in the template.
+*/}}

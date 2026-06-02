@@ -25,6 +25,8 @@ const SLUGS = [
   "listbox", "menubar", "tree", "carousel", "feed", "grid", "treegrid", "splitter",
   // Landmarks (page-shell)
   "landmarks",
+  // tier-1
+  "form-field", "file-upload", "copy-button", "date-time-picker", "sheet", "hover-card", "active-search", "edit-in-place", "load-more", "skip-link", "theme-toggle",
 ]
 
 // Console "error" lines that aren't our fault (network/resource fetches).

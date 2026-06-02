@@ -1,0 +1,85 @@
+{{/*
+  Form Field templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/form-field.tsx for Go projects using html/template.
+
+  A field row composes a <label>, a control slot, an optional description, and
+  an optional error. The label's `for`, and the control's aria-describedby /
+  aria-invalid, are wired from the id you pass. Error styling rides on the
+  native :user-invalid pseudo-class. Because html/template has no caller-block
+  syntax, hand the control HTML in via .Control (template.HTML).
+
+  Usage in your handler:
+
+      type FormFieldArgs struct {
+          For         string        // id of the control inside .Control
+          Label       string
+          Description string
+          Error       string        // non-empty => invalid
+          Invalid     bool          // force invalid even without a message
+          Required    bool
+          Control     template.HTML // the <input>/<select>/… markup
+      }
+
+      tpl.ExecuteTemplate(w, "form-field", FormFieldArgs{
+          For: "email", Label: "Email",
+          Description: "We'll never share it.",
+          Error: errs["email"],
+          Control: template.HTML(`<input id="email" name="email" type="email"
+              aria-describedby="email-description email-error" …>`),
+      })
+
+  Built on <fieldset>/<legend>, Constraint Validation + :user-invalid, and
+  aria-describedby. See:
+    repos/mdn/files/en-us/web/html/reference/elements/fieldset/index.md
+    repos/mdn/files/en-us/web/css/reference/selectors/_colon_user-invalid/index.md
+    repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-describedby/index.md
+*/}}
+
+{{define "form-field"}}
+{{- $invalid := or .Invalid (ne (or .Error "") "") -}}
+{{- $base := "grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive" -}}
+<div class="{{$base}}" data-slot="form-field"{{if $invalid}} data-invalid="true"{{end}}>
+  {{- if .Label}}
+  <label class="flex items-center gap-2 text-sm leading-none font-medium select-none data-[invalid=true]:text-destructive peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+         {{- if .For}} for="{{.For}}"{{end}} data-slot="form-field-label"{{if $invalid}} data-invalid="true"{{end}}{{if .Required}} data-required="true"{{end}}>{{.Label}}{{if .Required}}<span class="text-destructive" aria-hidden="true">*</span>{{end}}</label>
+  {{- end}}
+  {{- if .Control}}{{htmlSafe .Control}}{{end}}
+  {{- if .Description}}
+  <p {{if .For}}id="{{.For}}-description" {{end}}class="text-sm text-muted-foreground" data-slot="form-field-description">{{.Description}}</p>
+  {{- end}}
+  {{- if and $invalid (ne (or .Error "") "")}}
+  <p {{if .For}}id="{{.For}}-error" {{end}}role="alert" aria-live="assertive" class="text-sm font-medium text-destructive" data-slot="form-field-error">{{.Error}}</p>
+  {{- end}}
+</div>
+{{end}}
+
+{{/*
+  Group variant — multiple controls under one <legend>. `Disabled` disables
+  every descendant control natively. Point group controls at
+  "<ID>-description <ID>-error" via their own aria-describedby.
+
+      tpl.ExecuteTemplate(w, "form-fieldset", FormFieldsetArgs{
+          ID: "plan", Legend: "Plan", Error: errs["plan"],
+          Controls: template.HTML(`…radios…`),
+      })
+*/}}
+{{define "form-fieldset"}}
+{{- $invalid := or .Invalid (ne (or .Error "") "") -}}
+{{- $base := "grid gap-2 [&:has(:user-invalid)_[data-slot=form-field-label]]:text-destructive min-w-0 border-0 p-0" -}}
+{{- $hasDesc := ne (or .Description "") "" -}}
+{{- $hasErr := and $invalid (ne (or .Error "") "") -}}
+<fieldset class="{{$base}}" data-slot="form-field"{{if $invalid}} data-invalid="true"{{end}}{{if .Disabled}} disabled{{end}}
+  {{- if .ID}}{{if $hasDesc}} aria-describedby="{{.ID}}-description{{if $hasErr}} {{.ID}}-error{{end}}"{{else if $hasErr}} aria-describedby="{{.ID}}-error"{{end}}{{end}}
+  {{- if $invalid}} aria-invalid="true"{{end}}{{if .Required}} aria-required="true"{{end}}>
+  {{- if .Legend}}
+  <legend class="text-sm leading-none font-medium select-none float-none mb-1 data-[invalid=true]:text-destructive" data-slot="form-field-legend"{{if $invalid}} data-invalid="true"{{end}}{{if .Required}} data-required="true"{{end}}>{{.Legend}}{{if .Required}}<span class="text-destructive" aria-hidden="true"> *</span>{{end}}</legend>
+  {{- end}}
+  {{- if .Controls}}{{htmlSafe .Controls}}{{end}}
+  {{- if .Description}}
+  <p {{if .ID}}id="{{.ID}}-description" {{end}}class="text-sm text-muted-foreground" data-slot="form-field-description">{{.Description}}</p>
+  {{- end}}
+  {{- if $hasErr}}
+  <p {{if .ID}}id="{{.ID}}-error" {{end}}role="alert" aria-live="assertive" class="text-sm font-medium text-destructive" data-slot="form-field-error">{{.Error}}</p>
+  {{- end}}
+</fieldset>
+{{end}}

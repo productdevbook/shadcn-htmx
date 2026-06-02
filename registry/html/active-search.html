@@ -1,0 +1,52 @@
+<!--
+  shadcn-htmx — raw HTML active-search snippet.
+
+  Debounced live-search box that filters an external results list/table as
+  you type, with an inline loading indicator and stale-request cancellation.
+  Submits as a normal GET search on Enter when JS is off (native <form action>).
+
+  Native-first: <form role="search"> wraps <input type="search">. The
+  `search` event fires on Enter + the native clear button, so it's in
+  hx-trigger alongside the debounced `input` trigger.
+    - hx-trigger="input changed delay:300ms, search"  (debounce + clear/Enter)
+    - hx-sync="this:replace"      (abort in-flight, use the latest request)
+    - hx-indicator="#search-indicator"  (.htmx-request fades the spinner in)
+
+  Wire hx-target at your results container; the server returns the rows/list.
+  Relies only on theme tokens — no app CSS beyond Tailwind + the htmx-indicator
+  class (htmx ships its default opacity transition for it).
+-->
+
+<form data-slot="active-search" role="search" class="relative w-full"
+      action="/search" method="get">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+       aria-hidden="true">
+    <circle cx="11" cy="11" r="8"></circle>
+    <path d="m21 21-4.3-4.3"></path>
+  </svg>
+  <input type="search" id="search" name="q"
+         placeholder="Search contacts…"
+         autocomplete="off" enterkeyhint="search" inputmode="search"
+         data-slot="active-search-input"
+         hx-get="/search"
+         hx-trigger="input changed delay:300ms, search"
+         hx-sync="this:replace"
+         hx-indicator="#search-indicator"
+         hx-target="#results"
+         hx-swap="innerHTML"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent py-1 pr-9 pl-9 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&::-webkit-search-cancel-button]:hidden">
+  <span id="search-indicator" data-slot="active-search-indicator" role="status" aria-live="polite"
+        class="htmx-indicator pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         class="size-4 animate-spin" aria-hidden="true">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+    </svg>
+    <span class="sr-only">Searching…</span>
+  </span>
+</form>
+
+<!-- Results container the search targets. Server returns the rows on each query. -->
+<tbody id="results"></tbody>

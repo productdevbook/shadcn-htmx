@@ -1,0 +1,41 @@
+<!--
+  shadcn-htmx — raw HTML load-more snippet.
+  A self-replacing pagination trigger. It appends the next page and swaps a
+  fresh trigger into its place (hx-swap="outerHTML" + hx-target="this"); when
+  the server omits the trigger from its response, the chain ends.
+
+  Two modes shown below:
+    1. Click  — a real <button>. Works with no JS; htmx upgrades the click.
+    2. Sentinel — fires on scroll (hx-trigger="revealed", or "intersect once"
+       inside an overflow-y:scroll container). IntersectionObserver-backed.
+
+  The inline spinner carries the htmx-indicator class, so it stays hidden
+  until htmx adds .htmx-request to the trigger during the in-flight request,
+  then fades in (the skeleton/loading fallback). Relies only on the theme
+  tokens in styles.css — no JS of its own.
+
+  Sources (read, not copied):
+    repos/htmx/.../patterns/01-loading/01-click-to-load.md
+    repos/htmx/.../patterns/01-loading/02-infinite-scroll.md
+    repos/htmx/.../reference/01-attributes/{06-hx-trigger,07-hx-swap,19-hx-indicator}.md
+    repos/mdn/.../web/api/intersection_observer_api/index.md
+-->
+
+<!-- 1. Click trigger. On click it GETs the next page and replaces itself with
+        (next items + a fresh trigger). Omit the trigger on the last page. -->
+<button type="button" data-slot="load-more" data-trigger="click"
+        hx-get="/comments?page=2" hx-trigger="click" hx-target="this" hx-swap="outerHTML"
+        class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap outline-none transition-all text-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+  <span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>
+  Show more comments
+</button>
+
+<!-- 2. Scroll sentinel. When it scrolls into view, htmx GETs the next page
+        and replaces it. Use "intersect once" inside an overflow-y:scroll box. -->
+<div data-slot="load-more" data-trigger="revealed"
+     role="status" aria-label="Loading more"
+     hx-get="/contacts?page=2" hx-trigger="revealed" hx-swap="outerHTML"
+     class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+  <span class="htmx-indicator size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>
+  Loading more…
+</div>
