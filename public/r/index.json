@@ -14,6 +14,156 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in five flavours."
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "Native <label> with shadcn polish — peer-disabled-aware, click-to-focus from the platform."
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Native <input type=\"checkbox\"> with shadcn polish — peer-checked SVG indicator, indeterminate support, htmx-ready."
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Native <dialog> + 30-line script. Focus trap, ESC, accessible modal — all from the platform. Backdrop click to close, X button, htmx-rendered variants."
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "WAI-ARIA tabs over real <button role=\"tab\">. Inline boot script eliminates first-paint flicker; keyboard contract (arrows/Home/End) lives in site.js."
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Native <textarea> with shadcn polish + CSS field-sizing: content auto-resize. htmx autosave demo."
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Native input role=\"switch\" styled as a sliding pill. Two sizes; htmx save-on-toggle pattern."
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Native <input type=\"radio\"> grouped by name; arrow-key cycle from the platform, custom dot indicator on top."
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Native <select> + chevron icon overlay. Browser-driven dropdown, type-to-search, mobile-native picker. htmx cascading select demo."
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Structural container — Header / Title / Description / Action / Content / Footer slots. Pure layout primitive; pair with htmx for content swaps."
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Small visual marker — status pill / counter / label. Six variants; renders as span (default) or anchor (with href)."
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "Horizontal or vertical divider. Decorative (visual only) or semantic (renders <hr> or role=\"separator\")."
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Boxed informational / success / warning / error message. Five variants + live-region politeness (off / polite / assertive)."
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Transient notifications. Fixed-position viewport + per-toast item with live-region politeness. Server-driven via htmx beforeend swap."
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Short label on a control. CSS-only show on hover + focus; ESC to dismiss. APG-compliant tooltip pattern."
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Collapsible stacked sections. Native <details>/<summary> + new HTML name attribute for zero-JS exclusive accordion. APG keyboard nav in site.js."
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Round image with text/icon fallback. Native <img> + inline onerror handler reveals fallback on 404. Group + count subcomponents."
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Native HTML Popover API. Light dismiss + ESC + top-layer + focus restoration handled by the browser."
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Menu of actions from a button. Native Popover API + APG menu keyboard contract (arrows, Home/End, type-to-find)."
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "ARIA role=\"progressbar\" with valuemin/max/now. Omit value for indeterminate (animated stripe). htmx polling demo for live updates."
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Pulsing placeholder for content that hasn't loaded yet. role=\"status\" + aria-busy; pairs with htmx outerHTML swap."
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Native <input type=\"range\"> styled cross-browser. role=slider + ARIA value attrs + arrow/Home/End/PageUp-Down keyboard contract come from the platform."
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Page navigation strip. <nav> landmark + aria-label + aria-current=\"page\" on the active link. Previous/Next have built-in aria-labels."
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Semantic <table>/<thead>/<tbody>; sortable columns via aria-sort + clickable button inside <th>. Sort actions route through htmx."
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "Autocomplete text input. Native <datalist> variant (zero JS) + APG role=combobox + htmx-filtered listbox variant."
     }
   ]
 }

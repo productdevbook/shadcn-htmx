@@ -1,0 +1,39 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "Pulsing placeholder for content that hasn't loaded yet. role=\"status\" + aria-busy; pairs with htmx outerHTML swap.",
+  "files": [
+    {
+      "path": "registry/ui/skeleton.tsx",
+      "type": "registry:ui",
+      "target": "components/ui/skeleton.tsx",
+      "content": "/** @jsxImportSource hono/jsx */\nimport { cn, type ClassValue } from \"@/registry/lib/cn\"\n\n// Skeleton — shadcn-htmx, htmx v4 + Tailwind v4.\n//\n// Visual loading placeholder. Renders as a styled div with a subtle\n// pulse animation. Pair with htmx so the real content swaps in when\n// the server responds — the placeholder DOM is replaced wholesale.\n//\n// Accessibility:\n//   - role=\"status\" + aria-busy=\"true\" so AT announces \"Loading\".\n//   - aria-label gives the announcement substance (\"Loading user list\").\n//   - Once the real content swaps in, the role/aria-busy goes with it\n//     — no manual cleanup needed.\n\ntype SkeletonProps = {\n  // Required so AT users hear something meaningful while content loads.\n  ariaLabel?: string\n  class?: ClassValue\n  id?: string\n  // Pass-through for tests / debugging.\n  [key: `data-${string}`]: any\n}\n\nexport function Skeleton(props: SkeletonProps) {\n  const { ariaLabel = \"Loading\", class: className, id, ...rest } = props\n  return (\n    <div\n      id={id}\n      role=\"status\"\n      aria-busy=\"true\"\n      aria-label={ariaLabel}\n      data-slot=\"skeleton\"\n      class={cn(\n        \"animate-pulse rounded-md bg-muted\",\n        className,\n      )}\n      {...rest}\n    />\n  )\n}\n"
+    },
+    {
+      "path": "registry/jinja2/skeleton.html",
+      "type": "registry:file",
+      "target": "templates/components/skeleton.html",
+      "content": "{# Skeleton macro — shadcn-htmx, htmx v4 + Tailwind v4.\n   Mirrors registry/ui/skeleton.tsx. #}\n\n{% macro skeleton(aria_label=\"Loading\", id=none, extra_class=\"\") %}\n<div\n  {%- if id %} id=\"{{ id }}\"{% endif %}\n  role=\"status\" aria-busy=\"true\" aria-label=\"{{ aria_label }}\"\n  data-slot=\"skeleton\"\n  class=\"animate-pulse rounded-md bg-muted {{ extra_class }}\"></div>\n{% endmacro %}\n"
+    },
+    {
+      "path": "registry/go-templates/skeleton.tmpl",
+      "type": "registry:file",
+      "target": "components/skeleton.tmpl",
+      "content": "{{/* Skeleton template — shadcn-htmx, htmx v4 + Tailwind v4. */}}\n\n{{define \"skeleton\"}}\n<div {{if .ID}}id=\"{{.ID}}\"{{end}}\n     role=\"status\" aria-busy=\"true\" aria-label=\"{{or .AriaLabel \"Loading\"}}\"\n     data-slot=\"skeleton\"\n     class=\"animate-pulse rounded-md bg-muted {{.Class}}\"></div>\n{{end}}\n"
+    },
+    {
+      "path": "registry/phoenix/skeleton.ex",
+      "type": "registry:file",
+      "target": "lib/my_app_web/components/skeleton.ex",
+      "content": "defmodule ShadcnHtmx.Components.Skeleton do\n  @moduledoc \"\"\"\n  Skeleton — shadcn-htmx, htmx v4 + Tailwind v4 for Phoenix.\n\n  Visual loading placeholder with role=\"status\" + aria-busy + pulse\n  animation. Pair with htmx; once content swaps in, the skeleton DOM\n  is replaced wholesale.\n\n  ## Examples\n\n      <.skeleton class=\"h-4 w-64\" aria-label=\"Loading row\" />\n  \"\"\"\n\n  use Phoenix.Component\n\n  attr :\"aria-label\", :string, default: \"Loading\"\n  attr :class, :string, default: nil\n  attr :rest, :global\n\n  def skeleton(assigns) do\n    ~H\"\"\"\n    <div\n      role=\"status\"\n      aria-busy=\"true\"\n      aria-label={assigns[:\"aria-label\"]}\n      data-slot=\"skeleton\"\n      class={[\"animate-pulse rounded-md bg-muted\", @class]}\n      {@rest}\n    />\n    \"\"\"\n  end\nend\n"
+    },
+    {
+      "path": "registry/html/skeleton.html",
+      "type": "registry:file",
+      "target": "snippets/skeleton.html",
+      "content": "<!--\n  shadcn-htmx — raw HTML skeleton snippet.\n  Loading placeholder with role=\"status\" + aria-busy + pulse animation.\n-->\n\n<div role=\"status\" aria-busy=\"true\" aria-label=\"Loading user profile\"\n     data-slot=\"skeleton\"\n     class=\"animate-pulse rounded-md bg-muted h-4 w-64\"></div>\n"
+    }
+  ]
+}
