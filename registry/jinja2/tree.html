@@ -1,0 +1,61 @@
+{# Tree (Tree View) macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/tree.tsx 1:1 (same elements, roles, ARIA, data-slot,
+   classes). WAI-ARIA APG Tree View pattern; the live keyboard + roving
+   tabindex contract lives in public/site.js keyed on data-slot="tree".
+
+   Usage:
+     {% from "components/tree.html" import tree_open, tree_close,
+        tree_item_open, tree_item_close, tree_group_open, tree_group_close %}
+
+     {{ tree_open(aria_label="File system") }}
+       {{ tree_item_open(label="Projects", expanded=true) }}
+         {{ tree_group_open() }}
+           {{ tree_item_open(label="project-1.docx") }}{{ tree_item_close() }}
+         {{ tree_group_close() }}
+       {{ tree_item_close() }}
+     {{ tree_close() }} #}
+
+{% macro tree_open(aria_label="", aria_labelledby="", id="", extra_class="", attrs={}) -%}
+<ul role="tree" data-slot="tree"
+    {%- if id %} id="{{ id }}"{% endif %}
+    {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="w-fit min-w-56 select-none text-sm text-foreground {{ extra_class }}">
+<script>(function(el){var items=el.querySelectorAll('[role="treeitem"]');items.forEach(function(it,i){it.setAttribute('tabindex',i===0?'0':'-1');});el.setAttribute('data-tree-ready','true');})(document.currentScript.previousElementSibling);</script>
+{%- endmacro %}
+
+{% macro tree_close() %}</ul>{% endmacro %}
+
+{% macro tree_item_open(label="", value="", parent=false, expanded=none, selected=false, disabled=false, extra_class="", attrs={}) -%}
+{%- set is_parent = parent or expanded is not none -%}
+<li role="treeitem" data-slot="tree-item"
+    {%- if value %} data-value="{{ value }}"{% endif %}
+    tabindex="-1"
+    {%- if is_parent %} aria-expanded="{{ 'true' if expanded else 'false' }}"{% endif %}
+    aria-selected="{{ 'true' if selected else 'false' }}"
+    {%- if disabled %} aria-disabled="true"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="{{ extra_class }}">
+  <span data-slot="tree-label"
+        class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+    {%- if is_parent %}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         data-slot="tree-chevron"
+         class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+    {%- else %}
+    <span aria-hidden="true" class="size-4 shrink-0"></span>
+    {%- endif %}
+    {{ label }}
+  </span>
+{%- endmacro %}
+
+{% macro tree_item_close() %}</li>{% endmacro %}
+
+{% macro tree_group_open(extra_class="") -%}
+<ul role="group" data-slot="tree-group" class="ml-3.5 border-l border-border pl-1.5 {{ extra_class }}">
+{%- endmacro %}
+
+{% macro tree_group_close() %}</ul>{% endmacro %}

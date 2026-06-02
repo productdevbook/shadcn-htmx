@@ -1,0 +1,151 @@
+<!--
+  shadcn-htmx — raw HTML tree (tree view) snippet.
+
+  Web-standard nested lists wired to the WAI-ARIA APG Tree View pattern:
+  <ul role="tree"> with <li role="treeitem"> nodes. Parent nodes carry
+  aria-expanded and hold a nested <ul role="group">; end nodes have no
+  aria-expanded. Collapsing is pure CSS: a closed parent hides its child group.
+
+  The inline boot script seeds the roving tabindex (first node tabindex="0").
+  For the full APG keyboard contract (arrows, Home/End, type-ahead, *, Enter)
+  copy the second <script> at the bottom — or use public/site.js, which wires
+  every [data-slot="tree"] on the page.
+-->
+
+<ul role="tree" data-slot="tree" aria-label="File system"
+    class="w-fit min-w-56 select-none text-sm text-foreground">
+
+  <li role="treeitem" data-slot="tree-item" data-value="projects" tabindex="-1" aria-expanded="true" aria-selected="false" class="">
+    <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           data-slot="tree-chevron" class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+      Projects
+    </span>
+    <ul role="group" data-slot="tree-group" class="ml-3.5 border-l border-border pl-1.5">
+      <li role="treeitem" data-slot="tree-item" data-value="p1" tabindex="-1" aria-selected="false" class="">
+        <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+          <span aria-hidden="true" class="size-4 shrink-0"></span>
+          project-1.docx
+        </span>
+      </li>
+      <li role="treeitem" data-slot="tree-item" data-value="p2" tabindex="-1" aria-expanded="false" aria-selected="false" class="">
+        <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               data-slot="tree-chevron" class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+          drafts
+        </span>
+        <ul role="group" data-slot="tree-group" class="ml-3.5 border-l border-border pl-1.5">
+          <li role="treeitem" data-slot="tree-item" data-value="d1" tabindex="-1" aria-selected="false" class="">
+            <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+              <span aria-hidden="true" class="size-4 shrink-0"></span>
+              draft-a.docx
+            </span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+
+  <li role="treeitem" data-slot="tree-item" data-value="readme" tabindex="-1" aria-selected="false" class="">
+    <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+      <span aria-hidden="true" class="size-4 shrink-0"></span>
+      README.md
+    </span>
+  </li>
+</ul>
+
+<!-- Boot: seed the roving tabindex (first node is the single tab stop). -->
+<script>
+  document.querySelectorAll('[data-slot="tree"]:not([data-tree-ready])').forEach(function (tree) {
+    tree.querySelectorAll('[role="treeitem"]').forEach(function (it, i) {
+      it.setAttribute('tabindex', i === 0 ? '0' : '-1')
+    })
+    tree.setAttribute('data-tree-ready', 'true')
+  })
+</script>
+
+<!-- APG keyboard contract. Skip if you already load public/site.js. -->
+<script>
+  (function () {
+    var visibleItems = function (tree) {
+      return [].slice.call(tree.querySelectorAll('[role="treeitem"]')).filter(function (it) {
+        var p = it.parentElement
+        while (p && p !== tree) {
+          if (p.getAttribute && p.getAttribute('role') === 'group') {
+            var owner = p.closest('[role="treeitem"]')
+            if (owner && owner.getAttribute('aria-expanded') === 'false') return false
+          }
+          p = p.parentElement
+        }
+        return true
+      })
+    }
+    var focusItem = function (tree, item) {
+      tree.querySelectorAll('[role="treeitem"]').forEach(function (it) {
+        it.setAttribute('tabindex', it === item ? '0' : '-1')
+      })
+      item.focus()
+    }
+    var childGroup = function (item) {
+      var el = item.firstElementChild
+      while (el) { if (el.getAttribute && el.getAttribute('role') === 'group') return el; el = el.nextElementSibling }
+      return null
+    }
+    document.addEventListener('keydown', function (e) {
+      var item = e.target.closest && e.target.closest('[role="treeitem"]')
+      if (!item) return
+      var tree = item.closest('[data-slot="tree"]')
+      if (!tree) return
+      if (item.getAttribute('aria-disabled') === 'true') return
+      var isParent = item.hasAttribute('aria-expanded')
+      var open = item.getAttribute('aria-expanded') === 'true'
+      var vis = visibleItems(tree)
+      var idx = vis.indexOf(item)
+      var key = e.key
+      if (key === 'ArrowDown') { e.preventDefault(); if (idx < vis.length - 1) focusItem(tree, vis[idx + 1]) }
+      else if (key === 'ArrowUp') { e.preventDefault(); if (idx > 0) focusItem(tree, vis[idx - 1]) }
+      else if (key === 'Home') { e.preventDefault(); focusItem(tree, vis[0]) }
+      else if (key === 'End') { e.preventDefault(); focusItem(tree, vis[vis.length - 1]) }
+      else if (key === 'ArrowRight') {
+        e.preventDefault()
+        if (isParent && !open) item.setAttribute('aria-expanded', 'true')
+        else if (isParent && open) { var g = childGroup(item); var f = g && g.querySelector('[role="treeitem"]'); if (f) focusItem(tree, f) }
+      } else if (key === 'ArrowLeft') {
+        e.preventDefault()
+        if (isParent && open) item.setAttribute('aria-expanded', 'false')
+        else { var pg = item.parentElement.closest('[role="treeitem"]'); if (pg) focusItem(tree, pg) }
+      } else if (key === 'Enter' || key === ' ') {
+        e.preventDefault()
+        tree.querySelectorAll('[role="treeitem"][aria-selected="true"]').forEach(function (n) { n.setAttribute('aria-selected', 'false') })
+        item.setAttribute('aria-selected', 'true')
+        if (isParent) item.setAttribute('aria-expanded', open ? 'false' : 'true')
+      } else if (key === '*') {
+        e.preventDefault()
+        var siblings = item.parentElement.children
+        for (var i = 0; i < siblings.length; i++) if (siblings[i].hasAttribute && siblings[i].hasAttribute('aria-expanded')) siblings[i].setAttribute('aria-expanded', 'true')
+      } else if (key.length === 1 && /\S/.test(key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        var ch = key.toLowerCase()
+        for (var j = 1; j <= vis.length; j++) {
+          var cand = vis[(idx + j) % vis.length]
+          var lbl = cand.querySelector('[data-slot="tree-label"]')
+          if (((lbl ? lbl.textContent : cand.textContent) || '').trim().toLowerCase().indexOf(ch) === 0) { focusItem(tree, cand); break }
+        }
+      }
+    })
+    document.addEventListener('click', function (e) {
+      var label = e.target.closest && e.target.closest('[data-slot="tree-label"]')
+      if (!label) return
+      var item = label.closest('[role="treeitem"]')
+      var tree = item && item.closest('[data-slot="tree"]')
+      if (!tree || item.getAttribute('aria-disabled') === 'true') return
+      if (item.hasAttribute('aria-expanded')) item.setAttribute('aria-expanded', item.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')
+      tree.querySelectorAll('[role="treeitem"][aria-selected="true"]').forEach(function (n) { n.setAttribute('aria-selected', 'false') })
+      item.setAttribute('aria-selected', 'true')
+      focusItem(tree, item)
+    })
+  })()
+</script>

@@ -1,0 +1,44 @@
+{{/*
+  Splitter (window splitter) template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/splitter.tsx. A CSS grid whose first track is sized by
+  --split (a percentage) plus a focusable role="separator" divider. site.js
+  (data-slot="splitter") owns pointer drag + the APG keyboard contract and
+  keeps --split / aria-valuenow in sync.
+  Accessibility contract:
+  repos/aria-practices/content/patterns/windowsplitter/windowsplitter-pattern.html
+
+      type SplitterArgs struct {
+          ID, PrimaryID string
+          Orientation string // "horizontal" | "vertical"
+          Value, Min, Max, Step int
+          AriaLabel, AriaLabelledby string
+          Primary, Secondary template.HTML // pane bodies via htmlSafe
+          // Everything else (hx-get, data-*, …) goes here.
+          Attrs map[string]string
+      }
+*/}}
+{{define "splitter"}}
+{{- $orientation := or .Orientation "horizontal" -}}
+{{- $now := or .Value 50 -}}{{- $min := or .Min 0 -}}{{- $max := or .Max 100 -}}{{- $step := or .Step 10 -}}
+{{- $paneId := .PrimaryID -}}{{- if not $paneId}}{{- if .ID}}{{- $paneId = print .ID "-primary" -}}{{end}}{{end -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="splitter"
+     data-orientation="{{$orientation}}"
+     style="--split:{{$now}}%"
+     class="grid w-full overflow-hidden rounded-md border bg-card data-[orientation=horizontal]:h-64 data-[orientation=horizontal]:grid-cols-[var(--split,50%)_auto_minmax(0,1fr)] data-[orientation=vertical]:h-96 data-[orientation=vertical]:grid-rows-[var(--split,50%)_auto_minmax(0,1fr)]"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}>
+  <div data-slot="splitter-panel" data-splitter-panel="primary" {{if $paneId}}id="{{$paneId}}"{{end}} class="min-h-0 min-w-0 overflow-auto p-4 text-sm text-foreground">{{.Primary}}</div>
+  <div role="separator" tabindex="0"
+       data-slot="splitter-handle"
+       data-orientation="{{$orientation}}"
+       data-min="{{$min}}" data-max="{{$max}}" data-step="{{$step}}" data-collapsed="false"
+       aria-orientation="{{$orientation}}"
+       {{if $paneId}}aria-controls="{{$paneId}}"{{end}}
+       {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+       aria-valuenow="{{$now}}" aria-valuemin="{{$min}}" aria-valuemax="{{$max}}"
+       class="group/splitter relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors select-none hover:bg-ring/40 focus-visible:bg-ring/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[orientation=horizontal]:w-1.5 data-[orientation=horizontal]:cursor-col-resize data-[orientation=horizontal]:h-full data-[orientation=vertical]:h-1.5 data-[orientation=vertical]:cursor-row-resize data-[orientation=vertical]:w-full">
+    <span class="pointer-events-none rounded-full bg-muted-foreground/40 transition-colors group-hover/splitter:bg-muted-foreground/70 group-data-[orientation=horizontal]/splitter:h-6 group-data-[orientation=horizontal]/splitter:w-0.5 group-data-[orientation=vertical]/splitter:w-6 group-data-[orientation=vertical]/splitter:h-0.5" aria-hidden="true"></span>
+  </div>
+  <div data-slot="splitter-panel" data-splitter-panel="secondary" class="min-h-0 min-w-0 overflow-auto p-4 text-sm text-foreground">{{.Secondary}}</div>
+</div>
+{{end}}

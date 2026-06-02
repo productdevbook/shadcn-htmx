@@ -1,0 +1,129 @@
+<!--
+  shadcn-htmx — raw HTML menubar snippet.
+
+  App-style horizontal menubar. role="menubar" > role="menuitem" triggers
+  open native [popover] submenus (role="menu"). Native [popover] gives
+  open/close + light dismiss + ESC + top-layer; the inline script below adds
+  the APG composite keyboard contract (roving tabindex, ArrowLeft/Right along
+  the bar, ArrowDown to open a menu, ArrowUp/Down inside a menu, Home/End,
+  type-ahead). Relies only on the theme tokens in styles.css.
+-->
+
+<div role="menubar" data-slot="menubar" aria-label="Application"
+     class="inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs">
+
+  <div data-slot="menubar-menu" class="contents">
+    <button type="button" role="menuitem" tabindex="-1"
+            popovertarget="mb-file" popovertargetaction="toggle"
+            aria-haspopup="menu" aria-expanded="false"
+            data-slot="menubar-trigger" data-menu-for="mb-file"
+            class="flex select-none items-center rounded-sm px-3 py-1 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground aria-[expanded=true]:bg-accent aria-[expanded=true]:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50">File</button>
+    <div id="mb-file" popover="auto" role="menu" aria-label="File"
+         data-slot="menubar-content" data-side="bottom"
+         class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">New File</button>
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Open…</button>
+      <div role="separator" aria-orientation="horizontal" data-slot="menubar-separator" class="-mx-1 my-1 h-px bg-border"></div>
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 text-destructive focus:bg-destructive/10 focus:text-destructive">Delete project</button>
+    </div>
+  </div>
+
+  <div data-slot="menubar-menu" class="contents">
+    <button type="button" role="menuitem" tabindex="-1"
+            popovertarget="mb-edit" popovertargetaction="toggle"
+            aria-haspopup="menu" aria-expanded="false"
+            data-slot="menubar-trigger" data-menu-for="mb-edit"
+            class="flex select-none items-center rounded-sm px-3 py-1 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground aria-[expanded=true]:bg-accent aria-[expanded=true]:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50">Edit</button>
+    <div id="mb-edit" popover="auto" role="menu" aria-label="Edit"
+         data-slot="menubar-content" data-side="bottom"
+         class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Undo</button>
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Redo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard contract — copy once per page -->
+<script>
+  document.querySelectorAll('[data-slot="menubar"]').forEach(function (bar) {
+    var triggers = function () {
+      return [].slice.call(bar.querySelectorAll('[data-slot="menubar-trigger"]:not([disabled])'))
+    }
+    // Roving tabindex: first enabled trigger is the single tab stop.
+    var ts = triggers()
+    ts.forEach(function (t, i) { t.setAttribute('tabindex', i === 0 ? '0' : '-1') })
+    var roll = function (target) {
+      triggers().forEach(function (t) { t.setAttribute('tabindex', '-1') })
+      target.setAttribute('tabindex', '0')
+      target.focus()
+    }
+    var menuOf = function (trig) { return document.getElementById(trig.getAttribute('data-menu-for')) }
+    bar.addEventListener('keydown', function (e) {
+      var trig = e.target.closest && e.target.closest('[data-slot="menubar-trigger"]')
+      if (!trig) return
+      var list = triggers(); var i = list.indexOf(trig)
+      if (e.key === 'ArrowRight') { e.preventDefault(); roll(list[(i + 1) % list.length]) }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); roll(list[(i - 1 + list.length) % list.length]) }
+      else if (e.key === 'Home') { e.preventDefault(); roll(list[0]) }
+      else if (e.key === 'End') { e.preventDefault(); roll(list[list.length - 1]) }
+      else if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowUp') {
+        var menu = menuOf(trig); if (!menu || typeof menu.showPopover !== 'function') return
+        e.preventDefault()
+        if (!menu.matches(':popover-open')) menu.showPopover()
+        var items = [].slice.call(menu.querySelectorAll('[role="menuitem"]:not([data-disabled="true"])'))
+        if (items.length) setTimeout(function () { items[e.key === 'ArrowUp' ? items.length - 1 : 0].focus() }, 0)
+      }
+    })
+    // Reflect open/closed state onto aria-expanded.
+    bar.querySelectorAll('[data-slot="menubar-content"]').forEach(function (menu) {
+      menu.addEventListener('toggle', function (e) {
+        var trig = bar.querySelector('[data-menu-for="' + CSS.escape(menu.id) + '"]')
+        if (trig) trig.setAttribute('aria-expanded', e.newState === 'open' ? 'true' : 'false')
+      })
+    })
+  })
+  // Inside a submenu: ArrowUp/Down/Home/End/type-ahead + ArrowLeft/Right hop bars.
+  document.addEventListener('keydown', function (e) {
+    var item = e.target.closest && e.target.closest('[data-slot="menubar-content"] [role="menuitem"]')
+    if (!item) return
+    var menu = item.closest('[data-slot="menubar-content"]'); if (!menu) return
+    var bar = menu.closest('[data-slot="menubar"]'); if (!bar) return
+    var items = [].slice.call(menu.querySelectorAll('[role="menuitem"]:not([data-disabled="true"])'))
+    var i = items.indexOf(item)
+    var bars = [].slice.call(bar.querySelectorAll('[data-slot="menubar-trigger"]:not([disabled])'))
+    var trig = bar.querySelector('[data-menu-for="' + CSS.escape(menu.id) + '"]')
+    var bi = bars.indexOf(trig)
+    var hop = function (dir) {
+      menu.hidePopover()
+      var next = bars[(bi + dir + bars.length) % bars.length]
+      bars.forEach(function (t) { t.setAttribute('tabindex', '-1') })
+      next.setAttribute('tabindex', '0')
+      var nm = document.getElementById(next.getAttribute('data-menu-for'))
+      if (nm && typeof nm.showPopover === 'function') {
+        nm.showPopover()
+        var ni = [].slice.call(nm.querySelectorAll('[role="menuitem"]:not([data-disabled="true"])'))
+        if (ni.length) setTimeout(function () { ni[0].focus() }, 0)
+      } else next.focus()
+    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus() }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus() }
+    else if (e.key === 'Home') { e.preventDefault(); items[0].focus() }
+    else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus() }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); hop(1) }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); hop(-1) }
+    else if (e.key.length === 1 && /\S/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      var ch = e.key.toLowerCase()
+      for (var k = 1; k <= items.length; k++) {
+        var c = items[(i + k) % items.length]
+        if ((c.textContent || '').trim().toLowerCase().startsWith(ch)) { c.focus(); break }
+      }
+    }
+  })
+  // Click a leaf item closes its menu (APG: items perform an action + close).
+  document.addEventListener('click', function (e) {
+    var item = e.target.closest && e.target.closest('[data-slot="menubar-item"]')
+    if (!item || item.getAttribute('data-disabled') === 'true') return
+    var menu = item.closest('[data-slot="menubar-content"]')
+    if (menu && typeof menu.hidePopover === 'function') menu.hidePopover()
+  })
+</script>

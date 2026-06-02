@@ -1,0 +1,75 @@
+{# Listbox macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/listbox.tsx. Renders the APG Listbox pattern: a
+   <ul role="listbox"> with <li role="option"> children, a sibling hidden
+   <input> for form submission, and a boot <script> that sets the roving
+   tabindex (single tab stop) + seeds the hidden value on first paint.
+   public/site.js (keyed on data-slot="listbox") owns the live keyboard +
+   selection contract. Accessibility contract:
+     repos/aria-practices/content/patterns/listbox/listbox-pattern.html
+
+   Usage:
+     {% from "components/listbox.html" import listbox_open, listbox_close,
+          listbox_option, listbox_group_open, listbox_group_close %}
+
+     {{ listbox_open(aria_label="Favourite element", name="element") }}
+       {{ listbox_option("Hydrogen", value="H", selected=true) }}
+       {{ listbox_option("Helium",   value="He") }}
+       {{ listbox_option("Lithium",  value="Li") }}
+     {{ listbox_close(name="element") }} #}
+
+{% macro listbox_open(aria_label=none, aria_labelledby=none, multiple=false, disabled=false, orientation="vertical", name=none, extra_class="", attrs={}) -%}
+<span class="relative inline-flex w-full flex-col">
+<ul role="listbox"
+    data-slot="listbox"
+    data-orientation="{{ orientation }}"
+    aria-orientation="{{ orientation }}"
+    {%- if multiple %} aria-multiselectable="true"{% endif %}
+    {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    {%- if disabled %} aria-disabled="true"{% endif %}
+    tabindex="-1"
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md border bg-background p-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[orientation=horizontal]:flex data-[orientation=horizontal]:max-h-none data-[orientation=horizontal]:overflow-x-auto data-[orientation=horizontal]:overflow-y-hidden {{ extra_class }}">
+{%- endmacro %}
+
+{% macro listbox_close(name=none) -%}
+</ul>
+{%- if name %}
+<input type="hidden" name="{{ name }}" data-listbox-value="">
+{%- endif %}
+<script>(function(el){
+  var opts = el.querySelectorAll('[role="option"]');
+  var sel = el.querySelector('[role="option"][aria-selected="true"]:not([aria-disabled="true"])');
+  var active = sel || el.querySelector('[role="option"]:not([aria-disabled="true"])');
+  opts.forEach(function(o){ o.setAttribute('tabindex', o === active ? '0' : '-1'); });
+  var hidden = el.parentNode && el.parentNode.querySelector('[data-listbox-value]');
+  if (hidden) {
+    var vals = [];
+    el.querySelectorAll('[role="option"][aria-selected="true"]').forEach(function(o){
+      vals.push(o.getAttribute('data-value') || (o.textContent || '').trim());
+    });
+    hidden.value = vals.join(',');
+  }
+  el.setAttribute('data-listbox-ready','true');
+})(document.currentScript.parentNode.querySelector('[data-slot="listbox"]'));</script>
+</span>
+{%- endmacro %}
+
+{% macro listbox_option(label, value=none, selected=false, disabled=false, id=none, extra_class="", attrs={}) -%}
+<li role="option"
+    data-slot="listbox-option"
+    {%- if value is not none %} data-value="{{ value }}"{% endif %}
+    {%- if disabled %} aria-disabled="true"{% else %} aria-selected="{{ 'true' if selected else 'false' }}"{% endif %}
+    {%- if id %} id="{{ id }}"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="relative flex cursor-pointer scroll-my-1 items-center gap-2 rounded-sm px-2 py-1.5 text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 {{ extra_class }}">{{ label }}</li>
+{%- endmacro %}
+
+{# A labelled cluster of options. role="group" carries the accessible name;
+   options inside still participate in the listbox's roving tabindex. #}
+{% macro listbox_group_open(label, extra_class="") -%}
+<li role="presentation" data-slot="listbox-group-wrapper" class="py-1 {{ extra_class }}">
+  <span aria-hidden="true" class="px-2 py-1 text-xs font-medium text-muted-foreground">{{ label }}</span>
+  <ul role="group" data-slot="listbox-group" aria-label="{{ label }}" class="contents">
+{%- endmacro %}
+{% macro listbox_group_close() %}</ul></li>{% endmacro %}

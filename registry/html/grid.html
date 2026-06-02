@@ -1,0 +1,98 @@
+<!--
+  shadcn-htmx — raw HTML grid snippet.
+
+  Mirrors registry/ui/grid.tsx. An INTERACTIVE data grid: <table role="grid">
+  that is a SINGLE tab stop with 2-D arrow-key cell navigation (roving
+  tabindex). Distinct from the static <table> snippet — use this only when you
+  want spreadsheet-style cell focus.
+
+  Every focusable cell carries [data-grid-cell]; exactly one has tabindex="0",
+  the rest tabindex="-1". The inline <script> right after the grid sets that
+  on first paint. The full keyboard contract (Arrow keys move one cell,
+  Home/End jump to row ends, Ctrl+Home/End jump to the grid corners) needs the
+  wiring in public/site.js.
+
+  Accessibility contract:
+    repos/aria-practices/content/patterns/grid/grid-pattern.html
+
+  Required CSS theme variables: --background, --foreground, --muted,
+  --muted-foreground, --border, --ring. See app/styles/input.css.
+
+  Minimal inline JS for keyboard navigation (if you are not loading site.js):
+
+    <script>
+      document.addEventListener('keydown', function (e) {
+        var cell = e.target.closest('[data-grid-cell]')
+        if (!cell) return
+        var grid = cell.closest('[data-slot="grid"]')
+        if (!grid) return
+        var keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End']
+        if (keys.indexOf(e.key) === -1) return
+        e.preventDefault()
+        var rows = [].slice.call(grid.querySelectorAll('tr'))
+        var grid2d = rows.map(function (r) {
+          return [].slice.call(r.querySelectorAll('[data-grid-cell]'))
+        }).filter(function (r) { return r.length })
+        var R = grid2d.length, C = grid2d[0].length
+        var r = -1, c = -1
+        grid2d.forEach(function (row, ri) {
+          var ci = row.indexOf(cell)
+          if (ci !== -1) { r = ri; c = ci }
+        })
+        if (r === -1) return
+        if (e.key === 'ArrowUp') r = Math.max(0, r - 1)
+        else if (e.key === 'ArrowDown') r = Math.min(R - 1, r + 1)
+        else if (e.key === 'ArrowLeft') c = Math.max(0, c - 1)
+        else if (e.key === 'ArrowRight') c = Math.min(C - 1, c + 1)
+        else if (e.key === 'Home') { c = 0; if (e.ctrlKey) r = 0 }
+        else if (e.key === 'End') { c = grid2d[r].length - 1; if (e.ctrlKey) r = R - 1 }
+        var next = grid2d[r][c]
+        if (!next) return
+        cell.setAttribute('tabindex', '-1'); cell.removeAttribute('data-grid-active')
+        next.setAttribute('tabindex', '0'); next.setAttribute('data-grid-active', 'true')
+        next.focus()
+      })
+    </script>
+-->
+
+<div class="relative w-full overflow-auto rounded-md border">
+  <table role="grid" data-slot="grid" aria-label="Transactions"
+         class="w-full caption-bottom border-separate border-spacing-0 text-sm">
+    <thead data-slot="grid-header">
+      <tr data-slot="grid-row" class="transition-colors">
+        <th scope="col" data-slot="grid-columnheader" data-grid-cell="" data-sortable="true" aria-sort="ascending"
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 border-t bg-muted/50 text-left font-medium text-muted-foreground first:rounded-tl-md last:rounded-tr-md">
+          <span class="inline-flex items-center gap-1.5">Name
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="18 15 12 9 6 15" /></svg>
+          </span>
+        </th>
+        <th scope="col" data-slot="grid-columnheader" data-grid-cell=""
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 border-t bg-muted/50 text-left font-medium text-muted-foreground first:rounded-tl-md last:rounded-tr-md">
+          <span class="inline-flex items-center gap-1.5">Amount</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody data-slot="grid-body">
+      <tr data-slot="grid-row" class="transition-colors">
+        <th scope="row" data-slot="grid-rowheader" data-grid-cell=""
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 border-t bg-muted/50 text-left font-medium text-muted-foreground first:rounded-tl-md last:rounded-tr-md font-medium text-foreground">Ada Lovelace</th>
+        <td data-slot="grid-cell" data-grid-cell=""
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 bg-background text-foreground">$120.00</td>
+      </tr>
+      <tr data-slot="grid-row" class="transition-colors">
+        <th scope="row" data-slot="grid-rowheader" data-grid-cell=""
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 border-t bg-muted/50 text-left font-medium text-muted-foreground first:rounded-tl-md last:rounded-tr-md font-medium text-foreground">Grace Hopper</th>
+        <td data-slot="grid-cell" data-grid-cell=""
+            class="border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50 bg-background text-foreground">$87.50</td>
+      </tr>
+    </tbody>
+  </table>
+  <script>
+    (function (el) {
+      var cells = el.querySelectorAll('[data-grid-cell]')
+      cells.forEach(function (c, i) { c.setAttribute('tabindex', i === 0 ? '0' : '-1') })
+      if (cells.length) cells[0].setAttribute('data-grid-active', 'true')
+      el.setAttribute('data-grid-ready', 'true')
+    })(document.currentScript.previousElementSibling)
+  </script>
+</div>

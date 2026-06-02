@@ -1,0 +1,67 @@
+{{/*
+  Tree (Tree View) templates — shadcn-htmx, htmx v4 + Tailwind v4.
+
+  Mirrors registry/ui/tree.tsx 1:1 (same elements, roles, ARIA, data-slot,
+  classes). WAI-ARIA APG Tree View pattern; the live keyboard + roving
+  tabindex contract lives in public/site.js keyed on data-slot="tree".
+
+  Named templates compose:
+    - "tree"        — the <ul role="tree"> wrapper (call with Body, AriaLabel)
+    - "tree_item"   — one <li role="treeitem"> (Label, Expanded, Body for group)
+    - "tree_group"  — the nested <ul role="group"> (call with Body)
+
+  Usage:
+    {{template "tree" (dict
+      "AriaLabel" "File system"
+      "Body" (htmlSafe `
+        {{template "tree_item" (dict
+          "Label" "Projects" "Expanded" true
+          "Body" (htmlSafe `{{template "tree_group" (dict "Body" (htmlSafe `
+            {{template "tree_item" (dict "Label" "project-1.docx")}}
+          `))}}`)
+        )}}`)
+    )}}
+*/}}
+
+{{define "tree"}}
+<ul role="tree" data-slot="tree"
+    {{if .ID}}id="{{.ID}}"{{end}}
+    {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+    {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+    class="w-fit min-w-56 select-none text-sm text-foreground {{or .Class ""}}">
+  {{.Body}}
+</ul>
+<script>(function(el){var items=el.querySelectorAll('[role="treeitem"]');items.forEach(function(it,i){it.setAttribute('tabindex',i===0?'0':'-1');});el.setAttribute('data-tree-ready','true');})(document.currentScript.previousElementSibling);</script>
+{{end}}
+
+{{define "tree_item"}}
+{{- $isParent := or .Parent (ne (printf "%v" .Expanded) "<no value>") -}}
+<li role="treeitem" data-slot="tree-item"
+    {{if .Value}}data-value="{{.Value}}"{{end}}
+    tabindex="-1"
+    {{if $isParent}}aria-expanded="{{if .Expanded}}true{{else}}false{{end}}"{{end}}
+    aria-selected="{{if .Selected}}true{{else}}false{{end}}"
+    {{if .Disabled}}aria-disabled="true"{{end}}
+    class="{{or .Class ""}}">
+  <span data-slot="tree-label"
+        class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
+    {{if $isParent}}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         data-slot="tree-chevron"
+         class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+    {{else}}
+    <span aria-hidden="true" class="size-4 shrink-0"></span>
+    {{end}}
+    {{.Label}}
+  </span>
+  {{.Body}}
+</li>
+{{end}}
+
+{{define "tree_group"}}
+<ul role="group" data-slot="tree-group" class="ml-3.5 border-l border-border pl-1.5 {{or .Class ""}}">
+  {{.Body}}
+</ul>
+{{end}}

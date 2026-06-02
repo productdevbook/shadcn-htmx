@@ -30,6 +30,7 @@ const sections: Section[] = [
       { label: "Slider", href: "/docs/slider" },
       { label: "Number Input", href: "/docs/number-input" },
       { label: "Range Slider", href: "/docs/range-slider" },
+      { label: "Listbox", href: "/docs/listbox" },
     ],
   },
   {
@@ -39,6 +40,9 @@ const sections: Section[] = [
       { label: "Table", href: "/docs/table" },
       { label: "Collapsible", href: "/docs/collapsible" },
       { label: "Toolbar", href: "/docs/toolbar" },
+      { label: "Grid", href: "/docs/grid" },
+      { label: "Treegrid", href: "/docs/treegrid" },
+      { label: "Splitter", href: "/docs/splitter" },
     ],
   },
   {
@@ -47,6 +51,7 @@ const sections: Section[] = [
       { label: "Avatar", href: "/docs/avatar" },
       { label: "Badge", href: "/docs/badge" },
       { label: "Separator", href: "/docs/separator" },
+      { label: "Carousel", href: "/docs/carousel" },
     ],
   },
   {
@@ -57,6 +62,7 @@ const sections: Section[] = [
       { label: "Skeleton", href: "/docs/skeleton" },
       { label: "Toast", href: "/docs/toast" },
       { label: "Meter", href: "/docs/meter" },
+      { label: "Feed", href: "/docs/feed" },
     ],
   },
   {
@@ -77,6 +83,8 @@ const sections: Section[] = [
       { label: "Tabs", href: "/docs/tabs" },
       { label: "Breadcrumb", href: "/docs/breadcrumb" },
       { label: "Link", href: "/docs/link" },
+      { label: "Menubar", href: "/docs/menubar" },
+      { label: "Tree", href: "/docs/tree" },
     ],
   },
 ]

@@ -686,6 +686,118 @@
         { "path": "registry/phoenix/toolbar.ex", "type": "registry:file", "target": "lib/my_app_web/components/toolbar.ex" },
         { "path": "registry/html/toolbar.html", "type": "registry:file", "target": "snippets/toolbar.html" }
       ]
+    },
+    {
+      "name": "listbox",
+      "type": "registry:ui",
+      "title": "Listbox",
+      "description": "A scrollable single- or multi-select list built on role=\"listbox\" with role=\"option\" children, following the WAI-ARIA APG keyboard contract. A hidden input mirrors the selection so it submits like a normal form field.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/listbox.tsx", "type": "registry:ui", "target": "components/ui/listbox.tsx" },
+        { "path": "registry/jinja2/listbox.html", "type": "registry:file", "target": "templates/components/listbox.html" },
+        { "path": "registry/go-templates/listbox.tmpl", "type": "registry:file", "target": "components/listbox.tmpl" },
+        { "path": "registry/phoenix/listbox.ex", "type": "registry:file", "target": "lib/my_app_web/components/listbox.ex" },
+        { "path": "registry/html/listbox.html", "type": "registry:file", "target": "snippets/listbox.html" }
+      ]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "A visually-persistent, app-style horizontal bar of menus built on the native Popover API and the WAI-ARIA menu/menubar keyboard contract (roving tabindex, arrow navigation, type-ahead, ESC).",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/menubar.tsx", "type": "registry:ui", "target": "components/ui/menubar.tsx" },
+        { "path": "registry/jinja2/menubar.html", "type": "registry:file", "target": "templates/components/menubar.html" },
+        { "path": "registry/go-templates/menubar.tmpl", "type": "registry:file", "target": "components/menubar.tmpl" },
+        { "path": "registry/phoenix/menubar.ex", "type": "registry:file", "target": "lib/my_app_web/components/menubar.ex" },
+        { "path": "registry/html/menubar.html", "type": "registry:file", "target": "snippets/menubar.html" }
+      ]
+    },
+    {
+      "name": "tree",
+      "type": "registry:ui",
+      "title": "Tree",
+      "description": "A hierarchical role=\"tree\" widget built from nested <ul>/<li> lists, where parent nodes carry aria-expanded and contain a nested role=\"group\". Ships Tree, TreeItem, and TreeGroup subcomponents with the full WAI-ARIA APG keyboard contract and roving tabindex wired in site.js.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/tree.tsx", "type": "registry:ui", "target": "components/ui/tree.tsx" },
+        { "path": "registry/jinja2/tree.html", "type": "registry:file", "target": "templates/components/tree.html" },
+        { "path": "registry/go-templates/tree.tmpl", "type": "registry:file", "target": "components/tree.tmpl" },
+        { "path": "registry/phoenix/tree.ex", "type": "registry:file", "target": "lib/my_app_web/components/tree.ex" },
+        { "path": "registry/html/tree.html", "type": "registry:file", "target": "snippets/tree.html" }
+      ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "A slideshow built on native CSS scroll-snap (snap-x mandatory; each slide snap-center). WAI-ARIA carousel/slide roles, real <button> prev/next that scroll by one slide; touch, trackpad and keyboard scrolling are the platform's.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/carousel.tsx", "type": "registry:ui", "target": "components/ui/carousel.tsx" },
+        { "path": "registry/jinja2/carousel.html", "type": "registry:file", "target": "templates/components/carousel.html" },
+        { "path": "registry/go-templates/carousel.tmpl", "type": "registry:file", "target": "components/carousel.tmpl" },
+        { "path": "registry/phoenix/carousel.ex", "type": "registry:file", "target": "lib/my_app_web/components/carousel.ex" },
+        { "path": "registry/html/carousel.html", "type": "registry:file", "target": "snippets/carousel.html" }
+      ]
+    },
+    {
+      "name": "feed",
+      "type": "registry:ui",
+      "title": "Feed",
+      "description": "A role=\"feed\" container of <article> items that loads more as the user scrolls (htmx infinite scroll via hx-trigger=\"revealed\"), following the WAI-ARIA APG Feed pattern. A structure, not a widget — screen readers stay in reading mode.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/feed.tsx", "type": "registry:ui", "target": "components/ui/feed.tsx" },
+        { "path": "registry/jinja2/feed.html", "type": "registry:file", "target": "templates/components/feed.html" },
+        { "path": "registry/go-templates/feed.tmpl", "type": "registry:file", "target": "components/feed.tmpl" },
+        { "path": "registry/phoenix/feed.ex", "type": "registry:file", "target": "lib/my_app_web/components/feed.ex" },
+        { "path": "registry/html/feed.html", "type": "registry:file", "target": "snippets/feed.html" }
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "An interactive data grid built on a real <table role=\"grid\">: a single tab stop with 2-D arrow-key cell navigation (roving tabindex), Home/End to row ends, and Ctrl+Home/End to the grid corners.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/grid.tsx", "type": "registry:ui", "target": "components/ui/grid.tsx" },
+        { "path": "registry/jinja2/grid.html", "type": "registry:file", "target": "templates/components/grid.html" },
+        { "path": "registry/go-templates/grid.tmpl", "type": "registry:file", "target": "components/grid.tmpl" },
+        { "path": "registry/phoenix/grid.ex", "type": "registry:file", "target": "lib/my_app_web/components/grid.ex" },
+        { "path": "registry/html/grid.html", "type": "registry:file", "target": "snippets/grid.html" }
+      ]
+    },
+    {
+      "name": "treegrid",
+      "type": "registry:ui",
+      "title": "Treegrid",
+      "description": "A hierarchical data grid: role=\"treegrid\" rows expand and collapse like a tree (aria-expanded + aria-level) while cells navigate like a grid with the arrow keys. Built on a native HTML table, following the WAI-ARIA APG Treegrid pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/treegrid.tsx", "type": "registry:ui", "target": "components/ui/treegrid.tsx" },
+        { "path": "registry/jinja2/treegrid.html", "type": "registry:file", "target": "templates/components/treegrid.html" },
+        { "path": "registry/go-templates/treegrid.tmpl", "type": "registry:file", "target": "components/treegrid.tmpl" },
+        { "path": "registry/phoenix/treegrid.ex", "type": "registry:file", "target": "lib/my_app_web/components/treegrid.ex" },
+        { "path": "registry/html/treegrid.html", "type": "registry:file", "target": "snippets/treegrid.html" }
+      ]
+    },
+    {
+      "name": "splitter",
+      "type": "registry:ui",
+      "title": "Splitter",
+      "description": "A resizable two-pane split whose divider is a focusable role=\"separator\" widget — drag it or use the arrow keys — driving a single CSS variable (--split) that sizes a grid track.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/splitter.tsx", "type": "registry:ui", "target": "components/ui/splitter.tsx" },
+        { "path": "registry/jinja2/splitter.html", "type": "registry:file", "target": "templates/components/splitter.html" },
+        { "path": "registry/go-templates/splitter.tmpl", "type": "registry:file", "target": "components/splitter.tmpl" },
+        { "path": "registry/phoenix/splitter.ex", "type": "registry:file", "target": "lib/my_app_web/components/splitter.ex" },
+        { "path": "registry/html/splitter.html", "type": "registry:file", "target": "snippets/splitter.html" }
+      ]
     }
   ]
 }

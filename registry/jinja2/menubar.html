@@ -1,0 +1,64 @@
+{# Menubar macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   App-style horizontal menubar. role="menubar" > role="menuitem" triggers
+   open native [popover] submenus (role="menu"). The APG composite keyboard
+   contract (roving tabindex, ArrowLeft/Right, ArrowDown to open, etc.) is
+   wired up in public/site.js keyed on data-slot="menubar". Mirrors
+   registry/ui/menubar.tsx exactly. #}
+
+{% macro menubar_open(aria_label=none, extra_class="") %}
+<div role="menubar" data-slot="menubar"
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     class="inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs {{ extra_class }}">
+{% endmacro %}
+
+{% macro menubar_close() %}</div>{% endmacro %}
+
+{# menu_open / menu_close wrap one top-level menu: trigger + popover submenu.
+   `id` is the popovertarget + popover id. Put items between them. #}
+{% macro menu_open(label, id, disabled=false, trigger_class="", content_class="") %}
+<div data-slot="menubar-menu" class="contents">
+  <button type="button" role="menuitem" tabindex="-1"
+          popovertarget="{{ id }}" popovertargetaction="toggle"
+          aria-haspopup="menu" aria-expanded="false"
+          data-slot="menubar-trigger" data-menu-for="{{ id }}"
+          {%- if disabled %} data-disabled="true" disabled{% endif %}
+          class="flex select-none items-center rounded-sm px-3 py-1 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground aria-[expanded=true]:bg-accent aria-[expanded=true]:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 {{ trigger_class }}">{{ label }}</button>
+  <div id="{{ id }}" popover="auto" role="menu" aria-label="{{ label }}"
+       data-slot="menubar-content" data-side="bottom"
+       class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom {{ content_class }}">
+{% endmacro %}
+
+{% macro menu_close() %}</div></div>{% endmacro %}
+
+{% macro menubar_item(label, href=none, onclick=none, disabled=false, variant="default", extra_class="", **attrs) %}
+{%- set base -%}
+relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0
+{%- endset -%}
+{%- set destructive -%}
+{% if variant == "destructive" %}text-destructive focus:bg-destructive/10 focus:text-destructive{% endif %}
+{%- endset -%}
+{% if href %}
+<a role="menuitem" tabindex="-1" href="{{ href }}"
+   data-slot="menubar-item"
+   {%- if disabled %} data-disabled="true"{% endif %}
+   class="{{ base }} {{ destructive }} {{ extra_class }}"
+   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label }}</a>
+{% else %}
+<button type="button" role="menuitem" tabindex="-1"
+        {% if onclick %}onclick="{{ onclick }}"{% endif %}
+        data-slot="menubar-item"
+        {%- if disabled %} data-disabled="true"{% endif %}
+        class="{{ base }} {{ destructive }} {{ extra_class }}"
+        {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label }}</button>
+{% endif %}
+{% endmacro %}
+
+{% macro menubar_separator() %}
+<div role="separator" aria-orientation="horizontal" data-slot="menubar-separator" class="-mx-1 my-1 h-px bg-border"></div>
+{% endmacro %}
+
+{% macro menubar_label(text) %}
+<div data-slot="menubar-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ text }}</div>
+{% endmacro %}

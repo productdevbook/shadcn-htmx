@@ -44,6 +44,15 @@ const SLUGS = [
   "alert-dialog",
   "range-slider",
   "toolbar",
+  // APG batch B
+  "listbox",
+  "menubar",
+  "tree",
+  "carousel",
+  "feed",
+  "grid",
+  "treegrid",
+  "splitter",
 ]
 
 for (const slug of SLUGS) {

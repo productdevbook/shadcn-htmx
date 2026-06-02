@@ -1,0 +1,91 @@
+<!--
+  shadcn-htmx — raw HTML treegrid snippet.
+
+  Mirrors registry/ui/treegrid.tsx. An HTML <table role="treegrid"> whose body
+  rows expand/collapse like a tree (aria-expanded + aria-level on the <tr>) and
+  whose cells navigate like a grid. Accessibility contract from the WAI-ARIA
+  APG Treegrid pattern (rows-focused-first variant):
+    repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html
+
+  The inline <script> right after the <table> sets the roving tabindex on first
+  paint (first row tabindex="0", the rest -1; interactive widgets in rows go to
+  -1 until their row is active). The live keyboard contract — Up/Down move by
+  row or cell, Right expands a collapsed row then steps into cells, Left
+  collapses / steps back to the row, Home/End/Ctrl+Home/Ctrl+End jump, Enter
+  toggles — needs the wiring in public/site.js (keyed on data-slot="treegrid").
+
+  Collapsed descendant rows carry the native `hidden` attribute, which removes
+  them from layout AND the accessibility tree.
+
+  Required CSS theme variables: --muted, --muted-foreground, --accent,
+  --accent-foreground, --border. See app/styles/input.css (plus the
+  [data-slot="treegrid"] chevron rule there that rotates the expand icon).
+-->
+
+<div class="relative w-full overflow-auto">
+  <table role="treegrid" data-slot="treegrid" aria-label="Inbox"
+         class="w-full caption-bottom border-collapse text-sm">
+    <thead>
+      <tr role="row" class="border-b">
+        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Subject</th>
+        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Summary</th>
+        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr role="row" data-slot="treegrid-row" aria-level="1" aria-posinset="1" aria-setsize="1" aria-expanded="true"
+          class="border-b outline-none transition-colors hover:bg-muted/50 focus-visible:bg-accent focus-visible:text-accent-foreground [&:focus-within]:bg-muted/60 aria-selected:bg-muted data-[state=selected]:bg-muted">
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">
+          <span class="flex items-center gap-1.5" style="padding-left:0rem">
+            <svg data-slot="treegrid-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-muted-foreground transition-transform" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>Treegrids are awesome</span>
+          </span>
+        </td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">Want to learn how to use them?</td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground"><a href="mailto:aaron@thegoogle.rocks" class="underline-offset-4 hover:underline">aaron@thegoogle.rocks</a></td>
+      </tr>
+      <tr role="row" data-slot="treegrid-row" aria-level="2" aria-posinset="1" aria-setsize="2"
+          class="border-b outline-none transition-colors hover:bg-muted/50 focus-visible:bg-accent focus-visible:text-accent-foreground [&:focus-within]:bg-muted/60 aria-selected:bg-muted data-[state=selected]:bg-muted">
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">
+          <span class="flex items-center gap-1.5" style="padding-left:1rem">
+            <span class="size-3.5 shrink-0" aria-hidden="true"></span>
+            <span>re: Treegrids are awesome</span>
+          </span>
+        </td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">I agree, they are the shizzle</td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground"><a href="mailto:joe@blahblahblah.blahblah" class="underline-offset-4 hover:underline">joe@blahblahblah.blahblah</a></td>
+      </tr>
+      <tr role="row" data-slot="treegrid-row" aria-level="2" aria-posinset="2" aria-setsize="2" aria-expanded="false"
+          class="border-b outline-none transition-colors hover:bg-muted/50 focus-visible:bg-accent focus-visible:text-accent-foreground [&:focus-within]:bg-muted/60 aria-selected:bg-muted data-[state=selected]:bg-muted">
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">
+          <span class="flex items-center gap-1.5" style="padding-left:1rem">
+            <svg data-slot="treegrid-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-muted-foreground transition-transform" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>re: Treegrids are awesome</span>
+          </span>
+        </td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">They are great for showing a lot of data</td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground"><a href="mailto:billy@dangerous.fish" class="underline-offset-4 hover:underline">billy@dangerous.fish</a></td>
+      </tr>
+      <tr role="row" data-slot="treegrid-row" aria-level="3" aria-posinset="1" aria-setsize="1" hidden
+          class="border-b outline-none transition-colors hover:bg-muted/50 focus-visible:bg-accent focus-visible:text-accent-foreground [&:focus-within]:bg-muted/60 aria-selected:bg-muted data-[state=selected]:bg-muted">
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">
+          <span class="flex items-center gap-1.5" style="padding-left:2rem">
+            <span class="size-3.5 shrink-0" aria-hidden="true"></span>
+            <span>re: Treegrids are awesome</span>
+          </span>
+        </td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground">Cool, we needed an example</td>
+        <td role="gridcell" data-slot="treegrid-cell" class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground"><a href="mailto:doris@rufflazydogs.sleep" class="underline-offset-4 hover:underline">doris@rufflazydogs.sleep</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <script>(function(el){
+    var rows = el.querySelectorAll('tbody > tr[role="row"]');
+    rows.forEach(function(r, i){ r.setAttribute('tabindex', i === 0 ? '0' : '-1'); });
+    el.querySelectorAll('tbody a,tbody button,tbody input,tbody [tabindex]').forEach(function(f){
+      if (f.getAttribute('role') === 'row') return;
+      f.setAttribute('tabindex', '-1');
+    });
+    el.setAttribute('data-treegrid-ready', 'true');
+  })(document.currentScript.parentElement.querySelector('[data-slot="treegrid"]'));</script>
+</div>

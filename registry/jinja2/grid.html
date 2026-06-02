@@ -1,0 +1,100 @@
+{# Grid macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/grid.tsx. An INTERACTIVE data grid: <table role="grid">
+   that is a SINGLE tab stop with 2-D arrow-key cell navigation (roving
+   tabindex). Distinct from the static Table component.
+
+   The boot <script> emitted by grid_close() sets the roving tabindex on
+   first paint (the first focusable [data-grid-cell] gets tabindex="0", the
+   rest -1); public/site.js (keyed on data-slot="grid") owns the live
+   arrow / Home / End / Ctrl+Home / Ctrl+End contract.
+
+   Accessibility contract:
+     repos/aria-practices/content/patterns/grid/grid-pattern.html
+     repos/aria-practices/content/patterns/grid/examples/js/dataGrid.js
+
+   Usage:
+     {% from "components/grid.html" import grid_open, grid_close,
+          ghead_open, ghead_close, gbody_open, gbody_close,
+          grow_open, grow_close, gcolheader, growheader, gcell %}
+
+     {{ grid_open(aria_label="Transactions") }}
+       {{ ghead_open() }}{{ grow_open() }}
+         {{ gcolheader("Name", sort="ascending") }}{{ gcolheader("Amount") }}
+       {{ grow_close() }}{{ ghead_close() }}
+       {{ gbody_open() }}{{ grow_open() }}
+         {{ gcell("Ada") }}{{ gcell("$120") }}
+       {{ grow_close() }}{{ gbody_close() }}
+     {{ grid_close() }} #}
+
+{% macro grid_open(aria_label=none, aria_labelledby=none, aria_describedby=none, aria_rowcount=none, aria_colcount=none, aria_readonly=false, extra_class="", wrapper_class="", attrs={}) -%}
+<div class="relative w-full overflow-auto rounded-md border {{ wrapper_class }}">
+  <table role="grid"
+         data-slot="grid"
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+         {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+         {%- if aria_rowcount is not none %} aria-rowcount="{{ aria_rowcount }}"{% endif %}
+         {%- if aria_colcount is not none %} aria-colcount="{{ aria_colcount }}"{% endif %}
+         {%- if aria_readonly %} aria-readonly="true"{% endif %}
+         {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+         class="w-full caption-bottom border-separate border-spacing-0 text-sm {{ extra_class }}">
+{%- endmacro %}
+
+{% macro grid_close() -%}
+  </table>
+  <script>(function(el){
+    var cells = el.querySelectorAll('[data-grid-cell]');
+    cells.forEach(function(c,i){ c.setAttribute('tabindex', i===0 ? '0' : '-1'); });
+    if (cells.length) cells[0].setAttribute('data-grid-active','true');
+    el.setAttribute('data-grid-ready','true');
+  })(document.currentScript.previousElementSibling);</script>
+</div>
+{%- endmacro %}
+
+{% macro ghead_open() %}<thead data-slot="grid-header">{% endmacro %}
+{% macro ghead_close() %}</thead>{% endmacro %}
+
+{% macro gbody_open() %}<tbody data-slot="grid-body">{% endmacro %}
+{% macro gbody_close() %}</tbody>{% endmacro %}
+
+{% macro grow_open(aria_rowindex=none, selected=false, extra_class="", attrs={}) -%}
+<tr data-slot="grid-row"
+    {%- if aria_rowindex is not none %} aria-rowindex="{{ aria_rowindex }}"{% endif %}
+    {%- if selected %} aria-selected="true"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="transition-colors {{ extra_class }}">
+{%- endmacro %}
+{% macro grow_close() %}</tr>{% endmacro %}
+
+{%- set CELL = "border-b border-r px-3 py-2 align-middle outline-none focus-visible:relative focus-visible:z-10 focus-visible:ring-[2px] focus-visible:ring-ring/50 data-[grid-active=true]:bg-muted/50" -%}
+{%- set HEAD = CELL ~ " border-t bg-muted/50 text-left font-medium text-muted-foreground first:rounded-tl-md last:rounded-tr-md" -%}
+{%- set DATA = CELL ~ " bg-background text-foreground" -%}
+
+{% macro gcolheader(label, sort=none, aria_colindex=none, extra_class="", attrs={}) -%}
+<th scope="col"
+    data-slot="grid-columnheader"
+    data-grid-cell=""
+    {%- if sort is not none %} data-sortable="true" aria-sort="{{ sort }}"{% endif %}
+    {%- if aria_colindex is not none %} aria-colindex="{{ aria_colindex }}"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="{{ HEAD }} {{ extra_class }}"><span class="inline-flex items-center gap-1.5">{{ label|safe }}{% if sort == "ascending" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="18 15 12 9 6 15" /></svg>{% elif sort == "descending" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>{% elif sort == "none" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 opacity-30" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>{% endif %}</span></th>
+{%- endmacro %}
+
+{% macro growheader(label, aria_colindex=none, extra_class="", attrs={}) -%}
+<th scope="row"
+    data-slot="grid-rowheader"
+    data-grid-cell=""
+    {%- if aria_colindex is not none %} aria-colindex="{{ aria_colindex }}"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="{{ HEAD }} font-medium text-foreground {{ extra_class }}">{{ label|safe }}</th>
+{%- endmacro %}
+
+{% macro gcell(content, aria_colindex=none, selected=false, aria_readonly=false, extra_class="", attrs={}) -%}
+<td data-slot="grid-cell"
+    data-grid-cell=""
+    {%- if aria_colindex is not none %} aria-colindex="{{ aria_colindex }}"{% endif %}
+    {%- if selected %} aria-selected="true"{% endif %}
+    {%- if aria_readonly %} aria-readonly="true"{% endif %}
+    {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+    class="{{ DATA }} {{ extra_class }}">{{ content|safe }}</td>
+{%- endmacro %}

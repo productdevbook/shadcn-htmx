@@ -358,3 +358,140 @@ test.describe("APG components — batch A", () => {
       await expect(first).toHaveAttribute("tabindex", "-1")
     })
 })
+
+test.describe("APG components — batch B", () => {
+
+  test("Listbox arrow keys move selection + roll the roving tabindex", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "listbox")
+      // First live single-select listbox preview.
+      const lb = page.locator('[data-slot="listbox"]').first()
+      const options = lb.locator('[role="option"]')
+      const first = options.nth(0)
+      const second = options.nth(1)
+      // Roving tabindex: only one option is in the tab order at boot.
+      await expect(lb).toHaveAttribute("data-listbox-ready", "true")
+      // Focus the first option and arrow down.
+      await first.focus()
+      await page.keyboard.press("ArrowDown")
+      // Focus AND the roving tabindex move; single-select selection follows focus.
+      await expect(second).toBeFocused()
+      await expect(second).toHaveAttribute("tabindex", "0")
+      await expect(first).toHaveAttribute("tabindex", "-1")
+      await expect(second).toHaveAttribute("aria-selected", "true")
+      await expect(first).toHaveAttribute("aria-selected", "false")
+    })
+
+  test("Menubar opens a menu via ArrowDown and focuses first item", async ({ page }) => {
+      await gotoDoc(page, "menubar")
+      // The bar is a single tab stop with a roving tabindex; focus the first
+      // enabled trigger, then ArrowDown opens its submenu + focuses first item.
+      const trigger = page.locator('[data-menu-for="ex-mb-file"]')
+      await trigger.focus()
+      await page.keyboard.press("ArrowDown")
+      await page.waitForFunction(() => {
+        const el = document.getElementById("ex-mb-file")
+        return !!el && el.matches(":popover-open")
+      }, { timeout: 2000 })
+      await expect(
+        page.locator('#ex-mb-file [role="menuitem"]').first(),
+      ).toBeFocused()
+      await expect(trigger).toHaveAttribute("aria-expanded", "true")
+    })
+
+  test("Tree expands a collapsed parent with ArrowRight", async ({ page }) => {
+    await gotoDoc(page, "tree")
+    // The "Reports" node in the File-tree example renders collapsed
+    // (parent without expanded → aria-expanded="false").
+    const tree = page.locator('[data-slot="tree"]').first()
+    const reports = tree
+      .locator('[role="treeitem"]', { hasText: "Reports" })
+      .first()
+    await expect(reports).toHaveAttribute("aria-expanded", "false")
+    // Move focus onto the node, then ArrowRight to open it (focus stays).
+    await reports.focus()
+    await page.keyboard.press("ArrowRight")
+    await expect(reports).toHaveAttribute("aria-expanded", "true")
+  })
+
+  test("Carousel advances on Next click", async ({ page }) => {
+      await gotoDoc(page, "carousel")
+      const content = page.locator(
+        '#ex-basic-carousel [data-slot="carousel-content"]',
+      )
+      // Starts at the first slide; Prev is disabled.
+      await expect(
+        page.locator("#ex-basic-carousel [data-carousel-prev]"),
+      ).toBeDisabled()
+      const before = await content.evaluate((el) => el.scrollLeft)
+      await page.locator("#ex-basic-carousel [data-carousel-next]").click()
+      // scrollBy({behavior:'smooth'}) animates, so poll for the position change.
+      await expect
+        .poll(() => content.evaluate((el) => el.scrollLeft))
+        .toBeGreaterThan(before)
+    })
+
+  test("Feed — Page Down moves focus to the next article", async ({ page }) => {
+    await gotoDoc(page, "feed")
+    const first = page.locator('[data-test="kbd-article-1"]')
+    const second = page.locator('[data-test="kbd-article-2"]')
+    await first.focus()
+    await expect(first).toBeFocused()
+    await page.keyboard.press("PageDown")
+    await expect(second).toBeFocused()
+    // Page Up walks back to the first article.
+    await page.keyboard.press("PageUp")
+    await expect(first).toBeFocused()
+  })
+
+  test("Grid moves cell focus with arrow keys", async ({ page }) => {
+      await gotoDoc(page, "grid")
+      const cells = page
+        .locator('[data-slot="grid"]')
+        .first()
+        .locator("[data-grid-cell]")
+      // First cell is the roving-tabindex owner (set by the boot script).
+      const first = cells.first()
+      await first.focus()
+      await expect(first).toBeFocused()
+      // ArrowRight rolls focus + the tabindex="0" to the next cell in the row.
+      await page.keyboard.press("ArrowRight")
+      const second = cells.nth(1)
+      await expect(second).toBeFocused()
+      await expect(second).toHaveAttribute("tabindex", "0")
+      await expect(first).toHaveAttribute("tabindex", "-1")
+    })
+
+  test("Treegrid expands a collapsed row on ArrowRight", async ({ page }) => {
+    await gotoDoc(page, "treegrid")
+    // A collapsed folder row (aria-expanded=false) with a hidden child row.
+    // Grab a STABLE handle to the row — a state selector like [aria-expanded=
+    // "false"] would stop matching once we expand it. Focus it, ArrowRight.
+    const collapsed = page
+      .locator('[data-slot="treegrid"] tr[role="row"][aria-expanded="false"]')
+      .first()
+    const handle = await collapsed.elementHandle()
+    if (!handle) throw new Error("no collapsed treegrid row found")
+    expect(await handle.getAttribute("aria-expanded")).toBe("false")
+    await handle.focus()
+    await page.keyboard.press("ArrowRight")
+    await expect.poll(() => handle.getAttribute("aria-expanded")).toBe("true")
+  })
+
+  test("Splitter resizes via ArrowRight", async ({ page }) => {
+      await gotoDoc(page, "splitter")
+      const handle = page.locator('#ex-split-files [data-slot="splitter-handle"]')
+      await handle.focus()
+      const before = await handle.getAttribute("aria-valuenow")
+      await page.keyboard.press("ArrowRight")
+      await expect
+        .poll(() => handle.getAttribute("aria-valuenow"))
+        .not.toBe(before)
+      // The CSS variable that sizes the grid track moves with the value.
+      const split = await page
+        .locator('#ex-split-files')
+        .evaluate((el) => (el as HTMLElement).style.getPropertyValue("--split"))
+      expect(split).toMatch(/%$/)
+    })
+})

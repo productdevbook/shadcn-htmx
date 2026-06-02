@@ -1,0 +1,40 @@
+{{/* Feed templates — shadcn-htmx, htmx v4 + Tailwind v4.
+     Mirrors registry/ui/feed.tsx.
+
+     role="feed" container of role="article" items (WAI-ARIA APG Feed pattern).
+     The trailing sentinel uses hx-trigger="revealed" to load the next page.
+
+     Usage:
+       {{template "feed" (dict "AriaLabelledby" "feed-title" "Body" (htmlSafe `
+         {{template "feed_article" (dict "Posinset" 1 "Setsize" -1
+            "Labelledby" "post-1-title" "Describedby" "post-1-body" "ID" "post-1"
+            "Body" (htmlSafe `<h3 id="post-1-title" class="font-semibold">Title</h3>
+            <p id="post-1-body" class="mt-1 text-sm text-muted-foreground">Body…</p>`))}}
+         {{template "feed_sentinel" (dict "Href" "/feed/page?page=2")}}`))}} */}}
+
+{{define "feed"}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     role="feed" data-slot="feed"
+     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+     {{if .Busy}}aria-busy="true"{{end}}
+     class="flex flex-col gap-4 {{.Class}}">{{.Body}}</div>
+{{end}}
+
+{{define "feed_article"}}
+{{- $setsize := or .Setsize -1 -}}
+<article {{if .ID}}id="{{.ID}}"{{end}}
+         role="article" data-slot="feed-article" tabindex="0"
+         aria-posinset="{{.Posinset}}" aria-setsize="{{$setsize}}"
+         aria-labelledby="{{.Labelledby}}"
+         {{if .Describedby}}aria-describedby="{{.Describedby}}"{{end}}
+         class="rounded-xl border bg-card p-5 text-card-foreground shadow-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none {{.Class}}">{{.Body}}</article>
+{{end}}
+
+{{define "feed_sentinel"}}
+{{- $trigger := or .Trigger "revealed" -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="feed-sentinel"
+     {{if .Href}}hx-get="{{.Href}}"{{end}}
+     hx-trigger="{{$trigger}}" hx-swap="outerHTML"
+     class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{.Class}}">{{if .Body}}{{.Body}}{{else}}<span aria-hidden="true" class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"></span>Loading more…{{end}}</div>
+{{end}}

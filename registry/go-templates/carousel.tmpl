@@ -1,0 +1,86 @@
+{{/*
+  Carousel template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/carousel.tsx. Native CSS scroll-snap slideshow.
+  Provides named templates:
+    - "carousel"           — the role="group" carousel wrapper + boot script
+    - "carousel_content"   — the scroll-snap slides wrapper (compose items in .Body)
+    - "carousel_item"      — one role="group" aria-roledescription="slide"
+    - "carousel_previous"  — the prev <button>
+    - "carousel_next"      — the next <button>
+
+  Usage (compose the inner HTML so you can build the slide list):
+
+      {{template "carousel" (dict "ID" "gallery" "AriaLabel" "Featured photos"
+        "Body" (htmlSafe (printf `%s%s%s`
+          (... carousel_content with items ...)
+          (... carousel_previous ...)
+          (... carousel_next ...))))}}
+
+  The boot <script> fills each slide's "N of M" label + initial disabled state;
+  public/site.js owns the live scrollBy() + disabled contract.
+*/}}
+
+{{define "carousel"}}
+<section id="{{.ID}}"
+         data-slot="carousel"
+         data-carousel
+         role="group"
+         aria-roledescription="carousel"
+         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+         {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         class="group/carousel relative">
+  {{.Body}}
+</section>
+<script>(function(el){
+  var content = el.querySelector('[data-slot="carousel-content"]');
+  if (content){
+    if (!content.id) content.id = el.id + '-content';
+    var items = content.querySelectorAll('[data-slot="carousel-item"]');
+    var total = items.length;
+    items.forEach(function(it, i){
+      if (!it.getAttribute('aria-label')) it.setAttribute('aria-label', (i+1)+' of '+total);
+    });
+    el.querySelectorAll('[data-carousel-prev],[data-carousel-next]').forEach(function(b){
+      b.setAttribute('aria-controls', content.id);
+    });
+    var prev = el.querySelector('[data-carousel-prev]');
+    if (prev) prev.disabled = content.scrollLeft <= 0;
+  }
+  el.setAttribute('data-carousel-ready','true');
+})(document.currentScript.previousElementSibling);</script>
+{{end}}
+
+{{define "carousel_content"}}
+<div data-slot="carousel-content"
+     aria-atomic="false"
+     aria-live="polite"
+     tabindex="0"
+     class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg">{{.Body}}</div>
+{{end}}
+
+{{define "carousel_item"}}
+<div data-slot="carousel-item"
+     role="group"
+     aria-roledescription="slide"
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     class="min-w-0 shrink-0 grow-0 basis-full snap-center">{{.Body}}</div>
+{{end}}
+
+{{define "carousel_previous"}}
+{{- $label := or .AriaLabel "Previous slide" -}}
+<button type="button"
+        data-slot="carousel-previous"
+        data-carousel-prev
+        aria-label="{{$label}}"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-full border bg-background text-foreground shadow-xs transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 absolute top-1/2 -left-3 -translate-y-1/2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+{{end}}
+
+{{define "carousel_next"}}
+{{- $label := or .AriaLabel "Next slide" -}}
+<button type="button"
+        data-slot="carousel-next"
+        data-carousel-next
+        aria-label="{{$label}}"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-full border bg-background text-foreground shadow-xs transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 absolute top-1/2 -right-3 -translate-y-1/2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+{{end}}

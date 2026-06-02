@@ -212,6 +212,54 @@
       "type": "registry:ui",
       "title": "Toolbar",
       "description": "A role=\"toolbar\" container that groups related controls (buttons, toggle buttons, separators) into a single tab stop with APG roving-tabindex arrow-key navigation. Ships ToolbarButton, ToolbarToggle, ToolbarSeparator, and ToolbarGroup subcomponents."
+    },
+    {
+      "name": "listbox",
+      "type": "registry:ui",
+      "title": "Listbox",
+      "description": "A scrollable single- or multi-select list built on role=\"listbox\" with role=\"option\" children, following the WAI-ARIA APG keyboard contract. A hidden input mirrors the selection so it submits like a normal form field."
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "A visually-persistent, app-style horizontal bar of menus built on the native Popover API and the WAI-ARIA menu/menubar keyboard contract (roving tabindex, arrow navigation, type-ahead, ESC)."
+    },
+    {
+      "name": "tree",
+      "type": "registry:ui",
+      "title": "Tree",
+      "description": "A hierarchical role=\"tree\" widget built from nested <ul>/<li> lists, where parent nodes carry aria-expanded and contain a nested role=\"group\". Ships Tree, TreeItem, and TreeGroup subcomponents with the full WAI-ARIA APG keyboard contract and roving tabindex wired in site.js."
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "A slideshow built on native CSS scroll-snap (snap-x mandatory; each slide snap-center). WAI-ARIA carousel/slide roles, real <button> prev/next that scroll by one slide; touch, trackpad and keyboard scrolling are the platform's."
+    },
+    {
+      "name": "feed",
+      "type": "registry:ui",
+      "title": "Feed",
+      "description": "A role=\"feed\" container of <article> items that loads more as the user scrolls (htmx infinite scroll via hx-trigger=\"revealed\"), following the WAI-ARIA APG Feed pattern. A structure, not a widget — screen readers stay in reading mode."
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "An interactive data grid built on a real <table role=\"grid\">: a single tab stop with 2-D arrow-key cell navigation (roving tabindex), Home/End to row ends, and Ctrl+Home/End to the grid corners."
+    },
+    {
+      "name": "treegrid",
+      "type": "registry:ui",
+      "title": "Treegrid",
+      "description": "A hierarchical data grid: role=\"treegrid\" rows expand and collapse like a tree (aria-expanded + aria-level) while cells navigate like a grid with the arrow keys. Built on a native HTML table, following the WAI-ARIA APG Treegrid pattern."
+    },
+    {
+      "name": "splitter",
+      "type": "registry:ui",
+      "title": "Splitter",
+      "description": "A resizable two-pane split whose divider is a focusable role=\"separator\" widget — drag it or use the arrow keys — driving a single CSS variable (--split) that sizes a grid track."
     }
   ]
 }

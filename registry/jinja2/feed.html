@@ -1,0 +1,55 @@
+{# Feed macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/feed.tsx.
+
+   A role="feed" container of role="article" items, per the WAI-ARIA APG
+   Feed pattern. The trailing sentinel uses hx-trigger="revealed" to load
+   the next page (htmx infinite scroll).
+
+   Usage:
+     {% from "components/feed.html" import feed_open, feed_close, feed_article,
+        feed_sentinel %}
+
+     {{ feed_open(aria_labelledby="feed-title") }}
+       {% call feed_article(posinset=1, setsize=-1, labelledby="post-1-title",
+          describedby="post-1-body", id="post-1") %}
+         <h3 id="post-1-title" class="font-semibold">Title</h3>
+         <p id="post-1-body" class="mt-1 text-sm text-muted-foreground">Body…</p>
+       {% endcall %}
+       {{ feed_sentinel(href="/feed/page?page=2") }}
+     {{ feed_close() }} #}
+
+{% macro feed_open(aria_label=none, aria_labelledby=none, busy=false, id=none, extra_class="") %}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  role="feed" data-slot="feed"
+  {% if aria_labelledby %}aria-labelledby="{{ aria_labelledby }}"{% elif aria_label %}aria-label="{{ aria_label }}"{% endif %}
+  {% if busy %}aria-busy="true"{% endif %}
+  class="flex flex-col gap-4 {{ extra_class }}">
+{% endmacro %}
+
+{% macro feed_close() %}
+</div>
+{% endmacro %}
+
+{% macro feed_article(posinset, setsize, labelledby, describedby=none, id=none, extra_class="", **attrs) %}
+<article
+  {%- if id %} id="{{ id }}"{% endif %}
+  role="article" data-slot="feed-article" tabindex="0"
+  aria-posinset="{{ posinset }}" aria-setsize="{{ setsize }}"
+  aria-labelledby="{{ labelledby }}"
+  {% if describedby %}aria-describedby="{{ describedby }}"{% endif %}
+  class="rounded-xl border bg-card p-5 text-card-foreground shadow-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ caller() }}</article>
+{% endmacro %}
+
+{% macro feed_sentinel(href=none, trigger="revealed", id=none, extra_class="") %}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="feed-sentinel"
+  {% if href %}hx-get="{{ href }}"{% endif %}
+  hx-trigger="{{ trigger }}" hx-swap="outerHTML"
+  class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{ extra_class }}">
+  {% if caller %}{{ caller() }}{% else %}<span aria-hidden="true" class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"></span>Loading more…{% endif %}
+</div>
+{% endmacro %}

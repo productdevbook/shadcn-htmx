@@ -36,6 +36,14 @@ import { collapsibleRoutes } from "@/app/routes/collapsible"
 import { alertDialogRoutes } from "@/app/routes/alert-dialog"
 import { rangeSliderRoutes } from "@/app/routes/range-slider"
 import { toolbarRoutes } from "@/app/routes/toolbar"
+import { listboxRoutes } from "@/app/routes/listbox"
+import { menubarRoutes } from "@/app/routes/menubar"
+import { treeRoutes } from "@/app/routes/tree"
+import { carouselRoutes } from "@/app/routes/carousel"
+import { feedRoutes } from "@/app/routes/feed"
+import { gridRoutes } from "@/app/routes/grid"
+import { treegridRoutes } from "@/app/routes/treegrid"
+import { splitterRoutes } from "@/app/routes/splitter"
 
 const app = new Hono()
 
@@ -83,6 +91,14 @@ app.route("/docs/collapsible", collapsibleRoutes)
 app.route("/docs/alert-dialog", alertDialogRoutes)
 app.route("/docs/range-slider", rangeSliderRoutes)
 app.route("/docs/toolbar", toolbarRoutes)
+app.route("/docs/listbox", listboxRoutes)
+app.route("/docs/menubar", menubarRoutes)
+app.route("/docs/tree", treeRoutes)
+app.route("/docs/carousel", carouselRoutes)
+app.route("/docs/feed", feedRoutes)
+app.route("/docs/grid", gridRoutes)
+app.route("/docs/treegrid", treegridRoutes)
+app.route("/docs/splitter", splitterRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -120,6 +136,14 @@ app.route("/collapsible", collapsibleRoutes)
 app.route("/alert-dialog", alertDialogRoutes)
 app.route("/range-slider", rangeSliderRoutes)
 app.route("/toolbar", toolbarRoutes)
+app.route("/listbox", listboxRoutes)
+app.route("/menubar", menubarRoutes)
+app.route("/tree", treeRoutes)
+app.route("/carousel", carouselRoutes)
+app.route("/feed", feedRoutes)
+app.route("/grid", gridRoutes)
+app.route("/treegrid", treegridRoutes)
+app.route("/splitter", splitterRoutes)
 
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
@@ -141,6 +165,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Slider", href: "/docs/slider", blurb: "Native range, full keyboard contract." },
       { label: "Number Input", href: "/docs/number-input", blurb: "Native number spinbutton with −/+ steppers" },
       { label: "Range Slider", href: "/docs/range-slider", blurb: "Two-thumb range from native range inputs" },
+      { label: "Listbox", href: "/docs/listbox", blurb: "Scrollable single/multi-select list (APG listbox)" },
     ],
   },
   {
@@ -150,6 +175,9 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Table", href: "/docs/table", blurb: "Semantic table, sortable via aria-sort." },
       { label: "Collapsible", href: "/docs/collapsible", blurb: "Native single show/hide disclosure" },
       { label: "Toolbar", href: "/docs/toolbar", blurb: "Group controls in one arrow-navigable tab stop" },
+      { label: "Grid", href: "/docs/grid", blurb: "Interactive data grid with 2-D arrow-key cell navigation" },
+      { label: "Treegrid", href: "/docs/treegrid", blurb: "Expandable hierarchical grid (role=treegrid)" },
+      { label: "Splitter", href: "/docs/splitter", blurb: "Resizable two-pane split with a draggable divider" },
     ],
   },
   {
@@ -158,6 +186,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Avatar", href: "/docs/avatar", blurb: "Image with text/icon fallback on 404." },
       { label: "Badge", href: "/docs/badge", blurb: "Six variants; renders span or anchor." },
       { label: "Separator", href: "/docs/separator", blurb: "Decorative or semantic divider." },
+      { label: "Carousel", href: "/docs/carousel", blurb: "Native scroll-snap slideshow with APG carousel roles" },
     ],
   },
   {
@@ -168,6 +197,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Skeleton", href: "/docs/skeleton", blurb: "role=status placeholder, outerHTML swap." },
       { label: "Toast", href: "/docs/toast", blurb: "Server-driven via htmx beforeend swap." },
       { label: "Meter", href: "/docs/meter", blurb: "Native <meter> gauge, low/high/optimum zones." },
+      { label: "Feed", href: "/docs/feed", blurb: "Infinite-scroll list of articles, APG feed pattern" },
     ],
   },
   {
@@ -188,6 +218,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Tabs", href: "/docs/tabs", blurb: "role=tab, arrow / Home / End contract." },
       { label: "Breadcrumb", href: "/docs/breadcrumb", blurb: "Path-to-page trail: native nav + ol of links" },
       { label: "Link", href: "/docs/link", blurb: "Native anchor; underlined/muted/hover + external." },
+      { label: "Menubar", href: "/docs/menubar", blurb: "App-style menubar of native popover menus" },
+      { label: "Tree", href: "/docs/tree", blurb: "Hierarchical role=tree with APG keyboard nav" },
     ],
   },
 ]

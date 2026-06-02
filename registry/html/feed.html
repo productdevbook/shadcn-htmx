@@ -1,0 +1,50 @@
+<!--
+  shadcn-htmx — raw HTML feed snippet.
+  role="feed" container of role="article" items (WAI-ARIA APG Feed pattern).
+  Each article is focusable and carries aria-posinset / aria-setsize
+  (-1 = unknown total), aria-labelledby (title) and aria-describedby (body).
+  The trailing sentinel uses htmx hx-trigger="revealed" to load the next
+  page; the response replaces it (hx-swap="outerHTML"), extending the chain.
+  Relies only on the theme tokens in styles.css. The PageUp/PageDown +
+  Ctrl+Home/End keyboard contract is wired by site.js (data-slot="feed").
+-->
+
+<h2 id="feed-title" class="text-lg font-semibold tracking-tight">Latest posts</h2>
+
+<div role="feed" data-slot="feed" aria-labelledby="feed-title"
+     class="flex flex-col gap-4">
+
+  <article role="article" data-slot="feed-article" tabindex="0"
+           aria-posinset="1" aria-setsize="-1"
+           aria-labelledby="post-1-title" aria-describedby="post-1-body"
+           id="post-1"
+           class="rounded-xl border bg-card p-5 text-card-foreground shadow-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <h3 id="post-1-title" class="font-semibold">Shipping hypermedia at scale</h3>
+    <p id="post-1-body" class="mt-1 text-sm text-muted-foreground">
+      How we moved a dashboard from a SPA to server-rendered htmx — and why
+      the page got faster.
+    </p>
+  </article>
+
+  <article role="article" data-slot="feed-article" tabindex="0"
+           aria-posinset="2" aria-setsize="-1"
+           aria-labelledby="post-2-title" aria-describedby="post-2-body"
+           id="post-2"
+           class="rounded-xl border bg-card p-5 text-card-foreground shadow-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <h3 id="post-2-title" class="font-semibold">Tailwind v4: the Oxide engine</h3>
+    <p id="post-2-body" class="mt-1 text-sm text-muted-foreground">
+      A tour of CSS-first config, container queries, and the new color system.
+    </p>
+  </article>
+
+  <!-- Sentinel: when it scrolls into view, htmx GETs the next page and
+       replaces this node with (next articles + a fresh sentinel). Omit the
+       sentinel from the server response when there are no more pages. -->
+  <div data-slot="feed-sentinel" hx-get="/feed/page?page=2"
+       hx-trigger="revealed" hx-swap="outerHTML"
+       class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+    <span aria-hidden="true"
+          class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"></span>
+    Loading more…
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<!--
+  shadcn-htmx — raw HTML listbox snippet.
+
+  Mirrors registry/ui/listbox.tsx. The APG Listbox pattern: a
+  <ul role="listbox"> with <li role="option"> children. The inline <script>
+  right after the wrapper sets the roving tabindex (single tab stop) and
+  seeds the hidden form value on first paint (no flicker). The live keyboard
+  + selection contract (Up/Down/Home/End, Space/Enter, type-ahead, multi-
+  select range) needs the wiring in public/site.js, keyed on
+  data-slot="listbox".
+
+  Accessibility contract:
+    repos/aria-practices/content/patterns/listbox/listbox-pattern.html
+
+  Required CSS theme variables: --background, --foreground, --primary,
+  --primary-foreground, --accent, --accent-foreground, --muted-foreground,
+  --border, --ring. See app/styles/input.css.
+
+  Native fallback (zero JS): a <select multiple> IS the platform's listbox —
+  it submits each selected <option> on its own. Use it when you don't need
+  custom option rendering. The styled widget below is the APG listbox.
+-->
+
+<span class="relative inline-flex w-full flex-col">
+  <ul id="fav-element"
+      role="listbox"
+      data-slot="listbox"
+      data-orientation="vertical"
+      aria-orientation="vertical"
+      aria-label="Favourite element"
+      tabindex="-1"
+      class="max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md border bg-background p-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[orientation=horizontal]:flex data-[orientation=horizontal]:max-h-none data-[orientation=horizontal]:overflow-x-auto data-[orientation=horizontal]:overflow-y-hidden">
+
+    <li role="option" data-slot="listbox-option" data-value="H" aria-selected="true"
+        class="relative flex cursor-pointer scroll-my-1 items-center gap-2 rounded-sm px-2 py-1.5 text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">Hydrogen</li>
+
+    <li role="option" data-slot="listbox-option" data-value="He" aria-selected="false"
+        class="relative flex cursor-pointer scroll-my-1 items-center gap-2 rounded-sm px-2 py-1.5 text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">Helium</li>
+
+    <li role="option" data-slot="listbox-option" data-value="Li" aria-selected="false"
+        class="relative flex cursor-pointer scroll-my-1 items-center gap-2 rounded-sm px-2 py-1.5 text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">Lithium</li>
+
+    <li role="option" data-slot="listbox-option" data-value="Be" aria-disabled="true"
+        class="relative flex cursor-pointer scroll-my-1 items-center gap-2 rounded-sm px-2 py-1.5 text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">Beryllium</li>
+
+  </ul>
+
+  <!-- Hidden form value — site.js keeps it in sync with the selection. -->
+  <input type="hidden" name="element" data-listbox-value="">
+
+  <script>
+    (function (el) {
+      var opts = el.querySelectorAll('[role="option"]')
+      var sel = el.querySelector('[role="option"][aria-selected="true"]:not([aria-disabled="true"])')
+      var active = sel || el.querySelector('[role="option"]:not([aria-disabled="true"])')
+      opts.forEach(function (o) { o.setAttribute('tabindex', o === active ? '0' : '-1') })
+      var hidden = el.parentNode && el.parentNode.querySelector('[data-listbox-value]')
+      if (hidden) {
+        var vals = []
+        el.querySelectorAll('[role="option"][aria-selected="true"]').forEach(function (o) {
+          vals.push(o.getAttribute('data-value') || (o.textContent || '').trim())
+        })
+        hidden.value = vals.join(',')
+      }
+      el.setAttribute('data-listbox-ready', 'true')
+    })(document.currentScript.parentNode.querySelector('[data-slot="listbox"]'))
+  </script>
+</span>

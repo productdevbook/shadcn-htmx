@@ -1,0 +1,39 @@
+{# Splitter (window splitter) macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/splitter.tsx. A CSS grid whose first track is sized by
+   --split (a percentage) plus a focusable role="separator" divider. site.js
+   (data-slot="splitter") owns pointer drag + the APG keyboard contract and
+   keeps --split / aria-valuenow in sync.
+   Accessibility contract:
+   repos/aria-practices/content/patterns/windowsplitter/windowsplitter-pattern.html #}
+
+{% macro splitter(
+    orientation="horizontal",
+    primary="", secondary="",
+    value=50, min=0, max=100, step=10,
+    aria_label=none, aria_labelledby=none,
+    primary_id=none, id=none,
+    extra_class="", **attrs
+) %}
+{% set now = [[value, min]|max, max]|min %}
+{% set pane_id = primary_id if primary_id is not none else (id ~ "-primary" if id is not none else none) %}
+<div {% if id %}id="{{ id }}"{% endif %}
+     data-slot="splitter"
+     data-orientation="{{ orientation }}"
+     style="--split:{{ now }}%"
+     class="grid w-full overflow-hidden rounded-md border bg-card data-[orientation=horizontal]:h-64 data-[orientation=horizontal]:grid-cols-[var(--split,50%)_auto_minmax(0,1fr)] data-[orientation=vertical]:h-96 data-[orientation=vertical]:grid-rows-[var(--split,50%)_auto_minmax(0,1fr)] {{ extra_class }}"
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor %}>
+  <div data-slot="splitter-panel" data-splitter-panel="primary" {% if pane_id %}id="{{ pane_id }}"{% endif %} class="min-h-0 min-w-0 overflow-auto p-4 text-sm text-foreground">{{ primary }}</div>
+  <div role="separator" tabindex="0"
+       data-slot="splitter-handle"
+       data-orientation="{{ orientation }}"
+       data-min="{{ min }}" data-max="{{ max }}" data-step="{{ step }}" data-collapsed="false"
+       aria-orientation="{{ orientation }}"
+       {%- if pane_id %} aria-controls="{{ pane_id }}"{% endif %}
+       {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% elif aria_label %} aria-label="{{ aria_label }}"{% endif %}
+       aria-valuenow="{{ now }}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}"
+       class="group/splitter relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors select-none hover:bg-ring/40 focus-visible:bg-ring/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[orientation=horizontal]:w-1.5 data-[orientation=horizontal]:cursor-col-resize data-[orientation=horizontal]:h-full data-[orientation=vertical]:h-1.5 data-[orientation=vertical]:cursor-row-resize data-[orientation=vertical]:w-full">
+    <span class="pointer-events-none rounded-full bg-muted-foreground/40 transition-colors group-hover/splitter:bg-muted-foreground/70 group-data-[orientation=horizontal]/splitter:h-6 group-data-[orientation=horizontal]/splitter:w-0.5 group-data-[orientation=vertical]/splitter:w-6 group-data-[orientation=vertical]/splitter:h-0.5" aria-hidden="true"></span>
+  </div>
+  <div data-slot="splitter-panel" data-splitter-panel="secondary" class="min-h-0 min-w-0 overflow-auto p-4 text-sm text-foreground">{{ secondary }}{{ caller() if caller is defined }}</div>
+</div>
+{% endmacro %}

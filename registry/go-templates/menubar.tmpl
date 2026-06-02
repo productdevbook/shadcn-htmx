@@ -1,0 +1,59 @@
+{{/* Menubar templates — shadcn-htmx, htmx v4 + Tailwind v4.
+     App-style horizontal menubar. role="menubar" > role="menuitem" triggers
+     open native [popover] submenus (role="menu"). The APG composite keyboard
+     contract lives in public/site.js keyed on data-slot="menubar".
+     Mirrors registry/ui/menubar.tsx exactly. */}}
+
+{{define "menubar"}}
+<div role="menubar" data-slot="menubar"
+     {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+     class="inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs {{.Class}}">
+  {{.Body}}
+</div>
+{{end}}
+
+{{/* menubar_menu renders one top-level menu: trigger + popover submenu.
+     ID is the popovertarget + popover id; Body holds the items. */}}
+{{define "menubar_menu"}}
+<div data-slot="menubar-menu" class="contents">
+  <button type="button" role="menuitem" tabindex="-1"
+          popovertarget="{{.ID}}" popovertargetaction="toggle"
+          aria-haspopup="menu" aria-expanded="false"
+          data-slot="menubar-trigger" data-menu-for="{{.ID}}"
+          {{if .Disabled}}data-disabled="true" disabled{{end}}
+          class="flex select-none items-center rounded-sm px-3 py-1 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground aria-[expanded=true]:bg-accent aria-[expanded=true]:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 {{.TriggerClass}}">{{.Label}}</button>
+  <div id="{{.ID}}" popover="auto" role="menu" aria-label="{{.Label}}"
+       data-slot="menubar-content" data-side="bottom"
+       class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom {{.ContentClass}}">
+    {{.Body}}
+  </div>
+</div>
+{{end}}
+
+{{define "menubar_item"}}
+{{- $variant := or .Variant "default" -}}
+{{- $base := "relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0" -}}
+{{- $destr := "" -}}{{- if eq $variant "destructive" -}}{{- $destr = "text-destructive focus:bg-destructive/10 focus:text-destructive" -}}{{- end -}}
+{{if .Href}}
+<a role="menuitem" tabindex="-1" href="{{.Href}}" data-slot="menubar-item"
+   {{if .Disabled}}data-disabled="true"{{end}}
+   class="{{$base}} {{$destr}}"
+   {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Label}}</a>
+{{else}}
+<button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item"
+        {{if .Disabled}}data-disabled="true"{{end}}
+        {{- if .Onclick}} onclick="{{.Onclick}}"{{end}}
+        class="{{$base}} {{$destr}}"
+        {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Label}}</button>
+{{end}}
+{{end}}
+
+{{define "menubar_separator"}}
+<div role="separator" aria-orientation="horizontal" data-slot="menubar-separator" class="-mx-1 my-1 h-px bg-border"></div>
+{{end}}
+
+{{define "menubar_label"}}
+<div data-slot="menubar-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{.Text}}</div>
+{{end}}

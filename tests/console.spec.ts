@@ -21,6 +21,8 @@ const SLUGS = [
   // APG batch A
   "meter", "number-input", "breadcrumb", "link", "collapsible", "alert-dialog",
   "range-slider", "toolbar",
+  // APG batch B
+  "listbox", "menubar", "tree", "carousel", "feed", "grid", "treegrid", "splitter",
 ]
 
 // Console "error" lines that aren't our fault (network/resource fetches).

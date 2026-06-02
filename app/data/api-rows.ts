@@ -586,3 +586,455 @@ export const TOOLBAR_PROPS: ApiRow[] = [
   CLASS_ROW,
   HX_ROW,
 ]
+
+// ---- New APG components (batch B) ----
+
+export const LISTBOX_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the listbox when there's no visible label. APG requires a standalone listbox to be labelled via aria-label or aria-labelledby.",
+    source: { badge: "APG", label: "Listbox roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element that names the listbox (alternative to ariaLabel).",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "multiple",
+    type: "boolean",
+    default: "false",
+    description:
+      "Allow more than one option to be selected. Sets aria-multiselectable=\"true\"; Space toggles the focused option and Shift/Ctrl extend the selection per the APG recommended model.",
+    source: { badge: "MDN", label: "aria-multiselectable", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-multiselectable" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the whole widget. Sets aria-disabled and makes the options inert.",
+  },
+  {
+    prop: "orientation",
+    type: ['"horizontal"', '"vertical"'],
+    default: '"vertical"',
+    description:
+      "Layout axis. Sets aria-orientation and selects the arrow-key axis: Up/Down when vertical, Left/Right when horizontal.",
+    source: { badge: "MDN", label: "listbox role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/listbox_role" },
+  },
+  {
+    prop: "name",
+    type: "string",
+    description:
+      "Renders a sibling <input type=\"hidden\"> whose value mirrors the selection (single value, or comma-joined when multiple) so the listbox submits like a normal field. Omit to skip the hidden input.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// ListboxOption props: value (string, defaults to text content), selected
+// (boolean), disabled (boolean), id, class — forwarded onto <li role="option">.
+
+export const MENUBAR_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name for the menubar. APG: a menubar without a visible label must have aria-label (or aria-labelledby).",
+    source: { badge: "APG", label: "Menu and Menubar pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" },
+  },
+  CLASS_ROW,
+]
+
+export const MENUBAR_MENU_PROPS: ApiRow[] = [
+  {
+    prop: "label",
+    type: "string",
+    required: true,
+    description: "Visible text of the top-level menu (e.g. \"File\"). Also used as the submenu's aria-label.",
+  },
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description: "Unique id. Wires the trigger's popovertarget attribute to the submenu popover.",
+    source: { badge: "MDN", label: "Popover API", href: "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the menu trigger. Disabled triggers are skipped by roving tabindex and arrow navigation.",
+  },
+  {
+    prop: "triggerClass",
+    type: "string",
+    description: "Extra classes on the top-level trigger button.",
+  },
+  {
+    prop: "contentClass",
+    type: "string",
+    description: "Extra classes on the submenu popover container.",
+  },
+]
+
+export const MENUBAR_ITEM_PROPS: ApiRow[] = [
+  {
+    prop: "variant",
+    type: ['"default"', '"destructive"'],
+    default: '"default"',
+    description: "Visual style. destructive renders the item in the destructive colour.",
+  },
+  {
+    prop: "href",
+    type: "string",
+    description: "Render the item as an <a>. Use for navigation menubars.",
+  },
+  {
+    prop: "onclick",
+    type: "string",
+    description: "Inline click handler for the item (button variant).",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the item. Focusable per APG, but not activatable and skipped by arrow navigation.",
+    source: { badge: "APG", label: "Disabled menu items", href: "https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" },
+  },
+  HX_ROW,
+  CLASS_ROW,
+]
+
+export const TREE_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the tree when there's no visible label. APG requires every tree to be labelled via aria-label or aria-labelledby.",
+    source: { badge: "APG", label: "Tree View roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treeview/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element (e.g. a heading) that names the tree (alternative to ariaLabel).",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "<TreeItem> label",
+    type: "Child",
+    description: "Visible label for a node. Rendered before any nested <TreeGroup> and used as the type-ahead match text.",
+  },
+  {
+    prop: "<TreeItem> expanded",
+    type: "boolean",
+    description:
+      "Marks the node as a parent and sets its initial open state via aria-expanded. Pass it (true/false) on parent nodes; omit it on end nodes so they are not mis-announced as parents.",
+    source: { badge: "APG", label: "aria-expanded on parent nodes", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treeview/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "<TreeItem> parent",
+    type: "boolean",
+    default: "false",
+    description: "Mark a node as a parent without pre-expanding it (forces aria-expanded=\"false\"). Shorthand for expanded={false}.",
+  },
+  {
+    prop: "<TreeItem> selected",
+    type: "boolean",
+    default: "false",
+    description: "Single-select state — sets aria-selected and the primary fill. Selection is distinct from focus.",
+    source: { badge: "MDN", label: "aria-selected", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-selected" },
+  },
+  {
+    prop: "<TreeItem> disabled",
+    type: "boolean",
+    default: "false",
+    description: "Sets aria-disabled and dims the node; click/keyboard interaction is skipped over it.",
+    source: { badge: "MDN", label: "aria-disabled", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-disabled" },
+  },
+  {
+    prop: "<TreeItem> value",
+    type: "string",
+    description: "Stable identifier emitted as data-value so consumers or htmx can target the node.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const CAROUSEL_PROPS: ApiRow[] = [
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description:
+      "Scopes the boot script + site.js handlers to this carousel and links the Prev/Next buttons to the scroller via aria-controls.",
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the carousel container. APG: since aria-roledescription is \"carousel\", the name must NOT contain the word \"carousel\".",
+    source: { badge: "APG", label: "Carousel — name the container", href: "https://www.w3.org/WAI/ARIA/apg/patterns/carousel/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element that names the carousel (alternative to ariaLabel).",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const FEED_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the feed when there's no visible heading. APG: the feed must be named via aria-label or aria-labelledby.",
+    source: { badge: "APG", label: "Feed roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/feed/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description:
+      "Id of a visible element (usually the heading) that names the feed. Preferred over ariaLabel when a title is on screen.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "busy",
+    type: "boolean",
+    default: "false",
+    description:
+      "Sets aria-busy=\"true\" while a batch of articles is being added or removed, then must return to false once the DOM is stable. With htmx this usually rides on the in-flight sentinel rather than the container.",
+    source: { badge: "APG", label: "aria-busy", href: "https://www.w3.org/WAI/ARIA/apg/patterns/feed/#wai-ariaroles,states,andproperties" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// Per-article props (sub-component <FeedArticle>).
+export const FEED_ARTICLE_PROPS: ApiRow[] = [
+  {
+    prop: "posinset",
+    type: "number",
+    required: true,
+    description: "1-based position of this article within the feed (aria-posinset).",
+    source: { badge: "APG", label: "aria-posinset", href: "https://www.w3.org/WAI/ARIA/apg/patterns/feed/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "setsize",
+    type: "number",
+    required: true,
+    description: "Total number of articles (loaded or in the feed). Use -1 when the total is unknown (aria-setsize).",
+    source: { badge: "APG", label: "aria-setsize", href: "https://www.w3.org/WAI/ARIA/apg/patterns/feed/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "labelledby",
+    type: "string",
+    required: true,
+    description: "Id of the element inside the article that names it (its title) — sets aria-labelledby.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "describedby",
+    type: "string",
+    description: "Id(s) of the element(s) providing the article's primary content, so AT users can skim (aria-describedby).",
+    source: { badge: "MDN", label: "aria-describedby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// Trailing infinite-scroll placeholder props (sub-component <FeedSentinel>).
+export const FEED_SENTINEL_PROPS: ApiRow[] = [
+  {
+    prop: "href",
+    type: "string",
+    description: "Next-page URL. Sets hx-get on the sentinel.",
+    source: { badge: "htmx", label: "hx-get", href: "https://htmx.org/attributes/hx-get/" },
+  },
+  {
+    prop: "trigger",
+    type: "string",
+    default: '"revealed"',
+    description: "htmx trigger that fires the load. Defaults to \"revealed\"; use \"intersect once\" when the feed scrolls inside an overflow container.",
+    source: { badge: "htmx", label: "hx-trigger (revealed)", href: "https://htmx.org/reference/#trigger-modifiers" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const GRID_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name for the grid. Required when there is no visible labelling element (APG: a grid must be named).",
+    source: { badge: "APG", label: "Grid pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/grid/" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element that names the grid (use instead of ariaLabel).",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "ariaDescribedby",
+    type: "string",
+    description: "Id of an element describing the grid (announced after the name).",
+    source: { badge: "MDN", label: "aria-describedby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" },
+  },
+  {
+    prop: "ariaRowcount",
+    type: "number",
+    description: "Total number of rows when not all are present in the DOM (virtualised/paginated grids).",
+    source: { badge: "MDN", label: "aria-rowcount", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-rowcount" },
+  },
+  {
+    prop: "ariaColcount",
+    type: "number",
+    description: "Total number of columns when not all are present in the DOM.",
+    source: { badge: "MDN", label: "aria-colcount", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-colcount" },
+  },
+  {
+    prop: "ariaReadonly",
+    type: "boolean",
+    description: "Set on the grid when editing is disabled for all cells (read-only data grid).",
+    source: { badge: "MDN", label: "aria-readonly", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-readonly" },
+  },
+  { prop: "wrapperClass", type: "string", description: "Tailwind classes appended to the overflow-x scroll wrapper." },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const TREEGRID_PROPS: ApiRow[] = [
+  {
+    prop: "columns",
+    type: "string[]",
+    required: true,
+    description:
+      "Column header labels for <Treegrid>. Rendered as a single header row of <th role=\"columnheader\" scope=\"col\">.",
+    source: { badge: "APG", label: "Treegrid roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/#wai-ariaroles,states,andproperties" },
+  },
+  ...COMMON_ARIA.slice(0, 2),
+  {
+    prop: "level",
+    type: "number",
+    required: true,
+    description:
+      "<TreegridRow> only. 1-based depth in the hierarchy; root rows are level 1. Emitted as aria-level.",
+    source: { badge: "MDN", label: "aria-level", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-level" },
+  },
+  {
+    prop: "posinset",
+    type: "number",
+    required: true,
+    description:
+      "<TreegridRow> only. 1-based position of this row within its sibling set at this level. Emitted as aria-posinset.",
+    source: { badge: "MDN", label: "aria-posinset", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-posinset" },
+  },
+  {
+    prop: "setsize",
+    type: "number",
+    required: true,
+    description:
+      "<TreegridRow> only. Total number of rows in this row's sibling set at this level. Emitted as aria-setsize.",
+    source: { badge: "MDN", label: "aria-setsize", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-setsize" },
+  },
+  {
+    prop: "expanded",
+    type: "boolean",
+    description:
+      "<TreegridRow> only. Set on PARENT rows: true = children visible, false = collapsed. Emitted as aria-expanded on the <tr>. Omit on leaf rows so AT doesn't announce them as empty parents.",
+    source: { badge: "APG", label: "Treegrid pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/" },
+  },
+  {
+    prop: "hidden",
+    type: "boolean",
+    description:
+      "<TreegridRow> only. Collapsed descendant rows pass hidden to leave layout AND the accessibility tree until their ancestor is expanded. The keyboard contract toggles this attribute.",
+    source: { badge: "MDN", label: "hidden attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/hidden" },
+  },
+  {
+    prop: "selected",
+    type: "boolean",
+    description:
+      "<TreegridRow> only. Single-select treegrids set this on the selected row; emitted as aria-selected.",
+    source: { badge: "MDN", label: "aria-selected", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-selected" },
+  },
+  {
+    prop: "first",
+    type: "boolean",
+    description:
+      "<TreegridCell> only. Marks the first cell of a row; hosts the indent and (when expandable) the expand/collapse chevron.",
+  },
+  {
+    prop: "expandable",
+    type: "boolean",
+    description:
+      "<TreegridCell> only. On the first cell of a PARENT row, renders the chevron whose rotation tracks the row's aria-expanded.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SPLITTER_PROPS: ApiRow[] = [
+  {
+    prop: "orientation",
+    type: ['"horizontal"', '"vertical"'],
+    default: '"horizontal"',
+    description:
+      "Layout axis. horizontal puts the panes side by side (the divider resizes width); vertical stacks them (resizes height). Sets aria-orientation and selects the arrow-key axis: Left/Right when horizontal, Up/Down when vertical.",
+    source: { badge: "MDN", label: "aria-orientation", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-orientation" },
+  },
+  { prop: "primary", type: "Child", description: "Content of the primary pane — the one the divider's value sizes." },
+  { prop: "secondary", type: "Child", description: "Content of the secondary pane, which fills the remaining space." },
+  {
+    prop: "value",
+    type: "number",
+    default: "50",
+    description:
+      "Initial size of the primary pane as a percent, clamped into [min, max]. Becomes aria-valuenow and the --split CSS variable.",
+    source: { badge: "APG", label: "Window Splitter (value = primary pane size)", href: "https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/" },
+  },
+  {
+    prop: "min",
+    type: "number",
+    default: "0",
+    description: "Position giving the primary pane its smallest size (aria-valuemin). Typically 0 — fully collapsed.",
+    source: { badge: "MDN", label: "aria-valuemin", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-valuemin" },
+  },
+  {
+    prop: "max",
+    type: "number",
+    default: "100",
+    description: "Position giving the primary pane its largest size (aria-valuemax). Typically 100.",
+    source: { badge: "MDN", label: "aria-valuemax", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-valuemax" },
+  },
+  { prop: "step", type: "number", default: "10", description: "Resize increment per arrow-key press (in the same percent units as value)." },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the divider; per APG it matches the primary pane (e.g. \"Files\"). Required when there's no visible label and ariaLabelledby is not set.",
+    source: { badge: "APG", label: "Window Splitter roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element (typically the primary pane's heading) that names the divider, used in place of ariaLabel.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "primaryId",
+    type: "string",
+    default: "id-primary",
+    description: "Id given to the primary pane; the divider's aria-controls points at it. Auto-derived from id when omitted.",
+    source: { badge: "MDN", label: "aria-controls", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls" },
+  },
+  { prop: "id", type: "string", description: "Root id. Also seeds primaryId (id-primary) when primaryId is not supplied." },
+  CLASS_ROW,
+  HX_ROW,
+]

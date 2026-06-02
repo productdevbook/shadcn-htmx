@@ -290,3 +290,62 @@
   [data-slot="meter"]:-moz-meter-sub-sub-optimum::-moz-meter-bar {
     background: var(--color-destructive);
   }
+
+/* ===== New APG components (batch B) ===== */
+/* Tree (registry/ui/tree.tsx). The treeitem state (focus ring, hover, selected
+   fill, disabled dimming), the collapse of closed branches, and the chevron
+   rotation are all driven by CSS attribute selectors scoped to the tree —
+   exactly as the APG example "synchronizes" open/closed + selected with a CSS
+   attribute selector. This keeps the per-node markup identical and tiny across
+   all five flavours. (repos/aria-practices/content/patterns/treeview/examples/) */
+@layer utilities {
+  /* Collapse a closed parent: hide the child group of an aria-expanded=false node. */
+  [data-slot="tree"] [role="treeitem"][aria-expanded="false"] > [role="group"] {
+    display: none;
+  }
+  /* Rotate the chevron when its node is open. */
+  [data-slot="tree"] [role="treeitem"][aria-expanded="true"]
+    > [data-slot="tree-label"]
+    > [data-slot="tree-chevron"] {
+    transform: rotate(90deg);
+  }
+  /* Hover affordance on the label row. */
+  [data-slot="tree"] [role="treeitem"] > [data-slot="tree-label"]:hover {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+  /* Focus ring follows the roving-tabindex node onto its label row. */
+  [data-slot="tree"] [role="treeitem"]:focus {
+    outline: none;
+  }
+  [data-slot="tree"] [role="treeitem"]:focus > [data-slot="tree-label"] {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-ring) 50%, transparent);
+  }
+  /* Selected node gets the primary fill (distinct from focus). */
+  [data-slot="tree"] [role="treeitem"][aria-selected="true"] > [data-slot="tree-label"] {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+  /* Disabled node: dim and ignore pointer events on its label. */
+  [data-slot="tree"] [role="treeitem"][aria-disabled="true"] > [data-slot="tree-label"] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+/* Carousel (registry/ui/carousel.tsx). Tailwind's `scrollbar-none` utility
+     sets scrollbar-width:none (Firefox/standards); WebKit needs the
+     pseudo-element to fully hide the bar. The scroll region stays scrollable +
+     keyboard reachable — only the scrollbar chrome is hidden. */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+/* Treegrid (registry/ui/treegrid.tsx). The expand/collapse chevron is a
+     decorative SVG inside the first cell; Tailwind utilities can't rotate it
+     based on an ANCESTOR row's aria-expanded, so the one rule that links the
+     two lives here, scoped to [data-slot="treegrid"]. The chevron points
+     right when collapsed and rotates 90deg to point down when expanded. */
+  [data-slot="treegrid"] tr[aria-expanded="true"] [data-slot="treegrid-chevron"] {
+    transform: rotate(90deg);
+  }

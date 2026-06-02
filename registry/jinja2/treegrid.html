@@ -1,0 +1,93 @@
+{# Treegrid macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/treegrid.tsx so a Python/Flask/FastAPI/Django project
+   can render the same markup our docs site renders.
+
+   A treegrid is a hierarchical, 2-D-navigable grid: rows expand/collapse like
+   a tree, cells navigate like a grid. The accessibility contract comes from
+   the WAI-ARIA APG Treegrid pattern (rows-focused-first variant):
+     repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html
+     repos/aria-practices/content/patterns/treegrid/examples/treegrid-1.html
+
+   Usage:
+       {% from "components/treegrid.html" import treegrid_open, treegrid_close,
+          tg_row_open, tg_row_close, tg_cell, tg_first_cell %}
+
+       {{ treegrid_open(["Subject", "Summary", "Email"], aria_label="Inbox") }}
+         {{ tg_row_open(level=1, posinset=1, setsize=1, expanded=true) }}
+           {{ tg_first_cell("Treegrids are awesome", level=1, expandable=true) }}
+           {{ tg_cell("Want to learn how to use them?") }}
+           {{ tg_cell('<a href="mailto:a@b.c">a@b.c</a>') }}
+         {{ tg_row_close() }}
+       {{ treegrid_close() }}
+
+   The keyboard contract (Up/Down/Left/Right/Home/End/Enter, roving tabindex)
+   lives in public/site.js, keyed on data-slot="treegrid". #}
+
+{% macro treegrid_open(columns, aria_label=none, aria_labelledby=none, id=none, wrapper_class="", extra_class="", **attrs) %}
+<div class="relative w-full overflow-auto {{ wrapper_class }}">
+  <table role="treegrid" data-slot="treegrid"
+         {%- if id %} id="{{ id }}"{% endif %}
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+         class="w-full caption-bottom border-collapse text-sm {{ extra_class }}"
+         {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >
+    <thead>
+      <tr role="row" class="border-b">
+        {%- for label in columns %}
+        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{ label }}</th>
+        {%- endfor %}
+      </tr>
+    </thead>
+    <tbody>
+{% endmacro %}
+
+{% macro treegrid_close() %}
+    </tbody>
+  </table>
+  <script>(function(el){
+    var rows = el.querySelectorAll('tbody > tr[role="row"]');
+    rows.forEach(function(r, i){ r.setAttribute('tabindex', i === 0 ? '0' : '-1'); });
+    el.querySelectorAll('tbody a,tbody button,tbody input,tbody [tabindex]').forEach(function(f){
+      if (f.getAttribute('role') === 'row') return;
+      f.setAttribute('tabindex', '-1');
+    });
+    el.setAttribute('data-treegrid-ready', 'true');
+  })(document.currentScript.parentElement.querySelector('[data-slot="treegrid"]'));</script>
+{% endmacro %}
+
+{% macro tg_row_open(level, posinset, setsize, expanded=none, hidden=false, selected=none, extra_class="", **attrs) %}
+<tr role="row" data-slot="treegrid-row"
+    aria-level="{{ level }}" aria-posinset="{{ posinset }}" aria-setsize="{{ setsize }}"
+    {%- if expanded is not none %} aria-expanded="{{ 'true' if expanded else 'false' }}"{% endif %}
+    {%- if selected is not none %} aria-selected="{{ 'true' if selected else 'false' }}"{% endif %}
+    {%- if hidden %} hidden{% endif %}
+    class="border-b outline-none transition-colors hover:bg-muted/50 focus-visible:bg-accent focus-visible:text-accent-foreground [&:focus-within]:bg-muted/60 aria-selected:bg-muted data-[state=selected]:bg-muted {{ extra_class }}"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{% endmacro %}
+
+{% macro tg_row_close() %}
+</tr>
+{% endmacro %}
+
+{% macro tg_cell(content, extra_class="", **attrs) %}
+<td role="gridcell" data-slot="treegrid-cell"
+    class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground {{ extra_class }}"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ content }}</td>
+{% endmacro %}
+
+{% macro tg_first_cell(content, level=1, expandable=false, extra_class="", **attrs) %}
+<td role="gridcell" data-slot="treegrid-cell"
+    class="px-2 py-1.5 align-middle outline-none focus-visible:bg-accent focus-visible:text-accent-foreground {{ extra_class }}"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+><span class="flex items-center gap-1.5" style="padding-left:{{ (level - 1) }}rem">
+  {%- if expandable %}
+  <svg data-slot="treegrid-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-muted-foreground transition-transform" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+  {%- else %}
+  <span class="size-3.5 shrink-0" aria-hidden="true"></span>
+  {%- endif %}
+  <span>{{ content }}</span>
+</span></td>
+{% endmacro %}
