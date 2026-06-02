@@ -46,7 +46,7 @@ export async function CodeBlock(props: CodeBlockProps) {
         {copy && (
           <button
             type="button"
-            class="absolute top-2 right-2 z-10 inline-flex h-7 items-center gap-1.5 rounded-md border bg-background/80 px-2 text-xs font-medium opacity-70 backdrop-blur transition-opacity hover:bg-accent hover:opacity-100 focus-visible:opacity-100 group-hover:opacity-100"
+            class="absolute top-2 right-2 z-10 inline-flex h-7 items-center gap-1.5 rounded-md border bg-background px-2 text-xs font-medium shadow-xs transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
             data-copy-code
             aria-label="Copy code"
           >
@@ -66,7 +66,13 @@ export async function CodeBlock(props: CodeBlockProps) {
             <span data-copy-label>Copy</span>
           </button>
         )}
-        <div class="shiki-host overflow-x-auto p-4 text-sm leading-relaxed [&_pre]:bg-transparent! [&_pre]:p-0! [&_code]:text-[0.8125rem]!">
+        <div
+          class={
+            "shiki-host overflow-x-auto p-4 text-sm leading-relaxed " +
+            (copy ? "pr-14 " : "") +
+            "[&_pre]:bg-transparent! [&_pre]:p-0! [&_code]:text-[0.8125rem]!"
+          }
+        >
           {raw(html)}
         </div>
       </div>

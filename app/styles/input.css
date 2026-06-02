@@ -8,6 +8,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Tailwind v4 reads --font-sans / --font-mono from theme tokens to build
+     its `font-sans` / `font-mono` utilities and as the default body font.
+     Loaded via Google Fonts in app/layout.tsx. */
+  --font-sans:
+    "Inter", "Inter Fallback", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -15,6 +26,10 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -34,6 +49,10 @@
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -52,6 +71,10 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
@@ -74,7 +97,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -105,40 +131,107 @@
     display: block;
   }
 
-  /* Per-language code tabs (see app/components/lang-tabs.tsx). The supported
-     language values are listed here so we don't have to author a selector
-     for every theoretical language — adding one means adding a clause here. */
+  /* Per-language code panels (see app/components/lang-tabs.tsx). Selection
+     lives globally as <html data-lang="…">, so every section on the page
+     flips together when the header selector changes. Adding a new language
+     means appending a clause to both rules. */
   .lang-tabs .lang-panel {
     display: none;
   }
-  .lang-tabs:has(input[value="jsx"]:checked) .lang-panel[data-lang="jsx"],
-  .lang-tabs:has(input[value="jinja"]:checked) .lang-panel[data-lang="jinja"],
-  .lang-tabs:has(input[value="go"]:checked) .lang-panel[data-lang="go"],
-  .lang-tabs:has(input[value="phoenix"]:checked) .lang-panel[data-lang="phoenix"],
-  .lang-tabs:has(input[value="html"]:checked) .lang-panel[data-lang="html"] {
+  :root[data-lang="jsx"] .lang-panel[data-lang="jsx"],
+  :root[data-lang="jinja"] .lang-panel[data-lang="jinja"],
+  :root[data-lang="go"] .lang-panel[data-lang="go"],
+  :root[data-lang="phoenix"] .lang-panel[data-lang="phoenix"],
+  :root[data-lang="html"] .lang-panel[data-lang="html"] {
     display: block;
   }
-  /* Same trick for the labels — light up the one whose radio is checked. */
-  .lang-tabs:has(input[value="jsx"]:checked) label[data-lang-label="jsx"],
-  .lang-tabs:has(input[value="jinja"]:checked) label[data-lang-label="jinja"],
-  .lang-tabs:has(input[value="go"]:checked) label[data-lang-label="go"],
-  .lang-tabs:has(input[value="phoenix"]:checked) label[data-lang-label="phoenix"],
-  .lang-tabs:has(input[value="html"]:checked) label[data-lang-label="html"] {
-    background-color: var(--background);
-    color: var(--foreground);
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  /* No <html data-lang> set yet (pre-paint script hasn't run): default to jsx
+     so the page is never blank on initial render. */
+  :root:not([data-lang]) .lang-panel[data-lang="jsx"] {
+    display: block;
+  }
+
+  /* TOC active-link state set by IntersectionObserver in public/site.js. */
+  [data-toc-link][data-active] {
+    color: var(--color-foreground);
+    font-weight: 500;
+  }
+
+  /* Progress indeterminate bar (registry/ui/progress.tsx). */
+  @keyframes scn-progress-indeterminate {
+    0%   { left: -33%; }
+    100% { left: 100%; }
+  }
+
+  /* Popover (registry/ui/popover.tsx). Uses the native [popover]
+     attribute — element enters the top layer when shown. We just animate
+     opacity + a small offset. True CSS Anchor Positioning isn't widely
+     supported yet, so we fall back to a centred placement with a side
+     offset; consumers can override with positioning utilities. */
+  @keyframes scn-popover-in {
+    from { opacity: 0; transform: translateY(4px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)  scale(1); }
+  }
+  .anchor-popover-bottom { position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 4rem)); }
+  .anchor-popover-top    { position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% - 4rem)); }
+  .anchor-popover-left   { position: fixed; left: 50%; top: 50%; transform: translate(calc(-50% - 6rem), -50%); }
+  .anchor-popover-right  { position: fixed; left: 50%; top: 50%; transform: translate(calc(-50% + 6rem), -50%); }
+
+  /* Toast entrance / exit animations (used by registry/ui/toast.tsx).
+     The viewport's data-position dictates the slide direction so the
+     toast feels like it comes in from its anchor edge. */
+  @keyframes scn-toast-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  @keyframes scn-toast-out {
+    from { opacity: 1; transform: translateY(0)   scale(1); }
+    to   { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  }
+  /* Slide in from the right for right-anchored viewports. */
+  [data-slot="toast-viewport"][data-position$="-right"] [data-slot="toast"][data-state="open"] {
+    animation-name: scn-toast-in-right;
+  }
+  @keyframes scn-toast-in-right {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  [data-slot="toast-viewport"][data-position$="-left"] [data-slot="toast"][data-state="open"] {
+    animation-name: scn-toast-in-left;
+  }
+  @keyframes scn-toast-in-left {
+    from { opacity: 0; transform: translateX(-24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Example preview canvas — fixed minimum height, centered content. Solid
+     background (no grid) so the component sits cleanly against the page. */
+  .demo-canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 14rem;
+    padding: 1.5rem;
+    background-color: var(--color-background);
   }
 
   /* Shiki dual-theme: switch CSS variables when .dark is present.
-     We set defaultColor:false in CodeBlock, so light=default, dark via class. */
+     We set defaultColor:false in CodeBlock, so Shiki emits --shiki-light /
+     --shiki-dark on every token. Color goes on each span; background only
+     goes on the outer .shiki container (otherwise every token gets its own
+     rectangle, which looks like a striped highlight in dark mode). */
   .shiki-host .shiki,
   .shiki-host .shiki span {
     color: var(--shiki-light);
+  }
+  .shiki-host .shiki {
     background-color: var(--shiki-light-bg);
   }
   .dark .shiki-host .shiki,
   .dark .shiki-host .shiki span {
     color: var(--shiki-dark);
+  }
+  .dark .shiki-host .shiki {
     background-color: var(--shiki-dark-bg);
   }
 }
