@@ -1176,6 +1176,188 @@
         { "path": "registry/phoenix/auto_grid.ex", "type": "registry:file", "target": "lib/my_app_web/components/auto_grid.ex" },
         { "path": "registry/html/auto-grid.html", "type": "registry:file", "target": "snippets/auto-grid.html" }
       ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Inline keyboard-key badge — renders a native <kbd> for a single key, or nests one <kbd> per key inside an outer one for a shortcut like Ctrl + Shift + R. Zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/kbd.tsx", "type": "registry:ui", "target": "components/ui/kbd.tsx" },
+        { "path": "registry/jinja2/kbd.html", "type": "registry:file", "target": "templates/components/kbd.html" },
+        { "path": "registry/go-templates/kbd.tmpl", "type": "registry:file", "target": "components/kbd.tmpl" },
+        { "path": "registry/phoenix/kbd.ex", "type": "registry:file", "target": "lib/my_app_web/components/kbd.ex" },
+        { "path": "registry/html/kbd.html", "type": "registry:file", "target": "snippets/kbd.html" }
+      ]
+    },
+    {
+      "name": "highlight",
+      "type": "registry:ui",
+      "title": "Highlight",
+      "description": "Semantic marker that wraps the words matching a search query in a native <mark>, the HTML element for text relevant to the user's current activity. Rendered entirely on the server, styled with theme tokens, zero client JS — drop it inside the fragment htmx swaps into a results list.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/highlight.tsx", "type": "registry:ui", "target": "components/ui/highlight.tsx" },
+        { "path": "registry/jinja2/highlight.html", "type": "registry:file", "target": "templates/components/highlight.html" },
+        { "path": "registry/go-templates/highlight.tmpl", "type": "registry:file", "target": "components/highlight.tmpl" },
+        { "path": "registry/phoenix/highlight.ex", "type": "registry:file", "target": "lib/my_app_web/components/highlight.ex" },
+        { "path": "registry/html/highlight.html", "type": "registry:file", "target": "snippets/highlight.html" }
+      ]
+    },
+    {
+      "name": "relative-time",
+      "type": "registry:ui",
+      "title": "Relative Time",
+      "description": "A semantic timestamp built on the native <time> element. The server renders a machine-readable instant in the datetime attribute and a human-readable label as the text; a tiny optional script re-localises the label to the visitor's locale and timezone via the Intl APIs and degrades to the server value with no JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/relative-time.tsx", "type": "registry:ui", "target": "components/ui/relative-time.tsx" },
+        { "path": "registry/jinja2/relative-time.html", "type": "registry:file", "target": "templates/components/relative-time.html" },
+        { "path": "registry/go-templates/relative-time.tmpl", "type": "registry:file", "target": "components/relative-time.tmpl" },
+        { "path": "registry/phoenix/relative_time.ex", "type": "registry:file", "target": "lib/my_app_web/components/relative_time.ex" },
+        { "path": "registry/html/relative-time.html", "type": "registry:file", "target": "snippets/relative-time.html" }
+      ]
+    },
+    {
+      "name": "figure",
+      "type": "registry:ui",
+      "title": "Figure",
+      "description": "Self-contained, referenced content — an image, diagram, code block, or quotation — wrapped in a native <figure> whose <figcaption> supplies its accessible name. Distinct from a Card's generic surface: a figure stands apart from the main flow and can be moved without breaking it, and its caption is semantically tied to the content. Built on native <figure> + <figcaption>, zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/figure.tsx", "type": "registry:ui", "target": "components/ui/figure.tsx" },
+        { "path": "registry/jinja2/figure.html", "type": "registry:file", "target": "templates/components/figure.html" },
+        { "path": "registry/go-templates/figure.tmpl", "type": "registry:file", "target": "components/figure.tmpl" },
+        { "path": "registry/phoenix/figure.ex", "type": "registry:file", "target": "lib/my_app_web/components/figure.ex" },
+        { "path": "registry/html/figure.html", "type": "registry:file", "target": "snippets/figure.html" }
+      ]
+    },
+    {
+      "name": "responsive-image",
+      "type": "registry:ui",
+      "title": "Responsive Image",
+      "description": "Art-directed, format-switching image built on native <picture> + <source> + a fallback <img>. The browser selects the best candidate by media and type queries (light/dark, AVIF/WebP/JPEG, viewport crops) and falls back to the <img> when none match — all natively, zero JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/responsive-image.tsx", "type": "registry:ui", "target": "components/ui/responsive-image.tsx" },
+        { "path": "registry/jinja2/responsive-image.html", "type": "registry:file", "target": "templates/components/responsive-image.html" },
+        { "path": "registry/go-templates/responsive-image.tmpl", "type": "registry:file", "target": "components/responsive-image.tmpl" },
+        { "path": "registry/phoenix/responsive_image.ex", "type": "registry:file", "target": "lib/my_app_web/components/responsive_image.ex" },
+        { "path": "registry/html/responsive-image.html", "type": "registry:file", "target": "snippets/responsive-image.html" }
+      ]
+    },
+    {
+      "name": "media-player",
+      "type": "registry:ui",
+      "title": "Media Player",
+      "description": "A styled native <video controls> / <audio controls> with multiple <source> formats, <track> captions, a poster, and aspect-ratio framing. The browser ships the entire accessible playback UI — play, scrub, volume, captions, fullscreen, Picture-in-Picture — so there are no custom controls and zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/media-player.tsx", "type": "registry:ui", "target": "components/ui/media-player.tsx" },
+        { "path": "registry/jinja2/media-player.html", "type": "registry:file", "target": "templates/components/media-player.html" },
+        { "path": "registry/go-templates/media-player.tmpl", "type": "registry:file", "target": "components/media-player.tmpl" },
+        { "path": "registry/phoenix/media_player.ex", "type": "registry:file", "target": "lib/my_app_web/components/media_player.ex" },
+        { "path": "registry/html/media-player.html", "type": "registry:file", "target": "snippets/media-player.html" }
+      ]
+    },
+    {
+      "name": "autocomplete",
+      "type": "registry:ui",
+      "title": "Autocomplete",
+      "description": "Free-text input with native typeahead suggestions: <input list> bound to a <datalist>. The browser owns the dropdown, filtering, and selection; htmx can stream a fresh <option> set in on input. The light native sibling of the APG combobox — it suggests, it does not constrain.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/autocomplete.tsx", "type": "registry:ui", "target": "components/ui/autocomplete.tsx" },
+        { "path": "registry/jinja2/autocomplete.html", "type": "registry:file", "target": "templates/components/autocomplete.html" },
+        { "path": "registry/go-templates/autocomplete.tmpl", "type": "registry:file", "target": "components/autocomplete.tmpl" },
+        { "path": "registry/phoenix/autocomplete.ex", "type": "registry:file", "target": "lib/my_app_web/components/autocomplete.ex" },
+        { "path": "registry/html/autocomplete.html", "type": "registry:file", "target": "snippets/autocomplete.html" }
+      ]
+    },
+    {
+      "name": "exclusive-accordion",
+      "type": "registry:ui",
+      "title": "Exclusive Accordion",
+      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macros, Go html/template, Phoenix function component, and a raw HTML snippet.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/exclusive-accordion.tsx", "type": "registry:ui", "target": "components/ui/exclusive-accordion.tsx" },
+        { "path": "registry/jinja2/exclusive-accordion.html", "type": "registry:file", "target": "templates/components/exclusive-accordion.html" },
+        { "path": "registry/go-templates/exclusive-accordion.tmpl", "type": "registry:file", "target": "components/exclusive-accordion.tmpl" },
+        { "path": "registry/phoenix/exclusive_accordion.ex", "type": "registry:file", "target": "lib/my_app_web/components/exclusive_accordion.ex" },
+        { "path": "registry/html/exclusive-accordion.html", "type": "registry:file", "target": "snippets/exclusive-accordion.html" }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A constrained-overflow region with a themed native scrollbar and optional fade masks that appear only while more content can scroll into view. Scrolling is fully native (keyboard, wheel, trackpad, touch) with zero JavaScript — no Radix-style scrollbar reimplementation. The fade masks are driven purely by CSS @container scroll-state().",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/scroll-area.tsx", "type": "registry:ui", "target": "components/ui/scroll-area.tsx" },
+        { "path": "registry/jinja2/scroll-area.html", "type": "registry:file", "target": "templates/components/scroll-area.html" },
+        { "path": "registry/go-templates/scroll-area.tmpl", "type": "registry:file", "target": "components/scroll-area.tmpl" },
+        { "path": "registry/phoenix/scroll_area.ex", "type": "registry:file", "target": "lib/my_app_web/components/scroll_area.ex" },
+        { "path": "registry/html/scroll-area.html", "type": "registry:file", "target": "snippets/scroll-area.html" }
+      ]
+    },
+    {
+      "name": "snap-list",
+      "type": "registry:ui",
+      "title": "Snap List",
+      "description": "The bare, reusable CSS scroll-snapping rail (gallery strip, chip row, media shelf, date rail) — zero JavaScript. A real <ul role=\"list\"> scroll container with snap-x/snap-y + snap-mandatory/snap-proximity, and <li> children carrying scroll-snap-align (snap-start/center/end) and optional scroll-snap-stop:always. It is the un-opinionated scroller the Carousel dresses up with Prev/Next controls; the platform owns the scrolling and snapping.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/snap-list.tsx", "type": "registry:ui", "target": "components/ui/snap-list.tsx" },
+        { "path": "registry/jinja2/snap-list.html", "type": "registry:file", "target": "templates/components/snap-list.html" },
+        { "path": "registry/go-templates/snap-list.tmpl", "type": "registry:file", "target": "components/snap-list.tmpl" },
+        { "path": "registry/phoenix/snap_list.ex", "type": "registry:file", "target": "lib/my_app_web/components/snap_list.ex" },
+        { "path": "registry/html/snap-list.html", "type": "registry:file", "target": "snippets/snap-list.html" }
+      ]
+    },
+    {
+      "name": "container-card",
+      "type": "registry:ui",
+      "title": "Container Card",
+      "description": "A self-adapting card that restyles based on its own inline width, not the viewport. The same markup stacks media above text in a narrow column or sidebar and lays them side-by-side in a wide column or grid cell — built on CSS container queries (container-type: inline-size + @container). Pure CSS, zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/container-card.tsx", "type": "registry:ui", "target": "components/ui/container-card.tsx" },
+        { "path": "registry/jinja2/container-card.html", "type": "registry:file", "target": "templates/components/container-card.html" },
+        { "path": "registry/go-templates/container-card.tmpl", "type": "registry:file", "target": "components/container-card.tmpl" },
+        { "path": "registry/phoenix/container_card.ex", "type": "registry:file", "target": "lib/my_app_web/components/container_card.ex" },
+        { "path": "registry/html/container-card.html", "type": "registry:file", "target": "snippets/container-card.html" }
+      ]
+    },
+    {
+      "name": "sticky-header",
+      "type": "registry:ui",
+      "title": "Sticky Header",
+      "description": "A page/section/table header that pins on scroll via position: sticky and visually reacts (shadow + solid background) the moment it becomes stuck, using a @container scroll-state(stuck: top) query — no IntersectionObserver sentinel, zero JS. The root is both the sticky element and the scroll-state query container; descendants opt into the stuck styling with data-sticky-revealed.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/sticky-header.tsx", "type": "registry:ui", "target": "components/ui/sticky-header.tsx" },
+        { "path": "registry/jinja2/sticky-header.html", "type": "registry:file", "target": "templates/components/sticky-header.html" },
+        { "path": "registry/go-templates/sticky-header.tmpl", "type": "registry:file", "target": "components/sticky-header.tmpl" },
+        { "path": "registry/phoenix/sticky_header.ex", "type": "registry:file", "target": "lib/my_app_web/components/sticky_header.ex" },
+        { "path": "registry/html/sticky-header.html", "type": "registry:file", "target": "snippets/sticky-header.html" }
+      ]
+    },
+    {
+      "name": "scroll-progress",
+      "type": "registry:ui",
+      "title": "Scroll Progress",
+      "description": "A reading-position bar whose fill tracks how far the user has scrolled the page (or a named scroller). Pure CSS scroll-driven animation (animation-timeline: scroll()) — zero JavaScript, no scroll listeners. Distinct from value-driven Progress.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/scroll-progress.tsx", "type": "registry:ui", "target": "components/ui/scroll-progress.tsx" },
+        { "path": "registry/jinja2/scroll-progress.html", "type": "registry:file", "target": "templates/components/scroll-progress.html" },
+        { "path": "registry/go-templates/scroll-progress.tmpl", "type": "registry:file", "target": "components/scroll-progress.tmpl" },
+        { "path": "registry/phoenix/scroll_progress.ex", "type": "registry:file", "target": "lib/my_app_web/components/scroll_progress.ex" },
+        { "path": "registry/html/scroll-progress.html", "type": "registry:file", "target": "snippets/scroll-progress.html" }
+      ]
     }
   ]
 }

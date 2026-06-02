@@ -1,0 +1,34 @@
+<!--
+  shadcn-htmx — raw HTML scroll-progress snippets.
+
+  A reading-position bar whose fill tracks scroll position — ZERO JavaScript,
+  pure CSS scroll-driven animation. The fill keyframe (scn-scroll-progress)
+  and the default animation-timeline: scroll(root block) live in input.css
+  keyed on data-slot="scroll-progress-indicator", with a prefers-reduced-motion
+  fallback. The bar is decorative (aria-hidden) — it mirrors the scroll
+  position the user already controls. Relies only on theme tokens.
+
+  Built on CSS scroll-driven animations:
+    animation-timeline: scroll() / scroll-timeline-name — see
+    repos/mdn/.../css/reference/properties/animation-timeline.
+-->
+
+<!-- Page reading bar (pinned to the top, tracks the page scroll) -->
+<div data-slot="scroll-progress" data-position="top" aria-hidden="true"
+     class="pointer-events-none fixed inset-x-0 top-0 z-50 h-1 w-full overflow-hidden bg-primary/15">
+  <div data-slot="scroll-progress-indicator" class="h-full w-full origin-left bg-primary"></div>
+</div>
+
+<!-- Pinned to the bottom edge instead -->
+<div data-slot="scroll-progress" data-position="bottom" aria-hidden="true"
+     class="pointer-events-none fixed inset-x-0 bottom-0 z-50 h-1 w-full overflow-hidden bg-primary/15">
+  <div data-slot="scroll-progress-indicator" class="h-full w-full origin-left bg-primary"></div>
+</div>
+
+<!-- Driven by a named scroller: put `scroll-timeline-name: --article` on the
+     scroll container in your CSS, then point the fill at it. -->
+<div data-slot="scroll-progress" data-position="top" aria-hidden="true"
+     class="pointer-events-none fixed inset-x-0 top-0 z-50 h-1 w-full overflow-hidden bg-primary/15">
+  <div data-slot="scroll-progress-indicator" style="animation-timeline: --article"
+       class="h-full w-full origin-left bg-primary"></div>
+</div>

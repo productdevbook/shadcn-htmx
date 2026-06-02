@@ -18,6 +18,7 @@ const sections: Section[] = [
   {
     title: "Forms",
     items: [
+      { label: "Autocomplete", href: "/docs/autocomplete" },
       { label: "Output", href: "/docs/output" },
       { label: "Segmented Control", href: "/docs/segmented-control" },
       { label: "Rating", href: "/docs/rating" },
@@ -47,6 +48,11 @@ const sections: Section[] = [
   {
     title: "Layout",
     items: [
+      { label: "Exclusive Accordion", href: "/docs/exclusive-accordion" },
+      { label: "Scroll Area", href: "/docs/scroll-area" },
+      { label: "Snap List", href: "/docs/snap-list" },
+      { label: "Container Card", href: "/docs/container-card" },
+      { label: "Sticky Header", href: "/docs/sticky-header" },
       { label: "Aspect Ratio", href: "/docs/aspect-ratio" },
       { label: "Auto Grid", href: "/docs/auto-grid" },
       { label: "Card", href: "/docs/card" },
@@ -62,6 +68,12 @@ const sections: Section[] = [
   {
     title: "Display",
     items: [
+      { label: "Kbd", href: "/docs/kbd" },
+      { label: "Highlight", href: "/docs/highlight" },
+      { label: "Relative Time", href: "/docs/relative-time" },
+      { label: "Figure", href: "/docs/figure" },
+      { label: "Responsive Image", href: "/docs/responsive-image" },
+      { label: "Media Player", href: "/docs/media-player" },
       { label: "Selectable Table", href: "/docs/selectable-table" },
       { label: "Delete Row", href: "/docs/delete-row" },
       { label: "Copy Button", href: "/docs/copy-button" },
@@ -74,6 +86,7 @@ const sections: Section[] = [
   {
     title: "Feedback",
     items: [
+      { label: "Scroll Progress", href: "/docs/scroll-progress" },
       { label: "Optimistic Toggle", href: "/docs/optimistic-toggle" },
       { label: "Status", href: "/docs/status" },
       { label: "Lazy Load", href: "/docs/lazy-load" },

@@ -1,0 +1,65 @@
+{{/*
+  Media Player template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/media-player.tsx.
+
+  A styled native <video controls> / <audio controls>. The browser ships the
+  full accessible playback UI (play, seek, volume, captions, fullscreen, PiP);
+  we only frame it. Zero JS — we never emulate platform features.
+    MDN <video>:  repos/mdn/files/en-us/web/html/reference/elements/video/index.md
+    MDN <audio>:  repos/mdn/files/en-us/web/html/reference/elements/audio/index.md
+    MDN <source>: repos/mdn/files/en-us/web/html/reference/elements/source/index.md
+    MDN <track>:  repos/mdn/files/en-us/web/html/reference/elements/track/index.md
+
+      type MediaSource struct { Src, Type string }
+      type MediaTrack  struct { Src, Kind, Srclang, Label string; Default bool }
+      type MediaPlayerArgs struct {
+          Kind        string        // "video" (default) | "audio"
+          Src         string        // single-source shortcut
+          Sources     []MediaSource
+          Tracks      []MediaTrack
+          Poster      string        // video only
+          Ratio       string        // "16/9" (default) | "1/1" | "4/3" | …
+          Controls    bool          // default true (pass explicitly)
+          Preload     string        // none | metadata | auto
+          Loop        bool
+          Muted       bool
+          Autoplay    bool
+          Playsinline bool          // video only
+          Crossorigin string        // anonymous | use-credentials
+          AriaLabel   string
+          ID          string
+          Class       string
+          Body        template.HTML // no-support fallback (download links)
+      }
+*/}}
+
+{{define "media-player"}}
+{{- $kind := or .Kind "video" -}}
+{{- $isVideo := eq $kind "video" -}}
+{{- $ratio := or .Ratio "16/9" -}}
+{{- $ratioClass := printf "aspect-[%s]" $ratio -}}
+{{- if eq $ratio "1/1" -}}{{- $ratioClass = "aspect-square" -}}{{- else if eq $ratio "16/9" -}}{{- $ratioClass = "aspect-video" -}}{{- end -}}
+<div {{if .ID}}id="{{.ID}}" {{end}}data-slot="media-player" data-kind="{{$kind}}" class="group/media-player relative block w-full overflow-hidden rounded-lg border bg-card {{if $isVideo}}{{$ratioClass}}{{else}}p-2{{end}} {{.Class}}">
+  {{- if $isVideo}}
+  <video data-slot="media-player-media"{{if .Src}} src="{{.Src}}"{{end}}{{if .Controls}} controls{{end}}{{if .Poster}} poster="{{.Poster}}"{{end}}{{if .Preload}} preload="{{.Preload}}"{{end}}{{if .Loop}} loop{{end}}{{if .Muted}} muted{{end}}{{if .Autoplay}} autoplay{{end}}{{if .Playsinline}} playsinline{{end}}{{if .Crossorigin}} crossorigin="{{.Crossorigin}}"{{end}}{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}} class="block size-full bg-black object-contain">
+    {{- range .Sources}}
+    <source data-slot="media-player-source" src="{{.Src}}"{{if .Type}} type="{{.Type}}"{{end}}>
+    {{- end}}
+    {{- range .Tracks}}
+    <track data-slot="media-player-track" kind="{{or .Kind "subtitles"}}" src="{{.Src}}"{{if .Srclang}} srclang="{{.Srclang}}"{{end}}{{if .Label}} label="{{.Label}}"{{end}}{{if .Default}} default{{end}}>
+    {{- end}}
+    {{htmlSafe .Body}}
+  </video>
+  {{- else}}
+  <audio data-slot="media-player-media"{{if .Src}} src="{{.Src}}"{{end}}{{if .Controls}} controls{{end}}{{if .Preload}} preload="{{.Preload}}"{{end}}{{if .Loop}} loop{{end}}{{if .Muted}} muted{{end}}{{if .Autoplay}} autoplay{{end}}{{if .Crossorigin}} crossorigin="{{.Crossorigin}}"{{end}}{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}} class="block w-full">
+    {{- range .Sources}}
+    <source data-slot="media-player-source" src="{{.Src}}"{{if .Type}} type="{{.Type}}"{{end}}>
+    {{- end}}
+    {{- range .Tracks}}
+    <track data-slot="media-player-track" kind="{{or .Kind "subtitles"}}" src="{{.Src}}"{{if .Srclang}} srclang="{{.Srclang}}"{{end}}{{if .Label}} label="{{.Label}}"{{end}}{{if .Default}} default{{end}}>
+    {{- end}}
+    {{htmlSafe .Body}}
+  </audio>
+  {{- end}}
+</div>
+{{end}}

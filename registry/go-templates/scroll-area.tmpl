@@ -1,0 +1,55 @@
+{{/*
+  Scroll Area template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/scroll-area.tsx for Go projects using html/template.
+
+  A constrained-overflow region: content taller (or wider) than the box
+  scrolls NATIVELY, with a themed scrollbar and optional top/bottom fade
+  masks that appear only while more content can scroll in that direction.
+  Zero JavaScript — the masks are driven by CSS @container scroll-state().
+
+  Built on:
+    - CSS overflow + the web.dev a11y contract (a scroll region needs
+      tabindex="0" + role="region" + an accessible name):
+      repos/web.dev/src/site/content/en/learn/css/overflow/index.md
+    - Tailwind v4 scrollbar-thin / scrollbar-thumb-* / scrollbar-track-*:
+      repos/tailwindcss/packages/tailwindcss/src/utilities.ts:2230-2255
+    - CSS @container scroll-state(scrollable: top|bottom) for the fade masks:
+      repos/mdn/files/en-us/web/css/reference/at-rules/@container/index.md
+      repos/mdn/files/en-us/web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+  The container-type + fade rules live in app/styles/input.css, scoped to
+  [data-slot="scroll-area"].
+
+      type ScrollAreaArgs struct {
+          Orientation   string        // "vertical" (default) | "horizontal" | "both"
+          Fade          bool          // top/bottom fade masks (default true via NoFade inversion below)
+          NoFade        bool          // set true to turn the fade masks off
+          AriaLabel     string
+          AriaLabelledby string
+          ID            string
+          Class         string        // extra classes on the root (set a height, e.g. "h-72")
+          ViewportClass string        // extra classes on the inner viewport
+          Body          template.HTML // the scrollable content
+          Attrs         map[string]string
+      }
+*/}}
+
+{{define "scroll-area"}}
+{{- $orientation := or .Orientation "vertical" -}}
+{{- $overflow := "overflow-y-auto overflow-x-hidden" -}}
+{{- if eq $orientation "horizontal" -}}{{- $overflow = "overflow-x-auto overflow-y-hidden" -}}{{- else if eq $orientation "both" -}}{{- $overflow = "overflow-auto" -}}{{- end -}}
+<div {{if .ID}}id="{{.ID}}" {{end}}data-slot="scroll-area" data-orientation="{{$orientation}}" class="relative overflow-hidden rounded-md {{.Class}}"
+  {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+  <div data-slot="scroll-area-viewport" data-scroll-area-viewport
+    {{- if not .NoFade}} data-fade="true"{{end}}
+    role="region"
+    {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+    {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+    tabindex="0"
+    class="size-full scroll-smooth scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-[inherit] {{$overflow}} {{.ViewportClass}}">
+    {{- if not .NoFade}}<div data-slot="scroll-area-fade" data-edge="start" aria-hidden="true" class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>{{end}}
+    {{- htmlSafe .Body}}
+    {{- if not .NoFade}}<div data-slot="scroll-area-fade" data-edge="end" aria-hidden="true" class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>{{end}}
+  </div>
+</div>
+{{end}}

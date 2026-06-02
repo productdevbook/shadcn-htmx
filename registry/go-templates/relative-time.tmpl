@@ -1,0 +1,40 @@
+{{/*
+  Relative Time template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/relative-time.tsx.
+
+  Renders a native <time> element carrying a machine-readable `datetime`
+  plus a human-readable label as its body. With no JS the server label is
+  shown; the shared site.js block re-localises it to the visitor's
+  locale/timezone via the Intl APIs.
+
+  Usage:
+
+      type RelativeTimeArgs struct {
+          Datetime string            // machine-readable instant (ISO 8601)
+          Label    string            // human-readable text, e.g. "3 days ago"
+          Format   string            // relative (default) | datetime
+          Tone     string            // muted (default) | default
+          ID       string
+          Attrs    map[string]string
+      }
+
+      {{template "relative-time" (dict "Datetime" "2024-05-12T09:00:00Z" "Label" "3 days ago")}}
+*/}}
+
+{{define "relative-time"}}
+{{- $format := or .Format "relative" -}}
+{{- $tone := or .Tone "muted" -}}
+{{- $base := "tabular-nums" -}}
+{{- $tones := dict
+    "default" "text-foreground"
+    "muted" "text-muted-foreground" -}}
+<time
+  {{- if .ID}} id="{{.ID}}"{{end}}
+  datetime="{{.Datetime}}"
+  data-slot="relative-time"
+  data-relative-time=""
+  data-format="{{$format}}"
+  class="{{$base}} {{index $tones $tone}}"
+  {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{htmlSafe .Label}}</time>
+{{end}}

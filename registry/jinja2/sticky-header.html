@@ -1,0 +1,31 @@
+{# Sticky Header macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/sticky-header.tsx exactly.
+
+   Pins on scroll via `position: sticky; top: <top>` and reacts when STUCK
+   via `@container scroll-state(stuck: top)` — the root is BOTH the sticky
+   element and the scroll-state container ([container-type:scroll-state]).
+   The descendant reveal styling lives in a [data-slot="sticky-header"]
+   block in app/styles/input.css; opt in with data-sticky-revealed.
+     repos/mdn/files/en-us/web/css/reference/properties/position/index.md
+     repos/mdn/.../web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+     repos/mdn/files/en-us/web/css/reference/at-rules/@container/index.md
+   Zero JS — the browser drives the stuck state. #}
+
+{% macro sticky_header_open(as="header", top="0", extra_class="", **attrs) %}
+<{{ as }} data-slot="sticky-header"
+  class="sticky z-30 bg-background/95 supports-[backdrop-filter]:bg-background/80 [container-type:scroll-state] {{ extra_class }}"
+  style="top:{{ top }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{% endmacro %}
+
+{% macro sticky_header_close(as="header") %}</{{ as }}>{% endmacro %}
+
+{% macro sticky_header_bar_open(as="div", extra_class="", **attrs) %}
+<{{ as }} data-slot="sticky-header-bar" data-sticky-revealed=""
+  class="transition-shadow transition-colors duration-200 {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{% endmacro %}
+
+{% macro sticky_header_bar_close(as="div") %}</{{ as }}>{% endmacro %}

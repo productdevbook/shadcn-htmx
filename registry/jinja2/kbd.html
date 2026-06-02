@@ -1,0 +1,68 @@
+{# Kbd macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/kbd.tsx. Zero JavaScript — <kbd> is phrasing
+   content with no interaction.
+
+   Native element:
+     repos/mdn/files/en-us/web/html/reference/elements/kbd/index.md
+     (nested <kbd> per key inside an outer <kbd> = MDN keystroke pattern)
+
+   Usage:
+     {% from "components/kbd.html" import kbd, kbd_group %}
+     {{ kbd("Esc") }}
+     {{ kbd_group(["Ctrl", "Shift", "R"]) }}
+     {% call kbd_group() %}<kbd ...>⌘</kbd> + <kbd ...>K</kbd>{% endcall %} #}
+
+{%- set kbd_base -%}
+pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3
+{%- endset -%}
+
+{%- set kbd_group_base -%}
+inline-flex w-fit items-center gap-1 align-middle
+{%- endset -%}
+
+{# A single key cap → one <kbd>. #}
+{% macro kbd(
+    text,
+    id=none,
+    aria_label=none,
+    title=none,
+    extra_class="",
+    **attrs
+) %}
+<kbd
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="kbd"
+  class="{{ kbd_base }} {{ extra_class }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if title %} title="{{ title }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ text }}</kbd>
+{%- endmacro %}
+
+{# The outer <kbd> wrapping a shortcut. Pass `keys` (a list) to render a
+   key cap per entry joined by `separator`, or use {% call %} with a body. #}
+{% macro kbd_group(
+    keys=none,
+    separator="+",
+    id=none,
+    aria_label=none,
+    extra_class="",
+    **attrs
+) %}
+<kbd
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="kbd-group"
+  class="{{ kbd_group_base }} {{ extra_class }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+  {%- if keys -%}
+    {%- for key in keys -%}
+      {%- if not loop.first and separator -%}<span aria-hidden="true" class="text-muted-foreground/70">{{ separator }}</span>{%- endif -%}
+      <kbd data-slot="kbd" class="{{ kbd_base }}">{{ key }}</kbd>
+    {%- endfor -%}
+  {%- else -%}
+    {{ caller() }}
+  {%- endif -%}
+</kbd>
+{%- endmacro %}

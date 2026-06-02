@@ -1,0 +1,114 @@
+<!--
+  shadcn-htmx — raw HTML scroll-area snippets.
+
+  A constrained-overflow region: content taller (or wider) than the box
+  scrolls NATIVELY, with a themed scrollbar and optional start/end fade masks
+  that appear only while more content can scroll in that direction.
+  Zero JavaScript — the masks are driven by CSS @container scroll-state().
+
+    web.dev overflow a11y: repos/web.dev/src/site/content/en/learn/css/overflow/index.md
+    Tailwind scrollbar utils: repos/tailwindcss/packages/tailwindcss/src/utilities.ts:2230-2255
+    @container scroll-state: repos/mdn/files/en-us/web/css/reference/at-rules/@container/index.md
+                             repos/mdn/files/en-us/web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+
+  Requirements:
+    1. Tailwind CSS v4 (or the Play CDN for experiments). The scrollbar-thin /
+       scrollbar-thumb-border / scrollbar-track-transparent utilities theme the
+       native scrollbar via standard scrollbar-width / scrollbar-color.
+    2. The shadcn theme tokens (--border, --ring, --background, …) — copy the
+       :root / .dark blocks from app/styles/input.css.
+    3. For the fade masks, add this rule to your stylesheet. The masks are REAL
+       sticky child elements (a container's own ::before/::after are NOT matched
+       by scroll-state queries — verified in Chromium). Negative margins keep
+       them overlaying rather than pushing content:
+
+         [data-slot="scroll-area"] [data-scroll-area-viewport][data-fade] {
+           container-type: scroll-state;
+         }
+         [data-slot="scroll-area"] [data-slot="scroll-area-fade"] {
+           position: sticky; z-index: 1; pointer-events: none;
+           opacity: 0; transition: opacity 0.2s ease;
+         }
+         /* Vertical (default) + both: full-width bars pinned top / bottom. */
+         [data-slot="scroll-area"]:not([data-orientation="horizontal"]) [data-slot="scroll-area-fade"] {
+           display: block; left: 0; width: 100%; height: 2rem;
+         }
+         [data-slot="scroll-area"]:not([data-orientation="horizontal"]) [data-slot="scroll-area-fade"][data-edge="start"] {
+           top: 0; margin-bottom: -2rem;
+           background: linear-gradient(to bottom, var(--background), transparent);
+         }
+         [data-slot="scroll-area"]:not([data-orientation="horizontal"]) [data-slot="scroll-area-fade"][data-edge="end"] {
+           bottom: 0; margin-top: -2rem;
+           background: linear-gradient(to top, var(--background), transparent);
+         }
+         /* Horizontal: full-height bars pinned left / right (inline-block so
+            they sit inline with the scrolling row). */
+         [data-slot="scroll-area"][data-orientation="horizontal"] [data-slot="scroll-area-fade"] {
+           display: inline-block; top: 0; height: 100%; width: 2rem;
+         }
+         [data-slot="scroll-area"][data-orientation="horizontal"] [data-slot="scroll-area-fade"][data-edge="start"] {
+           left: 0; margin-right: -2rem;
+           background: linear-gradient(to right, var(--background), transparent);
+         }
+         [data-slot="scroll-area"][data-orientation="horizontal"] [data-slot="scroll-area-fade"][data-edge="end"] {
+           right: 0; margin-left: -2rem;
+           background: linear-gradient(to left, var(--background), transparent);
+         }
+         @container scroll-state(scrollable: top) {
+           [data-slot="scroll-area"]:not([data-orientation="horizontal"]) [data-slot="scroll-area-fade"][data-edge="start"] { opacity: 1; }
+         }
+         @container scroll-state(scrollable: bottom) {
+           [data-slot="scroll-area"]:not([data-orientation="horizontal"]) [data-slot="scroll-area-fade"][data-edge="end"] { opacity: 1; }
+         }
+         @container scroll-state(scrollable: left) {
+           [data-slot="scroll-area"][data-orientation="horizontal"] [data-slot="scroll-area-fade"][data-edge="start"] { opacity: 1; }
+         }
+         @container scroll-state(scrollable: right) {
+           [data-slot="scroll-area"][data-orientation="horizontal"] [data-slot="scroll-area-fade"][data-edge="end"] { opacity: 1; }
+         }
+
+  A scroll region must be keyboard operable: keep tabindex="0", role="region",
+  and an accessible name (aria-label / aria-labelledby) on the viewport.
+  Set a height on the ROOT (e.g. h-72) so the region actually constrains.
+-->
+
+<!-- Vertical scroll area with top/bottom fade masks -->
+<div data-slot="scroll-area" data-orientation="vertical"
+     class="relative overflow-hidden rounded-md border h-72 w-full max-w-sm">
+  <div data-slot="scroll-area-viewport" data-scroll-area-viewport data-fade="true"
+       role="region" aria-label="Release notes" tabindex="0"
+       class="size-full scroll-smooth scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-[inherit] overflow-y-auto overflow-x-hidden">
+    <div data-slot="scroll-area-fade" data-edge="start" aria-hidden="true"
+         class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>
+    <div class="space-y-3 p-4 text-sm">
+      <p>Scroll down — the bottom fade hints there is more. Once you reach the
+        end it disappears; the top fade appears as soon as you leave the top.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
+      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa.</p>
+      <p>Qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+    <div data-slot="scroll-area-fade" data-edge="end" aria-hidden="true"
+         class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>
+  </div>
+</div>
+
+<!-- Horizontal scroll area, no fade masks (just the themed scrollbar) -->
+<div data-slot="scroll-area" data-orientation="horizontal"
+     class="relative overflow-hidden rounded-md border w-full max-w-md">
+  <div data-slot="scroll-area-viewport" data-scroll-area-viewport
+       role="region" aria-label="Tags" tabindex="0"
+       class="size-full scroll-smooth scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-[inherit] overflow-x-auto overflow-y-hidden">
+    <div class="flex w-max gap-3 p-4 text-sm">
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">design</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">engineering</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">marketing</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">operations</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">research</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">support</span>
+      <span class="rounded-full border px-3 py-1 whitespace-nowrap">finance</span>
+    </div>
+  </div>
+</div>

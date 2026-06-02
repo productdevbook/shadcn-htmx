@@ -2211,3 +2211,434 @@ export const AUTO_GRID_PROPS: ApiRow[] = [
   CLASS_ROW,
   HX_ROW,
 ]
+
+// ---- New components (tier-3) ----
+
+export const KBD_PROPS: ApiRow[] = [
+  {
+    prop: "keys",
+    type: "Child[]",
+    description:
+      "KbdGroup only. Render one key cap (a nested <kbd>) per entry, joined by separator. Omit and pass children to compose a shortcut by hand. Follows MDN's nested-<kbd> keystroke pattern.",
+    source: { badge: "MDN", label: "Representing keystrokes within an input", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd#representing_keystrokes_within_an_input" },
+  },
+  {
+    prop: "separator",
+    type: "Child",
+    default: '"+"',
+    description: 'KbdGroup only. Node rendered between keys (aria-hidden so it is not announced). Set "" for no separator.',
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name. Use on symbol-only caps (e.g. \"⌘\" with ariaLabel=\"Command\") so AT announces a word, not the raw glyph; or on a KbdGroup to name the whole shortcut.",
+    source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" },
+  },
+  {
+    prop: "title",
+    type: "string",
+    description: "Kbd only. Native browser tooltip shown on hover.",
+    source: { badge: "MDN", label: "title attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/title" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const HIGHLIGHT_PROPS: ApiRow[] = [
+  {
+    prop: "text",
+    type: "string",
+    description:
+      "The source text to scan for matches. Its original casing is preserved in the output (only this string is sliced, never the query). Omit in single-term mode.",
+    source: { badge: "MDN", label: "<mark> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark" },
+  },
+  {
+    prop: "query",
+    type: "string",
+    description:
+      "The query to mark inside text. Empty or undefined renders text verbatim with no marks. The query is escaped before matching, so punctuation matches literally.",
+  },
+  {
+    prop: "words",
+    type: "boolean",
+    default: "false",
+    description:
+      "Highlight each whitespace-separated term in query independently. Off treats the whole query as a single phrase.",
+  },
+  {
+    prop: "caseSensitive",
+    type: "boolean",
+    default: "false",
+    description: "Require an exact-case match. By default matching is case-insensitive.",
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description:
+      "Single-term mode: when present, the children are wrapped verbatim in one <mark> and text/query are ignored. Use when the server already knows the exact run to mark.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const RELATIVE_TIME_PROPS: ApiRow[] = [
+  {
+    prop: "datetime",
+    type: "string",
+    required: true,
+    description: "Machine-readable instant for the datetime attribute. An ISO 8601 string (e.g. 2024-05-12T09:00:00Z) is what the script can re-localise; any valid HTML datetime value still renders.",
+    source: { badge: "MDN", label: "<time> datetime", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time" },
+  },
+  {
+    prop: "format",
+    type: ['"relative"', '"datetime"'],
+    default: '"relative"',
+    description: "How the optional script formats the label: relative renders 3 days ago via Intl.RelativeTimeFormat; datetime renders an absolute, locale/timezone-aware date+time via Intl.DateTimeFormat.",
+    source: { badge: "MDN", label: "Intl.RelativeTimeFormat", href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat" },
+  },
+  {
+    prop: "tone",
+    type: ['"default"', '"muted"'],
+    default: '"muted"',
+    description: "Text colour. muted for supporting timestamps, default for foreground emphasis.",
+  },
+  {
+    prop: "children",
+    type: "Child",
+    required: true,
+    description: "Server-rendered human label shown verbatim when JavaScript is off. The script replaces this text once Intl is available.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const FIGURE_PROPS: ApiRow[] = [
+  {
+    prop: "captionSide",
+    type: ['"bottom"', '"top"'],
+    default: '"bottom"',
+    description: "Where the <figcaption> sits relative to the content. \"bottom\" reads as a credit/label below; \"top\" reads as a legend introducing the content (common for code blocks). The spec allows the caption as the figure's first or last child, so place the caption in that DOM order.",
+    source: { badge: "MDN", label: "<figure>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure" },
+  },
+  {
+    prop: "id",
+    type: "string",
+    description: "Forwarded onto the <figure> root.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const RESPONSIVE_IMAGE_PROPS: ApiRow[] = [
+  {
+    prop: "src",
+    type: "string",
+    required: true,
+    description: "URL of the fallback <img>. Also the element that sizes the box and carries the accessible name. Required by the platform — the browser shows it when no <source> matches.",
+    source: { badge: "MDN", label: "<img src>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#src" },
+  },
+  {
+    prop: "alt",
+    type: "string",
+    required: true,
+    description: "Alternative text on the fallback <img>. <picture>/<source> have no ARIA role, so this is the only accessible name. Use an empty string only for purely decorative images.",
+    source: { badge: "MDN", label: "<img alt>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#alt" },
+  },
+  {
+    prop: "sources",
+    type: "ResponsiveImageSource[]",
+    description: "Candidate <source> elements in priority order, each { srcset, type?, media?, sizes?, width?, height? }. The browser picks the first whose media + type match. Inside <picture>, srcset is required and src is not allowed.",
+    source: { badge: "MDN", label: "<source> in <picture>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source#srcset" },
+  },
+  {
+    prop: "srcset / sizes",
+    type: "string",
+    description: "Density or width candidates on the fallback <img> itself (Retina without explicit media queries). sizes only takes effect with width (w) descriptors, not density (x).",
+    source: { badge: "MDN", label: "<img srcset>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#srcset" },
+  },
+  {
+    prop: "width / height",
+    type: "number",
+    description: "Intrinsic dimensions on the fallback <img> (integers, no units). Set them to reserve layout space and avoid layout shift (CLS).",
+    source: { badge: "MDN", label: "<img width/height>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#width" },
+  },
+  {
+    prop: "loading",
+    type: ['"lazy"', '"eager"'],
+    description: "Native lazy loading. lazy defers off-screen images until they near the viewport.",
+    source: { badge: "MDN", label: "<img loading>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#loading" },
+  },
+  {
+    prop: "decoding",
+    type: ['"sync"', '"async"', '"auto"'],
+    description: "Hint for how the browser decodes the image relative to painting other content. async avoids blocking the main thread.",
+    source: { badge: "MDN", label: "<img decoding>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#decoding" },
+  },
+  {
+    prop: "fetchpriority",
+    type: ['"high"', '"low"', '"auto"'],
+    description: "Relative fetch priority. Use high for the LCP hero image, low for below-the-fold decoration.",
+    source: { badge: "MDN", label: "<img fetchpriority>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#fetchpriority" },
+  },
+  {
+    prop: "imgClass",
+    type: "string",
+    description: "Extra Tailwind classes on the inner <img> (e.g. object-contain, aspect-video). object-fit / object-position belong here, not on <picture>.",
+    source: { badge: "MDN", label: "object-fit goes on <img>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture#usage_notes" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const MEDIA_PLAYER_PROPS: ApiRow[] = [
+  { prop: "kind", type: ['"video"', '"audio"'], default: '"video"', description: "Render <video> (aspect-ratio framed) or <audio> (full-width control bar).",
+    source: { badge: "MDN", label: "<video>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video" } },
+  { prop: "src", type: "string", description: "Single media URL. Use sources instead when offering multiple formats." },
+  { prop: "sources", type: "MediaSource[]", description: "Multiple encodings ({ src, type }) tried in order; the browser plays the first format it can decode.",
+    source: { badge: "MDN", label: "<source>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source" } },
+  { prop: "tracks", type: "MediaTrack[]", description: "WebVTT text tracks ({ src, kind, srclang, label, default }) for captions, subtitles, descriptions, or chapters the native UI can toggle.",
+    source: { badge: "MDN", label: "<track>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track" } },
+  { prop: "poster", type: "string", description: "Video only. Image shown while the video downloads, before the first frame is available." },
+  { prop: "ratio", type: ["number", "string"], default: '"16/9"', description: "Video only. Frame ratio: a number (1.778) or a \"w/h\" string. Maps to a Tailwind aspect-* utility (\"1/1\" -> aspect-square, \"16/9\" -> aspect-video, anything else -> aspect-[w/h]). Ignored for audio.",
+    source: { badge: "MDN", label: "aspect-ratio", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" } },
+  { prop: "controls", type: "boolean", default: "true", description: "Show the browser's native playback controls (play, seek, volume, captions, fullscreen)." },
+  { prop: "preload", type: ['"none"', '"metadata"', '"auto"'], description: "Hint for how much media to fetch before playback. The spec advises metadata." },
+  { prop: "loop", type: "boolean", default: "false", description: "Seek back to the start when playback reaches the end." },
+  { prop: "muted", type: "boolean", default: "false", description: "Start with the audio muted." },
+  { prop: "autoplay", type: "boolean", default: "false", description: "Begin playback as soon as possible. Most browsers block autoplay of unmuted media." },
+  { prop: "playsinline", type: "boolean", default: "false", description: "Video only. Play inline rather than forcing fullscreen on mobile." },
+  { prop: "crossorigin", type: ['"anonymous"', '"use-credentials"'], description: "CORS mode for cross-origin media (required when caption tracks are cross-origin)." },
+  { prop: "ariaLabel", type: "string", description: "Accessible name for the player when no caption track identifies the media (recommended for audio)." },
+  { prop: "children", type: "Child", description: "No-support fallback content (e.g. download links) shown to browsers that cannot render <video>/<audio>." },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const AUTOCOMPLETE_PROPS: ApiRow[] = [
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description:
+      "Input id, and the base for the bound list id (`${id}-list`). The default htmx hx-target points at that datalist, so server-streamed options land in the right list.",
+  },
+  { prop: "name", type: "string", description: "Form field name on submit. The submitted value is the free text in the input." },
+  {
+    prop: "options",
+    type: "AutocompleteOption[]",
+    default: "[]",
+    description:
+      "Static suggestions rendered as <option> in the bound <datalist>. Each is { value: string; label?: string }. Server-streamed autocompletes pass [] and let htmx populate the list on input.",
+    source: { badge: "MDN", label: "<datalist>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist" },
+  },
+  {
+    prop: "endpoint",
+    type: "string",
+    description:
+      "When set, wires the htmx streaming defaults: hx-get={endpoint}, hx-trigger=\"input changed delay:${delay}ms\", hx-target=\"#${id}-list\", hx-swap=\"innerHTML\", hx-sync=\"this:replace\". The server returns a fresh <option> set per keystroke. Explicit hx-* props override these.",
+    source: { badge: "htmx", label: "hx-trigger (input changed delay)", href: "https://htmx.org/attributes/hx-trigger/" },
+  },
+  { prop: "delay", type: "number", default: "200", description: "Debounce window (ms) for the input trigger when endpoint is set." },
+  { prop: "value", type: "string", description: "Initial free-text value." },
+  { prop: "placeholder", type: "string", description: "Placeholder text when empty." },
+  {
+    prop: "list",
+    type: "string",
+    description:
+      "Underlying native attribute the component sets to `${id}-list`. The value is always free text — a <datalist> suggests, it does not constrain (use Select / Listbox for a fixed value set).",
+    source: { badge: "MDN", label: "<input> list attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#list" },
+  },
+  { prop: "minLength / maxLength", type: "number", description: "Character bounds the platform enforces on the value." },
+  { prop: "required", type: "boolean", default: "false", description: "Native HTML required for form validation." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable — unfocusable, not submitted." },
+  { prop: "readonly", type: "boolean", default: "false", description: "Read-only — focusable + selectable but not editable." },
+  { prop: "autofocus", type: "boolean", default: "false", description: "Focus this input on initial page load (one per document)." },
+  {
+    prop: "ariaInvalid",
+    type: ['"true"', '"false"', '"grammar"', '"spelling"', "boolean"],
+    description: "Sets aria-invalid; drives the destructive border + ring styling.",
+    source: { badge: "MDN", label: "aria-invalid", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" },
+  },
+  { prop: "form", type: "string", description: "Associate the input with a <form> by id when it lives outside it." },
+  { prop: "inputClass", type: "string", description: "Extra Tailwind classes appended to the <input> (root takes `class`)." },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const EXCLUSIVE_ACCORDION_PROPS: ApiRow[] = [
+  {
+    prop: "name",
+    type: "string",
+    required: true,
+    description: "Shared group name written onto every item's <details name>. Required — it is what makes the group exclusive. Pass the same value to the root and to each item. Distinct accordions on one page must use distinct names, or they'd close each other.",
+    source: { badge: "MDN", label: "<details name>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#name" },
+  },
+  {
+    prop: "value",
+    type: "string",
+    description: "Distinct identifier per item, emitted as the data-value attribute so each item is individually targetable. Set on ExclusiveAccordionItem.",
+  },
+  {
+    prop: "open",
+    type: "boolean",
+    default: "false",
+    description: "Render this item expanded on initial load. Maps to the native boolean <details open> attribute — omit it (don't pass the string \"false\") to start collapsed. If two items in the group set open, the browser opens only the first in source order.",
+    source: { badge: "MDN", label: "<details open>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#open" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Visually mute an item and block pointer interaction (pointer-events-none, reduced opacity). Set on ExclusiveAccordionItem.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SCROLL_AREA_PROPS: ApiRow[] = [
+  {
+    prop: "orientation",
+    type: ['"vertical"', '"horizontal"', '"both"'],
+    default: '"vertical"',
+    description: "Which axis scrolls. vertical = overflow-y, horizontal = overflow-x, both = overflow both ways. Also selects which scroll-state edges drive the fade masks.",
+    source: { badge: "MDN", label: "overflow", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" },
+  },
+  {
+    prop: "fade",
+    type: "boolean",
+    default: "true",
+    description: "Render start/end fade masks (top+bottom for vertical, left+right for horizontal) that fade in only while content can still scroll towards that edge. Driven by CSS @container scroll-state() — no JS.",
+    source: { badge: "MDN", label: "@container scroll-state()", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/@container" },
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name for the scroll region (rendered on the viewport, which is role=region + tabindex=0). Provide this or ariaLabelledby so assistive tech can reach and identify the scrollable area.",
+    source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element naming the scroll region. Alternative to ariaLabel.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "viewportClass",
+    type: "string",
+    description: "Extra Tailwind classes for the inner scrolling viewport (e.g. padding). The root gets class; the viewport gets viewportClass.",
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description: "The scrollable content. Set a height/max-height on the root (via class, e.g. h-72) so the region actually constrains and overflows.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SNAP_LIST_PROPS: ApiRow[] = [
+  {
+    prop: "orientation",
+    type: ['"horizontal"', '"vertical"'],
+    default: '"horizontal"',
+    description: "<SnapList>. Scroll/snap axis. Sets scroll-snap-type's axis (snap-x/snap-y) and lays the list out as a row or column. The vertical case needs a bounded height to scroll.",
+    source: { badge: "MDN", label: "scroll-snap-type axis", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type#values" },
+  },
+  {
+    prop: "snap",
+    type: ['"mandatory"', '"proximity"'],
+    default: '"mandatory"',
+    description: "<SnapList>. scroll-snap-type strictness. mandatory always rests on a snap point; proximity only snaps when a rest point is near (gentler on long content).",
+    source: { badge: "MDN", label: "scroll-snap-type", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type" },
+  },
+  {
+    prop: "align",
+    type: ['"start"', '"center"', '"end"'],
+    default: '"start"',
+    description: "<SnapListItem>. Where the item snaps within the rail (scroll-snap-align). start for chip rows, center for one-up media shelves.",
+    source: { badge: "MDN", label: "scroll-snap-align", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-align" },
+  },
+  {
+    prop: "stop",
+    type: "boolean",
+    default: "false",
+    description: "<SnapListItem>. Sets scroll-snap-stop: always so a fast fling cannot skip past this item — the scroll must come to rest on it.",
+    source: { badge: "MDN", label: "scroll-snap-stop", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-stop" },
+  },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const CONTAINER_CARD_PROPS: ApiRow[] = [
+  {
+    prop: "as",
+    type: ['"article"', '"section"', '"div"', '"li"', '"aside"'],
+    default: '"article"',
+    description: "Semantic element for the card root. Defaults to <article> for self-contained, syndicatable content (product, post, comment).",
+    source: { badge: "MDN", label: "<article>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article" },
+  },
+  {
+    prop: "media",
+    type: "Child",
+    description: "Media element (img/video/picture/div) shown above the body when the card is stacked and beside it when wide. Omit for a text-only card.",
+  },
+  {
+    prop: "break",
+    type: "string",
+    default: '"28rem"',
+    description: "Inline width at which the card flips from stacked to side-by-side. Published as the --container-card-break custom property for inspection. Note: changing the number also requires editing the @min-[28rem] variant, since a container query condition cannot read a custom property.",
+    source: { badge: "MDN", label: "container-type", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/container-type" },
+  },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const STICKY_HEADER_PROPS: ApiRow[] = [
+  {
+    prop: "as",
+    type: ['"header"', '"div"', '"section"', '"nav"'],
+    default: '"header"',
+    description:
+      "Semantic element to render as. A page banner or section title uses header; a sticky toolbar can use div.",
+    source: { badge: "MDN", label: "<header> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header" },
+  },
+  {
+    prop: "top",
+    type: ["number", "string"],
+    default: "0",
+    description:
+      "Offset from the scroll container's top edge at which the header pins (CSS top). A number is treated as pixels; a string passes through verbatim. The stuck query keys off this same edge.",
+    source: { badge: "MDN", label: "position: sticky", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position" },
+  },
+  {
+    prop: "id",
+    type: "string",
+    description: "Forwarded to the root element.",
+  },
+  {
+    prop: "StickyHeaderBar.as",
+    type: ['"div"', '"header"', '"nav"'],
+    default: '"div"',
+    description:
+      "Element for a reveal region (the part that gains a shadow + solid background when stuck). Carries data-sticky-revealed.",
+  },
+  {
+    prop: "StickyHeaderBar.class",
+    type: "string",
+    description:
+      "Layout/spacing classes for the reveal region (e.g. flex h-14 items-center px-4). The stuck shadow + background are applied by the scoped [data-slot=\"sticky-header\"] CSS block via the data-sticky-revealed hook.",
+    source: { badge: "MDN", label: "@container scroll-state(stuck)", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@container" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SCROLL_PROGRESS_PROPS: ApiRow[] = [
+  { prop: "position", type: ['"top"', '"bottom"'], default: '"top"', description: "Which viewport edge the bar pins to." },
+  { prop: "timeline", type: "string", description: "A scroll-timeline-name (a --dashed-ident) to drive the bar from a named scroller instead of the whole page. Omit to track the page root via scroll(root block).", source: { badge: "MDN", label: "scroll-timeline-name", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-timeline-name" } },
+  CLASS_ROW,
+  HX_ROW,
+]

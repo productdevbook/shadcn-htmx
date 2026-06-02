@@ -1,0 +1,34 @@
+{# Relative Time macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/relative-time.tsx. Renders a native <time> element
+   carrying a machine-readable `datetime` plus a human-readable label as its
+   body. With no JS the server label is shown; the shared site.js block
+   re-localises it to the visitor's locale/timezone via the Intl APIs.
+
+   Usage:
+     {% from "components/relative-time.html" import relative_time %}
+     {% call relative_time("2024-05-12T09:00:00Z") %}3 days ago{% endcall %}
+     {% call relative_time("2024-05-12T09:00:00Z", format="datetime", tone="muted") %}May 12, 2024{% endcall %} #}
+
+{% macro relative_time(
+    datetime,
+    format="relative",
+    tone="muted",
+    id=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base = "tabular-nums" -%}
+{%- set tones = {
+    "default": "text-foreground",
+    "muted": "text-muted-foreground"
+} -%}
+<time
+  {%- if id %} id="{{ id }}"{% endif %}
+  datetime="{{ datetime }}"
+  data-slot="relative-time"
+  data-relative-time=""
+  data-format="{{ format }}"
+  class="{{ base }} {{ tones[tone] }} {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ caller() }}</time>
+{% endmacro %}

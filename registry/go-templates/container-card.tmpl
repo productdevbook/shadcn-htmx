@@ -1,0 +1,52 @@
+{{/*
+  Container Card template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/container-card.tsx.
+
+  A self-adapting card that restyles based on its OWN inline width: stacked
+  (media above text) when narrow, side-by-side when wide. Built on CSS
+  container queries (container-type: inline-size + @container). Pure CSS; no JS.
+
+    repos/mdn/files/en-us/web/css/reference/properties/container-type/index.md
+    repos/web.dev/src/site/content/en/patterns/layout/container-query-card/index.md
+
+      type ContainerCardArgs struct {
+          Tag         string // article | section | div | li | aside; default "article"
+          Title       string // title slot text (optional)
+          TitleID     string // id on the title (pair with AriaLabelledby)
+          Description string // supporting copy (optional)
+          Media       string // raw HTML for the media slot (use htmlSafe); optional
+          Break       string // flip threshold; default "28rem" (also edit @min-[…])
+          AriaLabel   string
+          AriaLabelledby string
+          Class       string // extra classes appended to the root
+          Body        string // footer / actions HTML (use htmlSafe)
+      }
+
+  Usage:
+      {{template "container-card" (dict
+          "Title" "Card title"
+          "Description" "Supporting copy"
+          "Media" (htmlSafe `<img src="/cover.jpg" alt="" class="size-full object-cover">`)
+          "Body" (htmlSafe `<a href="/more">Read more</a>`))}}
+*/}}
+
+{{define "container-card"}}
+{{- $tag := or .Tag "article" -}}
+{{- $break := or .Break "28rem" -}}
+<{{$tag}} data-slot="container-card" style="--container-card-break:{{$break}}"{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}{{if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}} class="@container/container-card overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm{{if .Class}} {{.Class}}{{end}}">
+  <div data-slot="container-card-layout" class="flex flex-col @min-[28rem]/container-card:grid @min-[28rem]/container-card:grid-cols-[40%_1fr] @min-[28rem]/container-card:items-stretch">
+    {{- if .Media}}
+    <div data-slot="container-card-media" class="bg-muted aspect-video w-full @min-[28rem]/container-card:aspect-auto @min-[28rem]/container-card:h-full">{{htmlSafe .Media}}</div>
+    {{- end}}
+    <div data-slot="container-card-body" class="flex flex-col gap-2 p-6 text-center @min-[28rem]/container-card:text-left">
+      {{- if .Title}}
+      <div data-slot="container-card-title"{{if .TitleID}} id="{{.TitleID}}"{{end}} class="leading-none font-semibold">{{.Title}}</div>
+      {{- end}}
+      {{- if .Description}}
+      <p data-slot="container-card-description" class="text-sm text-muted-foreground">{{.Description}}</p>
+      {{- end}}
+      <div data-slot="container-card-footer" class="mt-2 flex items-center justify-center gap-2 @min-[28rem]/container-card:justify-start">{{htmlSafe .Body}}</div>
+    </div>
+  </div>
+</{{$tag}}>
+{{end}}

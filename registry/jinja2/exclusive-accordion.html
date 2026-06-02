@@ -1,0 +1,61 @@
+{# Exclusive Accordion macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/exclusive-accordion.tsx EXACTLY.
+
+   The scriptless single-open accordion: every <details> shares one `name`
+   attribute, so the browser keeps exactly one open at a time — opening one
+   auto-closes the others. ZERO JavaScript: no boot script, no site.js. Per
+   the HTML spec, if multiple grouped items carry `open`, only the first in
+   source order renders open.
+
+   Ref: repos/mdn/files/en-us/web/html/reference/elements/details/index.md (name)
+
+   Usage:
+     {% from "components/exclusive-accordion.html" import
+        exclusive_accordion_open, exclusive_accordion_close,
+        exclusive_accordion_item_open, exclusive_accordion_item_close,
+        exclusive_accordion_trigger,
+        exclusive_accordion_content_open, exclusive_accordion_content_close %}
+
+     {{ exclusive_accordion_open(name="faq") }}
+       {{ exclusive_accordion_item_open(name="faq", value="q1", open=true) }}
+         {{ exclusive_accordion_trigger("What's htmx?") }}
+         {{ exclusive_accordion_content_open() }}
+           Hypermedia-driven HTML extensions.
+         {{ exclusive_accordion_content_close() }}
+       {{ exclusive_accordion_item_close() }}
+     {{ exclusive_accordion_close() }} #}
+
+{% macro exclusive_accordion_open(name, extra_class="") -%}
+<div data-slot="exclusive-accordion" data-name="{{ name }}" class="w-full {{ extra_class }}">
+{%- endmacro %}
+
+{% macro exclusive_accordion_close() %}</div>{% endmacro %}
+
+{% macro exclusive_accordion_item_open(name, value="", open=false, disabled=false, extra_class="") -%}
+<details data-slot="exclusive-accordion-item"
+         {%- if value %} data-value="{{ value }}"{% endif %}
+         {%- if disabled %} data-disabled="true"{% endif %}
+         name="{{ name }}"
+         {%- if open %} open{% endif %}
+         class="border-b last:border-b-0 {% if disabled %}pointer-events-none opacity-50{% endif %} {{ extra_class }}">
+{%- endmacro %}
+
+{% macro exclusive_accordion_item_close() %}</details>{% endmacro %}
+
+{% macro exclusive_accordion_trigger(text, extra_class="") -%}
+<summary data-slot="exclusive-accordion-trigger"
+  class="flex cursor-pointer items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none select-none marker:hidden hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 list-none [&::-webkit-details-marker]:hidden [details[open]>&_[data-slot=exclusive-accordion-chevron]]:rotate-180 {{ extra_class }}">
+  {{ text }}
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       data-slot="exclusive-accordion-chevron"
+       class="pointer-events-none size-4 shrink-0 translate-y-0.5 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</summary>
+{%- endmacro %}
+
+{% macro exclusive_accordion_content_open(extra_class="") -%}
+<div data-slot="exclusive-accordion-content" class="overflow-hidden pt-0 pb-4 text-sm {{ extra_class }}">
+{%- endmacro %}
+
+{% macro exclusive_accordion_content_close() %}</div>{% endmacro %}

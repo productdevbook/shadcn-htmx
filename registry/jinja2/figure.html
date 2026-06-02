@@ -1,0 +1,41 @@
+{# Figure macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/figure.tsx.
+
+   Self-contained captioned content (image, diagram, code, quote) in a native
+   <figure>; the <figcaption> supplies the figure's accessible name. Zero JS.
+     MDN figure:     repos/mdn/files/en-us/web/html/reference/elements/figure/index.md
+     MDN figcaption: repos/mdn/files/en-us/web/html/reference/elements/figcaption/index.md
+
+   The <figcaption> must be the figure's first or last child; choose
+   caption_side accordingly and put the figure_caption(...) call in that DOM
+   position yourself (this mirrors how the .tsx renders children in order).
+
+   Usage:
+     {% from "components/figure.html" import figure, figure_content,
+        figure_caption, figure_credit %}
+
+     {% call figure(caption_side="bottom") %}
+       <img src="/elephant.jpg" alt="An elephant at sunset" class="w-full rounded-md">
+       {% call figure_caption() %}An elephant at sunset{% endcall %}
+     {% endcall %} #}
+
+{% macro figure(caption_side="bottom", id=none, extra_class="", **attrs) -%}
+<figure
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="figure"
+  data-caption-side="{{ caption_side }}"
+  class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}>{{ caller() }}</figure>
+{%- endmacro %}
+
+{% macro figure_content(extra_class="") -%}
+<div data-slot="figure-content" class="overflow-hidden rounded-md bg-muted text-sm text-foreground {{ extra_class }}">{{ caller() }}</div>
+{%- endmacro %}
+
+{% macro figure_caption(id=none, extra_class="") -%}
+<figcaption {% if id %}id="{{ id }}" {% endif %}data-slot="figure-caption" class="px-1 text-sm leading-snug text-muted-foreground {{ extra_class }}">{{ caller() }}</figcaption>
+{%- endmacro %}
+
+{% macro figure_credit(extra_class="") -%}
+<span data-slot="figure-credit" class="mt-1 block text-xs text-muted-foreground/80 {{ extra_class }}">{{ caller() }}</span>
+{%- endmacro %}

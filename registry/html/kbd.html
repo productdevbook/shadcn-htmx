@@ -1,0 +1,42 @@
+<!--
+  shadcn-htmx — raw <kbd> snippets. Mirrors registry/ui/kbd.tsx.
+  Zero JavaScript — <kbd> is phrasing content with no interaction.
+
+  Native element:
+    repos/mdn/files/en-us/web/html/reference/elements/kbd/index.md
+    (nested <kbd> per key inside an outer <kbd> = MDN keystroke pattern)
+
+  KEY CAP base (data-slot="kbd"):
+    pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none
+    items-center justify-center gap-1 rounded-sm border bg-muted px-1
+    font-sans text-xs font-medium text-muted-foreground
+    [&_svg:not([class*='size-'])]:size-3
+
+  GROUP base (data-slot="kbd-group", the outer wrapping <kbd>):
+    inline-flex w-fit items-center gap-1 align-middle
+  Relies only on theme tokens; no script.
+-->
+
+<!-- Single key -->
+<kbd data-slot="kbd"
+  class="pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3">
+  Esc
+</kbd>
+
+<!-- Shortcut: outer <kbd> groups inner key caps, "+" between them -->
+<kbd data-slot="kbd-group" class="inline-flex w-fit items-center gap-1 align-middle">
+  <kbd data-slot="kbd"
+    class="pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3">Ctrl</kbd>
+  <span aria-hidden="true" class="text-muted-foreground/70">+</span>
+  <kbd data-slot="kbd"
+    class="pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3">Shift</kbd>
+  <span aria-hidden="true" class="text-muted-foreground/70">+</span>
+  <kbd data-slot="kbd"
+    class="pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3">R</kbd>
+</kbd>
+
+<!-- Symbol key with an accessible name (aria-label) for screen readers -->
+<kbd data-slot="kbd" aria-label="Command"
+  class="pointer-events-none inline-flex h-5 w-fit min-w-5 shrink-0 select-none items-center justify-center gap-1 rounded-sm border bg-muted px-1 font-sans text-xs font-medium text-muted-foreground [&_svg:not([class*='size-'])]:size-3">
+  ⌘
+</kbd>

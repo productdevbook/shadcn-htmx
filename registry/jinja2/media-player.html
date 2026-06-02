@@ -1,0 +1,80 @@
+{# Media Player macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/media-player.tsx.
+
+   A styled native <video controls> / <audio controls>. The browser ships
+   the full accessible playback UI (play, seek, volume, captions, fullscreen,
+   PiP); we only frame it. Zero JS — we never emulate platform features.
+     MDN <video>:  repos/mdn/files/en-us/web/html/reference/elements/video/index.md
+     MDN <audio>:  repos/mdn/files/en-us/web/html/reference/elements/audio/index.md
+     MDN <source>: repos/mdn/files/en-us/web/html/reference/elements/source/index.md
+     MDN <track>:  repos/mdn/files/en-us/web/html/reference/elements/track/index.md
+
+   `sources` is a list of {src, type} dicts; `tracks` a list of
+   {src, kind, srclang, label, default} dicts. The slotted {{ caller() }} is
+   the no-support fallback (download links, etc.).
+
+   Usage:
+     {% from "components/media-player.html" import media_player %}
+     {% call media_player(
+          sources=[{"src": "/clip.webm", "type": "video/webm"},
+                   {"src": "/clip.mp4",  "type": "video/mp4"}],
+          tracks=[{"src": "/clip.en.vtt", "kind": "captions",
+                   "srclang": "en", "label": "English", "default": True}],
+          poster="/poster.jpg") %}
+       <a href="/clip.mp4">Download the video</a>
+     {% endcall %} #}
+
+{% macro media_player(kind="video", src=none, sources=[], tracks=[], poster=none, ratio="16/9", controls=true, preload=none, loop=false, muted=false, autoplay=false, playsinline=false, crossorigin=none, aria_label=none, id=none, extra_class="", **attrs) %}
+{%- set is_video = kind == "video" -%}
+{%- set ratio_class -%}
+{%- if ratio == "1/1" -%}aspect-square{%- elif ratio == "16/9" -%}aspect-video{%- else -%}aspect-[{{ ratio | replace(' ', '') }}]{%- endif -%}
+{%- endset -%}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="media-player"
+  data-kind="{{ kind }}"
+  class="group/media-player relative block w-full overflow-hidden rounded-lg border bg-card {% if is_video %}{{ ratio_class }}{% else %}p-2{% endif %} {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}>
+  {%- if is_video %}
+  <video data-slot="media-player-media"
+         {%- if src %} src="{{ src }}"{% endif %}
+         {%- if controls %} controls{% endif %}
+         {%- if poster %} poster="{{ poster }}"{% endif %}
+         {%- if preload %} preload="{{ preload }}"{% endif %}
+         {%- if loop %} loop{% endif %}
+         {%- if muted %} muted{% endif %}
+         {%- if autoplay %} autoplay{% endif %}
+         {%- if playsinline %} playsinline{% endif %}
+         {%- if crossorigin %} crossorigin="{{ crossorigin }}"{% endif %}
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         class="block size-full bg-black object-contain">
+    {%- for s in sources %}
+    <source data-slot="media-player-source" src="{{ s.src }}"{% if s.type %} type="{{ s.type }}"{% endif %}>
+    {%- endfor %}
+    {%- for t in tracks %}
+    <track data-slot="media-player-track" kind="{{ t.kind | default('subtitles') }}" src="{{ t.src }}"{% if t.srclang %} srclang="{{ t.srclang }}"{% endif %}{% if t.label %} label="{{ t.label }}"{% endif %}{% if t.default %} default{% endif %}>
+    {%- endfor %}
+    {{ caller() }}
+  </video>
+  {%- else %}
+  <audio data-slot="media-player-media"
+         {%- if src %} src="{{ src }}"{% endif %}
+         {%- if controls %} controls{% endif %}
+         {%- if preload %} preload="{{ preload }}"{% endif %}
+         {%- if loop %} loop{% endif %}
+         {%- if muted %} muted{% endif %}
+         {%- if autoplay %} autoplay{% endif %}
+         {%- if crossorigin %} crossorigin="{{ crossorigin }}"{% endif %}
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         class="block w-full">
+    {%- for s in sources %}
+    <source data-slot="media-player-source" src="{{ s.src }}"{% if s.type %} type="{{ s.type }}"{% endif %}>
+    {%- endfor %}
+    {%- for t in tracks %}
+    <track data-slot="media-player-track" kind="{{ t.kind | default('subtitles') }}" src="{{ t.src }}"{% if t.srclang %} srclang="{{ t.srclang }}"{% endif %}{% if t.label %} label="{{ t.label }}"{% endif %}{% if t.default %} default{% endif %}>
+    {%- endfor %}
+    {{ caller() }}
+  </audio>
+  {%- endif %}
+</div>
+{% endmacro %}

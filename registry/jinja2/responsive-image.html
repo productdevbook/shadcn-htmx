@@ -1,0 +1,42 @@
+{# Responsive Image macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/responsive-image.tsx. Native <picture> + <source>s + <img>.
+
+   `sources` is a list of dicts: { srcset, type, media, sizes, width, height }.
+   The browser picks the first matching <source>; the <img> is the fallback
+   and carries the accessible name via `alt` (empty "" only for decorative).
+
+   Usage:
+     {% from "components/responsive-image.html" import responsive_image %}
+     {{ responsive_image(
+          src="/img/hero.jpg", alt="A surfer at golden hour",
+          sources=[
+            {"srcset": "/img/hero.avif", "type": "image/avif"},
+            {"srcset": "/img/hero.webp", "type": "image/webp"},
+          ]) }} #}
+
+{% macro responsive_image(src, alt, sources=[], width=none, height=none,
+                          loading=none, decoding=none, fetchpriority=none,
+                          srcset=none, sizes=none, extra_class="", img_class="",
+                          id=none, attrs={}) %}
+<picture data-slot="responsive-image"{% if id %} id="{{ id }}"{% endif %}
+         class="block overflow-hidden rounded-lg border bg-muted {{ extra_class }}"
+         {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}>
+  {%- for s in sources %}
+  <source srcset="{{ s.srcset }}"
+          {%- if s.type %} type="{{ s.type }}"{% endif %}
+          {%- if s.media %} media="{{ s.media }}"{% endif %}
+          {%- if s.sizes %} sizes="{{ s.sizes }}"{% endif %}
+          {%- if s.width %} width="{{ s.width }}"{% endif %}
+          {%- if s.height %} height="{{ s.height }}"{% endif %}>
+  {%- endfor %}
+  <img src="{{ src }}" alt="{{ alt }}" data-slot="responsive-image-img"
+       {%- if srcset %} srcset="{{ srcset }}"{% endif %}
+       {%- if sizes %} sizes="{{ sizes }}"{% endif %}
+       {%- if width %} width="{{ width }}"{% endif %}
+       {%- if height %} height="{{ height }}"{% endif %}
+       {%- if loading %} loading="{{ loading }}"{% endif %}
+       {%- if decoding %} decoding="{{ decoding }}"{% endif %}
+       {%- if fetchpriority %} fetchpriority="{{ fetchpriority }}"{% endif %}
+       class="block size-full object-cover {{ img_class }}">
+</picture>
+{% endmacro %}

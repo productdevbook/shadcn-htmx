@@ -1,0 +1,55 @@
+<!--
+  shadcn-htmx — raw HTML snap-list snippet.
+
+  Mirrors registry/ui/snap-list.tsx. The bare, reusable CSS scroll-snap rail
+  (gallery strip / chip row / media shelf / date rail) — ZERO JavaScript. The
+  platform owns the scrolling (wheel / trackpad / touch swipe / the browser's
+  own keyboard scrolling of the focusable region) and the snapping.
+
+  Built on CSS scroll snap:
+    - scroll-snap-type on the <ul>:  snap-x (axis) + snap-mandatory (strictness)
+    - scroll-snap-align on each <li>: snap-start / snap-center / snap-end
+    - scroll-snap-stop: always (snap-always) so a fling can't skip an item
+
+  Semantics: a real <ul role="list"> (Safari drops the implicit list role once
+  list-style is removed) that is a keyboard tab stop (tabindex="0") with a
+  visible focus ring, named via aria-label. Each entry is an <li>.
+
+  Required CSS theme variables: --ring. See app/styles/input.css. The
+  .scrollbar-none helper (hides the scrollbar; the region stays scrollable and
+  keyboard reachable) is defined there too.
+
+  Swap orientation by replacing the axis utilities on the <ul>:
+    horizontal: snap-x flex-row overflow-x-auto
+    vertical:   snap-y flex-col overflow-y-auto
+-->
+
+<ul data-slot="snap-list"
+    data-orientation="horizontal"
+    data-snap="mandatory"
+    role="list"
+    tabindex="0"
+    aria-label="Photo strip"
+    class="flex list-none scroll-smooth scrollbar-none rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 snap-x flex-row overflow-x-auto snap-mandatory gap-4 p-1">
+
+  <li data-slot="snap-list-item" data-align="start"
+      class="min-w-0 shrink-0 grow-0 snap-start basis-3/4">
+    <div class="flex aspect-video items-center justify-center rounded-lg border bg-muted text-4xl font-semibold text-muted-foreground">1</div>
+  </li>
+
+  <li data-slot="snap-list-item" data-align="start"
+      class="min-w-0 shrink-0 grow-0 snap-start basis-3/4">
+    <div class="flex aspect-video items-center justify-center rounded-lg border bg-muted text-4xl font-semibold text-muted-foreground">2</div>
+  </li>
+
+  <li data-slot="snap-list-item" data-align="start"
+      class="min-w-0 shrink-0 grow-0 snap-start basis-3/4">
+    <div class="flex aspect-video items-center justify-center rounded-lg border bg-muted text-4xl font-semibold text-muted-foreground">3</div>
+  </li>
+
+  <li data-slot="snap-list-item" data-align="start"
+      class="min-w-0 shrink-0 grow-0 snap-start basis-3/4">
+    <div class="flex aspect-video items-center justify-center rounded-lg border bg-muted text-4xl font-semibold text-muted-foreground">4</div>
+  </li>
+
+</ul>

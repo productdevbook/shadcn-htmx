@@ -1,0 +1,50 @@
+<!--
+  shadcn-htmx — raw HTML autocomplete snippet.
+
+  Free-text input with native typeahead: <input list> + <datalist>. The
+  light native sibling of the APG combobox — the browser handles the dropdown
+  UI, substring filtering, click + keyboard selection, and focus. Zero JS.
+  The value is always free text; an autocomplete suggests, it does not
+  constrain (use <select> when the value must be one of a fixed set).
+  Refs: repos/mdn/.../elements/datalist/index.md,
+        repos/mdn/.../elements/input/index.md#list
+
+  Two patterns:
+    1. Static suggestions — fill the <datalist> at render time.
+    2. Server-streamed — leave the <datalist> empty and let htmx fetch a
+       fresh <option> set on input. The server returns <option> tags swapped
+       into the bound list (hx-target points at the datalist).
+-->
+
+<!-- 1. Static suggestions -->
+<span data-slot="autocomplete" class="inline-block w-full">
+  <input type="text" id="fruit" name="fruit" list="fruit-list"
+         placeholder="Search fruit…" autocomplete="off"
+         data-slot="autocomplete-input"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70">
+  <datalist id="fruit-list" data-slot="autocomplete-list">
+    <option value="Apple">
+    <option value="Apricot">
+    <option value="Banana">
+    <option value="Blackberry">
+    <option value="Blueberry">
+  </datalist>
+</span>
+
+<!-- 2. Server-streamed via htmx -->
+<span data-slot="autocomplete" class="inline-block w-full">
+  <input type="text" id="city" name="city" list="city-list"
+         placeholder="Search cities…" autocomplete="off"
+         hx-get="/api/cities"
+         hx-trigger="input changed delay:200ms"
+         hx-target="#city-list"
+         hx-swap="innerHTML"
+         hx-sync="this:replace"
+         data-slot="autocomplete-input"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70">
+  <datalist id="city-list" data-slot="autocomplete-list">
+    <!-- Server returns: -->
+    <!-- <option value="Berlin"> -->
+    <!-- <option value="Bern"> -->
+  </datalist>
+</span>

@@ -1,0 +1,47 @@
+{{/*
+  Autocomplete templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Free-text input with native typeahead: <input list> + <datalist>. The
+  browser owns the dropdown UI, filtering, click + keyboard selection and
+  focus. No JS. The light native sibling of the APG combobox.
+  Refs: repos/mdn/.../elements/datalist/index.md,
+        repos/mdn/.../elements/input/index.md#list
+
+      type AutocompleteArgs struct {
+          ID, Name, Placeholder, Value string
+          Options                      []AutocompleteOption
+          Required, Disabled, Readonly bool
+          MinLength, MaxLength         string
+          AriaLabel, AriaLabelledby, AriaDescribedby string
+          // Server-streamed suggestions: set Endpoint (and optionally Delay,
+          // default "200") to wire the htmx defaults; leave Options empty and
+          // the bound <datalist> is filled by the htmx response.
+          Endpoint, Delay string
+      }
+      type AutocompleteOption struct{ Value, Label string }
+*/}}
+
+{{define "autocomplete"}}
+{{- $delay := or .Delay "200" -}}
+<span data-slot="autocomplete" class="inline-block w-full">
+  <input type="text" id="{{.ID}}" {{if .Name}}name="{{.Name}}"{{end}} list="{{.ID}}-list"
+         {{if .Value}}value="{{.Value}}"{{end}}
+         {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
+         {{if .Required}}required{{end}} {{if .Disabled}}disabled{{end}} {{if .Readonly}}readonly{{end}}
+         {{if .MinLength}}minlength="{{.MinLength}}"{{end}}
+         {{if .MaxLength}}maxlength="{{.MaxLength}}"{{end}}
+         {{if .Endpoint}}hx-get="{{.Endpoint}}" hx-trigger="input changed delay:{{$delay}}ms" hx-target="#{{.ID}}-list" hx-swap="innerHTML" hx-sync="this:replace"{{end}}
+         {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+         {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
+         autocomplete="off"
+         data-slot="autocomplete-input"
+         class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70">
+  <datalist id="{{.ID}}-list" data-slot="autocomplete-list">
+    {{range .Options}}<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>{{end}}
+  </datalist>
+</span>
+{{end}}
+
+{{define "autocomplete_option"}}
+<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>
+{{end}}

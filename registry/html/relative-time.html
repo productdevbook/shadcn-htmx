@@ -1,0 +1,87 @@
+<!--
+  shadcn-htmx — Relative Time (raw HTML snippet).
+
+  A semantic timestamp. The native <time> element carries BOTH:
+    - a machine-readable instant in `datetime` (ISO 8601), and
+    - a human-readable label as its text content ("3 days ago").
+
+  With no JavaScript the server label is exactly what the visitor sees — fully
+  progressive. The small behaviour <script> at the bottom re-localises the
+  label to the visitor's locale + timezone using the platform
+  Intl.RelativeTimeFormat / Intl.DateTimeFormat APIs (web standards, not a date
+  library), degrading silently to the server label if Intl is unavailable.
+
+  Requirements:
+    1. Tailwind CSS v4 theme tokens (--foreground, --muted-foreground). Copy
+       the :root / .dark blocks from app/styles/input.css.
+    2. No htmx extension. The script below is self-guarded so it attaches once
+       page-wide and re-runs after htmx swaps.
+
+  data-format:
+    "relative" (default) → "3 days ago"   via Intl.RelativeTimeFormat
+    "datetime"           → "12 May 2024, 09:00" via Intl.DateTimeFormat
+-->
+
+<!-- relative (default) -->
+<time datetime="2024-05-12T09:00:00Z"
+      data-slot="relative-time" data-relative-time="" data-format="relative"
+      class="tabular-nums text-muted-foreground">3 days ago</time>
+
+<!-- absolute, locale-formatted -->
+<time datetime="2024-05-12T09:00:00Z"
+      data-slot="relative-time" data-relative-time="" data-format="datetime"
+      class="tabular-nums text-foreground">May 12, 2024</time>
+
+<!-- Re-localise every [data-relative-time] <time>. Self-guarded; re-runs after
+     htmx swaps. Identical to the shared site.js block — load that once instead
+     if you ship multiple components. -->
+<script>
+  (function () {
+    if (window.__shadcnRelativeTime) return;
+    window.__shadcnRelativeTime = true;
+    var DIV = [
+      ["year", 31536000], ["month", 2592000], ["week", 604800],
+      ["day", 86400], ["hour", 3600], ["minute", 60], ["second", 1]
+    ];
+    function relLabel(then, now) {
+      var diff = Math.round((then - now) / 1000);
+      var abs = Math.abs(diff);
+      for (var i = 0; i < DIV.length; i++) {
+        if (abs >= DIV[i][1] || DIV[i][0] === "second") {
+          var rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+          return rtf.format(Math.round(diff / DIV[i][1]), DIV[i][0]);
+        }
+      }
+    }
+    function localize(el) {
+      var iso = el.getAttribute("datetime");
+      if (!iso) return;
+      var t = new Date(iso);
+      if (isNaN(t.getTime())) return;
+      try {
+        if (el.getAttribute("data-format") === "datetime") {
+          el.textContent = new Intl.DateTimeFormat(undefined, {
+            dateStyle: "medium", timeStyle: "short"
+          }).format(t);
+        } else if (typeof Intl.RelativeTimeFormat === "function") {
+          el.textContent = relLabel(t, new Date());
+        }
+        if (!el.getAttribute("title")) {
+          el.setAttribute("title", new Intl.DateTimeFormat(undefined, {
+            dateStyle: "full", timeStyle: "long"
+          }).format(t));
+        }
+      } catch (e) { /* leave the server label in place */ }
+    }
+    function run(root) {
+      (root || document)
+        .querySelectorAll('[data-slot="relative-time"][data-relative-time]')
+        .forEach(localize);
+    }
+    document.addEventListener("DOMContentLoaded", function () { run(document); });
+    run(document);
+    document.addEventListener("htmx:after:swap", function (e) { run(e.target || document); });
+    document.addEventListener("htmx:afterSwap", function (e) { run(e.target || document); });
+    setInterval(function () { run(document); }, 60000);
+  })();
+</script>

@@ -1,0 +1,61 @@
+{{/*
+  Highlight template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/highlight.tsx. Wraps query matches in a styled native
+  <mark> — the semantic element for "text relevant to the user's current
+  activity", i.e. the words that matched a search.
+    repos/mdn/files/en-us/web/html/reference/elements/mark/index.md
+  The UA yellow default is reset to theme tokens (bg-primary/15 + text-foreground)
+  so a match reads on brand in light/dark. No htmx attribute is <mark>-specific
+  (repos/htmx/www/reference.md); pass hx-*/data-* through .Attrs.
+
+  Go has no inline regex in templates, so the SCAN happens in Go and you pass
+  the result as an ordered []Segment. This keeps the same semantic HTML as the
+  other flavours (alternating text + <mark> runs), with the split logic where
+  Go wants it.
+
+      type Segment struct {
+          Text  string
+          Match bool
+      }
+      type HighlightArgs struct {
+          Segments  []Segment         // ordered runs from your splitMatches in Go
+          Attrs     map[string]string // hx-*/data-*/aria-* on the wrapper
+          ExtraClass string
+      }
+      // Single-term mode:
+      type MarkArgs struct {
+          Body       string            // exact run to mark (already sliced)
+          Attrs      map[string]string
+          ExtraClass string
+      }
+
+  Usage:
+    {{template "highlight" (dict "Segments" $segs)}}
+    {{template "mark" (dict "Body" "Imperial")}}
+*/}}
+
+{{- define "_highlight_mark_class" -}}rounded-sm bg-primary/15 px-0.5 font-medium text-foreground [box-decoration-break:clone]{{- end -}}
+
+{{/* Single-term mode: wrap a server-sliced run in one <mark>. */}}
+{{define "mark"}}
+{{- $extra := or .ExtraClass "" -}}
+<mark data-slot="highlight" class="{{template "_highlight_mark_class"}} {{$extra}}"
+  {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Body}}</mark>
+{{end}}
+
+{{/* Scan mode: range over the pre-split segments; mark the matched ones. */}}
+{{define "highlight"}}
+{{- $extra := or .ExtraClass "" -}}
+<span data-slot="highlight"
+  {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+{{- range .Segments -}}
+  {{- if .Match -}}
+    <mark class="{{template "_highlight_mark_class"}} {{$extra}}">{{.Text}}</mark>
+  {{- else -}}
+    {{- .Text -}}
+  {{- end -}}
+{{- end -}}
+</span>
+{{end}}

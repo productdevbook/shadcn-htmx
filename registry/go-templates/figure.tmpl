@@ -1,0 +1,48 @@
+{{/*
+  Figure template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/figure.tsx.
+
+  Self-contained captioned content (image, diagram, code, quote) in a native
+  <figure>; the <figcaption> supplies the figure's accessible name. Zero JS.
+    MDN figure:     repos/mdn/files/en-us/web/html/reference/elements/figure/index.md
+    MDN figcaption: repos/mdn/files/en-us/web/html/reference/elements/figcaption/index.md
+
+  The <figcaption> must be the figure's first or last child. The "figure"
+  template renders Caption first when CaptionSide == "top", otherwise last,
+  matching the .tsx DOM order. Compose the inner content/caption yourself via
+  the helper templates if you need finer control.
+
+      type FigureArgs struct {
+          CaptionSide string        // "bottom" (default) | "top"
+          ID          string
+          Class       string
+          Caption     template.HTML // <figcaption> inner HTML
+          Body        template.HTML // content (img / code block / quote …)
+      }
+*/}}
+
+{{define "figure-caption"}}
+{{- $id := .ID -}}
+<figcaption {{if $id}}id="{{$id}}" {{end}}data-slot="figure-caption" class="px-1 text-sm leading-snug text-muted-foreground {{.Class}}">{{htmlSafe .Body}}</figcaption>
+{{end}}
+
+{{define "figure-content"}}
+<div data-slot="figure-content" class="overflow-hidden rounded-md bg-muted text-sm text-foreground {{.Class}}">{{htmlSafe .Body}}</div>
+{{end}}
+
+{{define "figure-credit"}}
+<span data-slot="figure-credit" class="mt-1 block text-xs text-muted-foreground/80 {{.Class}}">{{htmlSafe .Body}}</span>
+{{end}}
+
+{{define "figure"}}
+{{- $side := or .CaptionSide "bottom" -}}
+<figure {{if .ID}}id="{{.ID}}" {{end}}data-slot="figure" data-caption-side="{{$side}}" class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground {{.Class}}">
+{{- if eq $side "top" -}}
+{{- if .Caption}}<figcaption data-slot="figure-caption" class="px-1 text-sm leading-snug text-muted-foreground">{{htmlSafe .Caption}}</figcaption>{{end -}}
+{{- htmlSafe .Body -}}
+{{- else -}}
+{{- htmlSafe .Body -}}
+{{- if .Caption}}<figcaption data-slot="figure-caption" class="px-1 text-sm leading-snug text-muted-foreground">{{htmlSafe .Caption}}</figcaption>{{end -}}
+{{- end -}}
+</figure>
+{{end}}

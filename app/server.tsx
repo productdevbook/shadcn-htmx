@@ -74,6 +74,20 @@ import { sidebarRoutes } from "@/app/routes/sidebar"
 import { aspectRatioRoutes } from "@/app/routes/aspect-ratio"
 import { autoGridRoutes } from "@/app/routes/auto-grid"
 
+import { kbdRoutes } from "@/app/routes/kbd"
+import { highlightRoutes } from "@/app/routes/highlight"
+import { relativeTimeRoutes } from "@/app/routes/relative-time"
+import { figureRoutes } from "@/app/routes/figure"
+import { responsiveImageRoutes } from "@/app/routes/responsive-image"
+import { mediaPlayerRoutes } from "@/app/routes/media-player"
+import { autocompleteRoutes } from "@/app/routes/autocomplete"
+import { exclusiveAccordionRoutes } from "@/app/routes/exclusive-accordion"
+import { scrollAreaRoutes } from "@/app/routes/scroll-area"
+import { snapListRoutes } from "@/app/routes/snap-list"
+import { containerCardRoutes } from "@/app/routes/container-card"
+import { stickyHeaderRoutes } from "@/app/routes/sticky-header"
+import { scrollProgressRoutes } from "@/app/routes/scroll-progress"
+
 const app = new Hono()
 
 // Default 404 for /favicon.ico so it doesn't show as a noisy console error
@@ -155,6 +169,19 @@ app.route("/docs/lazy-load", lazyLoadRoutes)
 app.route("/docs/sidebar", sidebarRoutes)
 app.route("/docs/aspect-ratio", aspectRatioRoutes)
 app.route("/docs/auto-grid", autoGridRoutes)
+app.route("/docs/kbd", kbdRoutes)
+app.route("/docs/highlight", highlightRoutes)
+app.route("/docs/relative-time", relativeTimeRoutes)
+app.route("/docs/figure", figureRoutes)
+app.route("/docs/responsive-image", responsiveImageRoutes)
+app.route("/docs/media-player", mediaPlayerRoutes)
+app.route("/docs/autocomplete", autocompleteRoutes)
+app.route("/docs/exclusive-accordion", exclusiveAccordionRoutes)
+app.route("/docs/scroll-area", scrollAreaRoutes)
+app.route("/docs/snap-list", snapListRoutes)
+app.route("/docs/container-card", containerCardRoutes)
+app.route("/docs/sticky-header", stickyHeaderRoutes)
+app.route("/docs/scroll-progress", scrollProgressRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -230,6 +257,20 @@ app.route("/sidebar", sidebarRoutes)
 app.route("/aspect-ratio", aspectRatioRoutes)
 app.route("/auto-grid", autoGridRoutes)
 
+app.route("/kbd", kbdRoutes)
+app.route("/highlight", highlightRoutes)
+app.route("/relative-time", relativeTimeRoutes)
+app.route("/figure", figureRoutes)
+app.route("/responsive-image", responsiveImageRoutes)
+app.route("/media-player", mediaPlayerRoutes)
+app.route("/autocomplete", autocompleteRoutes)
+app.route("/exclusive-accordion", exclusiveAccordionRoutes)
+app.route("/scroll-area", scrollAreaRoutes)
+app.route("/snap-list", snapListRoutes)
+app.route("/container-card", containerCardRoutes)
+app.route("/sticky-header", stickyHeaderRoutes)
+app.route("/scroll-progress", scrollProgressRoutes)
+
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
 // Homepage component index. Mirrors the categories in app/components/docs-sidebar.tsx —
@@ -238,6 +279,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Forms",
     items: [
+      { label: "Autocomplete", href: "/docs/autocomplete", blurb: "Native typeahead — datalist suggestions, htmx-streamed." },
       { label: "Output", href: "/docs/output", blurb: "Live result region for a calculation or server action — native <output> with an implicit aria-live so htmx swaps announce themselves." },
       { label: "Segmented Control", href: "/docs/segmented-control", blurb: "{ label: \"Segmented Control\", href: \"/docs/segmented-control\", blurb: \"Joined radio bar — pick a value, not a panel.\" }," },
       { label: "Rating", href: "/docs/rating", blurb: "{ label: \"Rating\", href: \"/docs/rating\", blurb: \"Star rating as a native radio group — per-star labels, CSS hover preview, submits a real value. Zero JS.\" }," },
@@ -267,6 +309,11 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Layout",
     items: [
+      { label: "Exclusive Accordion", href: "/docs/exclusive-accordion", blurb: "Native details/summary, exclusive via shared name — zero JS." },
+      { label: "Scroll Area", href: "/docs/scroll-area", blurb: "Constrained-overflow region with a themed native scrollbar and CSS-only fade masks that hint at more content — zero JavaScript." },
+      { label: "Snap List", href: "/docs/snap-list", blurb: "The bare scroll-snapping rail — gallery strip, chip row, media shelf, date rail. Pure CSS scroll-snap, zero JavaScript." },
+      { label: "Container Card", href: "/docs/container-card", blurb: "Container Card — a card that adapts to its own width, not the viewport. The same markup stacks in a sidebar and goes side-by-side in a wide column, using CSS container queries. No JavaScript." },
+      { label: "Sticky Header", href: "/docs/sticky-header", blurb: "Header that pins on scroll and reacts the instant it sticks — shadow + solid background via @container scroll-state(stuck), no sentinel, zero JS." },
       { label: "Aspect Ratio", href: "/docs/aspect-ratio", blurb: "Lock images, videos, and embeds to a fixed ratio that resizes fluidly — native CSS aspect-ratio, no layout shift, no JavaScript." },
       { label: "Auto Grid", href: "/docs/auto-grid", blurb: "Responsive grid that wraps into as many equal columns as fit — no breakpoints." },
       { label: "Card", href: "/docs/card", blurb: "Header / Content / Footer slots." },
@@ -282,6 +329,12 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Display",
     items: [
+      { label: "Kbd", href: "/docs/kbd", blurb: "Kbd — an inline keyboard-key badge. Renders a native <kbd> for a single key or nests one per key for shortcuts like Ctrl + Shift + R, the way command menus, docs, and tooltips show keystrokes. Phrasing content with no implicit role, so it ships zero JavaScript." },
+      { label: "Highlight", href: "/docs/highlight", blurb: "Highlight — wrap the words that matched a search query in a native <mark>. Server-rendered, theme-token styled, zero JS; rides along in the fragment htmx swaps into your results list." },
+      { label: "Relative Time", href: "/docs/relative-time", blurb: "{ label: \"Relative Time\", href: \"/docs/relative-time\", blurb: \"Semantic <time> timestamp — server renders a machine-readable datetime plus a human label; a tiny script re-localises to the visitor's locale and degrades to the server value with no JS.\" }" },
+      { label: "Figure", href: "/docs/figure", blurb: "Captioned, self-contained content — image, diagram, code, or quote — in a native <figure> whose <figcaption> is its accessible name. No JS." },
+      { label: "Responsive Image", href: "/docs/responsive-image", blurb: "Responsive Image — art-directed, format-switching image on native <picture> + <source>. Light/dark, AVIF/WebP/JPEG, per-viewport crops, all selected by the browser. Zero JS." },
+      { label: "Media Player", href: "/docs/media-player", blurb: "Style a native HTML5 video or audio player — multiple source formats, WebVTT caption tracks, poster, and aspect-ratio framing. The browser provides the full accessible playback UI (play, scrub, volume, captions, fullscreen, PiP). Zero JavaScript." },
       { label: "Selectable Table", href: "/docs/selectable-table", blurb: "Data table with row checkboxes, select-all, and a bulk-action bar revealed by CSS :has(:checked). Bulk actions hx-post the checked rows." },
       { label: "Delete Row", href: "/docs/delete-row", blurb: "Confirm, DELETE, fade out — in place. One inherited declaration covers every row." },
       { label: "Copy Button", href: "/docs/copy-button", blurb: "Click-to-copy button built on the Async Clipboard API with a progressive-enhancement fallback. Flips to a transient aria-live \"Copied\" state. The docs code-block is a consumer." },
@@ -294,6 +347,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Feedback",
     items: [
+      { label: "Scroll Progress", href: "/docs/scroll-progress", blurb: "Reading-position bar that fills as you scroll — pure animation-timeline: scroll(), zero JS." },
       { label: "Optimistic Toggle", href: "/docs/optimistic-toggle", blurb: "Instant like/follow/pin toggle — flips optimistically, reconciles with the server, rolls back on error." },
       { label: "Status", href: "/docs/status", blurb: "{ label: \"Status\", href: \"/docs/status\", blurb: \"Polite live region for non-urgent updates — role=status/log, htmx swap-in.\" }" },
       { label: "Lazy Load", href: "/docs/lazy-load", blurb: "Defer slow content past first paint — the container fetches its own body after render and swaps it in, with reserved space so the page never jumps." },

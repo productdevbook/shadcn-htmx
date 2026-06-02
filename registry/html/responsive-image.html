@@ -1,0 +1,35 @@
+<!--
+  shadcn-htmx — raw HTML responsive-image snippet.
+
+  Mirrors registry/ui/responsive-image.tsx. Native <picture> + <source>s +
+  fallback <img>. The browser picks the first matching <source> by media/type
+  and falls back to the <img>, which sizes the box and carries the accessible
+  name via `alt` (empty "" only for decorative images). Tailwind tokens only.
+-->
+
+<!-- Format negotiation: AVIF → WebP → JPEG fallback -->
+<picture data-slot="responsive-image"
+  class="block overflow-hidden rounded-lg border bg-muted">
+  <source srcset="/img/hero.avif" type="image/avif">
+  <source srcset="/img/hero.webp" type="image/webp">
+  <img src="/img/hero.jpg" alt="A surfer at golden hour"
+       data-slot="responsive-image-img" class="block size-full object-cover">
+</picture>
+
+<!-- Theme swap: dark vs light asset via prefers-color-scheme -->
+<picture data-slot="responsive-image"
+  class="block overflow-hidden rounded-lg border bg-muted">
+  <source srcset="/img/diagram-dark.png" media="(prefers-color-scheme: dark)">
+  <source srcset="/img/diagram-light.png" media="(prefers-color-scheme: light)">
+  <img src="/img/diagram-light.png" alt="System architecture diagram"
+       data-slot="responsive-image-img" class="block size-full object-contain">
+</picture>
+
+<!-- Art direction: wide crop on large screens, square on small -->
+<picture data-slot="responsive-image"
+  class="block overflow-hidden rounded-lg border bg-muted">
+  <source srcset="/img/banner-wide.jpg" media="(min-width: 800px)" width="1200" height="400">
+  <img src="/img/banner-square.jpg" alt="Conference keynote stage"
+       width="600" height="600" loading="lazy" decoding="async"
+       data-slot="responsive-image-img" class="block size-full object-cover">
+</picture>

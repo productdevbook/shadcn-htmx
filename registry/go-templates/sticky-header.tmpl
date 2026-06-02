@@ -1,0 +1,25 @@
+{{/* Sticky Header templates — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/sticky-header.tsx exactly.
+
+   Pins via `position: sticky; top: <Top>` and reacts when STUCK via
+   `@container scroll-state(stuck: top)` — the root is BOTH the sticky
+   element and the scroll-state container ([container-type:scroll-state]).
+   Descendant reveal styling lives in the [data-slot="sticky-header"] block
+   in app/styles/input.css; opt in with data-sticky-revealed. Zero JS.
+     repos/mdn/files/en-us/web/css/reference/properties/position/index.md
+     repos/mdn/.../web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+     repos/mdn/files/en-us/web/css/reference/at-rules/@container/index.md */}}
+
+{{define "sticky_header"}}
+{{- $as := or .As "header" -}}
+{{- $top := or .Top "0" -}}
+<{{$as}} data-slot="sticky-header"
+  class="sticky z-30 bg-background/95 supports-[backdrop-filter]:bg-background/80 [container-type:scroll-state] {{.Class}}"
+  style="top:{{$top}}">{{.Body}}</{{$as}}>
+{{end}}
+
+{{define "sticky_header_bar"}}
+{{- $as := or .As "div" -}}
+<{{$as}} data-slot="sticky-header-bar" data-sticky-revealed=""
+  class="transition-shadow transition-colors duration-200 {{.Class}}">{{.Body}}</{{$as}}>
+{{end}}

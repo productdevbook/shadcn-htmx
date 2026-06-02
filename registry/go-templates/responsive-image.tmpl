@@ -1,0 +1,37 @@
+{{/*
+  Responsive Image template — shadcn-htmx, htmx v4 + Tailwind v4.
+
+  Mirrors registry/ui/responsive-image.tsx. Native <picture> + <source>s + <img>.
+  The browser picks the first matching <source>; the <img> is the universal
+  fallback and carries the accessible name via Alt (empty "" only decorative).
+
+      type SourceArgs struct {
+          Srcset, Type, Media, Sizes string
+          Width, Height              int
+      }
+      type ResponsiveImageArgs struct {
+          Src, Alt, Srcset, Sizes              string
+          Loading, Decoding, Fetchpriority     string
+          Width, Height                        int
+          Sources                              []SourceArgs
+          ExtraClass, ImgClass, ID             string
+      }
+
+  Usage:
+      {{template "responsive-image" (dict
+          "Src" "/img/hero.jpg" "Alt" "A surfer at golden hour"
+          "Sources" (list
+              (dict "Srcset" "/img/hero.avif" "Type" "image/avif")
+              (dict "Srcset" "/img/hero.webp" "Type" "image/webp")))}}
+*/}}
+
+{{define "responsive-image"}}
+<picture data-slot="responsive-image"{{if .ID}} id="{{.ID}}"{{end}}
+         class="block overflow-hidden rounded-lg border bg-muted {{or .ExtraClass ""}}"{{with .Attrs}} {{. | htmlSafe}}{{end}}>
+  {{- range .Sources}}
+  <source srcset="{{.Srcset}}"{{if .Type}} type="{{.Type}}"{{end}}{{if .Media}} media="{{.Media}}"{{end}}{{if .Sizes}} sizes="{{.Sizes}}"{{end}}{{if .Width}} width="{{.Width}}"{{end}}{{if .Height}} height="{{.Height}}"{{end}}>
+  {{- end}}
+  <img src="{{.Src}}" alt="{{.Alt}}" data-slot="responsive-image-img"{{if .Srcset}} srcset="{{.Srcset}}"{{end}}{{if .Sizes}} sizes="{{.Sizes}}"{{end}}{{if .Width}} width="{{.Width}}"{{end}}{{if .Height}} height="{{.Height}}"{{end}}{{if .Loading}} loading="{{.Loading}}"{{end}}{{if .Decoding}} decoding="{{.Decoding}}"{{end}}{{if .Fetchpriority}} fetchpriority="{{.Fetchpriority}}"{{end}}
+       class="block size-full object-cover {{or .ImgClass ""}}">
+</picture>
+{{end}}

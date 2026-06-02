@@ -1,0 +1,35 @@
+<!--
+  shadcn-htmx — raw Sticky Header snippet. Mirrors registry/ui/sticky-header.tsx.
+
+  Pins on scroll via `position: sticky; top: 0` and reacts the moment it
+  becomes STUCK via `@container scroll-state(stuck: top)`: the root is BOTH
+  the sticky element AND the scroll-state container ([container-type:scroll-state]).
+  The descendant reveal styling (shadow + solid background) lives in the
+  [data-slot="sticky-header"] block in app/styles/input.css and is opted into
+  with data-sticky-revealed. Zero JS — the browser drives the stuck state.
+
+  Needs a SCROLL CONTAINER ancestor (here the .overflow-auto wrapper). Where
+  scroll-state() is unsupported the header still pins; it just won't gain the
+  extra stuck shadow (progressive enhancement).
+    repos/mdn/files/en-us/web/css/reference/properties/position/index.md
+    repos/mdn/.../web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+-->
+
+<div class="relative h-72 overflow-auto rounded-lg border">
+  <header data-slot="sticky-header"
+          class="sticky z-30 bg-background/95 supports-[backdrop-filter]:bg-background/80 [container-type:scroll-state]"
+          style="top:0">
+    <div data-slot="sticky-header-bar" data-sticky-revealed=""
+         class="flex h-14 items-center justify-between px-4 transition-shadow transition-colors duration-200">
+      <span class="font-semibold">Documents</span>
+      <span class="text-sm text-muted-foreground">128 files</span>
+    </div>
+  </header>
+
+  <div class="space-y-2 p-4 text-sm text-muted-foreground">
+    <p>Scroll this panel — the header pins to the top and gains a shadow once stuck.</p>
+    <p>Row 1</p><p>Row 2</p><p>Row 3</p><p>Row 4</p><p>Row 5</p>
+    <p>Row 6</p><p>Row 7</p><p>Row 8</p><p>Row 9</p><p>Row 10</p>
+    <p>Row 11</p><p>Row 12</p><p>Row 13</p><p>Row 14</p><p>Row 15</p>
+  </div>
+</div>

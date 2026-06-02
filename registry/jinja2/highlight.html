@@ -1,0 +1,67 @@
+{# Highlight macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/highlight.tsx. Wraps query matches in a styled native
+   <mark>; the marker is the semantic element for "text relevant to the user's
+   current activity" — the words that matched a search.
+     repos/mdn/files/en-us/web/html/reference/elements/mark/index.md
+   The UA yellow default is reset to theme tokens (bg-primary/15 + text-foreground)
+   so it reads on brand in light/dark. No htmx attribute is <mark>-specific
+   (repos/htmx/www/reference.md); hx-*/data-*/aria-* ride through **attrs.
+
+   Two modes, same as the .tsx:
+     1. highlight(text, query)  — scan `text` and mark each match.
+     2. mark(...) as a {% call %} block — wrap a body the server already
+        sliced (single-term mode).
+
+   Usage:
+     {% from "components/highlight.html" import highlight, mark %}
+     {{ highlight("Several species of salamander", query="salamander") }}
+     {% call mark() %}Imperial{% endcall %} #}
+
+{%- set _mark_class = "rounded-sm bg-primary/15 px-0.5 font-medium text-foreground [box-decoration-break:clone]" -%}
+
+{# Single-term mode: wrap the body verbatim in one <mark>. #}
+{% macro mark(extra_class="", **attrs) %}
+<mark data-slot="highlight" class="{{ _mark_class }} {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ caller() }}</mark>
+{%- endmacro %}
+
+{# Scan mode: split `text` on `query` (case-insensitive by default) and wrap
+   each match. Source casing is preserved — only `text` is sliced. `words=true`
+   marks each whitespace-separated term independently. #}
+{% macro highlight(text, query=none, words=false, case_sensitive=false, extra_class="", **attrs) %}
+<span data-slot="highlight"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{%- set q = (query | default("", true)) | trim -%}
+{%- if q | length == 0 -%}
+  {{ text }}
+{%- else -%}
+  {%- set terms = (q.split() if words else [q]) -%}
+  {%- set hay = text if case_sensitive else text | lower -%}
+  {%- set ns = namespace(i=0) -%}
+  {%- for _ in text -%}
+    {%- if ns.i < (text | length) -%}
+      {# find the earliest matching term at or after ns.i #}
+      {%- set best = namespace(at=-1, len=0) -%}
+      {%- for t in terms -%}
+        {%- set needle = t if case_sensitive else t | lower -%}
+        {%- set pos = hay.find(needle, ns.i) -%}
+        {%- if pos != -1 and (best.at == -1 or pos < best.at) -%}
+          {%- set best.at = pos -%}
+          {%- set best.len = needle | length -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if best.at == -1 -%}
+        {{- text[ns.i:] -}}
+        {%- set ns.i = text | length -%}
+      {%- else -%}
+        {{- text[ns.i:best.at] -}}
+        <mark class="{{ _mark_class }} {{ extra_class }}">{{ text[best.at:best.at + best.len] }}</mark>
+        {%- set ns.i = best.at + best.len -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+</span>
+{%- endmacro %}

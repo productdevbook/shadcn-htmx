@@ -1,0 +1,48 @@
+<!--
+  shadcn-htmx — raw HTML media-player snippets.
+
+  A styled native <video controls> / <audio controls>. The browser ships the
+  full accessible playback UI (play, seek, volume, captions, fullscreen, PiP);
+  we only frame it with a rounded card + native aspect-ratio. Zero JavaScript
+  — Tailwind theme tokens only, and we never emulate platform features.
+
+    MDN <video>:  repos/mdn/files/en-us/web/html/reference/elements/video/index.md
+    MDN <audio>:  repos/mdn/files/en-us/web/html/reference/elements/audio/index.md
+    MDN <source>: repos/mdn/files/en-us/web/html/reference/elements/source/index.md
+    MDN <track>:  repos/mdn/files/en-us/web/html/reference/elements/track/index.md
+
+  ROOT (video): group/media-player relative block w-full overflow-hidden
+                rounded-lg border bg-card  +  aspect utility (aspect-video, …)
+  ROOT (audio): same, swap the aspect utility for p-2
+  MEDIA:        video → block size-full bg-black object-contain
+                audio → block w-full
+-->
+
+<!-- Video, 16:9, multiple formats + English captions + poster -->
+<div data-slot="media-player" data-kind="video"
+     class="group/media-player relative block w-full overflow-hidden rounded-lg border bg-card aspect-video">
+  <video data-slot="media-player-media" controls preload="metadata"
+         poster="/poster.jpg" playsinline
+         class="block size-full bg-black object-contain">
+    <source data-slot="media-player-source" src="/clip.webm" type="video/webm">
+    <source data-slot="media-player-source" src="/clip.mp4" type="video/mp4">
+    <track data-slot="media-player-track" kind="captions" src="/clip.en.vtt"
+           srclang="en" label="English" default>
+    <!-- No-support fallback -->
+    Your browser does not support the video element.
+    <a href="/clip.mp4">Download the MP4 video</a>.
+  </video>
+</div>
+
+<!-- Audio — native control bar is the whole UI -->
+<div data-slot="media-player" data-kind="audio"
+     class="group/media-player relative block w-full overflow-hidden rounded-lg border bg-card p-2">
+  <audio data-slot="media-player-media" controls preload="metadata"
+         aria-label="Episode 12 — The Platform Strikes Back"
+         class="block w-full">
+    <source data-slot="media-player-source" src="/episode-12.ogg" type="audio/ogg">
+    <source data-slot="media-player-source" src="/episode-12.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+    <a href="/episode-12.mp3">Download the MP3</a>.
+  </audio>
+</div>

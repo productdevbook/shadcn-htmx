@@ -1,0 +1,38 @@
+<!--
+  shadcn-htmx — raw Highlight markup.
+
+  Mirrors registry/ui/highlight.tsx. The server wraps the words that matched a
+  search query in a native <mark>; <mark> is the semantic element for "text
+  relevant to the user's current activity".
+    repos/mdn/files/en-us/web/html/reference/elements/mark/index.md
+
+  The browser's default <mark> is a yellow background; the classes below reset
+  it to theme tokens so a match reads on brand in light and dark:
+
+    rounded-sm bg-primary/15 px-0.5 font-medium text-foreground
+    [box-decoration-break:clone]
+
+  No script and no <mark>-specific htmx attribute (repos/htmx/www/reference.md):
+  the highlighting is produced server-side and rendered into whatever fragment
+  htmx swaps in. Relies only on theme tokens.
+-->
+
+<!-- Scan mode: the wrapper carries data-slot="highlight"; only the matched
+     runs are <mark>. Here the query was "salamander". -->
+<p>
+  Several species of
+  <span data-slot="highlight">Several species of <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground [box-decoration-break:clone]">salamander</mark> inhabit the temperate rainforest.</span>
+</p>
+
+<!-- Inside an htmx-swapped search result row -->
+<li>
+  <span data-slot="highlight">Evading the dreaded <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground [box-decoration-break:clone]">Imperial</mark> Starfleet…</span>
+</li>
+
+<!-- Single-term mode: the server already sliced the exact run, so it's a bare
+     <mark> with data-slot on it directly. -->
+<p>
+  Evading the dreaded
+  <mark data-slot="highlight" class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground [box-decoration-break:clone]">Imperial</mark>
+  Starfleet.
+</p>

@@ -1,0 +1,60 @@
+<!--
+  shadcn-htmx — raw HTML Container Card snippet.
+  Mirrors registry/ui/container-card.tsx.
+
+  A self-adapting card that restyles based on its OWN inline width: stacked
+  (media above text) when narrow, side-by-side when wide. Built on CSS
+  container queries (container-type: inline-size + @container). Pure CSS;
+  no script. Relies only on theme tokens.
+
+  How it works:
+    - The root carries `@container/container-card`, which sets
+      `container-type: inline-size` and names the container `container-card`.
+    - Descendants use `@min-[28rem]/container-card:` variants, which only fire
+      when THIS named card is at least 28rem wide — independent of the viewport.
+    - The same markup therefore adapts to whatever column it lands in.
+
+    repos/mdn/files/en-us/web/css/reference/properties/container-type/index.md
+    repos/web.dev/src/site/content/en/patterns/layout/container-query-card/index.md
+-->
+
+<!-- Card with media: stacked under ~28rem, media-beside-text at or above it. -->
+<article data-slot="container-card"
+         style="--container-card-break:28rem"
+         aria-labelledby="cc-title"
+         class="@container/container-card overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
+  <div data-slot="container-card-layout"
+       class="flex flex-col @min-[28rem]/container-card:grid @min-[28rem]/container-card:grid-cols-[40%_1fr] @min-[28rem]/container-card:items-stretch">
+    <div data-slot="container-card-media"
+         class="bg-muted aspect-video w-full @min-[28rem]/container-card:aspect-auto @min-[28rem]/container-card:h-full">
+      <img src="/cover.jpg" alt="" class="size-full object-cover" />
+    </div>
+    <div data-slot="container-card-body"
+         class="flex flex-col gap-2 p-6 text-center @min-[28rem]/container-card:text-left">
+      <div data-slot="container-card-title" id="cc-title" class="leading-none font-semibold">Card title</div>
+      <p data-slot="container-card-description" class="text-sm text-muted-foreground">
+        Supporting copy that adapts with the card's own width.
+      </p>
+      <div data-slot="container-card-footer"
+           class="mt-2 flex items-center justify-center gap-2 @min-[28rem]/container-card:justify-start">
+        <a href="/more" class="text-sm font-medium text-primary underline-offset-4 hover:underline">Read more</a>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- Text-only card: omit the media slot. Still adapts its alignment by width. -->
+<article data-slot="container-card"
+         style="--container-card-break:28rem"
+         class="@container/container-card overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
+  <div data-slot="container-card-layout"
+       class="flex flex-col @min-[28rem]/container-card:grid @min-[28rem]/container-card:grid-cols-[40%_1fr] @min-[28rem]/container-card:items-stretch">
+    <div data-slot="container-card-body"
+         class="flex flex-col gap-2 p-6 text-center @min-[28rem]/container-card:text-left">
+      <div data-slot="container-card-title" class="leading-none font-semibold">No media</div>
+      <p data-slot="container-card-description" class="text-sm text-muted-foreground">
+        Works without a media slot too.
+      </p>
+    </div>
+  </div>
+</article>

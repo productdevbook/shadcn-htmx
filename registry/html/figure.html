@@ -1,0 +1,59 @@
+<!--
+  shadcn-htmx — raw HTML figure snippets.
+  Mirrors registry/ui/figure.tsx.
+
+  Self-contained captioned content (image, diagram, code, quote) in a native
+  <figure>; the <figcaption> gives the <figure> its accessible name. The
+  caption must be the figure's first or last child. Zero JavaScript —
+  Tailwind theme tokens only.
+
+    MDN figure:     repos/mdn/files/en-us/web/html/reference/elements/figure/index.md
+    MDN figcaption: repos/mdn/files/en-us/web/html/reference/elements/figcaption/index.md
+
+  ROOT:
+    flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground
+  data-caption-side="top" | "bottom" records where the figcaption sits.
+-->
+
+<!-- Image with a caption below (the common case) -->
+<figure data-slot="figure" data-caption-side="bottom"
+        class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground">
+  <img src="/elephant.jpg" alt="An elephant at sunset"
+       class="w-full rounded-md">
+  <figcaption data-slot="figure-caption"
+              class="px-1 text-sm leading-snug text-muted-foreground">
+    An elephant at sunset
+    <span data-slot="figure-credit" class="mt-1 block text-xs text-muted-foreground/80">
+      Photo: J. Doe / CC BY 4.0
+    </span>
+  </figcaption>
+</figure>
+
+<!-- Code block with a legend on top -->
+<figure data-slot="figure" data-caption-side="top"
+        class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground">
+  <figcaption data-slot="figure-caption"
+              class="px-1 text-sm leading-snug text-muted-foreground">
+    Get browser details using <code>navigator</code>.
+  </figcaption>
+  <div data-slot="figure-content"
+       class="overflow-hidden rounded-md bg-muted text-sm text-foreground">
+    <pre class="overflow-x-auto p-4"><code>console.log(navigator.userAgent);</code></pre>
+  </div>
+</figure>
+
+<!-- Quotation: blockquote content, attribution in the caption -->
+<figure data-slot="figure" data-caption-side="bottom"
+        class="flex flex-col gap-3 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground">
+  <div data-slot="figure-content"
+       class="overflow-hidden rounded-md bg-muted text-sm text-foreground">
+    <blockquote class="border-l-2 border-border px-4 py-3 italic">
+      If debugging is the process of removing software bugs, then programming
+      must be the process of putting them in.
+    </blockquote>
+  </div>
+  <figcaption data-slot="figure-caption"
+              class="px-1 text-sm leading-snug text-muted-foreground">
+    — Edsger W. Dijkstra
+  </figcaption>
+</figure>

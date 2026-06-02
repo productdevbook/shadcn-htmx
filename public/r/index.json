@@ -422,6 +422,84 @@
       "type": "registry:ui",
       "title": "Auto Grid",
       "description": "A responsive, intrinsically-wrapping grid of equal cells with no breakpoints. Children flow into as many columns as fit at a configurable minimum item width, then grow to share the leftover space — the card-grid recipe, built on CSS Grid's repeat(auto-fit, minmax()) (the RAM pattern). Pure CSS, zero JavaScript."
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Inline keyboard-key badge — renders a native <kbd> for a single key, or nests one <kbd> per key inside an outer one for a shortcut like Ctrl + Shift + R. Zero JavaScript."
+    },
+    {
+      "name": "highlight",
+      "type": "registry:ui",
+      "title": "Highlight",
+      "description": "Semantic marker that wraps the words matching a search query in a native <mark>, the HTML element for text relevant to the user's current activity. Rendered entirely on the server, styled with theme tokens, zero client JS — drop it inside the fragment htmx swaps into a results list."
+    },
+    {
+      "name": "relative-time",
+      "type": "registry:ui",
+      "title": "Relative Time",
+      "description": "A semantic timestamp built on the native <time> element. The server renders a machine-readable instant in the datetime attribute and a human-readable label as the text; a tiny optional script re-localises the label to the visitor's locale and timezone via the Intl APIs and degrades to the server value with no JavaScript."
+    },
+    {
+      "name": "figure",
+      "type": "registry:ui",
+      "title": "Figure",
+      "description": "Self-contained, referenced content — an image, diagram, code block, or quotation — wrapped in a native <figure> whose <figcaption> supplies its accessible name. Distinct from a Card's generic surface: a figure stands apart from the main flow and can be moved without breaking it, and its caption is semantically tied to the content. Built on native <figure> + <figcaption>, zero JavaScript."
+    },
+    {
+      "name": "responsive-image",
+      "type": "registry:ui",
+      "title": "Responsive Image",
+      "description": "Art-directed, format-switching image built on native <picture> + <source> + a fallback <img>. The browser selects the best candidate by media and type queries (light/dark, AVIF/WebP/JPEG, viewport crops) and falls back to the <img> when none match — all natively, zero JS."
+    },
+    {
+      "name": "media-player",
+      "type": "registry:ui",
+      "title": "Media Player",
+      "description": "A styled native <video controls> / <audio controls> with multiple <source> formats, <track> captions, a poster, and aspect-ratio framing. The browser ships the entire accessible playback UI — play, scrub, volume, captions, fullscreen, Picture-in-Picture — so there are no custom controls and zero JavaScript."
+    },
+    {
+      "name": "autocomplete",
+      "type": "registry:ui",
+      "title": "Autocomplete",
+      "description": "Free-text input with native typeahead suggestions: <input list> bound to a <datalist>. The browser owns the dropdown, filtering, and selection; htmx can stream a fresh <option> set in on input. The light native sibling of the APG combobox — it suggests, it does not constrain."
+    },
+    {
+      "name": "exclusive-accordion",
+      "type": "registry:ui",
+      "title": "Exclusive Accordion",
+      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macros, Go html/template, Phoenix function component, and a raw HTML snippet."
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A constrained-overflow region with a themed native scrollbar and optional fade masks that appear only while more content can scroll into view. Scrolling is fully native (keyboard, wheel, trackpad, touch) with zero JavaScript — no Radix-style scrollbar reimplementation. The fade masks are driven purely by CSS @container scroll-state()."
+    },
+    {
+      "name": "snap-list",
+      "type": "registry:ui",
+      "title": "Snap List",
+      "description": "The bare, reusable CSS scroll-snapping rail (gallery strip, chip row, media shelf, date rail) — zero JavaScript. A real <ul role=\"list\"> scroll container with snap-x/snap-y + snap-mandatory/snap-proximity, and <li> children carrying scroll-snap-align (snap-start/center/end) and optional scroll-snap-stop:always. It is the un-opinionated scroller the Carousel dresses up with Prev/Next controls; the platform owns the scrolling and snapping."
+    },
+    {
+      "name": "container-card",
+      "type": "registry:ui",
+      "title": "Container Card",
+      "description": "A self-adapting card that restyles based on its own inline width, not the viewport. The same markup stacks media above text in a narrow column or sidebar and lays them side-by-side in a wide column or grid cell — built on CSS container queries (container-type: inline-size + @container). Pure CSS, zero JavaScript."
+    },
+    {
+      "name": "sticky-header",
+      "type": "registry:ui",
+      "title": "Sticky Header",
+      "description": "A page/section/table header that pins on scroll via position: sticky and visually reacts (shadow + solid background) the moment it becomes stuck, using a @container scroll-state(stuck: top) query — no IntersectionObserver sentinel, zero JS. The root is both the sticky element and the scroll-state query container; descendants opt into the stuck styling with data-sticky-revealed."
+    },
+    {
+      "name": "scroll-progress",
+      "type": "registry:ui",
+      "title": "Scroll Progress",
+      "description": "A reading-position bar whose fill tracks how far the user has scrolled the page (or a named scroller). Pure CSS scroll-driven animation (animation-timeline: scroll()) — zero JavaScript, no scroll listeners. Distinct from value-driven Progress."
     }
   ]
 }

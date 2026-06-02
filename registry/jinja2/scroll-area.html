@@ -1,0 +1,64 @@
+{# Scroll Area macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/scroll-area.tsx so a Python/Flask/FastAPI/Django
+   project renders the same markup our docs site renders.
+
+   A constrained-overflow region: content taller (or wider) than the box
+   scrolls NATIVELY, with a themed scrollbar and optional top/bottom fade
+   masks that appear only while more content can scroll in that direction.
+   Zero JavaScript — the masks are driven by CSS @container scroll-state().
+
+   Built on:
+     - CSS overflow + the web.dev a11y contract (a scroll region needs
+       tabindex="0" + role="region" + an accessible name):
+       repos/web.dev/src/site/content/en/learn/css/overflow/index.md
+     - Tailwind v4 scrollbar-thin / scrollbar-thumb-* / scrollbar-track-*
+       (standard scrollbar-width / scrollbar-color):
+       repos/tailwindcss/packages/tailwindcss/src/utilities.ts:2230-2255
+     - CSS @container scroll-state(scrollable: top|bottom) for the fade masks:
+       repos/mdn/files/en-us/web/css/reference/at-rules/@container/index.md
+       repos/mdn/files/en-us/web/css/guides/conditional_rules/container_scroll-state_queries/index.md
+   The container-type + fade rules live in app/styles/input.css, scoped to
+   [data-slot="scroll-area"].
+
+   Usage:
+     {% from "components/scroll-area.html" import scroll_area %}
+     {% call scroll_area(aria_label="Changelog", extra_class="h-72") %}
+       <div class="p-4 text-sm">…lots of content…</div>
+     {% endcall %} #}
+
+{% macro scroll_area(
+    orientation="vertical",
+    fade=true,
+    aria_label=none,
+    aria_labelledby=none,
+    id=none,
+    viewport_class="",
+    extra_class="",
+    **attrs
+) %}
+{%- set overflow_axis = {
+    "vertical": "overflow-y-auto overflow-x-hidden",
+    "horizontal": "overflow-x-auto overflow-y-hidden",
+    "both": "overflow-auto"
+} -%}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="scroll-area"
+  data-orientation="{{ orientation }}"
+  class="relative overflow-hidden rounded-md {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}>
+  <div
+    data-slot="scroll-area-viewport"
+    data-scroll-area-viewport
+    {%- if fade %} data-fade="true"{% endif %}
+    role="region"
+    {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    tabindex="0"
+    class="size-full scroll-smooth scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-[inherit] {{ overflow_axis[orientation] }} {{ viewport_class }}">
+    {%- if fade %}<div data-slot="scroll-area-fade" data-edge="start" aria-hidden="true" class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>{% endif -%}
+    {{ caller() }}
+    {%- if fade %}<div data-slot="scroll-area-fade" data-edge="end" aria-hidden="true" class="pointer-events-none sticky z-[1] opacity-0 transition-opacity duration-200"></div>{% endif -%}
+  </div>
+</div>
+{% endmacro %}

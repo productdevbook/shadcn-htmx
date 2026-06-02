@@ -1919,3 +1919,699 @@ test.describe("New components — tier-2", () => {
     })
   })
 })
+
+test.describe("New components — tier-3", () => {
+
+  
+  // Kbd — non-interactive label, so the "interaction" we assert is the
+  // render-time contract (MDN nested-<kbd> keystroke pattern) plus the
+  // platform side-effect that the caps are unselectable / unclickable.
+  test.describe("Kbd", () => {
+    test("KbdGroup nests one inner <kbd> per key with aria-hidden separators", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "kbd")
+      // Scope to the rendered component, NOT the heading id.
+      const group = page
+        .locator('[data-slot="kbd-group"]')
+        .first()
+      await expect(group).toBeVisible()
+      // The first shortcut in the example is Ctrl + Shift + R → 3 inner caps.
+      const handle = await group.elementHandle()
+      if (!handle) throw new Error("no kbd-group element")
+      const shape = await handle.evaluate((el) => {
+        const caps = el.querySelectorAll(':scope > [data-slot="kbd"]')
+        const seps = el.querySelectorAll(':scope > [aria-hidden="true"]')
+        const cs = getComputedStyle(caps[0] as Element)
+        return {
+          capCount: caps.length,
+          capText: Array.from(caps, (c) => (c.textContent || "").trim()),
+          sepCount: seps.length,
+          sepText: (seps[0]?.textContent || "").trim(),
+          // select-none → user-select:none keeps caps out of text selections.
+          userSelect: cs.userSelect || (cs as any).webkitUserSelect,
+          pointerEvents: cs.pointerEvents,
+          isKbdEl: (caps[0] as Element).tagName.toLowerCase(),
+          outerIsKbd: el.tagName.toLowerCase(),
+        }
+      })
+      expect(shape.outerIsKbd).toBe("kbd")
+      expect(shape.isKbdEl).toBe("kbd")
+      expect(shape.capCount).toBe(3)
+      expect(shape.capText).toEqual(["Ctrl", "Shift", "R"])
+      expect(shape.sepCount).toBe(2) // separators between 3 keys
+      expect(shape.sepText).toBe("+")
+      expect(shape.userSelect).toBe("none")
+      expect(shape.pointerEvents).toBe("none")
+    })
+  
+    test("symbol cap exposes an accessible name via aria-label", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "kbd")
+      const cmd = page.locator('[data-slot="kbd"][aria-label="Command"]').first()
+      await expect(cmd).toHaveText("⌘")
+      await expect(cmd).toHaveAttribute("aria-label", "Command")
+    })
+  })
+
+  
+  // Highlight — the server wraps matched query terms in <mark>. The static
+  // example renders marks at page load; the Active Search example fetches marked
+  // rows over htmx. Both are scoped to [data-slot="highlight"].
+  
+  test.describe("Highlight", () => {
+    test("static example marks the matched query in the passage", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "highlight")
+      // The first scan-mode run on the page is the ex-basic "salamander" passage.
+      const run = page.locator('[data-slot="highlight"]').first()
+      const mark = run.locator("mark").first()
+      await expect(mark).toBeVisible()
+      // <mark> must wrap the actual match, not the whole passage.
+      await expect(mark).toHaveText(/salamander/i)
+      const runText = (await run.textContent()) ?? ""
+      expect(runText.length).toBeGreaterThan((await mark.textContent())!.length)
+    })
+  
+    test("live search swaps in rows whose matches are wrapped in <mark>", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "highlight")
+      const results = page.locator("#ex-hl-results")
+      // Before searching, the seeded list has no marks (query is empty).
+      await expect(results.locator("mark")).toHaveCount(0)
+  
+      // Type a query; the Active Search input debounces + fires an htmx GET,
+      // and the server returns rows with the matched term wrapped in <mark>.
+      const input = page.locator('#ex-hl-q[data-slot="active-search-input"]')
+      await input.fill("imperial")
+  
+      // htmx replaces the list; a highlight run containing a matched <mark>
+      // for "Imperial" must appear. Capture the element handle for the
+      // state-dependent text assertion.
+      const matchedMark = results
+        .locator('[data-slot="highlight"] mark')
+        .filter({ hasText: /imperial/i })
+        .first()
+      await expect(matchedMark).toBeVisible({ timeout: 5000 })
+      const handle = await matchedMark.elementHandle()
+      expect(handle).not.toBeNull()
+      const text = await handle!.textContent()
+      expect(text?.toLowerCase()).toContain("imperial")
+      // Source casing is preserved by the server.
+      expect(text).toBe("Imperial")
+    })
+  })
+
+  
+  // Relative Time — semantic <time> + client localisation, degrading to the
+  // server label. Built on registry/ui/relative-time.tsx.
+  
+  test.describe("Relative Time", () => {
+    test("server datetime is preserved and the label is localised to a relative string", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "relative-time")
+  
+      // Scope to the component, NOT a heading id. The first relative-format
+      // timestamp in the docs carries the fixed server fallback "a while ago".
+      const rel = page
+        .locator('[data-slot="relative-time"][data-format="relative"]')
+        .first()
+      await expect(rel).toBeVisible()
+  
+      // The machine-readable instant is the source of truth and must survive.
+      const datetime = await rel.getAttribute("datetime")
+      expect(datetime).toBe("2024-05-12T09:00:00Z")
+  
+      // Capture an element handle so we can assert on post-localisation state.
+      const handle = await rel.elementHandle()
+      if (!handle) throw new Error("no relative-time element")
+  
+      // The site.js block rewrites the text via Intl.RelativeTimeFormat. Poll
+      // until the server fallback has been replaced by a real relative label.
+      await expect
+        .poll(async () => (await handle.textContent())?.trim() ?? "", {
+          timeout: 3000,
+        })
+        .not.toBe("a while ago")
+  
+      const localized = (await handle.textContent())?.trim() ?? ""
+      // A relative label mentions a time unit or "ago"/"in" — not the raw ISO.
+      expect(localized).toMatch(/ago|in |year|month|week|day|hour|minute|second|now/i)
+      expect(localized).not.toContain("2024-05-12")
+  
+      // The script also adds a full absolute instant as the hover title.
+      await expect.poll(async () => await rel.getAttribute("title")).not.toBeNull()
+    })
+  
+    test("datetime format renders an absolute, non-empty localised string", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "relative-time")
+      const abs = page
+        .locator('[data-slot="relative-time"][data-format="datetime"]')
+        .first()
+      await expect(abs).toBeVisible()
+      await expect(abs).toHaveAttribute("datetime", "2024-05-12T09:00:00Z")
+      const text = (await abs.textContent())?.trim() ?? ""
+      expect(text.length).toBeGreaterThan(0)
+    })
+  })
+
+  
+  // Figure — self-contained captioned content in a native <figure>. No JS.
+  // We verify the web-standards contract that makes this component worth
+  // shipping: the <figcaption> supplies the <figure> its accessible name,
+  // and captionSide controls DOM order (caption as first vs last child).
+  //   MDN figure:     repos/mdn/files/en-us/web/html/reference/elements/figure
+  //   MDN figcaption: repos/mdn/files/en-us/web/html/reference/elements/figcaption
+  
+  test.describe("Figure", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "figure")
+      await expect(page.locator("h1", { hasText: "Figure" })).toBeVisible()
+    })
+  
+    test("renders a native <figure> + <figcaption> with data-slots", async ({ page }) => {
+      await gotoDoc(page, "figure")
+      const fig = page.locator('[data-slot="figure"]').first()
+      await expect(fig).toBeVisible()
+      // Must be the native element, not a div — that's what gives the figure role.
+      await expect(fig).toHaveJSProperty("tagName", "FIGURE")
+      const cap = fig.locator('[data-slot="figure-caption"]').first()
+      await expect(cap).toBeVisible()
+      await expect(cap).toHaveJSProperty("tagName", "FIGCAPTION")
+    })
+  
+    test("the figcaption provides the figure's accessible name", async ({ page }) => {
+      await gotoDoc(page, "figure")
+      // First example: image with caption "An elephant at sunset".
+      const fig = page.locator('[data-slot="figure"]').first()
+      const handle = await fig.elementHandle()
+      if (!handle) throw new Error("no figure element")
+      // The figcaption text is the figure's accessible name (the credit line
+      // lives inside the figcaption, so it is part of that name too).
+      const captionText = await fig
+        .locator('[data-slot="figure-caption"]')
+        .first()
+        .innerText()
+      expect(captionText).toContain("An elephant at sunset")
+      // Confirm the role exposed to AT is the figure role (implicit on <figure>
+      // once it has a figcaption — see MDN figure technical summary).
+      const role = await handle.evaluate(
+        (el) => el.getAttribute("role") ?? el.tagName.toLowerCase(),
+      )
+      expect(role === "figure" || role === "figure".toLowerCase()).toBeTruthy()
+    })
+  
+    test("captionSide=top renders the figcaption as the first child", async ({ page }) => {
+      await gotoDoc(page, "figure")
+      // The code-block example uses captionSide="top".
+      const top = page.locator('[data-slot="figure"][data-caption-side="top"]').first()
+      await expect(top).toBeVisible()
+      const handle = await top.elementHandle()
+      if (!handle) throw new Error("no top-caption figure")
+      // First element child must be the figcaption (spec: caption is first OR
+      // last child; "top" => first).
+      const firstChildSlot = await handle.evaluate(
+        (el) => el.firstElementChild?.getAttribute("data-slot") ?? null,
+      )
+      expect(firstChildSlot).toBe("figure-caption")
+  
+      // And a bottom-caption figure has it as the LAST element child.
+      const bottom = page
+        .locator('[data-slot="figure"][data-caption-side="bottom"]')
+        .first()
+      const bHandle = await bottom.elementHandle()
+      if (!bHandle) throw new Error("no bottom-caption figure")
+      const lastChildSlot = await bHandle.evaluate(
+        (el) => el.lastElementChild?.getAttribute("data-slot") ?? null,
+      )
+      expect(lastChildSlot).toBe("figure-caption")
+    })
+  })
+
+  
+  // Responsive Image — native <picture> + <source> + fallback <img>. No JS
+  // behaviour to exercise, so the contract under test is the *platform
+  // selection result*: the <picture> resolves a candidate, the inner <img>
+  // actually loads (naturalWidth > 0), and currentSrc reflects a chosen source.
+  
+  test.describe("Responsive Image", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "responsive-image")
+      await expect(
+        page.locator("h1", { hasText: "Responsive Image" }),
+      ).toBeVisible()
+    })
+  
+    test("renders a <picture> with the required fallback <img> + slots", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "responsive-image")
+      const pic = page.locator('[data-slot="responsive-image"]').first()
+      await expect(pic).toBeVisible()
+      // It must BE a <picture> per the parity contract.
+      await expect(pic).toHaveJSProperty("tagName", "PICTURE")
+      // Exactly one fallback <img> carrying the accessible name.
+      const img = pic.locator('[data-slot="responsive-image-img"]')
+      await expect(img).toHaveCount(1)
+      const alt = await img.getAttribute("alt")
+      expect(alt && alt.length > 0, "fallback img must have alt text").toBeTruthy()
+      // At least one <source> candidate is offered before the fallback.
+      expect(await pic.locator("source").count()).toBeGreaterThan(0)
+    })
+  
+    test("the browser resolves a source and the image actually loads", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "responsive-image")
+      const img = page
+        .locator('[data-slot="responsive-image"] [data-slot="responsive-image-img"]')
+        .first()
+      await expect(img).toBeVisible()
+      // Capture the element handle to assert post-load state.
+      const handle = await img.elementHandle()
+      if (!handle) throw new Error("responsive-image img not found")
+      // Wait until the picture has resolved + decoded a candidate.
+      await page.waitForFunction(
+        (el) => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0,
+        handle,
+        { timeout: 5000 },
+      )
+      const state = await handle.evaluate((el) => {
+        const i = el as HTMLImageElement
+        return { naturalWidth: i.naturalWidth, currentSrc: i.currentSrc }
+      })
+      // Proof the platform picked a real, loadable resource.
+      expect(state.naturalWidth).toBeGreaterThan(0)
+      expect(state.currentSrc.length).toBeGreaterThan(0)
+    })
+  })
+
+  test("media-player renders a native player and exposes a toggleable caption track", async ({ page }) => {
+    await gotoDoc(page, "media-player")
+  
+    // Scope to the component root (the basic example: video + captions + poster).
+    const player = page.locator('[data-slot="media-player"][data-kind="video"]').first()
+    await expect(player).toBeVisible()
+  
+    // The framed media is the real platform <video controls> — not a custom widget.
+    const video = player.locator('video[data-slot="media-player-media"]')
+    await expect(video).toHaveAttribute("controls", "")
+  
+    // A <track kind="captions"> is declared and registered with the element's
+    // TextTrack list (the native control bar's CC button toggles this track's
+    // mode). This is a genuine platform interaction that works without loading
+    // media bytes.
+    const track = video.locator('track[data-slot="media-player-track"]')
+    await expect(track).toHaveAttribute("kind", "captions")
+  
+    const handle = await video.elementHandle()
+    if (!handle) throw new Error("no video element")
+  
+    // Pre-state: exactly one text track, disabled until the platform enables it.
+    const trackCount = await handle.evaluate((v) => (v as HTMLMediaElement).textTracks.length)
+    expect(trackCount).toBe(1)
+  
+    // Drive the platform: enable the caption track the way the CC button does,
+    // then assert the post-state mutated.
+    const mode = await handle.evaluate((v) => {
+      const tt = (v as HTMLMediaElement).textTracks[0]
+      tt.mode = "showing"
+      return tt.mode
+    })
+    expect(mode).toBe("showing")
+  
+    // The audio example renders a native <audio> with an accessible name and no
+    // video frame (padded card instead of an aspect-ratio box).
+    const audioPlayer = page.locator('[data-slot="media-player"][data-kind="audio"]').first()
+    const audio = audioPlayer.locator('audio[data-slot="media-player-media"]')
+    await expect(audio).toHaveAttribute("controls", "")
+    await expect(audio).toHaveAttribute("aria-label", /Episode 12/)
+  })
+
+  
+  // Autocomplete — native <input list> + <datalist>, htmx-streamed options.
+  //
+  // The browser owns the dropdown UI / filtering / selection, which Playwright
+  // cannot inspect. The user-facing contract we CAN assert: the input is wired
+  // to a datalist, static options exist, and typing in the server-streamed
+  // variant swaps a fresh <option> set into the bound list (htmx). Locators are
+  // scoped to [data-slot="autocomplete"] roots, never the heading ids.
+  
+  test.describe("Autocomplete", () => {
+    test("route renders with the static + server-streamed demos", async ({ page }) => {
+      await gotoDoc(page, "autocomplete")
+      await expect(page.locator("h1", { hasText: "Autocomplete" })).toBeVisible()
+      // Two autocomplete roots in the examples (static fruit + server city).
+      expect(await page.locator('[data-slot="autocomplete"]').count()).toBeGreaterThanOrEqual(2)
+    })
+  
+    test("static: input is wired to a datalist that has options", async ({ page }) => {
+      await gotoDoc(page, "autocomplete")
+      const root = page.locator('[data-slot="autocomplete"]').first()
+      const input = root.locator('[data-slot="autocomplete-input"]')
+      await expect(input).toBeVisible()
+      const listId = await input.getAttribute("list")
+      expect(listId).toBeTruthy()
+      const list = root.locator(`datalist#${listId}[data-slot="autocomplete-list"]`)
+      await expect(list).toHaveCount(1)
+      expect(await list.locator("option").count()).toBeGreaterThan(0)
+      // The value is free text: setting it to a suggestion is exactly how a
+      // user "picks" from the native dropdown.
+      await input.fill("Apple")
+      expect(await input.inputValue()).toBe("Apple")
+    })
+  
+    test("server-streamed: typing swaps a fresh option set into the bound list", async ({ page }) => {
+      await gotoDoc(page, "autocomplete")
+      // The streaming root carries the endpoint wiring.
+      const root = page.locator('[data-slot="autocomplete"]', {
+        has: page.locator('[data-slot="autocomplete-input"][hx-get]'),
+      })
+      const input = root.locator('[data-slot="autocomplete-input"]')
+      await expect(input).toHaveAttribute("hx-sync", "this:replace")
+      const listId = await input.getAttribute("list")
+      const list = page.locator(`datalist#${listId}`)
+      const listHandle = await list.elementHandle()
+      if (!listHandle) throw new Error("bound datalist not found")
+      // Empty before any input.
+      expect(await listHandle.$$eval("option", (els) => els.length)).toBe(0)
+      // Type two letters → debounced htmx fetch → options swapped in.
+      await input.click()
+      await input.fill("be")
+      await expect
+        .poll(async () => listHandle.$$eval("option", (els) => els.length), { timeout: 3000 })
+        .toBeGreaterThan(0)
+      // Suggestions match the typed prefix.
+      const values = await listHandle.$$eval("option", (els) =>
+        els.map((el) => (el as HTMLOptionElement).value),
+      )
+      expect(values.length).toBeGreaterThan(0)
+      expect(values.every((v) => v.toLowerCase().startsWith("be"))).toBe(true)
+    })
+  
+    test("API Reference lists the core Autocomplete props", async ({ page }) => {
+      await gotoDoc(page, "autocomplete")
+      await expect(page.locator('[data-slot="api-table"]').first()).toBeVisible()
+      for (const prop of ["id", "options", "endpoint"]) {
+        await expect(
+          page.locator(`[data-slot="api-row"][data-prop="${prop}"]`).first(),
+        ).toHaveCount(1)
+      }
+    })
+  })
+
+  test("exclusive-accordion: opening one item closes the previously open one", async ({ page }) => {
+    await gotoDoc(page, "exclusive-accordion")
+  
+    // Scope to the first exclusive-accordion on the page (the ex-basic preview,
+    // whose first item starts open).
+    const group = page.locator('[data-slot="exclusive-accordion"]').first()
+    const items = group.locator('[data-slot="exclusive-accordion-item"]')
+  
+    const first = items.nth(0)
+    const second = items.nth(1)
+  
+    // The native `open` attribute reflects expanded state. First item ships open.
+    const firstHandle = await first.elementHandle()
+    const secondHandle = await second.elementHandle()
+    if (!firstHandle || !secondHandle) throw new Error("accordion items not found")
+  
+    expect(await firstHandle.evaluate((d: HTMLDetailsElement) => d.open)).toBe(true)
+    expect(await secondHandle.evaluate((d: HTMLDetailsElement) => d.open)).toBe(false)
+  
+    // Open the second item via its summary trigger.
+    await second.locator('[data-slot="exclusive-accordion-trigger"]').click()
+  
+    // Native <details name> exclusivity: the browser closes the first when the
+    // second opens — no JS of ours runs.
+    expect(await secondHandle.evaluate((d: HTMLDetailsElement) => d.open)).toBe(true)
+    expect(await firstHandle.evaluate((d: HTMLDetailsElement) => d.open)).toBe(false)
+  })
+
+  
+  // Scroll Area — native-scrolling overflow region with CSS-only fade masks
+  // driven by @container scroll-state(). Verifies the basic vertical example:
+  // at the top the start (top) mask is hidden and the end (bottom) mask is
+  // shown; after scrolling to the bottom the masks flip. State is read from the
+  // computed opacity of the [data-slot="scroll-area-fade"] children — proving
+  // the scroll-state query is actually toggling them, with zero JS.
+  
+  test.describe("Scroll Area", () => {
+    test("fade masks track scroll position via @container scroll-state()", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "scroll-area")
+  
+      // Scope to the first scroll-area instance's viewport (NOT the #ex-basic
+      // heading, which is just a section anchor).
+      const viewport = page
+        .locator('[data-slot="scroll-area"] [data-scroll-area-viewport][data-fade]')
+        .first()
+      await expect(viewport).toBeVisible()
+  
+      // Bail out cleanly if the browser under test lacks scroll-state queries —
+      // the feature is progressive enhancement, not a hard dependency.
+      const supported = await page.evaluate(() =>
+        CSS.supports("container-type", "scroll-state"),
+      )
+      test.skip(!supported, "browser lacks @container scroll-state() support")
+  
+      const handle = await viewport.elementHandle()
+      const startMask = viewport.locator('[data-slot="scroll-area-fade"][data-edge="start"]')
+      const endMask = viewport.locator('[data-slot="scroll-area-fade"][data-edge="end"]')
+      const opacity = (loc: typeof startMask) =>
+        loc.evaluate((el) => parseFloat(getComputedStyle(el).opacity))
+  
+      // At the top: only the bottom (end) fade is visible.
+      await handle!.evaluate((el) => {
+        el.scrollTop = 0
+      })
+      await expect.poll(() => opacity(startMask)).toBeLessThan(0.1)
+      await expect.poll(() => opacity(endMask)).toBeGreaterThan(0.9)
+  
+      // Scroll to the bottom: the masks flip — top fade shown, bottom hidden.
+      await handle!.evaluate((el) => {
+        el.scrollTop = el.scrollHeight
+      })
+      await expect.poll(() => opacity(startMask)).toBeGreaterThan(0.9)
+      await expect.poll(() => opacity(endMask)).toBeLessThan(0.1)
+    })
+  })
+
+  
+  // Snap List — the bare CSS scroll-snap rail (zero JS). We assert the native
+  // contract: the root is a focusable <ul role="list"> snap container, and it
+  // actually scrolls + lands on a snap point. The behaviour is the platform's;
+  // the test just proves the markup opts into it correctly.
+  //   repos/mdn/.../css/reference/properties/scroll-snap-type
+  
+  test.describe("Snap List", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "snap-list")
+      await expect(page.locator("h1", { hasText: "Snap List" })).toBeVisible()
+    })
+  
+    test("root is a focusable list snap container", async ({ page }) => {
+      await gotoDoc(page, "snap-list")
+      const rail = page.locator('[data-slot="snap-list"]').first()
+      await expect(rail).toBeVisible()
+      // Semantics: a real <ul> with role="list" (Safari drops the implicit role
+      // once list-style is removed) and a keyboard tab stop.
+      expect(await rail.evaluate((el) => el.tagName)).toBe("UL")
+      await expect(rail).toHaveAttribute("role", "list")
+      await expect(rail).toHaveAttribute("tabindex", "0")
+      // Opted into horizontal mandatory snapping via CSS.
+      const css = await rail.evaluate((el) => {
+        const cs = getComputedStyle(el)
+        return { snap: cs.scrollSnapType, overflowX: cs.overflowX }
+      })
+      expect(css.snap).toContain("x")
+      expect(css.snap).toContain("mandatory")
+      expect(css.overflowX).toMatch(/auto|scroll/)
+      // Items declare a snap-align.
+      const itemAlign = await rail
+        .locator('[data-slot="snap-list-item"]')
+        .first()
+        .evaluate((el) => getComputedStyle(el).scrollSnapAlign)
+      expect(itemAlign).not.toBe("none")
+    })
+  
+    test("scrolls horizontally and lands on a snap point", async ({ page }) => {
+      await gotoDoc(page, "snap-list")
+      // Use the center-aligned media shelf (ex-stop): items are wide so a real
+      // scroll happens and the rail re-snaps to an item's center.
+      const rail = page.locator('[data-slot="snap-list"]').nth(1)
+      const handle = await rail.elementHandle()
+      if (!handle) throw new Error("snap-list rail has no element handle")
+  
+      const before = await handle.evaluate((el) => el.scrollLeft)
+      expect(before).toBe(0)
+  
+      // Drive a programmatic scroll past the first item; the snap container then
+      // rests on a snap position. scroll-behavior is smooth, so wait for it.
+      await handle.evaluate((el) => {
+        el.scrollTo({ left: el.clientWidth * 0.9, behavior: "auto" })
+      })
+      await page.waitForFunction((el) => el.scrollLeft > 0, handle, { timeout: 2000 })
+  
+      const after = await handle.evaluate((el) => el.scrollLeft)
+      expect(after).toBeGreaterThan(before)
+      // Sanity: we didn't overscroll past the track's end.
+      const max = await handle.evaluate((el) => el.scrollWidth - el.clientWidth)
+      expect(after).toBeLessThanOrEqual(max + 1)
+    })
+  })
+
+  
+  // Container Card — verify the card adapts to its OWN inline width (not the
+  // viewport) via CSS container queries. The "Same card, two layouts" example
+  // (data-test="basic") renders identical markup in a narrow 18rem column and a
+  // wide column; the layout block must compute `display: flex` (stacked) in the
+  // narrow one and `display: grid` (side-by-side) in the wide one at the SAME
+  // viewport width — proving the query reads the card's own size.
+  test.describe("ContainerCard", () => {
+    test("identical markup flips layout based on its own width", async ({ page }) => {
+      // Wide viewport so the basic example's two columns clearly differ in width.
+      await page.setViewportSize({ width: 1280, height: 900 })
+      await gotoDoc(page, "container-card")
+  
+      const cards = page.locator(
+        '[data-test="basic"] [data-slot="container-card"]',
+      )
+      await expect(cards).toHaveCount(2)
+  
+      // First card sits in the 18rem column → stacked (flex column).
+      const narrowLayout = cards.nth(0).locator('[data-slot="container-card-layout"]')
+      // Second card sits in the wide column → side-by-side (grid).
+      const wideLayout = cards.nth(1).locator('[data-slot="container-card-layout"]')
+  
+      const narrowHandle = await narrowLayout.elementHandle()
+      const wideHandle = await wideLayout.elementHandle()
+      expect(narrowHandle).not.toBeNull()
+      expect(wideHandle).not.toBeNull()
+  
+      const narrowDisplay = await narrowHandle!.evaluate(
+        (el) => getComputedStyle(el as HTMLElement).display,
+      )
+      const wideDisplay = await wideHandle!.evaluate(
+        (el) => getComputedStyle(el as HTMLElement).display,
+      )
+  
+      // Same component, same viewport — only the container width differs.
+      expect(narrowDisplay).toBe("flex")
+      expect(wideDisplay).toBe("grid")
+  
+      // The named query container is established on the card itself.
+      await expect(cards.nth(1)).toHaveCSS("container-type", "inline-size")
+    })
+  })
+
+  // tests/components/sticky-header.spec.ts
+  
+  test.describe("Sticky Header", () => {
+    test("pins to the top of its scroll container once scrolled", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "sticky-header")
+  
+      // Scope to the component, not the #ex-basic heading. The first basic
+      // example wraps the header in an overflow-auto scroll panel.
+      const header = page.locator('[data-slot="sticky-header"]').first()
+      await expect(header).toBeVisible()
+  
+      // The scroll container is the header's nearest overflow ancestor.
+      const panel = page.locator('[data-slot="sticky-header"]').first()
+        .locator("xpath=ancestor::*[contains(@class,'overflow-auto')][1]")
+  
+      // Capture the header element to read live geometry after scrolling.
+      const handle = await header.elementHandle()
+      if (!handle) throw new Error("no sticky-header element handle")
+  
+      // Top edge of the header relative to the scroll panel before scrolling.
+      const before = await handle.evaluate((el) => {
+        const scroller = el.closest(".overflow-auto") as HTMLElement
+        return el.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+      })
+  
+      // Scroll the panel down past where the header would naturally sit.
+      await panel.evaluate((el) => {
+        ;(el as HTMLElement).scrollTop = 200
+      })
+      await expect
+        .poll(async () =>
+          handle.evaluate((el) => {
+            const scroller = el.closest(".overflow-auto") as HTMLElement
+            return Math.round(
+              el.getBoundingClientRect().top -
+                scroller.getBoundingClientRect().top,
+            )
+          }),
+        )
+        .toBeLessThanOrEqual(1) // pinned flush to the scroll container's top edge
+  
+      // It was at or below its start position before; now it's pinned at ~0.
+      expect(before).toBeGreaterThanOrEqual(0)
+  
+      // The reveal region exists and is marked for the stuck styling hook.
+      const bar = header.locator('[data-sticky-revealed]').first()
+      await expect(bar).toBeVisible()
+      await expect(bar).toHaveAttribute("data-slot", "sticky-header-bar")
+    })
+  })
+
+  
+  // Scroll Progress — a reading-position bar driven purely by a CSS scroll
+  // progress timeline (animation-timeline: scroll()). No JS, no scroll handler.
+  // Contract under test:
+  //   - The bar is decorative: aria-hidden + pointer-events:none so it never
+  //     intercepts clicks or adds noise to the a11y tree.
+  //   - The fill is a scroll-driven keyframe: scaleX advances from ~0 to ~1 as
+  //     the timeline's scroller is scrolled from top to bottom.
+  test.describe("Scroll Progress", () => {
+    test("route renders and the bar is decorative", async ({ page }) => {
+      await gotoDoc(page, "scroll-progress")
+      const bar = page.locator('[data-slot="scroll-progress"]').first()
+      await expect(bar).toHaveAttribute("aria-hidden", "true")
+      const pe = await bar.evaluate((el) => getComputedStyle(el).pointerEvents)
+      expect(pe).toBe("none")
+    })
+  
+    test("fill scales with the named scroller's scroll position", async ({ page }) => {
+      await gotoDoc(page, "scroll-progress")
+      // The first example wraps the bar in a scrollable demo container that
+      // carries the named scroll-timeline the indicator tracks.
+      const scroller = page.locator('[data-test="demo-scroller"]')
+      const fill = scroller.locator('[data-slot="scroll-progress-indicator"]')
+      const fillHandle = await fill.elementHandle()
+      if (!fillHandle) throw new Error("scroll-progress indicator not found")
+  
+      // Read scaleX from the computed transform matrix (matrix(a, ...) where a
+      // is the horizontal scale). At the top the fill should be ~empty.
+      const scaleX = async () =>
+        fillHandle.evaluate((el) => {
+          const m = new DOMMatrixReadOnly(getComputedStyle(el).transform)
+          return m.a
+        })
+  
+      // Ensure we start at the top of the demo scroller.
+      await scroller.evaluate((el) => { el.scrollTop = 0 })
+      await page.waitForTimeout(50)
+      const top = await scaleX()
+      expect(top).toBeLessThan(0.05)
+  
+      // Scroll the named scroller to the bottom; the scroll-driven animation
+      // should advance the fill to (near) full width.
+      await scroller.evaluate((el) => { el.scrollTop = el.scrollHeight })
+      await page.waitForTimeout(50)
+      const bottom = await scaleX()
+      expect(bottom).toBeGreaterThan(0.9)
+      expect(bottom).toBeGreaterThan(top)
+    })
+  })
+})

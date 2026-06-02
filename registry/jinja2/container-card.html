@@ -1,0 +1,70 @@
+{# Container Card macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/container-card.tsx.
+
+   A self-adapting card that restyles based on its OWN inline width: stacked
+   (media above text) when narrow, side-by-side when wide. Built on CSS
+   container queries (container-type: inline-size + @container). Pure CSS; no JS.
+
+     repos/mdn/files/en-us/web/css/reference/properties/container-type/index.md
+     repos/web.dev/src/site/content/en/patterns/layout/container-query-card/index.md
+
+   Usage:
+     {% from "components/container-card.html" import container_card %}
+
+     {% call container_card(
+          title="Card title",
+          description="Supporting copy",
+          media='<img src="/cover.jpg" alt="" class="size-full object-cover">'
+        ) %}
+       <a href="/more" class="text-sm font-medium text-primary underline-offset-4 hover:underline">Read more</a>
+     {% endcall %}
+
+   Args:
+     tag             article | section | div | li | aside. Default "article".
+     title           card title text (optional; rendered as the title slot).
+     title_id        id on the title, pair with aria_labelledby for naming.
+     description     supporting copy (optional).
+     media           raw HTML for the media slot (img/video/picture). Optional.
+     break_at        inline width at which the card flips to side-by-side.
+                     Published as --container-card-break. Default "28rem".
+                     (Changing the number also needs the @min-[…] variant edited.)
+     aria_label / aria_labelledby   accessible name for the root.
+     extra_class     extra classes appended to the root.
+     attrs           dict of extra attributes (hx-*, data-*, aria-*).
+   The caller() body becomes the footer / actions row. #}
+
+{% macro container_card(
+    tag="article",
+    title=none,
+    title_id=none,
+    description=none,
+    media=none,
+    break_at="28rem",
+    aria_label=none,
+    aria_labelledby=none,
+    extra_class="",
+    attrs={}
+) %}
+<{{ tag }}
+  data-slot="container-card"
+  style="--container-card-break:{{ break_at }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+  class="@container/container-card overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm {{ extra_class }}">
+  <div data-slot="container-card-layout" class="flex flex-col @min-[28rem]/container-card:grid @min-[28rem]/container-card:grid-cols-[40%_1fr] @min-[28rem]/container-card:items-stretch">
+    {%- if media %}
+    <div data-slot="container-card-media" class="bg-muted aspect-video w-full @min-[28rem]/container-card:aspect-auto @min-[28rem]/container-card:h-full">{{ media|safe }}</div>
+    {%- endif %}
+    <div data-slot="container-card-body" class="flex flex-col gap-2 p-6 text-center @min-[28rem]/container-card:text-left">
+      {%- if title %}
+      <div data-slot="container-card-title"{% if title_id %} id="{{ title_id }}"{% endif %} class="leading-none font-semibold">{{ title }}</div>
+      {%- endif %}
+      {%- if description %}
+      <p data-slot="container-card-description" class="text-sm text-muted-foreground">{{ description }}</p>
+      {%- endif %}
+      <div data-slot="container-card-footer" class="mt-2 flex items-center justify-center gap-2 @min-[28rem]/container-card:justify-start">{{ caller() }}</div>
+    </div>
+  </div>
+</{{ tag }}>
+{% endmacro %}

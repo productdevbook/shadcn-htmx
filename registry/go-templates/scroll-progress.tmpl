@@ -1,0 +1,28 @@
+{{/* Scroll Progress template — shadcn-htmx, htmx v4 + Tailwind v4.
+     Mirrors registry/ui/scroll-progress.tsx. A reading-position bar whose fill
+     tracks scroll position — ZERO JavaScript, pure CSS scroll-driven animation.
+
+     Built on CSS scroll-driven animations:
+       - animation-timeline: scroll(root block) ties the fill to the page scroller
+         repos/mdn/.../css/reference/properties/animation-timeline/scroll
+       - a named timeline (scroll-timeline-name on the scroller) drives it from
+         any scroll container
+         repos/mdn/.../css/reference/properties/scroll-timeline-name
+
+     The fill keyframe (scn-scroll-progress) + default animation-timeline live in
+     app/styles/input.css keyed on data-slot, with a prefers-reduced-motion
+     fallback. The bar is decorative (aria-hidden). */}}
+
+{{define "scroll-progress"}}
+{{- $position := or .Position "top" -}}
+{{- $edge := "top-0" -}}{{- if eq $position "bottom" -}}{{- $edge = "bottom-0" -}}{{- end -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="scroll-progress"
+     data-position="{{$position}}"
+     aria-hidden="true"
+     class="pointer-events-none fixed inset-x-0 z-50 h-1 w-full overflow-hidden bg-primary/15 {{$edge}}">
+  <div data-slot="scroll-progress-indicator"
+       {{if .Timeline}}style="animation-timeline: {{.Timeline}}"{{end}}
+       class="h-full w-full origin-left bg-primary"></div>
+</div>
+{{end}}

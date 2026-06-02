@@ -1,0 +1,70 @@
+{# Autocomplete macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Free-text input with native typeahead: <input list> + <datalist>. The
+   light native sibling of the APG combobox — the browser owns the dropdown
+   UI, substring filtering, click + keyboard selection, and focus. No JS.
+   Refs: repos/mdn/.../elements/datalist/index.md,
+         repos/mdn/.../elements/input/index.md#list
+
+   Usage (static suggestions):
+     {% from "components/autocomplete.html" import autocomplete %}
+     {{ autocomplete(id="fruit", name="fruit",
+                     options=[{"value": "Apple"}, {"value": "Apricot"}]) }}
+
+   Usage (server-streamed via htmx): pass an endpoint and an empty options
+   list; the macro wires the standard streaming defaults and the server
+   returns <option> tags swapped into the bound <datalist>.
+     {{ autocomplete(id="city", name="city", endpoint="/api/cities") }}
+#}
+
+{% macro autocomplete(
+    id,
+    name=none,
+    options=[],
+    placeholder=none,
+    value=none,
+    required=false,
+    disabled=false,
+    readonly=false,
+    minlength=none,
+    maxlength=none,
+    delay=200,
+    endpoint=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    extra_class="",
+    input_class="",
+    **attrs
+) %}
+<span data-slot="autocomplete" class="inline-block w-full {{ extra_class }}">
+  <input
+    type="text"
+    id="{{ id }}"
+    {%- if name %} name="{{ name }}"{% endif %}
+    list="{{ id }}-list"
+    {%- if value is not none %} value="{{ value }}"{% endif %}
+    {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
+    {%- if required %} required{% endif %}
+    {%- if disabled %} disabled{% endif %}
+    {%- if readonly %} readonly{% endif %}
+    {%- if minlength is not none %} minlength="{{ minlength }}"{% endif %}
+    {%- if maxlength is not none %} maxlength="{{ maxlength }}"{% endif %}
+    {%- if endpoint %} hx-get="{{ endpoint }}" hx-trigger="input changed delay:{{ delay }}ms" hx-target="#{{ id }}-list" hx-swap="innerHTML" hx-sync="this:replace"{% endif %}
+    {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+    autocomplete="off"
+    data-slot="autocomplete-input"
+    class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 {{ input_class }}"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >
+  <datalist id="{{ id }}-list" data-slot="autocomplete-list">
+    {% for opt in options %}<option value="{{ opt.value }}"{% if opt.label %} label="{{ opt.label }}"{% endif %}>{% endfor %}
+  </datalist>
+</span>
+{% endmacro %}
+
+{# A single <option> — useful when an htmx endpoint returns one suggestion. #}
+{% macro autocomplete_option(value, label=none) -%}
+<option value="{{ value }}"{% if label %} label="{{ label }}"{% endif %}>
+{%- endmacro %}

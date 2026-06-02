@@ -2021,4 +2021,69 @@
       })
   })();
 
+
+  // ===== New components (tier-3) =====
+
+  ;(function () {
+    // Relative Time (registry/ui/relative-time.tsx).
+      //
+      // Built on the native <time datetime> element. The server renders a
+      // machine-readable instant in `datetime` plus a human-readable label as the
+      // text content, so the timestamp is meaningful with NO JavaScript. This
+      // block re-localises every [data-relative-time] <time> to the visitor's
+      // locale + timezone using the platform Intl APIs (web standards, not a date
+      // library): Intl.RelativeTimeFormat for "3 days ago" and Intl.DateTimeFormat
+      // for absolute dates. If Intl is missing or the datetime can't be parsed we
+      // leave the server label in place — degradation, not breakage. It re-runs on
+      // htmx swaps so labels in swapped-in fragments localise too, and refreshes
+      // relative labels once a minute so "in 1 minute" rolls over to "now".
+      //   repos/mdn/files/en-us/web/html/reference/elements/time/index.md
+      //   htmx swap event names verified against repos/htmx/www/reference.md
+      ;(function () {
+        var DIV = [
+          ['year', 31536000], ['month', 2592000], ['week', 604800],
+          ['day', 86400], ['hour', 3600], ['minute', 60], ['second', 1],
+        ]
+        var relLabel = function (then, now) {
+          var diff = Math.round((then - now) / 1000)
+          var abs = Math.abs(diff)
+          for (var i = 0; i < DIV.length; i++) {
+            if (abs >= DIV[i][1] || DIV[i][0] === 'second') {
+              var rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+              return rtf.format(Math.round(diff / DIV[i][1]), DIV[i][0])
+            }
+          }
+        }
+        var localize = function (el) {
+          var iso = el.getAttribute('datetime')
+          if (!iso) return
+          var t = new Date(iso)
+          if (isNaN(t.getTime())) return
+          try {
+            if (el.getAttribute('data-format') === 'datetime') {
+              el.textContent = new Intl.DateTimeFormat(undefined, {
+                dateStyle: 'medium', timeStyle: 'short',
+              }).format(t)
+            } else if (typeof Intl.RelativeTimeFormat === 'function') {
+              el.textContent = relLabel(t, new Date())
+            }
+            if (!el.getAttribute('title')) {
+              el.setAttribute('title', new Intl.DateTimeFormat(undefined, {
+                dateStyle: 'full', timeStyle: 'long',
+              }).format(t))
+            }
+          } catch (e) { /* leave the server label in place */ }
+        }
+        var run = function (root) {
+          ;(root || document)
+            .querySelectorAll('[data-slot="relative-time"][data-relative-time]')
+            .forEach(localize)
+        }
+        run(document)
+        document.addEventListener('htmx:after:swap', function (e) { run(e.target || document) })
+        document.addEventListener('htmx:afterSwap', function (e) { run(e.target || document) })
+        setInterval(function () { run(document) }, 60000)
+      })();
+  })();
+
 })()

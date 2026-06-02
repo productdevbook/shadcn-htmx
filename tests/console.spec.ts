@@ -25,6 +25,8 @@ const SLUGS = [
   "listbox", "menubar", "tree", "carousel", "feed", "grid", "treegrid", "splitter",
   // Landmarks (page-shell)
   "landmarks",
+  // tier-3
+  "kbd", "highlight", "relative-time", "figure", "responsive-image", "media-player", "autocomplete", "exclusive-accordion", "scroll-area", "snap-list", "container-card", "sticky-header", "scroll-progress",
   // tier-2
   "output", "segmented-control", "rating", "color-picker", "autosize-textarea", "cascading-select", "selectable-table", "delete-row", "optimistic-toggle", "status", "split-button", "lazy-load", "sidebar", "aspect-ratio", "auto-grid",
   // tier-1
