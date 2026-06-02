@@ -45,6 +45,7 @@ import { gridRoutes } from "@/app/routes/grid"
 import { treegridRoutes } from "@/app/routes/treegrid"
 import { splitterRoutes } from "@/app/routes/splitter"
 import { landmarksRoutes } from "@/app/routes/landmarks"
+import { cliRoutes } from "@/app/routes/cli"
 
 import { formFieldRoutes } from "@/app/routes/form-field"
 import { fileUploadRoutes } from "@/app/routes/file-upload"
@@ -143,6 +144,7 @@ app.route("/docs/grid", gridRoutes)
 app.route("/docs/treegrid", treegridRoutes)
 app.route("/docs/splitter", splitterRoutes)
 app.route("/docs/landmarks", landmarksRoutes)
+app.route("/docs/cli", cliRoutes)
 app.route("/docs/form-field", formFieldRoutes)
 app.route("/docs/file-upload", fileUploadRoutes)
 app.route("/docs/copy-button", copyButtonRoutes)
@@ -228,6 +230,7 @@ app.route("/grid", gridRoutes)
 app.route("/treegrid", treegridRoutes)
 app.route("/splitter", splitterRoutes)
 app.route("/landmarks", landmarksRoutes)
+app.route("/cli", cliRoutes)
 
 app.route("/form-field", formFieldRoutes)
 app.route("/file-upload", fileUploadRoutes)

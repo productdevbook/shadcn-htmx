@@ -54,6 +54,8 @@ const SLUGS = [
   "treegrid",
   "splitter",
   "landmarks",
+  // docs pages
+  "cli",
   // tier-3
   "kbd",
   "highlight",
