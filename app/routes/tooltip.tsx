@@ -36,25 +36,26 @@ const usageJsx = `import { Tooltip } from "@/components/ui/tooltip"
   <Button>Save</Button>
 </Tooltip>`
 
+// In template flavours the macro can't reach into the slot, so the trigger
+// carries aria-describedby itself (reuse the id). JSX clones it on for you.
 const usageJinja = `{% from "components/tooltip.html" import tooltip_open %}
 
 {% call tooltip_open(id="save-tt", content="Saves your draft (⌘ + S)") %}
-  <button class="…">Save</button>
+  <button class="…" aria-describedby="save-tt">Save</button>
 {% endcall %}`
 
 const usageGo = `{{template "tooltip" (dict
   "ID" "save-tt" "Content" "Saves your draft (⌘ + S)"
-  "Body" (htmlSafe \`<button class="…">Save</button>\`)
+  "Body" (htmlSafe \`<button class="…" aria-describedby="save-tt">Save</button>\`)
 )}}`
 
 const usagePhoenix = `<.tooltip id="save-tt" content="Saves your draft (⌘ + S)">
-  <button class="…">Save</button>
+  <button class="…" aria-describedby="save-tt">Save</button>
 </.tooltip>`
 
 const usageHtml = `<span data-slot="tooltip" data-side="top" data-tooltip-trigger
-      class="relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 …"
-      aria-describedby="save-tt">
-  <button>Save</button>
+      class="relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 …">
+  <button aria-describedby="save-tt">Save</button>
   <span id="save-tt" role="tooltip" class="…">Saves your draft (⌘ + S)</span>
 </span>`
 
@@ -154,14 +155,14 @@ tooltipRoutes.get("/", async (c) => {
   <Button>Save</Button>
 </Tooltip>`,
               jinja: `{% call tooltip_open(id="save-tt", content="Saves your draft (⌘ + S)") %}
-  {{ button("Save") }}
+  <button class="…" aria-describedby="save-tt">Save</button>
 {% endcall %}`,
               go: `{{template "tooltip" (dict
   "ID" "save-tt" "Content" "Saves your draft (⌘ + S)"
-  "Body" (htmlSafe \`{{template "button" (dict "Label" "Save")}}\`)
+  "Body" (htmlSafe \`<button class="…" aria-describedby="save-tt">Save</button>\`)
 )}}`,
               phoenix: `<.tooltip id="save-tt" content="Saves your draft (⌘ + S)">
-  <.button>Save</.button>
+  <button class="…" aria-describedby="save-tt">Save</button>
 </.tooltip>`,
             })}
 

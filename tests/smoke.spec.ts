@@ -38,7 +38,7 @@ test.describe("Smoke — overlays", () => {
   test("Tooltip reveals on focus", async ({ page }) => {
     await gotoDoc(page, "tooltip")
     const btn = page
-      .locator('[aria-describedby="ex-tt-save"] button')
+      .locator('button[aria-describedby="ex-tt-save"]')
       .first()
     await btn.focus()
     await expect.poll(() =>

@@ -2,11 +2,13 @@
    Mirrors registry/ui/tooltip.tsx. Pure CSS hover + focus-within; ESC
    dismissal lives in public/site.js.
 
-   Usage:
-     {% from "components/tooltip.html" import tooltip_open, tooltip_close %}
+   Usage — put aria-describedby on YOUR trigger (reuse the same id). The macro
+   can't reach into the {% call %} slot to add it, and APG requires it on the
+   focusable trigger, not this wrapper:
+     {% from "components/tooltip.html" import tooltip_open %}
 
      {% call tooltip_open(id="save-tt", content="Saves your draft", side="top") %}
-       <button class="…">Save</button>
+       <button class="…" aria-describedby="save-tt">Save</button>
      {% endcall %} #}
 
 {% macro tooltip_open(id, content, side="top", extra_class="", content_class="") %}
@@ -23,7 +25,7 @@ pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-foreground px-2 p
     "right":  "top-1/2 -translate-y-1/2 left-[calc(100%+0.5rem)]"
 } -%}
 <span data-slot="tooltip" data-side="{{ side }}" data-tooltip-trigger
-      class="{{ wrapper }} {{ extra_class }}" aria-describedby="{{ id }}">
+      class="{{ wrapper }} {{ extra_class }}">
   {{ caller() }}
   <span id="{{ id }}" role="tooltip" data-slot="tooltip-content" data-side="{{ side }}"
         class="{{ content_base }} {{ sides[side] }} {{ content_class }}">{{ content }}</span>

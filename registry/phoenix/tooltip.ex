@@ -8,8 +8,11 @@ defmodule ShadcnHtmx.Components.Tooltip do
 
   ## Examples
 
+  Put aria-describedby on your trigger (reuse the id) — APG requires it on the
+  focusable trigger, not this wrapper, and the slot content can't be rewritten:
+
       <.tooltip id="save-tt" content="Saves your draft">
-        <button class="…">Save</button>
+        <button class="…" aria-describedby="save-tt">Save</button>
       </.tooltip>
   """
 
@@ -48,7 +51,6 @@ defmodule ShadcnHtmx.Components.Tooltip do
       data-side={@side}
       data-tooltip-trigger
       class={[@wrapper, @class]}
-      aria-describedby={@id}
     >
       {render_slot(@inner_block)}
       <span

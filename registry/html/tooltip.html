@@ -17,9 +17,9 @@
 -->
 
 <span data-slot="tooltip" data-side="top" data-tooltip-trigger
-      class="relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 [&:focus-within>[data-slot=tooltip-content]]:opacity-100 [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!"
-      aria-describedby="save-tt">
-  <button class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+      class="relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 [&:focus-within>[data-slot=tooltip-content]]:opacity-100 [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!">
+  <!-- aria-describedby goes on the focusable trigger (APG), not the wrapper. -->
+  <button aria-describedby="save-tt" class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
     Save
   </button>
   <span id="save-tt" role="tooltip" data-slot="tooltip-content" data-side="top"

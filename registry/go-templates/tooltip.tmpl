@@ -7,6 +7,9 @@
           Class             string         // optional: appended to the wrapper span
           ContentClass      string         // optional: appended to the content span
       }
+
+  Put aria-describedby="<ID>" on the trigger element you pass as Body — APG
+  requires it on the focusable trigger, and the template can't add it for you.
 */}}
 
 {{define "tooltip"}}
@@ -19,7 +22,7 @@
     "left"   "top-1/2 -translate-y-1/2 right-[calc(100%+0.5rem)]"
     "right"  "top-1/2 -translate-y-1/2 left-[calc(100%+0.5rem)]" -}}
 <span data-slot="tooltip" data-side="{{$side}}" data-tooltip-trigger
-      class="{{$wrapper}} {{.Class}}" aria-describedby="{{.ID}}">
+      class="{{$wrapper}} {{.Class}}">
   {{.Body}}
   <span id="{{.ID}}" role="tooltip" data-slot="tooltip-content" data-side="{{$side}}"
         class="{{$contentBase}} {{index $sides $side}} {{.ContentClass}}">{{.Content}}</span>

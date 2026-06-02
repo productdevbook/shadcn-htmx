@@ -1,5 +1,6 @@
 /** @jsxImportSource hono/jsx */
 import type { PropsWithChildren } from "hono/jsx"
+import { cloneElement, isValidElement } from "hono/jsx"
 import { cn, type ClassValue } from "@/registry/lib/cn"
 
 // Tooltip — shadcn-htmx, htmx v4 + Tailwind v4.
@@ -79,6 +80,15 @@ export function Tooltip(props: TooltipProps) {
     contentClass,
     children,
   } = props
+  // APG/MDN: aria-describedby must live on the element that RECEIVES FOCUS —
+  // the trigger — not on this inert wrapper span, or AT won't announce the
+  // tooltip when the trigger is focused. Clone the single child to attach it.
+  // Fall back to the wrapper only if children isn't one valid element, so the
+  // description relationship is never silently dropped.
+  const onTrigger = isValidElement(children)
+  const trigger = onTrigger
+    ? cloneElement(children as any, { "aria-describedby": id })
+    : children
   return (
     <span
       data-slot="tooltip"
@@ -87,12 +97,9 @@ export function Tooltip(props: TooltipProps) {
       // Tab-targetable for keyboard reveal. Skip when hoverOnly.
       tabindex={hoverOnly ? -1 : undefined}
       class={cn(wrapperBase, className)}
-      // The trigger's accessible name comes from its visible children;
-      // aria-describedby adds the tooltip text as a *description*
-      // (announced after the main name).
-      aria-describedby={id}
+      aria-describedby={onTrigger ? undefined : id}
     >
-      {children}
+      {trigger}
       <span
         id={id}
         role="tooltip"
