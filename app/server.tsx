@@ -1,7 +1,9 @@
 /** @jsxImportSource hono/jsx */
 import { Hono } from "hono"
 import { serveStatic } from "hono/bun"
+import { raw } from "hono/html"
 import { Layout, page } from "@/app/layout"
+import { COMPONENT_PREVIEWS } from "@/app/data/previews"
 import { buttonRoutes } from "@/app/routes/button"
 import { inputRoutes } from "@/app/routes/input"
 import { labelRoutes } from "@/app/routes/label"
@@ -560,7 +562,7 @@ app.get("/", (c) =>
                 Components
               </p>
               <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
-                Forty-three components. Every one, every flavour.
+                Eighty-two components. Every one, every flavour.
               </h2>
               <p class="text-sm text-muted-foreground">
                 Each ships with the same install, live examples, and source view
@@ -578,16 +580,21 @@ app.get("/", (c) =>
                     {group.items.map((item) => (
                       <a
                         href={item.href}
-                        class="group flex items-start justify-between gap-3 rounded-xl border bg-card p-5 transition-colors hover:bg-accent/40"
+                        class="group flex flex-col overflow-hidden rounded-xl border bg-card transition-colors hover:bg-accent/40"
                       >
-                        <div>
-                          <h4 class="font-semibold">{item.label}</h4>
-                          <p class="mt-1 text-sm text-muted-foreground">{item.blurb}</p>
+                        <div class="flex h-24 items-center justify-center overflow-hidden border-b bg-muted/30 text-muted-foreground/70 transition-colors group-hover:text-muted-foreground">
+                          {raw(COMPONENT_PREVIEWS[item.href.replace("/docs/", "")] ?? "")}
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true">
-                          <path d="M5 12h14" />
-                          <path d="m12 5 7 7-7 7" />
-                        </svg>
+                        <div class="flex flex-1 items-start justify-between gap-3 p-5">
+                          <div>
+                            <h4 class="font-semibold">{item.label}</h4>
+                            <p class="mt-1 text-sm text-muted-foreground">{item.blurb}</p>
+                          </div>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+                            <path d="M5 12h14" />
+                            <path d="m12 5 7 7-7 7" />
+                          </svg>
+                        </div>
                       </a>
                     ))}
                   </div>

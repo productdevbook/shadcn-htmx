@@ -60,15 +60,16 @@ to your stack, and copy the source. Your code, your repo, no runtime dependency.
 
 ## Components
 
-43 components across six categories — every interactive one mapped to its
-WAI-ARIA APG pattern:
+82 components across six categories — every interactive one mapped to its
+WAI-ARIA APG pattern, every other one to a native HTML element, Web API, or
+modern CSS feature:
 
-- **Forms** — Button, Input, Textarea, Label, Checkbox, Combobox, Switch, Radio Group, Select, Slider, Number Input, Range Slider, Listbox
-- **Layout** — Card, Table, Collapsible, Toolbar, Grid, Treegrid, Splitter, Landmarks
-- **Display** — Avatar, Badge, Separator, Carousel
-- **Feedback** — Alert, Progress, Skeleton, Toast, Meter, Feed
-- **Overlays** — Dialog, Dropdown Menu, Popover, Tooltip, Alert Dialog
-- **Navigation** — Accordion, Pagination, Tabs, Breadcrumb, Link, Menubar, Tree
+- **Forms** — Button, Input, Textarea, Label, Checkbox, Combobox, Switch, Radio Group, Select, Slider, Number Input, Range Slider, Listbox, Form Field, File Upload, Date Time Picker, Active Search, Edit In Place, Output, Segmented Control, Rating, Color Picker, Autosize Textarea, Cascading Select, Autocomplete
+- **Layout** — Card, Table, Collapsible, Toolbar, Grid, Treegrid, Splitter, Landmarks, Aspect Ratio, Auto Grid, Scroll Area, Snap List, Container Card, Sticky Header, Exclusive Accordion
+- **Display** — Avatar, Badge, Separator, Carousel, Copy Button, Kbd, Highlight, Relative Time, Figure, Responsive Image, Media Player, Selectable Table, Delete Row
+- **Feedback** — Alert, Progress, Skeleton, Toast, Meter, Feed, Status, Lazy Load, Optimistic Toggle, Scroll Progress
+- **Overlays** — Dialog, Dropdown Menu, Popover, Tooltip, Alert Dialog, Sheet, Hover Card
+- **Navigation** — Accordion, Pagination, Tabs, Breadcrumb, Link, Menubar, Tree, Skip Link, Theme Toggle, Split Button, Sidebar, Load More
 
 ## Local development
 
