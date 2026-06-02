@@ -1,0 +1,54 @@
+{{/*
+  Status template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/status.tsx.
+
+  Persistent POLITE live region for non-urgent updates ("Saved",
+  "3 results"). Swap text INTO it (hx-swap="innerHTML") — never move focus.
+
+    - role="status" (default) → aria-live="polite", aria-atomic="true"
+    - role="log"              → aria-live="polite", aria-atomic="false"
+                                only the appended entry is announced.
+
+  Refs:
+    repos/aria-practices/.../practices/structural-roles/structural-roles-practice.html
+    repos/mdn/.../roles/status_role/  repos/mdn/.../roles/log_role/
+
+      type StatusArgs struct {
+          As          string        // status (default) | log
+          Tone        string        // default | muted (default) | success | destructive
+          AriaAtomic  *bool         // nil = role default (status=true, log=false)
+          AriaLabel   string
+          AriaLabelledby string
+          ID          string
+          Body        template.HTML // status text, or status_item rows for a log
+      }
+
+  Usage:
+    {{template "status" (dict "AriaLabel" "Save status" "Body" (htmlSafe "Saved"))}}
+    {{template "status" (dict "As" "log" "AriaLabel" "Activity" "Body" (htmlSafe "...status-item rows..."))}}
+*/}}
+
+{{define "status"}}
+{{- $as := or .As "status" -}}
+{{- $tone := or .Tone "muted" -}}
+{{- $base := "block min-h-5 text-sm" -}}
+{{- $tones := dict
+    "default" "text-foreground"
+    "muted" "text-muted-foreground"
+    "success" "text-emerald-700 dark:text-emerald-300"
+    "destructive" "text-destructive" -}}
+{{- $roleAtomic := dict "status" "true" "log" "false" -}}
+{{- $atomic := index $roleAtomic $as -}}
+{{- if ne .AriaAtomic nil -}}{{- if deref .AriaAtomic -}}{{- $atomic = "true" -}}{{- else -}}{{- $atomic = "false" -}}{{- end -}}{{- end -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="status" data-role="{{$as}}"
+     role="{{$as}}" aria-live="polite" aria-atomic="{{$atomic}}"
+     {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     class="{{$base}} {{index $tones $tone}}">{{.Body}}</div>
+{{end}}
+
+{{define "status_item"}}
+{{- $id := .ID -}}
+<div {{if $id}}id="{{$id}}"{{end}} data-slot="status-item" class="py-0.5">{{.Body}}</div>
+{{end}}

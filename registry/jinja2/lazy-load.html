@@ -1,0 +1,36 @@
+{# Lazy Load macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/lazy-load.tsx.
+
+   A deferred-content container. It renders a placeholder immediately, then
+   fetches its own contents after the page paints (hx-get + hx-trigger="load")
+   and swaps them in. `reserve` sets min-height so the swap does not shift the
+   page (CLS). trigger="load" fires on insertion; "revealed" fires on scroll
+   into the page viewport; "intersect" fires once inside an overflow-y:scroll
+   container. swap="innerHTML" (default) keeps this wrapper; "outerHTML"
+   replaces it. Default hx-swap="innerHTML" keeps the trigger host, so the
+   server response must NOT repeat hx-trigger="load" (avoids an infinite loop).
+
+   Sources cited in lazy-load.tsx:
+     repos/htmx/.../patterns/01-loading/03-lazy-load.md
+     repos/htmx/.../reference/01-attributes/{01-hx-get,06-hx-trigger,07-hx-swap}.md
+     repos/mdn/.../web/accessibility/aria/reference/attributes/aria-busy/index.md
+     repos/mdn/.../web/api/intersection_observer_api/index.md
+
+   Usage:
+     {% from "components/lazy-load.html" import lazy_load %}
+
+     {{ lazy_load(src="/dashboard/sales", reserve="12rem", aria_label="Loading sales") }}
+     {{ lazy_load(src="/comments", trigger="revealed", reserve="8rem") }} #}
+
+{% macro lazy_load(src=none, trigger="load", swap="innerHTML", reserve=none, aria_label="Loading", id=none, extra_class="", **attrs) %}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="lazy-load" data-trigger="{{ trigger }}"
+  role="status" aria-busy="true" aria-label="{{ aria_label }}"
+  {% if src %}hx-get="{{ src }}"{% endif %}
+  hx-trigger="{{ 'intersect once' if trigger == 'intersect' else 'revealed' if trigger == 'revealed' else 'load' }}" hx-swap="{{ swap }}"
+  {% if reserve %}style="min-height:{{ reserve }}"{% endif %}
+  class="flex w-full items-center justify-center text-sm text-muted-foreground {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{% if caller %}{{ caller() }}{% else %}<span class="flex items-center gap-2"><span class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>Loading…</span>{% endif %}</div>
+{% endmacro %}

@@ -1,0 +1,55 @@
+<!--
+  shadcn-htmx — raw HTML aspect-ratio snippets.
+
+  Locks the slotted child to a fixed width-to-height ratio with the native
+  CSS `aspect-ratio` property (no padding-top hack). Replaced elements
+  (img/video) get `object-fit` via object-cover / object-contain; iframe /
+  embed already stretch to the box (object-fit has no effect on them).
+  Zero JavaScript — Tailwind utilities only.
+
+    MDN aspect-ratio: repos/mdn/files/en-us/web/css/reference/properties/aspect-ratio/index.md
+    MDN object-fit:   repos/mdn/files/en-us/web/css/reference/properties/object-fit/index.md
+    web.dev pattern:  repos/web.dev/src/site/content/en/patterns/layout/aspect-ratio-image-card/index.md
+
+  ROOT:
+    relative block w-full overflow-hidden  +  the ratio utility
+  RATIO utility:
+    1/1  → aspect-square
+    16/9 → aspect-video
+    any  → aspect-[w/h]   e.g. aspect-[4/3]
+-->
+
+<!-- 16:9 image, cropped to fill (object-cover) -->
+<div data-slot="aspect-ratio" data-ratio="16/9"
+     class="relative block w-full overflow-hidden aspect-video">
+  <img src="/photo.jpg" alt="Mountain lake at dawn"
+       data-slot="aspect-ratio-content"
+       class="size-full object-cover">
+</div>
+
+<!-- 1:1 square, letterboxed to fit (object-contain) -->
+<div data-slot="aspect-ratio" data-ratio="1/1"
+     class="relative block w-full overflow-hidden aspect-square">
+  <img src="/logo.png" alt="Brand logo"
+       data-slot="aspect-ratio-content"
+       class="size-full object-contain">
+</div>
+
+<!-- 16:9 responsive iframe (video embed) — object-fit has no effect here;
+     the iframe simply stretches to the ratio box. -->
+<div data-slot="aspect-ratio" data-ratio="16/9"
+     class="relative block w-full overflow-hidden aspect-video">
+  <iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID"
+          title="Embedded video"
+          data-slot="aspect-ratio-content"
+          class="size-full" allowfullscreen></iframe>
+</div>
+
+<!-- Arbitrary 4:3 ratio with a plain content slot (e.g. a chart canvas) -->
+<div data-slot="aspect-ratio" data-ratio="4/3"
+     class="relative block w-full overflow-hidden aspect-[4/3]">
+  <div data-slot="aspect-ratio-content"
+       class="flex size-full items-center justify-center bg-muted text-muted-foreground">
+    4 / 3 slot
+  </div>
+</div>

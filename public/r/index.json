@@ -332,6 +332,96 @@
       "type": "registry:ui",
       "title": "Theme Toggle",
       "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern."
+    },
+    {
+      "name": "output",
+      "type": "registry:ui",
+      "title": "Output",
+      "description": "Live result region for the outcome of a calculation or server action. Renders the native <output> element (implicit role=\"status\", an aria-live=\"polite\" + aria-atomic=\"true\" region), tied to its inputs via the for attribute. htmx innerHTML swaps of its content are announced by assistive tech automatically — zero JS."
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:ui",
+      "title": "Segmented Control",
+      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet."
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "A star/icon rating control built as a single-select radio group: one native <input type=\"radio\"> per star sharing a name, with per-star aria-label and a CSS-only hover preview. Submits a real value and works without JavaScript — the browser handles arrow-key navigation, focus, and one-at-a-time selection. Fill and hover preview come from rendering stars in reverse DOM order under flex-row-reverse so named-peer general-sibling selectors light the chosen star and every star to its visual left. Zero site.js."
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "A native <input type=\"color\"> styled as a shadcn swatch, with an optional live hex readout. The browser supplies the entire picker UI and guarantees a valid CSS color value — we only restyle the swatch and never parse colors ourselves."
+    },
+    {
+      "name": "autosize-textarea",
+      "type": "registry:ui",
+      "title": "Autosize Textarea",
+      "description": "Native <textarea> that grows/shrinks to fit its content between min/max bounds via the single CSS rule field-sizing: content — no scrollHeight JS hack. Degrades to a plain fixed field where unsupported; autosize={false} opts out to field-sizing: fixed. htmx autosave demo."
+    },
+    {
+      "name": "cascading-select",
+      "type": "registry:ui",
+      "title": "Cascading Select",
+      "description": "Two dependent native <select>s: choosing the parent reloads the child's <option>s — and an optional detail panel — from the server via an hx-swap-oob fragment. Cascade rides htmx's default `change` trigger on <select>; zero custom JS."
+    },
+    {
+      "name": "selectable-table",
+      "type": "registry:ui",
+      "title": "Selectable Table",
+      "description": "A data table with row checkboxes, a header select-all, a live selection count, and a contextual bulk-action bar revealed purely in CSS via :has(:checked). Each row is a native name=\"selected\" checkbox; bulk-action buttons hx-post the checked values and re-render the whole form."
+    },
+    {
+      "name": "delete-row",
+      "type": "registry:ui",
+      "title": "Delete Row",
+      "description": "A row/item delete affordance that confirms, sends DELETE, then fades out in place. One inherited declaration on the list host (hx-confirm:inherited / hx-target:inherited / hx-swap:inherited) covers every row, so each Delete button only needs hx-delete — no per-row wiring and no client-side list state. The server replies 200 with an empty body and the row simply disappears after a CSS opacity fade. Zero custom JS."
+    },
+    {
+      "name": "optimistic-toggle",
+      "type": "registry:ui",
+      "title": "Optimistic Toggle",
+      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern."
+    },
+    {
+      "name": "status",
+      "type": "registry:ui",
+      "title": "Status",
+      "description": "A persistent polite live-region announcer (role=status / role=log, aria-live=polite, aria-atomic) for non-urgent updates like \"Saved\" or \"3 results\" — the non-interruptive counterpart to Alert and Toast. Render it once and swap text in; assistive tech announces the change when the user is idle, without moving focus."
+    },
+    {
+      "name": "split-button",
+      "type": "registry:ui",
+      "title": "Split Button",
+      "description": "Primary action joined to a disclosure toggle that opens a popup of related secondary actions. Native Popover API + the APG menu keyboard contract (arrows, Home/End, type-to-find). Distinct from a dropdown menu — the main button has its own default action."
+    },
+    {
+      "name": "lazy-load",
+      "type": "registry:ui",
+      "title": "Lazy Load",
+      "description": "A deferred-content container that fetches its own contents after the page paints (hx-trigger=\"load\") and swaps them in, with a reserved-space placeholder to prevent layout shift (CLS). Pairs with Skeleton for slow dashboard panels and per-tab content. Zero JS of its own — htmx owns the request and the IntersectionObserver."
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "A responsive app-navigation sidebar: a fixed rail on wide screens that collapses to an off-canvas drawer behind a labelled hamburger on narrow screens. Nav links are real <a href> anchors and the open/close works without JavaScript — layout is CSS grid (grid-template-columns: minmax() 1fr) and the drawer toggles on the CSS :target pseudo-class."
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "A ratio-box wrapper that locks a child (image, video, iframe, embed, or chart slot) to a fixed width-to-height ratio while it resizes fluidly, eliminating layout shift. Built on the native CSS aspect-ratio property plus object-fit — one CSS declaration, zero JavaScript."
+    },
+    {
+      "name": "auto-grid",
+      "type": "registry:ui",
+      "title": "Auto Grid",
+      "description": "A responsive, intrinsically-wrapping grid of equal cells with no breakpoints. Children flow into as many columns as fit at a configurable minimum item width, then grow to share the leftover space — the card-grid recipe, built on CSS Grid's repeat(auto-fit, minmax()) (the RAM pattern). Pure CSS, zero JavaScript."
     }
   ]
 }

@@ -1,0 +1,75 @@
+{{/*
+  Delete Row templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/delete-row.tsx for Go projects using html/template.
+
+  A row/item delete affordance that confirms, sends DELETE, then fades out
+  in place. One inherited declaration on the list host covers every row —
+  no per-row wiring, no client-side list state. The server answers the
+  DELETE with a 200 and an empty body, so the row is swapped with nothing
+  and simply disappears.
+  See repos/htmx/www/src/content/patterns/03-records/02-delete-in-place.md.
+
+  htmx v4 inheritance is explicit (the `:inherited` modifier), so the host
+  hoists hx-confirm / hx-target / hx-swap to every descendant Delete button:
+  see repos/htmx/www/src/content/docs/03-features/08-attribute-inheritance.md.
+
+  Three templates:
+    - "delete_row_list" — the inheritance host (default <tbody>).
+    - "delete_row_item" — one deletable row (default <tr>) with the fade.
+    - "delete_row"      — the Delete button; only carries hx-delete.
+
+  Args:
+
+      type DeleteRowListArgs struct {
+          Confirm string       // "" disables the confirm prompt
+          Target  string       // default "closest tr"
+          SwapMs  int          // default 300
+          As      string       // default "tbody"
+          Body    template.HTML
+      }
+      type DeleteRowItemArgs struct {
+          SwapMs int           // default 300
+          As     string        // default "tr"
+          Body   template.HTML
+      }
+      type DeleteRowArgs struct {
+          Href      string     // DELETE endpoint; respond 200 + empty body
+          Label     string     // default "Delete"
+          AriaLabel string
+          Disabled  bool
+      }
+
+  Pass these via a (dict ...) helper and (htmlSafe ...) for the body, e.g.
+
+      {{template "delete_row_list" (dict "Body" (htmlSafe $rows))}}
+*/}}
+
+{{define "delete_row_list"}}
+{{- $confirm := or .Confirm "Are you sure you want to delete this?" -}}
+{{- $target := or .Target "closest tr" -}}
+{{- $swapMs := or .SwapMs 300 -}}
+{{- $as := or .As "tbody" -}}
+<{{$as}} data-slot="delete-row"
+   {{- if .NoConfirm}}{{else}} hx-confirm:inherited="{{$confirm}}"{{end}}
+   hx-target:inherited="{{$target}}" hx-swap:inherited="outerHTML swap:{{$swapMs}}ms">
+  {{- .Body}}
+</{{$as}}>
+{{end}}
+
+{{define "delete_row_item"}}
+{{- $swapMs := or .SwapMs 300 -}}
+{{- $as := or .As "tr" -}}
+<{{$as}} data-slot="delete-row-item" style="transition-duration:{{$swapMs}}ms"
+   class="transition-opacity ease-out [&.htmx-swapping]:opacity-0">
+  {{- .Body}}
+</{{$as}}>
+{{end}}
+
+{{define "delete_row"}}
+{{- $btn := "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5 text-muted-foreground hover:text-destructive" -}}
+{{- $label := or .Label "Delete" -}}
+<button type="button" data-slot="delete-row-trigger" hx-delete="{{.Href}}"
+        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+        {{- if .Disabled}} disabled{{end}}
+        class="{{$btn}}">{{$label}}</button>
+{{end}}

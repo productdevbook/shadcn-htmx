@@ -1,0 +1,52 @@
+<!--
+  shadcn-htmx — raw HTML autosize-textarea snippets.
+
+  Mirrors registry/ui/autosize-textarea.tsx. The `field-sizing: content` rule
+  (Tailwind utility field-sizing-content) makes the element grow/shrink to fit
+  its content between the min-h-* / max-h-* bounds — no scrollHeight JS hook.
+  See repos/mdn/files/en-us/web/css/reference/properties/field-sizing/index.md.
+
+  Where field-sizing is unsupported the rule is ignored and the textarea renders
+  as an ordinary fixed-height field (sized by min-height + rows). Progressive
+  enhancement, not emulation — relies only on theme tokens.
+
+  BASE:
+    flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base
+    shadow-xs transition-[color,box-shadow] outline-none
+    placeholder:text-muted-foreground
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    disabled:cursor-not-allowed disabled:opacity-50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    md:text-sm dark:bg-input/30
+    [&.htmx-request]:opacity-70
+  AUTOSIZE: field-sizing-content resize-none min-h-16 max-h-80 overflow-auto
+  FIXED:    field-sizing-fixed   resize-y   min-h-16 max-h-80 overflow-auto
+-->
+
+<!-- Basic — grows as you type, scrolls past max-h-80 -->
+<textarea name="reply" placeholder="Write a reply… the field grows as you type"
+  data-slot="autosize-textarea" data-autosize="true"
+  class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 field-sizing-content resize-none min-h-16 max-h-80 overflow-auto"></textarea>
+
+<!-- Plain bounded (autosize off) — classic fixed textarea with a drag handle -->
+<textarea name="notes" data-slot="autosize-textarea" data-autosize="false"
+  class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 field-sizing-fixed resize-y min-h-16 max-h-80 overflow-auto">A plain bounded textarea.</textarea>
+
+<!-- Disabled -->
+<textarea disabled data-slot="autosize-textarea" data-autosize="true"
+  class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 field-sizing-content resize-none min-h-16 max-h-80 overflow-auto">Locked content.</textarea>
+
+<!-- Invalid + describedby -->
+<div>
+  <textarea name="comment" aria-invalid="true" aria-describedby="comment-error"
+            placeholder="Comment…" data-slot="autosize-textarea" data-autosize="true"
+    class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 field-sizing-content resize-none min-h-16 max-h-80 overflow-auto"></textarea>
+  <p id="comment-error" class="mt-1 text-sm text-destructive">Comment can't be empty.</p>
+</div>
+
+<!-- htmx — autosave draft on input pause -->
+<textarea name="draft" placeholder="Start writing… we'll save as you pause"
+          data-slot="autosize-textarea" data-autosize="true"
+          hx-post="/drafts/123" hx-trigger="input changed delay:600ms" hx-swap="none"
+  class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 field-sizing-content resize-none min-h-16 max-h-80 overflow-auto [&.htmx-request]:opacity-70"></textarea>

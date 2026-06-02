@@ -58,6 +58,22 @@ import { loadMoreRoutes } from "@/app/routes/load-more"
 import { skipLinkRoutes } from "@/app/routes/skip-link"
 import { themeToggleRoutes } from "@/app/routes/theme-toggle"
 
+import { outputRoutes } from "@/app/routes/output"
+import { segmentedControlRoutes } from "@/app/routes/segmented-control"
+import { ratingRoutes } from "@/app/routes/rating"
+import { colorPickerRoutes } from "@/app/routes/color-picker"
+import { autosizeTextareaRoutes } from "@/app/routes/autosize-textarea"
+import { cascadingSelectRoutes } from "@/app/routes/cascading-select"
+import { selectableTableRoutes } from "@/app/routes/selectable-table"
+import { deleteRowRoutes } from "@/app/routes/delete-row"
+import { optimisticToggleRoutes } from "@/app/routes/optimistic-toggle"
+import { statusRoutes } from "@/app/routes/status"
+import { splitButtonRoutes } from "@/app/routes/split-button"
+import { lazyLoadRoutes } from "@/app/routes/lazy-load"
+import { sidebarRoutes } from "@/app/routes/sidebar"
+import { aspectRatioRoutes } from "@/app/routes/aspect-ratio"
+import { autoGridRoutes } from "@/app/routes/auto-grid"
+
 const app = new Hono()
 
 // Default 404 for /favicon.ico so it doesn't show as a noisy console error
@@ -124,6 +140,21 @@ app.route("/docs/edit-in-place", editInPlaceRoutes)
 app.route("/docs/load-more", loadMoreRoutes)
 app.route("/docs/skip-link", skipLinkRoutes)
 app.route("/docs/theme-toggle", themeToggleRoutes)
+app.route("/docs/output", outputRoutes)
+app.route("/docs/segmented-control", segmentedControlRoutes)
+app.route("/docs/rating", ratingRoutes)
+app.route("/docs/color-picker", colorPickerRoutes)
+app.route("/docs/autosize-textarea", autosizeTextareaRoutes)
+app.route("/docs/cascading-select", cascadingSelectRoutes)
+app.route("/docs/selectable-table", selectableTableRoutes)
+app.route("/docs/delete-row", deleteRowRoutes)
+app.route("/docs/optimistic-toggle", optimisticToggleRoutes)
+app.route("/docs/status", statusRoutes)
+app.route("/docs/split-button", splitButtonRoutes)
+app.route("/docs/lazy-load", lazyLoadRoutes)
+app.route("/docs/sidebar", sidebarRoutes)
+app.route("/docs/aspect-ratio", aspectRatioRoutes)
+app.route("/docs/auto-grid", autoGridRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -183,6 +214,22 @@ app.route("/load-more", loadMoreRoutes)
 app.route("/skip-link", skipLinkRoutes)
 app.route("/theme-toggle", themeToggleRoutes)
 
+app.route("/output", outputRoutes)
+app.route("/segmented-control", segmentedControlRoutes)
+app.route("/rating", ratingRoutes)
+app.route("/color-picker", colorPickerRoutes)
+app.route("/autosize-textarea", autosizeTextareaRoutes)
+app.route("/cascading-select", cascadingSelectRoutes)
+app.route("/selectable-table", selectableTableRoutes)
+app.route("/delete-row", deleteRowRoutes)
+app.route("/optimistic-toggle", optimisticToggleRoutes)
+app.route("/status", statusRoutes)
+app.route("/split-button", splitButtonRoutes)
+app.route("/lazy-load", lazyLoadRoutes)
+app.route("/sidebar", sidebarRoutes)
+app.route("/aspect-ratio", aspectRatioRoutes)
+app.route("/auto-grid", autoGridRoutes)
+
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
 // Homepage component index. Mirrors the categories in app/components/docs-sidebar.tsx —
@@ -191,6 +238,12 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Forms",
     items: [
+      { label: "Output", href: "/docs/output", blurb: "Live result region for a calculation or server action — native <output> with an implicit aria-live so htmx swaps announce themselves." },
+      { label: "Segmented Control", href: "/docs/segmented-control", blurb: "{ label: \"Segmented Control\", href: \"/docs/segmented-control\", blurb: \"Joined radio bar — pick a value, not a panel.\" }," },
+      { label: "Rating", href: "/docs/rating", blurb: "{ label: \"Rating\", href: \"/docs/rating\", blurb: \"Star rating as a native radio group — per-star labels, CSS hover preview, submits a real value. Zero JS.\" }," },
+      { label: "Color Picker", href: "/docs/color-picker", blurb: "Color Picker — native <input type=\"color\"> styled as a shadcn swatch with an optional live hex readout. The browser owns the whole picker UI and validates the CSS color." },
+      { label: "Autosize Textarea", href: "/docs/autosize-textarea", blurb: "Autosize Textarea — a <textarea> that grows and shrinks to fit its content between min/max bounds using one CSS line (field-sizing: content) instead of the classic scrollHeight JS loop. Zero JavaScript; degrades to a plain fixed field where unsupported." },
+      { label: "Cascading Select", href: "/docs/cascading-select", blurb: "Cascading Select — a pair of dependent native selects where picking the parent reloads the child's options (and an optional detail card) from the server in one request, using htmx's default change trigger plus an hx-swap-oob fragment. No JavaScript." },
       { label: "Form Field", href: "/docs/form-field", blurb: "Field-row wrapper composing label, control, description, and error — auto-wiring aria-describedby and a native :user-invalid styling hook. Plus a fieldset/legend group variant. Zero JS." },
       { label: "File Upload", href: "/docs/file-upload", blurb: "Drag-and-drop or click to pick files — a native file input with previews and a multipart upload bar." },
       { label: "Date Time Picker", href: "/docs/date-time-picker", blurb: "Native date, time, datetime-local, month and week fields with min/max/step constraints and normalized values — a web-standards date/time picker with no JS calendar library." },
@@ -214,6 +267,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Layout",
     items: [
+      { label: "Aspect Ratio", href: "/docs/aspect-ratio", blurb: "Lock images, videos, and embeds to a fixed ratio that resizes fluidly — native CSS aspect-ratio, no layout shift, no JavaScript." },
+      { label: "Auto Grid", href: "/docs/auto-grid", blurb: "Responsive grid that wraps into as many equal columns as fit — no breakpoints." },
       { label: "Card", href: "/docs/card", blurb: "Header / Content / Footer slots." },
       { label: "Table", href: "/docs/table", blurb: "Semantic table, sortable via aria-sort." },
       { label: "Collapsible", href: "/docs/collapsible", blurb: "Native single show/hide disclosure" },
@@ -227,6 +282,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Display",
     items: [
+      { label: "Selectable Table", href: "/docs/selectable-table", blurb: "Data table with row checkboxes, select-all, and a bulk-action bar revealed by CSS :has(:checked). Bulk actions hx-post the checked rows." },
+      { label: "Delete Row", href: "/docs/delete-row", blurb: "Confirm, DELETE, fade out — in place. One inherited declaration covers every row." },
       { label: "Copy Button", href: "/docs/copy-button", blurb: "Click-to-copy button built on the Async Clipboard API with a progressive-enhancement fallback. Flips to a transient aria-live \"Copied\" state. The docs code-block is a consumer." },
       { label: "Avatar", href: "/docs/avatar", blurb: "Image with text/icon fallback on 404." },
       { label: "Badge", href: "/docs/badge", blurb: "Six variants; renders span or anchor." },
@@ -237,6 +294,9 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Feedback",
     items: [
+      { label: "Optimistic Toggle", href: "/docs/optimistic-toggle", blurb: "Instant like/follow/pin toggle — flips optimistically, reconciles with the server, rolls back on error." },
+      { label: "Status", href: "/docs/status", blurb: "{ label: \"Status\", href: \"/docs/status\", blurb: \"Polite live region for non-urgent updates — role=status/log, htmx swap-in.\" }" },
+      { label: "Lazy Load", href: "/docs/lazy-load", blurb: "Defer slow content past first paint — the container fetches its own body after render and swaps it in, with reserved space so the page never jumps." },
       { label: "Alert", href: "/docs/alert", blurb: "Five variants + live-region politeness." },
       { label: "Progress", href: "/docs/progress", blurb: "role=progressbar, htmx polling demo." },
       { label: "Skeleton", href: "/docs/skeleton", blurb: "role=status placeholder, outerHTML swap." },
@@ -260,6 +320,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
   {
     title: "Navigation",
     items: [
+      { label: "Split Button", href: "/docs/split-button", blurb: "Primary action welded to a disclosure toggle — one click for the default, the chevron for the rest." },
+      { label: "Sidebar", href: "/docs/sidebar", blurb: "Responsive app-nav sidebar — a fixed rail on desktop, an off-canvas drawer behind a labelled hamburger on mobile. Real anchors, CSS grid + :target, opens and closes with zero JavaScript." },
       { label: "Load More", href: "/docs/load-more", blurb: "Self-replacing pagination — button or scroll sentinel, zero JS." },
       { label: "Skip Link", href: "/docs/skip-link", blurb: "Skip Link — a visually-hidden-until-focused \"Skip to main content\" link, the first focusable element on the page, jumping keyboard focus to the main landmark. Native <a href=\"#main\"> + CSS focus reveal, zero JS." },
       { label: "Theme Toggle", href: "/docs/theme-toggle", blurb: "Theme Toggle — light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default, persists an explicit override in a cookie for a no-flash server render, and ships as a native radiogroup with full keyboard support." },

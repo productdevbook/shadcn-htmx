@@ -966,6 +966,216 @@
         { "path": "registry/phoenix/theme_toggle.ex", "type": "registry:file", "target": "lib/my_app_web/components/theme_toggle.ex" },
         { "path": "registry/html/theme-toggle.html", "type": "registry:file", "target": "snippets/theme-toggle.html" }
       ]
+    },
+    {
+      "name": "output",
+      "type": "registry:ui",
+      "title": "Output",
+      "description": "Live result region for the outcome of a calculation or server action. Renders the native <output> element (implicit role=\"status\", an aria-live=\"polite\" + aria-atomic=\"true\" region), tied to its inputs via the for attribute. htmx innerHTML swaps of its content are announced by assistive tech automatically — zero JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/output.tsx", "type": "registry:ui", "target": "components/ui/output.tsx" },
+        { "path": "registry/jinja2/output.html", "type": "registry:file", "target": "templates/components/output.html" },
+        { "path": "registry/go-templates/output.tmpl", "type": "registry:file", "target": "components/output.tmpl" },
+        { "path": "registry/phoenix/output.ex", "type": "registry:file", "target": "lib/my_app_web/components/output.ex" },
+        { "path": "registry/html/output.html", "type": "registry:file", "target": "snippets/output.html" }
+      ]
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:ui",
+      "title": "Segmented Control",
+      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/segmented-control.tsx", "type": "registry:ui", "target": "components/ui/segmented-control.tsx" },
+        { "path": "registry/jinja2/segmented-control.html", "type": "registry:file", "target": "templates/components/segmented-control.html" },
+        { "path": "registry/go-templates/segmented-control.tmpl", "type": "registry:file", "target": "components/segmented-control.tmpl" },
+        { "path": "registry/phoenix/segmented_control.ex", "type": "registry:file", "target": "lib/my_app_web/components/segmented_control.ex" },
+        { "path": "registry/html/segmented-control.html", "type": "registry:file", "target": "snippets/segmented-control.html" }
+      ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "A star/icon rating control built as a single-select radio group: one native <input type=\"radio\"> per star sharing a name, with per-star aria-label and a CSS-only hover preview. Submits a real value and works without JavaScript — the browser handles arrow-key navigation, focus, and one-at-a-time selection. Fill and hover preview come from rendering stars in reverse DOM order under flex-row-reverse so named-peer general-sibling selectors light the chosen star and every star to its visual left. Zero site.js.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/rating.tsx", "type": "registry:ui", "target": "components/ui/rating.tsx" },
+        { "path": "registry/jinja2/rating.html", "type": "registry:file", "target": "templates/components/rating.html" },
+        { "path": "registry/go-templates/rating.tmpl", "type": "registry:file", "target": "components/rating.tmpl" },
+        { "path": "registry/phoenix/rating.ex", "type": "registry:file", "target": "lib/my_app_web/components/rating.ex" },
+        { "path": "registry/html/rating.html", "type": "registry:file", "target": "snippets/rating.html" }
+      ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "A native <input type=\"color\"> styled as a shadcn swatch, with an optional live hex readout. The browser supplies the entire picker UI and guarantees a valid CSS color value — we only restyle the swatch and never parse colors ourselves.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/color-picker.tsx", "type": "registry:ui", "target": "components/ui/color-picker.tsx" },
+        { "path": "registry/jinja2/color-picker.html", "type": "registry:file", "target": "templates/components/color-picker.html" },
+        { "path": "registry/go-templates/color-picker.tmpl", "type": "registry:file", "target": "components/color-picker.tmpl" },
+        { "path": "registry/phoenix/color_picker.ex", "type": "registry:file", "target": "lib/my_app_web/components/color_picker.ex" },
+        { "path": "registry/html/color-picker.html", "type": "registry:file", "target": "snippets/color-picker.html" }
+      ]
+    },
+    {
+      "name": "autosize-textarea",
+      "type": "registry:ui",
+      "title": "Autosize Textarea",
+      "description": "Native <textarea> that grows/shrinks to fit its content between min/max bounds via the single CSS rule field-sizing: content — no scrollHeight JS hack. Degrades to a plain fixed field where unsupported; autosize={false} opts out to field-sizing: fixed. htmx autosave demo.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/autosize-textarea.tsx", "type": "registry:ui", "target": "components/ui/autosize-textarea.tsx" },
+        { "path": "registry/jinja2/autosize-textarea.html", "type": "registry:file", "target": "templates/components/autosize-textarea.html" },
+        { "path": "registry/go-templates/autosize-textarea.tmpl", "type": "registry:file", "target": "components/autosize-textarea.tmpl" },
+        { "path": "registry/phoenix/autosize_textarea.ex", "type": "registry:file", "target": "lib/my_app_web/components/autosize_textarea.ex" },
+        { "path": "registry/html/autosize-textarea.html", "type": "registry:file", "target": "snippets/autosize-textarea.html" }
+      ]
+    },
+    {
+      "name": "cascading-select",
+      "type": "registry:ui",
+      "title": "Cascading Select",
+      "description": "Two dependent native <select>s: choosing the parent reloads the child's <option>s — and an optional detail panel — from the server via an hx-swap-oob fragment. Cascade rides htmx's default `change` trigger on <select>; zero custom JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/cascading-select.tsx", "type": "registry:ui", "target": "components/ui/cascading-select.tsx" },
+        { "path": "registry/jinja2/cascading-select.html", "type": "registry:file", "target": "templates/components/cascading-select.html" },
+        { "path": "registry/go-templates/cascading-select.tmpl", "type": "registry:file", "target": "components/cascading-select.tmpl" },
+        { "path": "registry/phoenix/cascading_select.ex", "type": "registry:file", "target": "lib/my_app_web/components/cascading_select.ex" },
+        { "path": "registry/html/cascading-select.html", "type": "registry:file", "target": "snippets/cascading-select.html" }
+      ]
+    },
+    {
+      "name": "selectable-table",
+      "type": "registry:ui",
+      "title": "Selectable Table",
+      "description": "A data table with row checkboxes, a header select-all, a live selection count, and a contextual bulk-action bar revealed purely in CSS via :has(:checked). Each row is a native name=\"selected\" checkbox; bulk-action buttons hx-post the checked values and re-render the whole form.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/selectable-table.tsx", "type": "registry:ui", "target": "components/ui/selectable-table.tsx" },
+        { "path": "registry/jinja2/selectable-table.html", "type": "registry:file", "target": "templates/components/selectable-table.html" },
+        { "path": "registry/go-templates/selectable-table.tmpl", "type": "registry:file", "target": "components/selectable-table.tmpl" },
+        { "path": "registry/phoenix/selectable_table.ex", "type": "registry:file", "target": "lib/my_app_web/components/selectable_table.ex" },
+        { "path": "registry/html/selectable-table.html", "type": "registry:file", "target": "snippets/selectable-table.html" }
+      ]
+    },
+    {
+      "name": "delete-row",
+      "type": "registry:ui",
+      "title": "Delete Row",
+      "description": "A row/item delete affordance that confirms, sends DELETE, then fades out in place. One inherited declaration on the list host (hx-confirm:inherited / hx-target:inherited / hx-swap:inherited) covers every row, so each Delete button only needs hx-delete — no per-row wiring and no client-side list state. The server replies 200 with an empty body and the row simply disappears after a CSS opacity fade. Zero custom JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/delete-row.tsx", "type": "registry:ui", "target": "components/ui/delete-row.tsx" },
+        { "path": "registry/jinja2/delete-row.html", "type": "registry:file", "target": "templates/components/delete-row.html" },
+        { "path": "registry/go-templates/delete-row.tmpl", "type": "registry:file", "target": "components/delete-row.tmpl" },
+        { "path": "registry/phoenix/delete_row.ex", "type": "registry:file", "target": "lib/my_app_web/components/delete_row.ex" },
+        { "path": "registry/html/delete-row.html", "type": "registry:file", "target": "snippets/delete-row.html" }
+      ]
+    },
+    {
+      "name": "optimistic-toggle",
+      "type": "registry:ui",
+      "title": "Optimistic Toggle",
+      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/optimistic-toggle.tsx", "type": "registry:ui", "target": "components/ui/optimistic-toggle.tsx" },
+        { "path": "registry/jinja2/optimistic-toggle.html", "type": "registry:file", "target": "templates/components/optimistic-toggle.html" },
+        { "path": "registry/go-templates/optimistic-toggle.tmpl", "type": "registry:file", "target": "components/optimistic-toggle.tmpl" },
+        { "path": "registry/phoenix/optimistic_toggle.ex", "type": "registry:file", "target": "lib/my_app_web/components/optimistic_toggle.ex" },
+        { "path": "registry/html/optimistic-toggle.html", "type": "registry:file", "target": "snippets/optimistic-toggle.html" }
+      ]
+    },
+    {
+      "name": "status",
+      "type": "registry:ui",
+      "title": "Status",
+      "description": "A persistent polite live-region announcer (role=status / role=log, aria-live=polite, aria-atomic) for non-urgent updates like \"Saved\" or \"3 results\" — the non-interruptive counterpart to Alert and Toast. Render it once and swap text in; assistive tech announces the change when the user is idle, without moving focus.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/status.tsx", "type": "registry:ui", "target": "components/ui/status.tsx" },
+        { "path": "registry/jinja2/status.html", "type": "registry:file", "target": "templates/components/status.html" },
+        { "path": "registry/go-templates/status.tmpl", "type": "registry:file", "target": "components/status.tmpl" },
+        { "path": "registry/phoenix/status.ex", "type": "registry:file", "target": "lib/my_app_web/components/status.ex" },
+        { "path": "registry/html/status.html", "type": "registry:file", "target": "snippets/status.html" }
+      ]
+    },
+    {
+      "name": "split-button",
+      "type": "registry:ui",
+      "title": "Split Button",
+      "description": "Primary action joined to a disclosure toggle that opens a popup of related secondary actions. Native Popover API + the APG menu keyboard contract (arrows, Home/End, type-to-find). Distinct from a dropdown menu — the main button has its own default action.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/split-button.tsx", "type": "registry:ui", "target": "components/ui/split-button.tsx" },
+        { "path": "registry/jinja2/split-button.html", "type": "registry:file", "target": "templates/components/split-button.html" },
+        { "path": "registry/go-templates/split-button.tmpl", "type": "registry:file", "target": "components/split-button.tmpl" },
+        { "path": "registry/phoenix/split_button.ex", "type": "registry:file", "target": "lib/my_app_web/components/split_button.ex" },
+        { "path": "registry/html/split-button.html", "type": "registry:file", "target": "snippets/split-button.html" }
+      ]
+    },
+    {
+      "name": "lazy-load",
+      "type": "registry:ui",
+      "title": "Lazy Load",
+      "description": "A deferred-content container that fetches its own contents after the page paints (hx-trigger=\"load\") and swaps them in, with a reserved-space placeholder to prevent layout shift (CLS). Pairs with Skeleton for slow dashboard panels and per-tab content. Zero JS of its own — htmx owns the request and the IntersectionObserver.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/lazy-load.tsx", "type": "registry:ui", "target": "components/ui/lazy-load.tsx" },
+        { "path": "registry/jinja2/lazy-load.html", "type": "registry:file", "target": "templates/components/lazy-load.html" },
+        { "path": "registry/go-templates/lazy-load.tmpl", "type": "registry:file", "target": "components/lazy-load.tmpl" },
+        { "path": "registry/phoenix/lazy_load.ex", "type": "registry:file", "target": "lib/my_app_web/components/lazy_load.ex" },
+        { "path": "registry/html/lazy-load.html", "type": "registry:file", "target": "snippets/lazy-load.html" }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "A responsive app-navigation sidebar: a fixed rail on wide screens that collapses to an off-canvas drawer behind a labelled hamburger on narrow screens. Nav links are real <a href> anchors and the open/close works without JavaScript — layout is CSS grid (grid-template-columns: minmax() 1fr) and the drawer toggles on the CSS :target pseudo-class.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/sidebar.tsx", "type": "registry:ui", "target": "components/ui/sidebar.tsx" },
+        { "path": "registry/jinja2/sidebar.html", "type": "registry:file", "target": "templates/components/sidebar.html" },
+        { "path": "registry/go-templates/sidebar.tmpl", "type": "registry:file", "target": "components/sidebar.tmpl" },
+        { "path": "registry/phoenix/sidebar.ex", "type": "registry:file", "target": "lib/my_app_web/components/sidebar.ex" },
+        { "path": "registry/html/sidebar.html", "type": "registry:file", "target": "snippets/sidebar.html" }
+      ]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "A ratio-box wrapper that locks a child (image, video, iframe, embed, or chart slot) to a fixed width-to-height ratio while it resizes fluidly, eliminating layout shift. Built on the native CSS aspect-ratio property plus object-fit — one CSS declaration, zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/aspect-ratio.tsx", "type": "registry:ui", "target": "components/ui/aspect-ratio.tsx" },
+        { "path": "registry/jinja2/aspect-ratio.html", "type": "registry:file", "target": "templates/components/aspect-ratio.html" },
+        { "path": "registry/go-templates/aspect-ratio.tmpl", "type": "registry:file", "target": "components/aspect-ratio.tmpl" },
+        { "path": "registry/phoenix/aspect_ratio.ex", "type": "registry:file", "target": "lib/my_app_web/components/aspect_ratio.ex" },
+        { "path": "registry/html/aspect-ratio.html", "type": "registry:file", "target": "snippets/aspect-ratio.html" }
+      ]
+    },
+    {
+      "name": "auto-grid",
+      "type": "registry:ui",
+      "title": "Auto Grid",
+      "description": "A responsive, intrinsically-wrapping grid of equal cells with no breakpoints. Children flow into as many columns as fit at a configurable minimum item width, then grow to share the leftover space — the card-grid recipe, built on CSS Grid's repeat(auto-fit, minmax()) (the RAM pattern). Pure CSS, zero JavaScript.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/auto-grid.tsx", "type": "registry:ui", "target": "components/ui/auto-grid.tsx" },
+        { "path": "registry/jinja2/auto-grid.html", "type": "registry:file", "target": "templates/components/auto-grid.html" },
+        { "path": "registry/go-templates/auto-grid.tmpl", "type": "registry:file", "target": "components/auto-grid.tmpl" },
+        { "path": "registry/phoenix/auto_grid.ex", "type": "registry:file", "target": "lib/my_app_web/components/auto_grid.ex" },
+        { "path": "registry/html/auto-grid.html", "type": "registry:file", "target": "snippets/auto-grid.html" }
+      ]
     }
   ]
 }

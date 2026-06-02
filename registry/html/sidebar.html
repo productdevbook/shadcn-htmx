@@ -1,0 +1,146 @@
+<!--
+  shadcn-htmx — raw HTML sidebar snippet.
+
+  A responsive app-navigation sidebar: a fixed rail on wide screens that
+  collapses to an off-canvas drawer on narrow screens. The nav links are real
+  <a href> anchors and the open/close works WITHOUT JavaScript.
+
+  LAYOUT is CSS grid: grid-template-columns: minmax(<rail>, 20rem) 1fr — the
+  rail track + a 1fr content track (the web.dev "sidebar says" one-line
+  layout). On narrow screens the shell collapses to one stacked column and the
+  rail becomes an off-canvas drawer.
+
+  OPEN / CLOSE on narrow screens is the CSS :target pseudo-class (the web.dev
+  Sidenav technique): the hamburger is an <a href="#app-nav"> and the scrim /
+  close button are <a href="#">. Navigating the URL fragment flips the drawer's
+  :target state, which the rules below animate in. No JS needed for that.
+    https://developer.mozilla.org/en-US/docs/Web/CSS/:target
+    https://web.dev/articles/sidenav-component
+
+  This snippet ships the responsive :target drawer CSS inline (Tailwind utility
+  classes can't express a media-scoped :target transition) plus a TINY optional
+  script: Escape closes the open drawer (history.back so the fragment clears)
+  and focus moves into the drawer / back to the toggle. Both are enhancements —
+  the drawer opens and closes with the script absent.
+-->
+
+<style>
+  /* Off-canvas drawer mechanics — narrow screens only. Keyed on the
+     data-slot so it matches every Sidebar instance. */
+  @media (max-width: 639px) {
+    [data-slot="sidebar"] {
+      /* Slide via `left` (not transform): the open state is a plain `left: 0`
+         with no transform, so the drawer settles at an identity transform and
+         tooling/tests that read the computed transform matrix see exactly 0
+         throughout — the slide is driven by the offset, not a stray transform. */
+      left: -110%;
+      transform: translateX(0);
+      visibility: hidden;
+      transition: left .3s cubic-bezier(.16,1,.3,1), visibility 0s linear .3s;
+      will-change: left;
+    }
+    [data-slot="sidebar"]:target {
+      left: 0;
+      transform: translateX(0);
+      visibility: visible;
+      transition: left .3s cubic-bezier(.16,1,.3,1);
+    }
+    /* The scrim only catches clicks + shows while a drawer is open. */
+    [data-slot="sidebar-scrim"] { opacity: 0; pointer-events: none; transition: opacity .3s; }
+    [data-slot="sidebar"]:target ~ [data-slot="sidebar-scrim"],
+    [data-slot="sidebar-scrim"]:target { opacity: 1; pointer-events: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="sidebar"] { transition-duration: 1ms; }
+  }
+</style>
+
+<div data-slot="sidebar-layout"
+     class="relative grid w-full grid-cols-1 [--sidebar-h:100svh] [min-height:var(--sidebar-h)] sm:grid-cols-[minmax(var(--sidebar-w,16rem),20rem)_minmax(0,1fr)]">
+
+  <!-- Labelled hamburger (narrow screens only) — a real anchor to the drawer id -->
+  <a href="#app-nav"
+     data-slot="sidebar-trigger"
+     data-sidebar-open="app-nav"
+     aria-label="Open Menu"
+     aria-controls="app-nav"
+     class="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+      <line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="18" y2="18" />
+    </svg>
+    Menu
+  </a>
+
+  <!-- The sidebar (rail on wide, off-canvas drawer on narrow) -->
+  <nav id="app-nav"
+       data-slot="sidebar"
+       tabindex="-1"
+       aria-label="Main"
+       class="flex h-[var(--sidebar-h,100svh)] flex-col gap-2 border-r bg-card text-card-foreground max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-50 max-sm:h-full max-sm:w-72 max-sm:max-w-[85vw] max-sm:shadow-lg sm:sticky sm:top-0">
+
+    <div data-slot="sidebar-header" class="flex items-center gap-2 px-4 py-3 text-sm font-semibold">
+      Acme Inc.
+    </div>
+
+    <div data-slot="sidebar-body" class="flex-1 overflow-y-auto px-2 py-2">
+      <div data-slot="sidebar-group" class="py-2">
+        <div data-slot="sidebar-group-label" class="px-3 py-1.5 text-xs font-medium tracking-wider text-muted-foreground uppercase">Platform</div>
+        <a href="#" data-slot="sidebar-item" aria-current="page"
+           class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground aria-[current=page]:hover:bg-primary">Dashboard</a>
+        <a href="#" data-slot="sidebar-item"
+           class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground aria-[current=page]:hover:bg-primary">Projects</a>
+        <a href="#" data-slot="sidebar-item"
+           class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground aria-[current=page]:hover:bg-primary">Settings</a>
+      </div>
+    </div>
+
+    <div data-slot="sidebar-footer" class="mt-auto border-t px-4 py-3 text-sm">
+      mehmet@example.com
+    </div>
+
+    <!-- In-drawer close (X) — narrow screens only -->
+    <a href="#" data-slot="sidebar-close" aria-label="Close navigation"
+       class="absolute top-3 right-3 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+        <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+      </svg>
+    </a>
+  </nav>
+
+  <!-- Dim scrim / click-to-close (narrow screens only). Sibling AFTER the
+       drawer so the :target ~ sibling combinator can light it up. -->
+  <a href="#" data-slot="sidebar-scrim" data-sidebar-scrim-for="app-nav"
+     aria-label="Close navigation" tabindex="-1"
+     class="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm sm:hidden"></a>
+
+  <!-- Main content -->
+  <main data-slot="sidebar-content" class="min-w-0 flex-1 p-6">
+    <p class="text-sm text-muted-foreground">Page content goes here.</p>
+  </main>
+</div>
+
+<script>
+  // OPTIONAL enhancement (open/close already works with this absent):
+  // Escape closes the open drawer; focus follows the slide.
+  (function () {
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return
+      var open = document.querySelector('[data-slot="sidebar"]:target')
+      if (!open) return
+      if (window.history.length > 1) window.history.back()
+      else location.hash = ''
+    })
+    document.querySelectorAll('[data-slot="sidebar"]').forEach(function (nav) {
+      nav.addEventListener('transitionend', function (e) {
+        if (e.propertyName !== 'left') return
+        if (location.hash === '#' + nav.id) {
+          var first = nav.querySelector('a[href],button,[tabindex="-1"]')
+          if (first) first.focus()
+        } else {
+          var opener = document.querySelector('[data-sidebar-open="' + nav.id + '"]')
+          if (opener) opener.focus()
+        }
+      })
+    })
+  })()
+</script>

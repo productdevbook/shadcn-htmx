@@ -1,0 +1,55 @@
+{{/*
+  SegmentedControl templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/segmented-control.tsx.
+
+  A <fieldset> groups native <input type="radio"> options sharing a `name`;
+  the browser handles arrow-key navigation + one-selected-at-a-time. Picks a
+  value, not a panel. Sources: web.dev settings pattern + learn/forms/
+  accessibility, APG radio group (see the .tsx header for exact paths).
+
+  Two templates:
+    - "segmented_control"      — the role-bearing <fieldset> track (pass a
+                                  Body field containing the items).
+    - "segmented_control_item" — one segment (label + radio + text).
+
+  Usage:
+    {{template "segmented_control" (dict
+      "Name" "view" "AriaLabel" "View" "DefaultValue" "list"
+      "Body" (htmlSafe `
+        {{template "segmented_control_item" (dict "Text" "List" "Value" "list" "Name" "view" "ID" "view-list" "Checked" true)}}
+        {{template "segmented_control_item" (dict "Text" "Grid" "Value" "grid" "Name" "view" "ID" "view-grid")}}`)
+    )}}
+*/}}
+
+{{define "segmented_control"}}
+{{- $size := or .Size "default" -}}
+{{- $track := "group/segmented inline-flex w-fit items-center gap-1 rounded-lg bg-muted p-[3px] text-muted-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50" -}}
+{{- if eq $size "sm"}}{{$track = printf "%s h-8 text-xs" $track}}{{else}}{{$track = printf "%s h-9" $track}}{{end -}}
+<fieldset data-slot="segmented-control"
+     data-name="{{.Name}}"
+     data-size="{{$size}}"
+     {{- if .DefaultValue}} data-default-value="{{.DefaultValue}}"{{end}}
+     {{- if .Disabled}} data-disabled="true" disabled{{end}}
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     class="{{$track}}">
+  {{- if .AriaLabel}}<legend class="sr-only">{{.AriaLabel}}</legend>{{end}}
+  {{.Body}}
+</fieldset>
+{{end}}
+
+{{define "segmented_control_item"}}
+{{- $item := "relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all select-none hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4" -}}
+<label data-slot="segmented-control-item" data-value="{{.Value}}" class="{{$item}}">
+  <input type="radio" class="peer sr-only"
+         value="{{.Value}}" name="{{.Name}}"
+         {{- if .ID}} id="{{.ID}}"{{end}}
+         {{- if .Checked}} checked{{end}}
+         {{- if .Disabled}} disabled{{end}}
+         {{- if .Required}} required{{end}}
+         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+         data-slot="segmented-control-input">
+  <span data-slot="segmented-control-label">{{.Text}}</span>
+</label>
+{{end}}

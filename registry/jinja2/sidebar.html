@@ -1,0 +1,95 @@
+{# Sidebar macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/sidebar.tsx. A responsive app-navigation sidebar: a
+   fixed rail on wide screens that collapses to an off-canvas drawer on narrow
+   screens. Nav links are real <a href>; open/close works WITHOUT JavaScript.
+
+   LAYOUT is CSS grid (minmax rail / 1fr content — the "sidebar says" pattern).
+   OPEN/CLOSE on narrow screens is the CSS :target pseudo-class (the web.dev
+   Sidenav technique): the hamburger is an <a href="#nav">, the scrim/close is
+   an <a href="#">. The responsive :target drawer transition lives in
+   app/styles/input.css keyed off data-slot="sidebar"; a tiny site.js block
+   adds Escape-to-close + focus as an enhancement.
+     repos/web.dev/.../patterns/layout/sidebar-says/index.md
+     repos/web.dev/.../patterns/components/sidenav/index.md
+     repos/mdn/files/en-us/web/css/reference/selectors/_colon_target/index.md
+     repos/mdn/files/en-us/web/accessibility/aria/reference/roles/navigation_role/index.md
+
+   Usage:
+     {% from "components/sidebar.html" import sidebar_layout, sidebar_trigger,
+        sidebar, sidebar_scrim, sidebar_item %}
+
+     {% call sidebar_layout() %}
+       {{ sidebar_trigger(sidebar_for="nav", label="Menu") }}
+       {{ sidebar_scrim(sidebar_for="nav") }}
+       {% call sidebar(id="nav", aria_label="Main") %}
+         <div data-slot="sidebar-body" class="flex-1 overflow-y-auto px-2 py-2">
+           {{ sidebar_item("Dashboard", href="/", current=true) }}
+           {{ sidebar_item("Settings", href="/settings") }}
+         </div>
+       {% endcall %}
+       <main data-slot="sidebar-content" class="min-w-0 flex-1">…</main>
+     {% endcall %} #}
+
+{% macro sidebar_layout(extra_class="") %}
+<div data-slot="sidebar-layout"
+     class="relative grid w-full grid-cols-1 [--sidebar-h:100svh] [min-height:var(--sidebar-h)] sm:grid-cols-[minmax(var(--sidebar-w,16rem),20rem)_minmax(0,1fr)] {{ extra_class }}">
+  {{ caller() }}
+</div>
+{% endmacro %}
+
+{% macro sidebar_trigger(sidebar_for, label="Menu", extra_class="") %}
+<a href="#{{ sidebar_for }}"
+   data-slot="sidebar-trigger"
+   data-sidebar-open="{{ sidebar_for }}"
+   aria-label="Open {{ label }}"
+   aria-controls="{{ sidebar_for }}"
+   class="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:hidden {{ extra_class }}">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+    <line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="18" y2="18" />
+  </svg>
+  {{ label }}
+</a>
+{% endmacro %}
+
+{% macro sidebar_scrim(sidebar_for, extra_class="") %}
+<a href="#"
+   data-slot="sidebar-scrim"
+   data-sidebar-scrim-for="{{ sidebar_for }}"
+   aria-label="Close navigation"
+   tabindex="-1"
+   class="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm sm:hidden {{ extra_class }}"></a>
+{% endmacro %}
+
+{% macro sidebar(id, aria_label=none, aria_labelledby=none, extra_class="") %}
+<nav id="{{ id }}"
+     data-slot="sidebar"
+     tabindex="-1"
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     class="flex h-[var(--sidebar-h,100svh)] flex-col gap-2 border-r bg-card text-card-foreground max-sm:absolute max-sm:inset-y-0 max-sm:left-0 max-sm:z-50 max-sm:h-full max-sm:w-72 max-sm:max-w-[85vw] max-sm:shadow-lg sm:sticky sm:top-0 {{ extra_class }}">
+  {{ caller() }}
+</nav>
+{% endmacro %}
+
+{% macro sidebar_close(extra_class="") %}
+<a href="#"
+   data-slot="sidebar-close"
+   aria-label="Close navigation"
+   class="absolute top-3 right-3 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:hidden {{ extra_class }}">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+  </svg>
+</a>
+{% endmacro %}
+
+{% macro sidebar_group_label(text, id=none, extra_class="") %}
+<div {% if id %}id="{{ id }}"{% endif %} data-slot="sidebar-group-label"
+     class="px-3 py-1.5 text-xs font-medium tracking-wider text-muted-foreground uppercase {{ extra_class }}">{{ text }}</div>
+{% endmacro %}
+
+{% macro sidebar_item(label, href, current=false, extra_class="") %}
+<a href="{{ href }}"
+   data-slot="sidebar-item"
+   {%- if current %} aria-current="page"{% endif %}
+   class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground aria-[current=page]:hover:bg-primary {{ extra_class }}">{{ label }}</a>
+{% endmacro %}

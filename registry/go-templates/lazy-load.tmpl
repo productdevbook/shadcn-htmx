@@ -1,0 +1,33 @@
+{{/* Lazy Load template — shadcn-htmx, htmx v4 + Tailwind v4.
+     Mirrors registry/ui/lazy-load.tsx.
+
+     A deferred-content container. It renders a placeholder immediately, then
+     fetches its own contents after the page paints (hx-get + hx-trigger="load")
+     and swaps them in. Reserve sets min-height so the swap does not shift the
+     page (CLS). Trigger "load" fires on insertion; "revealed" fires on scroll
+     into the page viewport; "intersect" fires once inside an overflow-y:scroll
+     container. Swap "innerHTML" (default) keeps this wrapper; "outerHTML"
+     replaces it. The default hx-swap="innerHTML" keeps the trigger host, so
+     the server response must NOT repeat hx-trigger="load" (infinite loop).
+
+     Sources cited in lazy-load.tsx:
+       repos/htmx/.../patterns/01-loading/03-lazy-load.md
+       repos/htmx/.../reference/01-attributes/{01-hx-get,06-hx-trigger,07-hx-swap}.md
+       repos/mdn/.../web/accessibility/aria/reference/attributes/aria-busy/index.md
+       repos/mdn/.../web/api/intersection_observer_api/index.md
+
+     Usage:
+       {{template "lazy_load" (dict "Src" "/dashboard/sales" "Reserve" "12rem" "AriaLabel" "Loading sales")}}
+       {{template "lazy_load" (dict "Src" "/comments" "Trigger" "revealed" "Reserve" "8rem")}} */}}
+
+{{define "lazy_load"}}
+{{- $trigger := or .Trigger "load" -}}
+{{- $swap := or .Swap "innerHTML" -}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     data-slot="lazy-load" data-trigger="{{$trigger}}"
+     role="status" aria-busy="true" aria-label="{{or .AriaLabel "Loading"}}"
+     {{if .Src}}hx-get="{{.Src}}"{{end}}
+     hx-trigger="{{if eq $trigger "intersect"}}intersect once{{else if eq $trigger "revealed"}}revealed{{else}}load{{end}}" hx-swap="{{$swap}}"
+     {{if .Reserve}}style="min-height:{{.Reserve}}"{{end}}
+     class="flex w-full items-center justify-center text-sm text-muted-foreground {{.Class}}">{{if .Body}}{{htmlSafe .Body}}{{else}}<span class="flex items-center gap-2"><span class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>Loading…</span>{{end}}</div>
+{{end}}

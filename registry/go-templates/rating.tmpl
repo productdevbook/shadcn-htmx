@@ -1,0 +1,55 @@
+{{/*
+  Rating template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/rating.tsx. A star rating built as a single-select
+  radio group: one native <input type="radio"> per star sharing a `name`.
+  The browser handles arrow keys, focus, one-at-a-time, and form submit.
+  Fill + hover preview are pure CSS via reversed DOM order + named peers.
+
+  APG: repos/aria-practices/content/patterns/radio/examples/radio-rating.html
+
+  Args (dict). Plain text/template has no numeric range, so the caller passes
+  the star numbers in REVERSE order (max..1) as .Stars — e.g. for a 5-star
+  control, (intSlice 5 4 3 2 1) or a precomputed []int{5,4,3,2,1}:
+    Name (string, required), Stars ([]int, e.g. {5,4,3,2,1}),
+    Max (int, total — used only for the aria-label text, default 5),
+    Value (int, the checked star), SizeClass (string, default "size-6"),
+    GapClass (string, default "gap-0.5"), Disabled (bool), Required (bool),
+    AriaLabel, AriaLabelledby, AriaDescribedby, Attrs (map).
+
+  Usage:
+    {{template "rating" (dict "Name" "score" "Max" 5 "Stars" .Stars "Value" 3)}}
+*/}}
+
+{{define "rating"}}
+{{- $max := or .Max 5 -}}
+{{- $sz := or .SizeClass "size-6" -}}
+{{- $gap := or .GapClass "gap-0.5" -}}
+{{- $labelBase := "cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50" -}}
+<div role="radiogroup"
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{else}} aria-label="{{or .AriaLabel "Rating"}}"{{end}}
+     {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     {{- if .Disabled}} aria-disabled="true"{{end}}
+     {{- if .Required}} aria-required="true"{{end}}
+     data-slot="rating"
+     class="inline-flex w-fit items-center"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}>
+  <span class="flex flex-row-reverse items-center justify-end {{$gap}}">
+    {{- $root := . -}}
+    {{- range $n := .Stars -}}
+    {{- $id := printf "%s-star-%v" $root.Name $n -}}
+    <input type="radio" id="{{$id}}" name="{{$root.Name}}" value="{{$n}}"
+           {{- if eq $root.Value $n}} checked{{end}}
+           {{- if $root.Disabled}} disabled{{end}}
+           {{- if and $root.Required (eq $n 1)}} required{{end}}
+           data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="{{$id}}" aria-label="{{$n}} {{if eq $n 1}}star{{else}}stars{{end}} out of {{$max}}" class="{{$labelBase}}">
+      <svg class="{{$sz}} shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24"
+           fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+    {{- end -}}
+  </span>
+</div>
+{{end}}

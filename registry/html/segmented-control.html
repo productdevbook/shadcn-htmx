@@ -1,0 +1,54 @@
+<!--
+  shadcn-htmx — raw HTML segmented control snippet.
+
+  Mirrors registry/ui/segmented-control.tsx. A <fieldset> groups native
+  <input type="radio"> options sharing a `name` — the browser handles
+  arrow-key navigation between siblings in the same group, auto-activates on
+  focus, and only one can be :checked at a time. It selects a *value*, not a
+  panel (that is what makes it a radio group, not tabs). Zero JS.
+
+  The visible "pill" is the <label>; the radio is sr-only and acts as the
+  .peer / has() target that promotes the checked label to the raised look.
+
+  Sources: web.dev settings pattern (grouped fieldset + appearance:none
+  inputs styled via :checked) + learn/forms/accessibility; APG radio group.
+
+  TRACK base:
+    group/segmented inline-flex w-fit items-center gap-1 rounded-lg bg-muted
+    p-[3px] text-muted-foreground h-9
+    has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50
+    data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50
+  ITEM (label) base:
+    relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center
+    justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm
+    font-medium whitespace-nowrap text-foreground/60 transition-all select-none
+    hover:text-foreground
+    has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm
+    dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground
+    has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50
+-->
+
+<fieldset data-slot="segmented-control" data-name="view" data-size="default" data-default-value="list"
+          aria-label="View"
+          class="group/segmented inline-flex h-9 w-fit items-center gap-1 rounded-lg bg-muted p-[3px] text-muted-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50">
+  <legend class="sr-only">View</legend>
+
+  <label data-slot="segmented-control-item" data-value="list"
+         class="relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all select-none hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+    <input type="radio" class="peer sr-only" value="list" name="view" id="view-list" checked data-slot="segmented-control-input">
+    <span data-slot="segmented-control-label">List</span>
+  </label>
+
+  <label data-slot="segmented-control-item" data-value="grid"
+         class="relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all select-none hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+    <input type="radio" class="peer sr-only" value="grid" name="view" id="view-grid" data-slot="segmented-control-input">
+    <span data-slot="segmented-control-label">Grid</span>
+  </label>
+
+  <label data-slot="segmented-control-item" data-value="board"
+         class="relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all select-none hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+    <input type="radio" class="peer sr-only" value="board" name="view" id="view-board" disabled data-slot="segmented-control-input">
+    <span data-slot="segmented-control-label">Board</span>
+  </label>
+
+</fieldset>

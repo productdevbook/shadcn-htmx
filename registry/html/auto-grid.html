@@ -1,0 +1,41 @@
+<!--
+  shadcn-htmx — raw HTML Auto Grid snippet.
+  Mirrors registry/ui/auto-grid.tsx.
+
+  A responsive, intrinsically-wrapping grid of equal cells with NO media
+  queries (the RAM pattern: repeat, auto-fit/auto-fill, minmax). Pure CSS;
+  no script. Relies only on theme tokens.
+
+  Tune density with the --auto-grid-min custom property in the inline style.
+  The grid-template-columns utility reads it:
+    repeat(auto-fit,  minmax(min(var(--auto-grid-min), 100%), 1fr))  → collapse empty tracks
+    repeat(auto-fill, minmax(min(var(--auto-grid-min), 100%), 1fr))  → keep empty tracks
+-->
+
+<!-- Default: 16rem minimum per item, gap-4, auto-fit (items stretch) -->
+<div data-slot="auto-grid"
+     style="--auto-grid-min:16rem"
+     class="grid [grid-template-columns:repeat(auto-fit,minmax(min(var(--auto-grid-min,16rem),100%),1fr))] gap-4">
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">Item 1</div>
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">Item 2</div>
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">Item 3</div>
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">Item 4</div>
+</div>
+
+<!-- As a list of cards: <ul> root, <li> children, wider min, larger gap -->
+<ul data-slot="auto-grid"
+    style="--auto-grid-min:20rem"
+    class="grid [grid-template-columns:repeat(auto-fit,minmax(min(var(--auto-grid-min,16rem),100%),1fr))] gap-6">
+  <li class="rounded-lg border bg-card p-4 text-card-foreground">Card A</li>
+  <li class="rounded-lg border bg-card p-4 text-card-foreground">Card B</li>
+  <li class="rounded-lg border bg-card p-4 text-card-foreground">Card C</li>
+</ul>
+
+<!-- auto-fill: empty trailing tracks are kept so a half-empty row stays
+     aligned to the column rhythm instead of stretching -->
+<div data-slot="auto-grid" data-fill="true"
+     style="--auto-grid-min:12rem"
+     class="grid [grid-template-columns:repeat(auto-fill,minmax(min(var(--auto-grid-min,16rem),100%),1fr))] gap-4">
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">One</div>
+  <div class="rounded-lg border bg-card p-4 text-card-foreground">Two</div>
+</div>

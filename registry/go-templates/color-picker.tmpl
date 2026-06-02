@@ -1,0 +1,84 @@
+{{/*
+  Color Picker template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/color-picker.tsx for Go projects using html/template.
+
+  The control is a native <input type="color">: the browser owns the whole
+  picker UI and validates the CSS color value. <input type=color> has no
+  implicit ARIA role, so pass a visible <label for> or AriaLabel. The optional
+  hex <output> is mirrored from the input's value by the shared handler in
+  public/site.js (keyed on data-slot="color-picker"). With NoValue, the
+  component is a bare swatch (zero JS).
+
+  Args (via dict):
+      ID, Name, Value              string  // Value is a CSS <color>, default #000000
+      Required, Disabled, Autofocus bool
+      Form, List, Autocomplete     string
+      Alpha                        bool    // allow editing the alpha channel
+      Colorspace                   string  // "limited-srgb" | "display-p3"
+      NoValue                      bool    // omit the hex readout (bare swatch)
+      AriaLabel, AriaLabelledby    string
+      AriaDescribedby              string
+      AriaInvalid, AriaRequired    string  // "true" | "false"
+      Attrs                        map[string]string // hx-*, data-*, …
+
+      {{template "color-picker" (dict "Name" "brand" "Value" "#e66465" "AriaLabel" "Brand color")}}
+
+  See repos/mdn/files/en-us/web/html/reference/elements/input/color/index.md.
+*/}}
+
+{{define "color-picker"}}
+{{- $showValue := not .NoValue -}}
+{{- $value := or .Value "#000000" -}}
+{{- $swatchBase := "size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.htmx-request]:opacity-70 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-0" -}}
+{{- $valueText := "font-mono text-sm tabular-nums text-muted-foreground uppercase select-none" -}}
+{{- if $showValue -}}
+<span data-slot="color-picker"
+      {{- if .Disabled}} data-disabled="true"{{end}}
+      class="inline-flex items-center gap-2{{if .Disabled}} opacity-50{{end}}"
+      {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+  <input type="color"
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       {{- if .Name}} name="{{.Name}}"{{end}}
+       value="{{$value}}"
+       {{- if .Required}} required{{end}}
+       {{- if .Disabled}} disabled{{end}}
+       {{- if .Autofocus}} autofocus{{end}}
+       {{- if .Form}} form="{{.Form}}"{{end}}
+       {{- if .List}} list="{{.List}}"{{end}}
+       {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+       {{- if .Alpha}} alpha{{end}}
+       {{- if .Colorspace}} colorspace="{{.Colorspace}}"{{end}}
+       {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+       {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+       {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+       {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+       data-slot="color-picker-swatch"
+       class="{{$swatchBase}}">
+  <output data-slot="color-picker-value" aria-hidden="true" class="{{$valueText}}">{{$value}}</output>
+</span>
+{{- else -}}
+<input type="color"
+     {{- if .ID}} id="{{.ID}}"{{end}}
+     {{- if .Name}} name="{{.Name}}"{{end}}
+     value="{{$value}}"
+     {{- if .Required}} required{{end}}
+     {{- if .Disabled}} disabled{{end}}
+     {{- if .Autofocus}} autofocus{{end}}
+     {{- if .Form}} form="{{.Form}}"{{end}}
+     {{- if .List}} list="{{.List}}"{{end}}
+     {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+     {{- if .Alpha}} alpha{{end}}
+     {{- if .Colorspace}} colorspace="{{.Colorspace}}"{{end}}
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+     {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+     data-slot="color-picker"
+     class="{{$swatchBase}}"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+{{- end -}}
+{{end}}

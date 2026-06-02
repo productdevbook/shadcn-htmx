@@ -1,0 +1,80 @@
+{{/* Selectable Table templates — shadcn-htmx, htmx v4 + Tailwind v4.
+     Mirrors registry/ui/selectable-table.tsx EXACTLY (same elements, roles,
+     data-slots, classes — only the templating syntax differs).
+
+     A <form>-wrapped <table> with row checkboxes (name="selected"), a header
+     select-all, a live <output> count, and a contextual bulk-action bar that
+     is revealed PURELY in CSS via :has(:checked) — no JS decides visibility.
+     Bulk-action <button>s sit inside the form, so htmx serialises every
+     checked value on hx-post; hx-target/hx-swap on the form replace it with
+     the re-render. The select-all toggle + running count come from the shared
+     site.js keyed on data-slot="selectable-table" (graceful without it).
+
+     Sources cited in selectable-table.tsx:
+       repos/htmx/.../patterns/03-records/01-bulk-actions.md
+       repos/htmx/.../reference/01-attributes/{02-hx-post,07-hx-swap,08-hx-target,22-hx-confirm}.md
+       repos/mdn/.../web/css/reference/selectors/_colon_has/index.md
+       repos/mdn/.../web/html/reference/elements/output/index.md
+
+     Usage:
+       {{template "selectable_table" (dict "AriaLabel" "Users" "Body" (htmlSafe "..."))}}
+       {{template "bulk_action" (dict "Label" "Activate" "HxPost" "/users/activate")}}
+       {{template "st_select_row" (dict "Value" "ada@db.org" "AriaLabel" "Select Ada")}} */}}
+
+{{/* htmx v4 inheritance is explicit, so the form carries no hx-target/hx-swap —
+     each bulk_action targets the closest form itself (see bulk_action). */}}
+{{define "selectable_table"}}
+<form data-slot="selectable-table"
+  {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+  {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="group/selectable-table w-full space-y-3 {{.Class}}">{{.Body}}</form>
+{{end}}
+
+{{define "st_actions"}}
+<div data-slot="selectable-table-actions"
+  class="hidden items-center gap-2 rounded-md border bg-muted px-3 py-2 group-has-[input[name=selected]:checked]/selectable-table:flex {{.Class}}">
+  {{if .Label}}<span class="mr-1 text-xs font-medium text-muted-foreground">{{.Label}}</span>{{end}}
+  {{.Body}}
+</div>
+{{end}}
+
+{{define "bulk_action"}}
+{{- $base := "inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-medium whitespace-nowrap outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70" -}}
+{{- $variant := or .Variant "default" -}}
+{{- $variantClass := "bg-background text-foreground hover:bg-accent hover:text-accent-foreground" -}}
+{{- if eq $variant "destructive" }}{{ $variantClass = "border-destructive/40 text-destructive hover:bg-destructive/10" }}{{ end -}}
+<button type="{{or .Type "button"}}" data-slot="selectable-table-action"
+  {{if .HxPost}}hx-post="{{.HxPost}}"{{end}}
+  hx-target="{{or .HxTarget "closest [data-slot='selectable-table']"}}" hx-swap="{{or .HxSwap "outerHTML"}}"
+  {{if .Confirm}}hx-confirm="{{.Confirm}}"{{end}}
+  {{if .Disabled}}disabled{{end}}
+  class="{{$base}} {{$variantClass}} {{.Class}}">{{if .Body}}{{.Body}}{{else}}{{.Label}}{{end}}</button>
+{{end}}
+
+{{define "st_content"}}
+<div class="relative w-full overflow-auto rounded-md border {{.WrapperClass}}">
+  <table data-slot="selectable-table-content" class="w-full caption-bottom text-sm {{.Class}}">{{.Body}}</table>
+</div>
+{{end}}
+
+{{define "st_select_all"}}
+{{- $box := "peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30" -}}
+<span class="relative inline-flex size-4 shrink-0 align-middle">
+  <input type="checkbox" {{if .ID}}id="{{.ID}}"{{end}} data-slot="selectable-table-select-all" aria-label="{{or .AriaLabel "Select all rows"}}" class="{{$box}} {{.Class}}">
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</span>
+{{end}}
+
+{{define "st_select_row"}}
+{{- $box := "peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30" -}}
+<span class="relative inline-flex size-4 shrink-0 align-middle">
+  <input type="checkbox" {{if .ID}}id="{{.ID}}"{{end}} name="{{or .Name "selected"}}" value="{{.Value}}" {{if .Checked}}checked{{end}} data-slot="selectable-table-select-row" aria-label="{{if .AriaLabel}}{{.AriaLabel}}{{else}}Select {{.Value}}{{end}}" class="{{$box}} {{.Class}}">
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</span>
+{{end}}
+
+{{define "st_count"}}
+<output data-slot="selectable-table-count" class="block text-sm text-muted-foreground {{.Class}}">{{.Message}}</output>
+{{end}}

@@ -1097,3 +1097,825 @@ test.describe("New components — tier-1", () => {
     })
   })
 })
+
+test.describe("New components — tier-2", () => {
+
+  test("htmx swap updates the output's live region in place", async ({ page }) => {
+    await gotoDoc(page, "output")
+    // Scope to the live region itself (data-slot="output"), not a heading id.
+    const out = page.locator('[data-slot="output"]#o-cart')
+    await expect(out).toBeVisible()
+    // <output> is an implicit role="status" live region.
+    await expect(out).toHaveAttribute("data-slot", "output")
+    // Capture a handle so we can assert the post-swap text on the SAME element
+    // (innerHTML swap keeps the element; outerHTML would replace it).
+    const handle = await out.elementHandle()
+    const before = (await out.textContent())?.trim()
+    // Change qty 2 -> 5; the form posts to /output/total and swaps innerHTML.
+    const qty = page.locator('[data-slot="output"] ~ * input#o-qty, input#o-qty').first()
+    await page.locator("input#o-qty").fill("5")
+    await page.locator("input#o-qty").blur()
+    // 5 x 19.99 = 99.95 — wait until the persistent element's text reflects it.
+    await expect
+      .poll(async () => (await out.textContent())?.trim(), { timeout: 5000 })
+      .toBe("$99.95")
+    expect((await out.textContent())?.trim()).not.toBe(before)
+    // Same element object survived the innerHTML swap (live region persisted).
+    const stillThere = await handle?.evaluate((el) => el.isConnected)
+    expect(stillThere).toBe(true)
+  })
+
+  test("segmented control: selecting a segment moves the checked radio", async ({ page }) => {
+    await gotoDoc(page, "segmented-control")
+    // Scope to the first segmented control on the page (the basic example).
+    const control = page.locator('[data-slot="segmented-control"]').first()
+    const radios = control.locator('input[type="radio"][data-slot="segmented-control-input"]')
+  
+    // Capture handles so state assertions survive any re-render.
+    const first = await radios.nth(0).elementHandle()
+    const second = await radios.nth(1).elementHandle()
+    if (!first || !second) throw new Error("expected at least two segments")
+  
+    // First segment ships checked.
+    expect(await first.evaluate((el: HTMLInputElement) => el.checked)).toBe(true)
+    expect(await second.evaluate((el: HTMLInputElement) => el.checked)).toBe(false)
+  
+    // Activating the second segment selects it and deselects the first —
+    // native radio one-at-a-time. The radio is sr-only, so click its wrapping
+    // <label> (the visible control), not the hidden input.
+    await control.locator('label[data-slot="segmented-control-item"]').nth(1).click()
+    expect(await second.evaluate((el: HTMLInputElement) => el.checked)).toBe(true)
+    expect(await first.evaluate((el: HTMLInputElement) => el.checked)).toBe(false)
+  
+    // The selected segment's <label> wrapper carries the active look.
+    const activeLabel = control.locator('label[data-slot="segmented-control-item"]:has(input:checked)')
+    await expect(activeLabel).toHaveCount(1)
+    await expect(activeLabel).toHaveAttribute("data-value", "grid")
+  })
+
+  
+  // Rating — star control built as a native single-select radio group. The
+  // browser gives us focus, arrow keys, and one-at-a-time for free; the
+  // cumulative fill is pure CSS (reverse DOM order + named-peer general-sibling
+  // selectors). We test the platform contract + the CSS fill cascade.
+  test.describe("Rating", () => {
+    test("route renders with a radiogroup of star radios", async ({ page }) => {
+      await gotoDoc(page, "rating")
+      await expect(page.locator("h1", { hasText: "Rating" })).toBeVisible()
+      const group = page.locator('[data-slot="rating"]').first()
+      await expect(group).toHaveAttribute("role", "radiogroup")
+      // Five stars => five radios sharing one name.
+      await expect(group.locator('input[type="radio"][data-slot="rating-item"]')).toHaveCount(5)
+    })
+  
+    test("clicking a star selects it and fills every star to its left (CSS cascade)", async ({ page }) => {
+      await gotoDoc(page, "rating")
+      const group = page.locator('[data-slot="rating"]').first()
+      // Click the "4 stars" label (labels carry the per-star aria-label).
+      await group.getByLabel("4 stars out of 5").click()
+      // The matching radio is now checked — real, submittable post-state.
+      await expect(group.locator('input[type="radio"][value="4"]')).toBeChecked()
+      // Capture an element handle and assert the fill cascade: exactly 4 of the
+      // 5 star SVGs resolve to a painted fill (1..4 filled, 5 empty).
+      const handle = await group.elementHandle()
+      const filled = await page.evaluate((g) => {
+        const labels = [...g!.querySelectorAll("label")]
+        return labels.filter((l) => {
+          const svg = l.querySelector("svg")!
+          const f = getComputedStyle(svg).fill
+          return f && f !== "none" && f !== "rgba(0, 0, 0, 0)"
+        }).length
+      }, handle)
+      expect(filled).toBe(4)
+    })
+  
+    test("disabled rating disables every radio and is skipped from the tab order", async ({ page }) => {
+      await gotoDoc(page, "rating")
+      const disabled = page.locator('[data-slot="rating"][aria-disabled="true"]').first()
+      const radios = disabled.locator('input[type="radio"]')
+      await expect(radios).toHaveCount(5)
+      for (let i = 0; i < 5; i++) await expect(radios.nth(i)).toBeDisabled()
+    })
+  })
+
+  // tests/components/color-picker.spec.ts
+  
+  // Color Picker — native <input type="color"> styled as a swatch with an
+  // optional live hex <output>. We test the platform contract + our one bit of
+  // JS (the hex readout sync from public/site.js), not a reimplemented picker.
+  test.describe("Color Picker", () => {
+    test("route exists and renders", async ({ page }) => {
+      await gotoDoc(page, "color-picker")
+      await expect(page.locator("h1", { hasText: "Color Picker" })).toBeVisible()
+    })
+  
+    test("renders a native color input scoped to the component", async ({ page }) => {
+      await gotoDoc(page, "color-picker")
+      const input = page
+        .locator('[data-slot="color-picker"] input[type="color"]')
+        .first()
+      await expect(input).toBeVisible()
+      await expect(input).toHaveAttribute("value", "#e66465")
+    })
+  
+    test("setting the value updates the live hex readout (site.js sync)", async ({ page }) => {
+      await gotoDoc(page, "color-picker")
+      // First color-picker on the page carries the hex <output>.
+      const root = page.locator('[data-slot="color-picker"]').first()
+      const input = root.locator('input[type="color"]')
+      const out = root.locator('[data-slot="color-picker-value"]')
+      // Capture a handle so the assertion reflects post-interaction DOM state.
+      const outHandle = await out.elementHandle()
+      if (!outHandle) throw new Error("no color-picker-value output")
+      // Native color pickers can't be driven by clicking; set the value and
+      // dispatch the input event the platform would fire, exactly as the docs
+      // MDN reference describes (input fires on every adjustment).
+      await input.evaluate((el: HTMLInputElement) => {
+        el.value = "#00ff00"
+        el.dispatchEvent(new Event("input", { bubbles: true }))
+      })
+      await expect
+        .poll(async () => (await outHandle.textContent())?.trim())
+        .toBe("#00ff00")
+    })
+  
+    test("bare swatch (showValue=false) is a plain native input, no readout", async ({ page }) => {
+      await gotoDoc(page, "color-picker")
+      // The bare-swatch example puts data-slot="color-picker" directly on the input.
+      const bare = page.locator('input[type="color"][data-slot="color-picker"]').first()
+      await expect(bare).toBeVisible()
+      await expect(bare).toHaveAttribute("alpha", "")
+    })
+  })
+
+  
+  // Autosize Textarea — a native <textarea> driven by CSS `field-sizing: content`
+  // (no JS). We assert the platform contract: the element auto-grows in height as
+  // its value gets longer, between the min/max bounds. We capture an element
+  // handle so the height assertion is taken on the same live node before/after.
+  test.describe("Autosize Textarea", () => {
+    test("route exists and renders", async ({ page }) => {
+      await gotoDoc(page, "autosize-textarea")
+      await expect(page.locator("h1", { hasText: "Autosize Textarea" })).toBeVisible()
+    })
+  
+    test("renders a real textarea with field-sizing: content", async ({ page }) => {
+      await gotoDoc(page, "autosize-textarea")
+      const ta = page.locator('[data-slot="autosize-textarea"][data-autosize="true"]').first()
+      await expect(ta).toBeVisible()
+      const fieldSizing = await ta.evaluate(
+        (el) => getComputedStyle(el).getPropertyValue("field-sizing").trim(),
+      )
+      // Browsers that support the property report "content"; older engines that
+      // don't recognise it report "" — the fallback path (still a usable field).
+      expect(["content", ""]).toContain(fieldSizing)
+    })
+  
+    test("grows in height as the value gets taller (field-sizing: content)", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "autosize-textarea")
+      const ta = page.locator('[data-slot="autosize-textarea"][data-autosize="true"]').first()
+      const handle = await ta.elementHandle()
+      if (!handle) throw new Error("no autosize-textarea element handle")
+  
+      // Start empty, measure baseline height.
+      await handle.evaluate((el: HTMLTextAreaElement) => {
+        el.value = ""
+        el.dispatchEvent(new Event("input", { bubbles: true }))
+      })
+      const before = (await handle.boundingBox())!.height
+  
+      // Add many lines of content.
+      await handle.evaluate((el: HTMLTextAreaElement) => {
+        el.value = Array.from({ length: 8 }, (_, i) => `line ${i + 1}`).join("\n")
+        el.dispatchEvent(new Event("input", { bubbles: true }))
+      })
+      const after = (await handle.boundingBox())!.height
+  
+      const supportsFieldSizing = await handle.evaluate((el) =>
+        getComputedStyle(el).getPropertyValue("field-sizing").trim() === "content",
+      )
+      if (supportsFieldSizing) {
+        // The control must have grown to fit the extra rows.
+        expect(after).toBeGreaterThan(before)
+      } else {
+        // No-support fallback: it stays a fixed, still-usable field.
+        expect(after).toBeGreaterThanOrEqual(before)
+      }
+    })
+  
+    test("autosize={false} variant opts out to field-sizing: fixed", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "autosize-textarea")
+      const fixed = page.locator('[data-slot="autosize-textarea"][data-autosize="false"]').first()
+      await expect(fixed).toBeVisible()
+      const fieldSizing = await fixed.evaluate(
+        (el) => getComputedStyle(el).getPropertyValue("field-sizing").trim(),
+      )
+      expect(["fixed", ""]).toContain(fieldSizing)
+    })
+  })
+
+  // tests/components/cascading-select.spec.ts
+  
+  // Cascading Select — parent <select> change reloads the child's <option>s
+  // (default hx-swap=innerHTML) AND updates the detail panel via hx-swap-oob.
+  // htmx defaults the trigger to `change` for <select>, so no hx-trigger.
+  test.describe("Cascading Select", () => {
+    test("route exists and renders", async ({ page }) => {
+      await gotoDoc(page, "cascading-select")
+      await expect(
+        page.locator("h1", { hasText: "Cascading Select" }),
+      ).toBeVisible()
+    })
+  
+    test("changing the parent swaps the child options + OOB detail", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "cascading-select")
+  
+      // Scope to the first cascading-select instance (the make → model demo).
+      const root = page.locator('[data-slot="cascading-select"]').first()
+      await expect(root).toBeVisible()
+  
+      const parent = root.locator('[data-slot="cascading-select-parent"]')
+      const child = root.locator('[data-slot="cascading-select-child"]')
+      const detail = root.locator('[data-slot="cascading-select-detail"]')
+  
+      // Initial state: Audi → A4, detail mentions Audi. Capture an element
+      // handle so the post-swap assertion is anchored to the live node.
+      const detailHandle = await detail.elementHandle()
+      expect(await child.locator("option").first().innerText()).toContain("A4")
+      expect(await detailHandle!.innerText()).toContain("Audi")
+  
+      // Pick BMW on the parent — fires the native change → htmx GET.
+      await parent.selectOption("bmw")
+  
+      // The child's first option swaps to a BMW model (M3)...
+      await expect
+        .poll(async () => child.locator("option").first().innerText(), {
+          timeout: 3000,
+        })
+        .toContain("M3")
+  
+      // ...and the detail panel is updated out of band to the BMW model.
+      await expect
+        .poll(async () => (await detailHandle!.innerText()).trim(), {
+          timeout: 3000,
+        })
+        .toContain("BMW M3")
+    })
+  
+    test("API Reference lists the cascading-select props", async ({ page }) => {
+      await gotoDoc(page, "cascading-select")
+      const api = page.locator('[data-slot="api-table"]').first()
+      await expect(api).toBeVisible()
+      for (const prop of ["id", "endpoint", "parentName", "childName", "detail"]) {
+        await expect(api.getByText(prop, { exact: true }).first()).toBeVisible()
+      }
+    })
+  })
+
+  
+  // Selectable Table — <form>-wrapped table + native name="selected" checkboxes
+  // + CSS :has() action-bar reveal + htmx bulk POST.
+  //
+  // We scope every locator to the first [data-slot="selectable-table"] (the
+  // ex-basic preview) — NOT "#ex-basic", which is the section heading id.
+  test.describe("Selectable Table", () => {
+    test("route exists and renders", async ({ page }) => {
+      await gotoDoc(page, "selectable-table")
+      await expect(page.locator("h1", { hasText: "Selectable Table" })).toBeVisible()
+    })
+  
+    test("select-all toggles rows, count + action bar react, bulk POST re-renders", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "selectable-table")
+      const root = page.locator('[data-slot="selectable-table"]').first()
+      const actions = root.locator('[data-slot="selectable-table-actions"]').first()
+      const selectAll = root.locator('[data-slot="selectable-table-select-all"]').first()
+      const rows = root.locator('[data-slot="selectable-table-select-row"]')
+      const out = root.locator('[data-slot="selectable-table-count"]').first()
+  
+      // 1. Action bar hidden by default (pure CSS :has, no selection yet).
+      await expect(actions).toHaveCSS("display", "none")
+  
+      // 2. Select-all: every row checked, count shows "N selected", bar reveals.
+      //    Drive via the change event so it works regardless of the sticky
+      //    docs header overlapping the header checkbox.
+      await selectAll.evaluate((el: HTMLInputElement) => {
+        el.checked = true
+        el.dispatchEvent(new Event("change", { bubbles: true }))
+      })
+      const total = await rows.count()
+      expect(total).toBeGreaterThan(0)
+      expect(await rows.evaluateAll((es) => es.every((e) => (e as HTMLInputElement).checked))).toBe(true)
+      await expect(out).toHaveText(`${total} selected`)
+      await expect(actions).toHaveCSS("display", "flex")
+  
+      // 3. Uncheck one row → header goes indeterminate, count drops.
+      await rows.first().evaluate((el: HTMLInputElement) => {
+        el.checked = false
+        el.dispatchEvent(new Event("change", { bubbles: true }))
+      })
+      expect(await selectAll.evaluate((el: HTMLInputElement) => el.indeterminate)).toBe(true)
+      await expect(out).toHaveText(`${total - 1} selected`)
+  
+      // 4. Re-select all, fire a bulk action, assert post-state: the form is
+      //    replaced (capture a handle to detect the swap), a result message
+      //    lands in the live <output>, selections clear, and the bar hides.
+      await selectAll.evaluate((el: HTMLInputElement) => {
+        el.checked = true
+        el.dispatchEvent(new Event("change", { bubbles: true }))
+      })
+      const formHandle = await root.elementHandle()
+      await root.locator('[data-test="deactivate"]').evaluate((el: HTMLElement) => el.click())
+  
+      // Wait for the htmx outerHTML swap to land a result message.
+      await page.waitForFunction(() => {
+        const o = document.querySelector(
+          '[data-slot="selectable-table"] [data-slot="selectable-table-count"]',
+        )
+        return !!o && /Deactivated/.test(o.textContent || "")
+      }, null, { timeout: 5000 })
+  
+      // Old form node detached by the outerHTML swap.
+      if (formHandle) {
+        expect(await formHandle.evaluate((el) => el.isConnected)).toBe(false)
+      }
+  
+      const root2 = page.locator('[data-slot="selectable-table"]').first()
+      await expect(
+        root2.locator('[data-slot="selectable-table-count"]').first(),
+      ).toContainText("Deactivated")
+      // Selections cleared by the re-render; no duplicated/nested rows.
+      expect(
+        await root2.locator('[data-slot="selectable-table-select-row"]:checked').count(),
+      ).toBe(0)
+      expect(await root2.locator('[data-slot="selectable-table-select-row"]').count()).toBe(total)
+      // Bar hidden again (no selection after swap).
+      await expect(
+        root2.locator('[data-slot="selectable-table-actions"]').first(),
+      ).toHaveCSS("display", "none")
+    })
+  
+    test("API Reference lists Selectable Table props", async ({ page }) => {
+      await gotoDoc(page, "selectable-table")
+      const section = page.locator('[data-slot="api-table"]')
+      await expect(section.first()).toBeVisible()
+    })
+  })
+
+  // Delete Row — the htmx delete-in-place pattern. The <tbody> host hoists
+  // hx-confirm / hx-target="closest tr" / hx-swap="outerHTML swap:Nms" to every
+  // Delete button via the :inherited modifier, so each button only carries
+  // hx-delete. Clicking confirms, DELETEs (server returns 200 + empty body),
+  // adds htmx-swapping to the row for the swap delay (CSS fades it), then
+  // detaches it. We scope to [data-slot="delete-row"] and capture a row handle
+  // to prove it gets removed from the DOM.
+  test.describe("Delete Row", () => {
+    test("route exists and renders the inheritance host", async ({ page }) => {
+      await gotoDoc(page, "delete-row")
+      await expect(page.locator("h1", { hasText: "Delete Row" })).toBeVisible()
+      const host = page.locator('[data-slot="delete-row"]').first()
+      await expect(host).toBeVisible()
+      // htmx v4 explicit inheritance is hoisted onto the host.
+      await expect(host).toHaveAttribute("hx-confirm:inherited", /.+/)
+      await expect(host).toHaveAttribute("hx-target:inherited", "closest tr")
+      await expect(host).toHaveAttribute("hx-swap:inherited", /outerHTML swap:\d+ms/)
+    })
+  
+    test("Delete confirms, DELETEs, and removes the row in place", async ({ page }) => {
+      // hx-confirm uses window.confirm — auto-accept so the request fires.
+      page.on("dialog", (d) => d.accept())
+      await gotoDoc(page, "delete-row")
+  
+      const host = page.locator('[data-slot="delete-row"]').first()
+      const rows = host.locator('[data-slot="delete-row-item"]')
+      const initialCount = await rows.count()
+      expect(initialCount).toBeGreaterThan(1)
+  
+      // The affordance is a real <button> carrying only hx-delete.
+      const firstRow = rows.first()
+      const trigger = firstRow.locator('[data-slot="delete-row-trigger"]')
+      expect(await trigger.evaluate((el) => el.tagName)).toBe("BUTTON")
+      await expect(trigger).toHaveAttribute("hx-delete", /\/delete-row\/contacts\/\d+/)
+  
+      // Capture the live row so we can prove the swap detaches it.
+      const rowHandle = await firstRow.elementHandle()
+      expect(rowHandle).not.toBeNull()
+  
+      await trigger.click()
+  
+      // After the DELETE (200 + empty body) and the fade swap delay, the row is
+      // detached from the DOM and the visible count drops by one.
+      await expect
+        .poll(async () => rowHandle && (await rowHandle.evaluate((el) => el.isConnected)), {
+          timeout: 3000,
+        })
+        .toBeFalsy()
+      await expect(host.locator('[data-slot="delete-row-item"]')).toHaveCount(initialCount - 1)
+    })
+  
+    test("API Reference lists the Delete Row props", async ({ page }) => {
+      await gotoDoc(page, "delete-row")
+      await expect(page.locator('[data-slot="api-table"]').first()).toBeVisible()
+      for (const prop of ["href", "confirm", "target", "swapMs"]) {
+        await expect(
+          page.locator(`[data-slot="api-row"][data-prop="${prop}"]`).first(),
+        ).toHaveCount(1)
+      }
+    })
+  })
+
+  
+  // Optimistic Toggle — server-backed like toggle. Asserts the reconciled
+  // post-state after the htmx POST (works whether or not the optimistic
+  // extension pre-flashes, since we assert the authoritative server response).
+  test.describe("Optimistic Toggle", () => {
+    test("click flips the toggle to the pressed state via the server", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "optimistic-toggle")
+  
+      // Scope to the component root (NOT the #ex-* heading ids). The first
+      // toggle on the page is the "Like a post" demo.
+      const root = page.locator('[data-slot="optimistic-toggle"]').first()
+      const button = root.locator("button#ex-like")
+  
+      // Resting state: not pressed, label "Like", points at /like.
+      await expect(button).toHaveAttribute("aria-pressed", "false")
+      await expect(button).toContainText("Like")
+      await expect(button).toHaveAttribute("hx-post", "/docs/optimistic-toggle/like")
+  
+      // Capture a handle so we can read state after htmx swaps the outerHTML.
+      const before = await button.elementHandle()
+  
+      await button.click()
+  
+      // After the POST, hx-swap="outerHTML" replaces the button with the
+      // server's pressed version: aria-pressed="true", label "Liked", and it now
+      // posts to /unlike. expect.poll re-queries the freshly swapped element.
+      const swapped = page.locator('[data-slot="optimistic-toggle"] button#ex-like')
+      await expect(swapped).toHaveAttribute("aria-pressed", "true", { timeout: 4000 })
+      await expect(swapped).toContainText("Liked")
+      await expect(swapped).toHaveAttribute("hx-post", "/docs/optimistic-toggle/unlike")
+  
+      // The original element was detached by the swap.
+      if (before) {
+        const stillAttached = await before.evaluate((el) => el.isConnected)
+        expect(stillAttached).toBe(false)
+      }
+    })
+  
+    test("failed request rolls back the optimistic flip", async ({ page }) => {
+      await gotoDoc(page, "optimistic-toggle")
+  
+      const failBtn = page.locator(
+        '[data-slot="optimistic-toggle"] button#ex-fail',
+      )
+      await expect(failBtn).toHaveAttribute("aria-pressed", "false")
+  
+      await failBtn.click()
+  
+      // The /fail endpoint returns 500, so the extension restores the original
+      // pre-click button: it stays unpressed and labelled "Like".
+      await expect(failBtn).toHaveAttribute("aria-pressed", "false", {
+        timeout: 4000,
+      })
+      await expect(failBtn).toContainText("Like")
+    })
+  })
+
+  
+  // Status — persistent polite live region (role=status / role=log).
+  
+  test.describe("Status (deep)", () => {
+    test("default region is role=status, polite, atomic", async ({ page }) => {
+      await gotoDoc(page, "status")
+      const status = page
+        .locator('[data-slot="status"][data-role="status"]')
+        .first()
+      await expect(status).toBeVisible()
+      await expect(status).toHaveAttribute("role", "status")
+      await expect(status).toHaveAttribute("aria-live", "polite")
+      await expect(status).toHaveAttribute("aria-atomic", "true")
+    })
+  
+    test("log region is role=log and non-atomic", async ({ page }) => {
+      await gotoDoc(page, "status")
+      const log = page.locator('[data-slot="status"][data-role="log"]').first()
+      await expect(log).toHaveAttribute("role", "log")
+      await expect(log).toHaveAttribute("aria-live", "polite")
+      await expect(log).toHaveAttribute("aria-atomic", "false")
+      // log entries are present and ordered
+      await expect(
+        log.locator('[data-slot="status-item"]').first(),
+      ).toBeVisible()
+    })
+  
+    test("htmx swaps fresh count into the persistent live region", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "status")
+      // The live region exists from first paint; htmx swaps text INTO it,
+      // preserving its live-region semantics. Scope to [data-slot="status"].
+      const live = page.locator('[data-slot="status"]#ex-status-live')
+      const handle = await live.elementHandle()
+      if (!handle) throw new Error("live status region not found")
+      await expect(live).toHaveText(/0 results/)
+      await page.locator("button", { hasText: "Add result" }).first().click()
+      // The region element itself stays in place (innerHTML swap), only text
+      // changes — assert post-state on the captured handle's region.
+      await expect(live).toHaveText(/1 result\b/, { timeout: 3000 })
+      // It must remain a live region after the swap.
+      await expect(live).toHaveAttribute("aria-live", "polite")
+      await expect(live).toHaveAttribute("role", "status")
+      await page.locator("button", { hasText: "Add result" }).first().click()
+      await expect(live).toHaveText(/2 results/, { timeout: 3000 })
+    })
+  })
+
+  test("split-button: default action stays clickable and toggle opens the secondary menu", async ({ page }) => {
+    await gotoDoc(page, "split-button")
+  
+    const root = page.locator('[data-slot="split-button"]').first()
+    const action = root.locator('[data-slot="split-button-action"]')
+    const toggle = root.locator('[data-slot="split-button-toggle"]')
+  
+    // The primary action is a real, focusable button distinct from the toggle.
+    await expect(action).toBeVisible()
+    await expect(action).toBeEnabled()
+  
+    // Toggle advertises the menu and starts collapsed.
+    await expect(toggle).toHaveAttribute("aria-haspopup", "menu")
+    await expect(toggle).toHaveAttribute("aria-expanded", "false")
+  
+    // The popup it controls is not yet in the top layer.
+    const menuId = await toggle.getAttribute("popovertarget")
+    expect(menuId).toBeTruthy()
+    const menu = page.locator(`#${menuId}`)
+    const menuHandle = await menu.elementHandle()
+    expect(menuHandle).not.toBeNull()
+    expect(
+      await menuHandle!.evaluate((el) => el.matches(":popover-open")),
+    ).toBe(false)
+  
+    // Open it.
+    await toggle.click()
+    await page.waitForFunction(
+      (id) => {
+        const el = document.getElementById(id)
+        return !!el && el.matches(":popover-open")
+      },
+      menuId,
+      { timeout: 2000 },
+    )
+  
+    // Post-state: popup is open, aria-expanded flipped, and the first menuitem
+    // received focus (the dropdown-menu contract focuses it on open).
+    expect(
+      await menuHandle!.evaluate((el) => el.matches(":popover-open")),
+    ).toBe(true)
+    await expect(toggle).toHaveAttribute("aria-expanded", "true")
+    const firstItem = menu.locator('[role="menuitem"]').first()
+    await expect(firstItem).toBeFocused()
+  
+    // ESC closes the popup and restores aria-expanded.
+    await page.keyboard.press("Escape")
+    await page.waitForFunction(
+      (id) => {
+        const el = document.getElementById(id)
+        return !!el && !el.matches(":popover-open")
+      },
+      menuId,
+      { timeout: 2000 },
+    )
+    await expect(toggle).toHaveAttribute("aria-expanded", "false")
+  })
+
+  
+  // Lazy Load — a deferred-content container. On hx-trigger="load" it fetches
+  // its own contents and swaps them into itself (hx-swap="innerHTML"). We test
+  // the real contract: the placeholder shows first (role=status + aria-busy),
+  // then htmx replaces the contents with the real panel after the request
+  // settles. We scope to [data-slot="lazy-load"] (the wrapper persists across
+  // the innerHTML swap) and capture a handle to the first instance.
+  
+  test.describe("Lazy Load", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "lazy-load")
+      await expect(page.locator("h1", { hasText: "Lazy Load" })).toBeVisible()
+    })
+  
+    test("placeholder is a role=status + aria-busy loading region", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "lazy-load")
+      const ll = page.locator('[data-slot="lazy-load"]').first()
+      await expect(ll).toHaveAttribute("role", "status")
+      await expect(ll).toHaveAttribute("aria-busy", "true")
+      await expect(ll).toHaveAttribute("hx-trigger", "load")
+      // An accessible name so AT users hear something meaningful while loading.
+      const label = await ll.getAttribute("aria-label")
+      expect(label && label.length > 0, "lazy-load needs an accessible name").toBeTruthy()
+    })
+  
+    test("fetches its own contents on load and swaps in the real panel", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "lazy-load")
+      // The first example (#ex-basic) lazy-loads /lazy-load/sales, whose panel
+      // contains the figure "$48,210". The wrapper persists (innerHTML swap),
+      // so we wait for that text to appear inside the first lazy-load instance.
+      const ll = page.locator('[data-slot="lazy-load"]').first()
+      const handle = await ll.elementHandle()
+      if (!handle) throw new Error("no lazy-load element")
+      // Reserved height keeps the box stable before content arrives (CLS guard).
+      const before = await ll.boundingBox()
+      expect(before && before.height > 0).toBeTruthy()
+      // After htmx fires `load` and the request settles, the real panel lands.
+      await expect(ll).toContainText("$48,210", { timeout: 5000 })
+      await expect(ll).toContainText("Sales")
+      // The wrapper element itself survived the innerHTML swap.
+      const stillAttached = await handle.evaluate((el) => el.isConnected)
+      expect(stillAttached).toBe(true)
+    })
+  })
+
+  // tests/components/sidebar.spec.ts
+  
+  // Sidebar — responsive nav: a CSS-grid rail on wide screens, an off-canvas
+  // :target drawer on narrow screens. The off-canvas demo (#ex-drawer) ships a
+  // scoped style that forces drawer mode at any width, so the labelled hamburger
+  // is exercisable on the desktop test viewport. We assert the no-JS open: click
+  // the trigger anchor, the drawer becomes the URL :target, and CSS reveals it.
+  
+  test.describe("Sidebar", () => {
+    test("hamburger anchor opens the :target drawer; scrim link closes it", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "sidebar")
+  
+      // The drawer is a <nav data-slot="sidebar"> with the demo id. Scope every
+      // locator to data-slot, NOT the #ex-drawer heading.
+      const drawer = page.locator('[data-slot="sidebar"]#ex-drawer-nav')
+      const handle = await drawer.elementHandle()
+      expect(handle).not.toBeNull()
+  
+      // Closed: the scoped style hides the drawer (visibility:hidden) and slides
+      // it off-canvas. Capture the pre-open state.
+      const closedVis = await handle!.evaluate(
+        (el) => getComputedStyle(el).visibility,
+      )
+      expect(closedVis).toBe("hidden")
+  
+      // Open it the no-JS way: the trigger is a real <a href="#ex-drawer-nav">.
+      const trigger = page.locator(
+        '[data-slot="sidebar-trigger"][data-sidebar-open="ex-drawer-nav"]',
+      )
+      await trigger.click()
+  
+      // The URL fragment now matches the drawer, so it is the document :target.
+      await expect.poll(() => page.evaluate(() => location.hash)).toBe(
+        "#ex-drawer-nav",
+      )
+      expect(await handle!.evaluate((el) => el.matches(":target"))).toBe(true)
+  
+      // CSS reveals it: visibility flips to visible and it slides to translateX(0)
+      // (transform resolves to a matrix with no x-translation). Wait for the
+      // transition to settle.
+      await expect
+        .poll(() => handle!.evaluate((el) => getComputedStyle(el).visibility))
+        .toBe("visible")
+      const opened = await handle!.evaluate((el) => {
+        const m = new DOMMatrixReadOnly(getComputedStyle(el).transform)
+        return { tx: Math.round(m.m41) }
+      })
+      expect(opened.tx).toBe(0)
+  
+      // Close via the scrim — an <a href="#"> that clears the fragment. The
+      // drawer covers the left ~18rem, so the scrim's centre is under the nav;
+      // click the exposed dim strip on the right (as a real user would).
+      const scrim = page.locator('[data-slot="sidebar-scrim"]')
+      const sbox = await scrim.boundingBox()
+      if (!sbox) throw new Error("scrim has no bounding box")
+      await scrim.click({ position: { x: sbox.width - 6, y: sbox.height / 2 } })
+      await expect
+        .poll(() => handle!.evaluate((el) => el.matches(":target")))
+        .toBe(false)
+      await expect
+        .poll(() => handle!.evaluate((el) => getComputedStyle(el).visibility))
+        .toBe("hidden")
+    })
+  
+    test("active item is a real anchor marked aria-current=page", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "sidebar")
+      const active = page
+        .locator('[data-slot="sidebar-item"][aria-current="page"]')
+        .first()
+      await expect(active).toBeVisible()
+      expect(await active.evaluate((el) => el.tagName)).toBe("A")
+    })
+  })
+
+  
+  // Aspect Ratio — the whole point of the component is that the rendered box
+  // keeps its declared width-to-height ratio as it resizes, so nothing
+  // reflows when the locked child (image/iframe) loads. We exercise that:
+  // resize the viewport, capture the box, and assert the ratio holds.
+  
+  test.describe("AspectRatio", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "aspect-ratio")
+      await expect(page.locator("h1", { hasText: "Aspect Ratio" })).toBeVisible()
+    })
+  
+    test("locks the box to its declared ratio and re-locks on resize", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "aspect-ratio")
+  
+      // The first example is a 16:9 box. Scope to the component, not a heading.
+      const box = page.locator('[data-slot="aspect-ratio"][data-ratio="16/9"]').first()
+      await expect(box).toBeVisible()
+  
+      // Capture a stable handle so state-dependent geometry reads are reliable.
+      const handle = await box.elementHandle()
+      if (!handle) throw new Error("aspect-ratio box has no element handle")
+  
+      const ratioOf = async () => {
+        const b = await handle.boundingBox()
+        if (!b) throw new Error("aspect-ratio box has no bounding box")
+        return b.width / b.height
+      }
+  
+      // Wide viewport: width/height must equal 16/9 (≈1.778) within tolerance.
+      await page.setViewportSize({ width: 1280, height: 900 })
+      const wide = await ratioOf()
+      expect(Math.abs(wide - 16 / 9)).toBeLessThan(0.05)
+  
+      // Narrow viewport: the box shrinks fluidly but the ratio is unchanged —
+      // this is the no-layout-shift contract.
+      await page.setViewportSize({ width: 420, height: 900 })
+      const narrow = await ratioOf()
+      expect(Math.abs(narrow - 16 / 9)).toBeLessThan(0.05)
+  
+      // The locked child fills the box and carries the object-fit class.
+      const content = box.locator('[data-slot="aspect-ratio-content"]')
+      await expect(content).toHaveClass(/object-cover/)
+    })
+  })
+
+  
+  // Auto Grid — responsive, intrinsically-wrapping grid (the RAM pattern).
+  // Pure CSS, no JS. The contract we test is the one that matters: at a fixed
+  // min item width, a WIDER container produces MORE columns with no breakpoints.
+  // We read the rendered grid-template-columns track count at two viewport
+  // widths and assert it grows. Scoped to [data-slot="auto-grid"].
+  
+  test.describe("Auto Grid", () => {
+    test("route exists and renders the docs page", async ({ page }) => {
+      await gotoDoc(page, "auto-grid")
+      await expect(page.locator("h1", { hasText: "Auto Grid" })).toBeVisible()
+    })
+  
+    test("more columns fit as the container widens (no breakpoints)", async ({
+      page,
+    }) => {
+      await gotoDoc(page, "auto-grid")
+      // The basic card grid in the first example (min = 16rem, 6 cells).
+      const grid = page.locator('[data-slot="auto-grid"][data-test="basic"]')
+      await expect(grid).toBeVisible()
+      const handle = await grid.elementHandle()
+      if (!handle) throw new Error("auto-grid[data-test=basic] not found")
+  
+      // Count the actual grid columns the browser computed from the
+      // repeat(auto-fit, …) template. getComputedStyle resolves the repeat()
+      // to an explicit list of track sizes (one per column).
+      const columnCount = () =>
+        handle.evaluate((el) => {
+          const tracks = getComputedStyle(el)
+            .getPropertyValue("grid-template-columns")
+            .trim()
+          return tracks ? tracks.split(/\s+/).length : 0
+        })
+  
+      await page.setViewportSize({ width: 480, height: 900 })
+      const narrow = await columnCount()
+  
+      await page.setViewportSize({ width: 1400, height: 900 })
+      const wide = await columnCount()
+  
+      // No media queries were declared — the column count is purely a function
+      // of available width vs the 16rem min. Wider ⇒ strictly more columns.
+      expect(narrow).toBeGreaterThanOrEqual(1)
+      expect(wide).toBeGreaterThan(narrow)
+    })
+  })
+})

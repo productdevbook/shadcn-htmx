@@ -1,0 +1,80 @@
+{# Color Picker macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/color-picker.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   The control is a native <input type="color"> — the browser owns the whole
+   picker UI and validates the CSS color value. <input type=color> has no
+   implicit ARIA role, so pass a visible <label for> or aria_label. The optional
+   hex <output> is mirrored from the input's value by the shared handler in
+   public/site.js (keyed on data-slot="color-picker"). With show_value=false the
+   component is a bare swatch (zero JS).
+
+   Usage:
+       {% from "components/color-picker.html" import color_picker %}
+       {{ color_picker(name="brand", value="#e66465", aria_label="Brand color") }}
+       {{ color_picker(name="bg", value="#1d4ed8", show_value=false) }}
+
+   See repos/mdn/files/en-us/web/html/reference/elements/input/color/index.md. #}
+
+{% macro color_picker(
+    id=none,
+    name=none,
+    value="#000000",
+    required=false,
+    disabled=false,
+    autofocus=false,
+    form=none,
+    list=none,
+    autocomplete=none,
+    alpha=false,
+    colorspace=none,
+    show_value=true,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    aria_invalid=none,
+    aria_required=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set swatch_base -%}
+size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.htmx-request]:opacity-70 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-0
+{%- endset -%}
+{%- set value_text -%}
+font-mono text-sm tabular-nums text-muted-foreground uppercase select-none
+{%- endset -%}
+{%- macro swatch(slot) -%}
+<input type="color"
+       {%- if id %} id="{{ id }}"{% endif %}
+       {%- if name %} name="{{ name }}"{% endif %}
+       value="{{ value }}"
+       {%- if required %} required{% endif %}
+       {%- if disabled %} disabled{% endif %}
+       {%- if autofocus %} autofocus{% endif %}
+       {%- if form %} form="{{ form }}"{% endif %}
+       {%- if list %} list="{{ list }}"{% endif %}
+       {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}
+       {%- if alpha %} alpha{% endif %}
+       {%- if colorspace %} colorspace="{{ colorspace }}"{% endif %}
+       {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+       {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+       {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+       {%- if aria_invalid is not none %} aria-invalid="{{ aria_invalid|string|lower }}"{% endif %}
+       {%- if aria_required is not none %} aria-required="{{ aria_required|string|lower }}"{% endif %}
+       data-slot="{{ slot }}"
+       class="{{ swatch_base }}{% if not show_value %} {{ extra_class }}{% endif %}"
+       {%- if not show_value %}{% for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor %}{% endif -%}
+>
+{%- endmacro -%}
+{%- if show_value -%}
+<span data-slot="color-picker"
+      {%- if disabled %} data-disabled="true"{% endif %}
+      class="inline-flex items-center gap-2{% if disabled %} opacity-50{% endif %} {{ extra_class }}"
+      {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+  {{ swatch("color-picker-swatch") }}
+  <output data-slot="color-picker-value" aria-hidden="true" class="{{ value_text }}">{{ value }}</output>
+</span>
+{%- else -%}
+{{ swatch("color-picker") }}
+{%- endif -%}
+{% endmacro %}

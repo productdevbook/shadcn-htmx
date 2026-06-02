@@ -1803,4 +1803,222 @@
     })()
   })();
 
+
+  // ===== New components (tier-2) =====
+
+  ;(function () {
+    // none — <output>'s implicit role="status" is the live region; htmx swaps are announced natively. No site.js.
+  })();
+
+  ;(function () {
+    // ─── Color Picker (registry/ui/color-picker.tsx) ──────────────────────
+    //
+    // The swatch is a real <input type="color">, so the platform owns the whole
+    // picker UI and validation — zero JS there. The OPTIONAL hex readout
+    // (showValue, default) is the only thing that needs syncing: mirror the
+    // input's value into the sibling <output data-slot="color-picker-value">.
+    // Native <input type=color> fires `input` continuously while the user adjusts
+    // and `change` on dismiss; we listen on `input` (bubbles) so the readout
+    // tracks live. The <output> is aria-hidden — the input stays the source of
+    // truth for forms + assistive tech. Bare swatches (showValue={false}) have no
+    // readout and are unaffected.
+    document.addEventListener("input", function (e) {
+      var input = e.target
+      if (
+        !input ||
+        !input.matches ||
+        !input.matches(
+          '[data-slot="color-picker"] input[type="color"], input[data-slot="color-picker-swatch"]',
+        )
+      )
+        return
+      var root = input.closest('[data-slot="color-picker"]')
+      if (!root) return
+      var out = root.querySelector('[data-slot="color-picker-value"]')
+      if (out) out.textContent = input.value
+    })
+  })();
+
+  ;(function () {
+    // None. This component needs zero JavaScript: the grow/shrink behaviour is
+    // delivered entirely by the CSS `field-sizing: content` declaration (Tailwind
+    // utility `field-sizing-content`). There is no shared keyboard/behaviour
+    // contract to wire up, so do NOT add anything to public/site.js for it.
+    // Where field-sizing is unsupported the rule is ignored and the textarea
+    // renders as an ordinary fixed-height field (progressive enhancement).
+  })();
+
+  ;(function () {
+    // NONE. Cascading Select needs no shared JS.
+    //
+    // The cascade is entirely htmx + native semantics:
+    //   - htmx defaults the trigger to `change` for <select>, so picking the
+    //     parent fires the request with no hx-trigger
+    //     (repos/htmx/.../reference/01-attributes/06-hx-trigger.md Defaults table).
+    //   - The default hx-swap="innerHTML" replaces the child select's <option>s.
+    //   - A second response fragment carrying hx-swap-oob="true" updates the
+    //     detail panel by id, out of band
+    //     (repos/htmx/.../reference/01-attributes/13-hx-swap-oob.md).
+    //   - hx-include pins the parent value to the request.
+    // Do NOT add anything to public/site.js for this component.
+  })();
+
+  ;(function () {
+    // Selectable Table (registry/ui/selectable-table.tsx).
+      //
+      // The action-bar visibility and selected-row highlight are PURE CSS
+      // (:has(input[name=selected]:checked)) — no JS there. This handler only
+      // covers what CSS can't express: the header "select all" toggle, keeping
+      // that header box in sync (checked / unchecked / indeterminate) as rows
+      // change, and writing the running selection count into the <output>.
+      // Everything is delegated off `document`, so it survives the htmx swaps
+      // that replace the whole form on a bulk action. The table still works
+      // without this script: every checkbox toggles + submits natively; you only
+      // lose the convenience toggle and the running count.
+      (function () {
+        function rowBoxes(form) {
+          return [].slice.call(
+            form.querySelectorAll('input[name="selected"][data-slot="selectable-table-select-row"]'),
+          )
+        }
+    
+        // Recompute the header box state + the count <output> for one form.
+        function sync(form) {
+          var boxes = rowBoxes(form)
+          var checked = boxes.filter(function (b) { return b.checked }).length
+          var all = form.querySelector('[data-slot="selectable-table-select-all"]')
+          if (all) {
+            all.checked = boxes.length > 0 && checked === boxes.length
+            all.indeterminate = checked > 0 && checked < boxes.length
+          }
+          var out = form.querySelector('[data-slot="selectable-table-count"]')
+          // Don't clobber a server-rendered result message (a fresh swap that
+          // carries one marks it with data-st-msg="1").
+          if (out && out.getAttribute('data-st-msg') !== '1') {
+            out.textContent = checked === 0 ? '' : checked + ' selected'
+          }
+        }
+    
+        // change events bubble — catch them at document so swapped-in forms work.
+        document.addEventListener('change', function (e) {
+          var t = e.target
+          if (!t || !t.closest) return
+          var form = t.closest('[data-slot="selectable-table"]')
+          if (!form) return
+    
+          // Header "select all" → set every row box to the header's state. We set
+          // .checked directly (no per-row change dispatch): the CSS :has() reveal
+          // and the row highlight react to the property, and re-dispatching would
+          // re-enter this handler mid-loop and fight the running sync.
+          if (t.getAttribute('data-slot') === 'selectable-table-select-all') {
+            var want = t.checked
+            rowBoxes(form).forEach(function (b) {
+              if (!b.disabled) b.checked = want
+            })
+          }
+          sync(form)
+        })
+    
+        // Initialise every form on first paint and after each htmx swap.
+        function init(root) {
+          var scope = root && root.querySelectorAll ? root : document
+          var forms = []
+          if (scope.matches && scope.matches('[data-slot="selectable-table"]')) forms.push(scope)
+          ;[].push.apply(forms, [].slice.call(scope.querySelectorAll('[data-slot="selectable-table"]')))
+          forms.forEach(sync)
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () { init(document) })
+        } else {
+          init(document)
+        }
+        document.body && document.body.addEventListener('htmx:afterSwap', function (e) {
+          init(e.target)
+        })
+      })()
+  })();
+
+  ;(function () {
+    // No site.js needed. The behaviour is fully provided by:
+    //   1. A real <button> + aria-pressed (platform: role=button, Space/Enter
+    //      activation, focus — nothing to wire up).
+    //   2. The htmx v4 `optimistic` extension, which performs the instant flip,
+    //      reconciliation, and rollback. In htmx 4 there is NO hx-ext attribute:
+    //      load dist/ext/hx-optimistic.js after htmx and it applies page-wide
+    //      (repos/htmx/www/src/content/docs/03-features/10-extensions.md:15).
+    //
+    // The docs route boots the extension for its live previews with a small inline
+    // <script> (app/routes/optimistic-toggle.tsx → OPTIMISTIC_EXT_BOOT) that injects
+    // dist/ext/hx-optimistic.js from the CDN once. If the docs shell ever bundles
+    // the extension globally instead, add this line to public/site.js-adjacent
+    // loading (or the <head>) and drop the per-route boot:
+    //
+    //   <script src="/htmx.min.js" defer></script>
+    //   <script src="https://unpkg.com/htmx.org@4.0.0-beta4/dist/ext/hx-optimistic.js" defer></script>
+    //
+    // Without the extension the toggle still works (it just skips the pre-flash and
+    // waits for the server) — graceful degradation, no JS of our own required.
+  })();
+
+  ;(function () {
+    // Split Button (registry/ui/split-button.tsx).
+      //
+      // The popup of secondary actions carries data-slot="dropdown-menu", so the
+      // existing dropdown-menu keyboard contract above already drives it (open
+      // focuses the first item; ArrowUp/Down, Home/End, type-to-find; clicking an
+      // item closes the popup). The native Popover API gives light dismiss + ESC +
+      // focus restoration to the toggle. The one APG menu-button requirement the
+      // dropdown contract doesn't cover is reflecting open state onto the trigger:
+      //   repos/aria-practices/content/patterns/menu-button/menu-button-pattern.html
+      //   ("When the menu is displayed … aria-expanded is true; when hidden, false")
+      // So here we mirror each popup's open state onto its toggle's aria-expanded.
+      document.querySelectorAll('[data-slot="split-button"]').forEach(function (root) {
+        var toggle = root.querySelector('[data-slot="split-button-toggle"]')
+        if (!toggle) return
+        var menu = document.getElementById(toggle.getAttribute('popovertarget'))
+        if (!menu) return
+        menu.addEventListener('toggle', function (e) {
+          toggle.setAttribute('aria-expanded', e.newState === 'open' ? 'true' : 'false')
+        })
+      })
+  })();
+
+  ;(function () {
+    // Sidebar (registry/ui/sidebar.tsx).
+      //
+      // Open/close is 100% CSS: the hamburger is an <a href="#id">, the scrim/X
+      // are <a href="#">, and the responsive :target rule in input.css slides the
+      // drawer in (the web.dev Sidenav technique). This block is a TINY progressive
+      // enhancement only — keyed on data-slot="sidebar" — and the component works
+      // with it absent:
+      //   - Escape closes the open drawer. We history.back() when there's history
+      //     to pop (so the URL fragment clears the way the back button would),
+      //     otherwise blank the hash. Mirrors web.dev's sidenav/script.js.
+      //   - After the slide settles, move focus INTO the drawer when it opened, or
+      //     back to the toggle when it closed, so keyboard users land somewhere
+      //     sensible (also from the web.dev Sidenav reference).
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return
+        var open = document.querySelector('[data-slot="sidebar"]:target')
+        if (!open) return
+        if (window.history.length > 1) window.history.back()
+        else { try { location.hash = '' } catch (err) {} }
+      })
+      document.querySelectorAll('[data-slot="sidebar"]').forEach(function (nav) {
+        nav.addEventListener('transitionend', function (e) {
+          // Only react to the slide (left); ignore opacity/other transitions.
+          if (e.propertyName !== 'left') return
+          if (location.hash === '#' + nav.id) {
+            // Opened: focus the first focusable inside, falling back to the nav.
+            var first = nav.querySelector('a[href],button,input,[tabindex]:not([tabindex="-1"])')
+            ;(first || nav).focus()
+          } else {
+            // Closed: restore focus to whichever toggle targets this drawer.
+            var opener = document.querySelector('[data-sidebar-open="' + nav.id + '"]')
+            if (opener) opener.focus()
+          }
+        })
+      })
+  })();
+
 })()

@@ -1595,3 +1595,619 @@ export const THEME_TOGGLE_PROPS: ApiRow[] = [
   CLASS_ROW,
   HX_ROW,
 ]
+
+// ---- New components (tier-2) ----
+
+export const OUTPUT_PROPS: ApiRow[] = [
+  {
+    prop: "htmlFor",
+    type: "string",
+    description:
+      "Space-separated list of the ids of the inputs that contributed to the result. Sets the native for attribute.",
+    source: { badge: "MDN", label: "<output for>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output" },
+  },
+  {
+    prop: "form",
+    type: "string",
+    description:
+      "Id of a <form> elsewhere in the document to associate with; overrides the nearest ancestor <form>. The output's value is not submitted.",
+    source: { badge: "MDN", label: "<output form>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output" },
+  },
+  {
+    prop: "name",
+    type: "string",
+    description: "The element's name in the form.elements API.",
+  },
+  {
+    prop: "tone",
+    type: ['"default"', '"muted"', '"primary"', '"destructive"'],
+    default: '"default"',
+    description: "Visual tone of the result chip. Purely cosmetic — the role=\"status\" semantics are identical across tones.",
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description: "The result value / content. With an htmx innerHTML swap, this is the initial content replaced in place.",
+  },
+  {
+    prop: "ariaAtomic",
+    type: "boolean",
+    description: "Override the implicit aria-atomic=\"true\". Leave unset to announce the whole result on every change (the usual choice).",
+    source: { badge: "MDN", label: "status role (aria-atomic)", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role" },
+  },
+  ...COMMON_ARIA,
+  HX_ROW,
+  CLASS_ROW,
+]
+
+export const SEGMENTED_CONTROL_PROPS: ApiRow[] = [
+  { prop: "name", type: "string", required: true, description: "Shared name attribute. Every SegmentedControlItem reuses it so the browser groups the radios." },
+  { prop: "defaultValue", type: "string", description: "Value of the segment that starts selected. Match it to one item's value (or set checked on that item)." },
+  { prop: "size", type: ['"default"', '"sm"'], default: '"default"', description: "Track height + text size. Use sm for toolbars." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable the whole control. Renders a disabled <fieldset>, which natively disables every radio inside." },
+  { prop: "value", type: "string", required: true, description: "On SegmentedControlItem: the value submitted when that segment is selected and matched against defaultValue." },
+  { prop: "checked", type: "boolean", description: "On SegmentedControlItem: pre-select this segment." },
+  { prop: "required", type: "boolean", description: "On SegmentedControlItem: native required, making the whole name-group required." },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const RATING_PROPS: ApiRow[] = [
+  { prop: "name", type: "string", required: true, description: "Form field name shared by every star radio. Groups them so the browser allows one selection, and is the key submitted with the chosen value." },
+  { prop: "max", type: "number", default: "5", description: "Number of stars to render." },
+  { prop: "value", type: "number", description: "Pre-selected rating (1..max). Renders the matching radio checked." },
+  { prop: "size", type: ['"sm"', '"default"', '"lg"'], default: '"default"', description: "Star dimensions." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable the whole control. Sets the disabled attribute on every radio, so the group is skipped from the tab order and not submitted.", source: { badge: "MDN", label: "input disabled", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled" } },
+  { prop: "required", type: "boolean", default: "false", description: "Require a selection for native form validation. Applied to the first star radio; the browser treats any required radio in a name-group as making the whole group required.", source: { badge: "MDN", label: "<input type=\"radio\"> required", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio" } },
+  { prop: "label", type: "(n: number, max: number) => string", default: "n of max stars", description: "Builds each star's accessible name (the aria-label on the per-star label)." },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// Append to app/data/api-rows.ts (references existing CLASS_ROW / HX_ROW / COMMON_ARIA partials).
+export const COLOR_PICKER_PROPS: ApiRow[] = [
+  {
+    prop: "value",
+    type: "string",
+    default: '"#000000"',
+    description:
+      "A CSS <color> value. The browser coerces invalid input to a valid color and defaults to #000000 when omitted or unparseable.",
+    source: { badge: "MDN", label: "color input value", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/color#value" },
+  },
+  {
+    prop: "showValue",
+    type: "boolean",
+    default: "true",
+    description:
+      "Render a live hex <output> next to the swatch. false renders a bare native swatch (zero JS).",
+  },
+  {
+    prop: "alpha",
+    type: "boolean",
+    default: "false",
+    description:
+      "Allow editing the color's alpha channel. Experimental — ignored where the engine does not support it.",
+    source: { badge: "MDN", label: "alpha attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/color#additional_attributes" },
+  },
+  {
+    prop: "colorspace",
+    type: ['"limited-srgb"', '"display-p3"'],
+    default: '"limited-srgb"',
+    description: "Hints the picker's color space and gamut. Experimental.",
+    source: { badge: "MDN", label: "colorspace attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/color#additional_attributes" },
+  },
+  {
+    prop: "list",
+    type: "string",
+    description: "Id of a <datalist> of preset color swatches the browser offers in the picker.",
+    source: { badge: "MDN", label: "list / <datalist>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist" },
+  },
+  {
+    prop: "autocomplete",
+    type: "string",
+    description: "Browser auto-fill hint. One of the few common attributes the color input supports.",
+  },
+  { prop: "id", type: "string", description: "Pairs the input with a <label for>." },
+  { prop: "name", type: "string", description: "Form field name on submit." },
+  { prop: "required", type: "boolean", default: "false", description: "Native HTML required for form validation." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable — unfocusable, not submitted." },
+  { prop: "autofocus", type: "boolean", default: "false", description: "Focus this swatch on initial page load (one per document)." },
+  { prop: "form", type: "string", description: "Associate with a <form> by id when rendered outside it." },
+  {
+    prop: "ariaInvalid",
+    type: ["boolean", '"grammar"', '"spelling"'],
+    description: "Mark the swatch invalid — drives the destructive border/ring styling.",
+    source: { badge: "MDN", label: "aria-invalid", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" },
+  },
+  { prop: "ariaRequired", type: "boolean", description: "Expose required state to assistive tech." },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const AUTOSIZE_TEXTAREA_PROPS: ApiRow[] = [
+  {
+    prop: "autosize",
+    type: "boolean",
+    default: "true",
+    description:
+      "true sets field-sizing: content so the textarea grows/shrinks to fit its value; false sets field-sizing: fixed — a plain bounded textarea with a drag handle.",
+    source: { badge: "MDN", label: "field-sizing", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing" },
+  },
+  {
+    prop: "minHeight",
+    type: "string",
+    default: '"min-h-16"',
+    description:
+      "Lower growth bound as a Tailwind height utility. Per MDN, pair min/max height with field-sizing rather than a fixed height (a fixed height would reimpose a static size).",
+    source: { badge: "MDN", label: "field-sizing + min/max height", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing#field-sizing_interaction_with_other_size_settings" },
+  },
+  {
+    prop: "maxHeight",
+    type: "string",
+    default: '"max-h-80"',
+    description: "Upper growth bound as a Tailwind height utility. Once the value reaches it the browser shows a scrollbar.",
+  },
+  {
+    prop: "rows / cols",
+    type: "number",
+    description: "Fallback size only. With field-sizing: content active these have no effect (MDN); they size the control where field-sizing is unsupported.",
+    source: { badge: "MDN", label: "<textarea> rows", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea#rows" },
+  },
+  { prop: "minlength / maxlength", type: "number", description: "Length bounds. maxlength also stops the field growing once the character limit is reached." },
+  { prop: "wrap", type: ['"hard"', '"soft"', '"off"'], default: '"soft"', description: "Newline handling on submit." },
+  { prop: "spellcheck", type: "boolean", description: "Browser spellchecker." },
+  { prop: "autocorrect", type: ['"on"', '"off"'], description: "WebKit autocorrect (Safari/iOS)." },
+  { prop: "autocapitalize", type: ['"off"', '"on"', '"sentences"', '"words"', '"characters"'], description: "Mobile capitalisation hint." },
+  { prop: "dirname", type: "string", description: "Submit text direction (ltr/rtl) as a second form field." },
+  ...FORM_FIELD_COMMON,
+]
+
+// Add to app/data/api-rows.ts (references the existing CLASS_ROW / HX_ROW partials).
+// Place it right before `export const SLIDER_PROPS` to mirror the file's ordering.
+export const CASCADING_SELECT_PROPS: ApiRow[] = [
+  { prop: "id", type: "string", required: true, description: "Base id. The child select is `${id}-child`, the detail panel `${id}-detail`, the legend `${id}-legend`." },
+  { prop: "endpoint", type: "string", required: true, description: "URL the parent select requests on change. Returns the child <option>s, plus an optional detail fragment with hx-swap-oob.", source: { badge: "htmx", label: "Linked selects", href: "https://htmx.org/examples/value-select/" } },
+  { prop: "parentName", type: "string", default: '"parent"', description: "Form field name for the parent select; also pinned to the request via hx-include." },
+  { prop: "childName", type: "string", default: '"child"', description: "Form field name for the child (dependent) select." },
+  { prop: "legend", type: "string", description: "Group label rendered as a <legend>; also wires aria-labelledby on the fieldset." },
+  { prop: "parentLabel", type: "string", description: "Visible <label> for the parent select." },
+  { prop: "childLabel", type: "string", description: "Visible <label> for the child select." },
+  { prop: "children", type: "Child", required: true, description: "The parent <option>s (use CascadingSelectOption)." },
+  { prop: "childOptions", type: "Child", description: "Initial child <option>s shown before the first change fires." },
+  { prop: "detail", type: "Child", description: "Initial detail-panel content. Omit to drop the detail panel and the OOB swap entirely.", source: { badge: "htmx", label: "hx-swap-oob", href: "https://htmx.org/attributes/hx-swap-oob/" } },
+  { prop: "method", type: ['"get"', '"post"'], default: '"get"', description: "Request method for the cascade. GET keeps it idempotent and the no-JS form post shareable." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable the whole group via the <fieldset disabled> attribute.", source: { badge: "MDN", label: "<fieldset disabled>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset" } },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SELECTABLE_TABLE_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description: "Accessible name for the <form> region wrapping the table. Use when there is no visible heading naming the table.",
+    source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element (e.g. a heading) that names the table. Alternative to ariaLabel.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "BulkAction hx-post",
+    type: "string",
+    description: "Endpoint for a bulk action. The button sits inside the form, so htmx serialises every checked name=\"selected\" value onto the POST. The button defaults hx-target to the closest [data-slot=selectable-table] form and hx-swap to outerHTML, so the response replaces the whole table.",
+    source: { badge: "htmx", label: "hx-post", href: "https://htmx.org/attributes/hx-post/" },
+  },
+  {
+    prop: "BulkAction confirm",
+    type: "string",
+    description: "Sets hx-confirm on the button. htmx pops the browser's native window.confirm before issuing the request — used to gate destructive actions.",
+    source: { badge: "htmx", label: "hx-confirm", href: "https://htmx.org/attributes/hx-confirm/" },
+  },
+  {
+    prop: "BulkAction variant",
+    type: ['"default"', '"destructive"'],
+    default: '"default"',
+    description: "Visual style for the bulk-action button. Use destructive for delete/remove actions.",
+  },
+  {
+    prop: "SelectRowCheckbox value",
+    type: "string",
+    required: true,
+    description: "Identifier submitted for this row when its checkbox is checked. Rendered as <input type=\"checkbox\" name=\"selected\" value>.",
+    source: { badge: "MDN", label: "<input type=checkbox>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/checkbox" },
+  },
+  {
+    prop: "SelectRowCheckbox checked",
+    type: "boolean",
+    default: "false",
+    description: "Pre-check this row on render (e.g. to restore a server-side selection).",
+  },
+  {
+    prop: "SelectRowCheckbox name",
+    type: "string",
+    default: '"selected"',
+    description: "Form field name for the row checkboxes. Keep the same name across all rows so the checked values submit as one repeated field.",
+  },
+  {
+    prop: "SelectableTableCount children",
+    type: "Child",
+    description: "Result message rendered into the <output> live region after a bulk POST. <output> is an implicit aria-live region, so the message is announced without moving focus. The running selection count (\"N selected\") is written here by site.js when no server message is present.",
+    source: { badge: "MDN", label: "<output>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output" },
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const DELETE_ROW_PROPS: ApiRow[] = [
+  {
+    prop: "href",
+    type: "string",
+    required: true,
+    description:
+      "DELETE endpoint for this row's resource (on DeleteRow). The server must answer 200 with an empty body so htmx swaps the row with nothing; a 204 performs no swap and the row stays.",
+    source: { badge: "htmx", label: "hx-delete", href: "https://htmx.org/attributes/hx-delete/" },
+  },
+  {
+    prop: "confirm",
+    type: ["string", "null"],
+    default: '"Are you sure you want to delete this?"',
+    description:
+      "Confirmation question shown by window.confirm before each DELETE (on DeleteRowList; inherited by every Delete button via hx-confirm:inherited). Pass null to skip confirmation.",
+    source: { badge: "htmx", label: "hx-confirm", href: "https://htmx.org/attributes/hx-confirm/" },
+  },
+  {
+    prop: "target",
+    type: "string",
+    default: '"closest tr"',
+    description:
+      'Selector for the element each Delete request removes (on DeleteRowList; inherited as hx-target). Change to match the host element, e.g. "closest li" for a <ul>.',
+    source: { badge: "htmx", label: "hx-target", href: "https://htmx.org/attributes/hx-target/" },
+  },
+  {
+    prop: "swapMs",
+    type: "number",
+    default: "300",
+    description:
+      'Fade duration in milliseconds. Set on both DeleteRowList (the htmx swap delay, hx-swap="outerHTML swap:Nms") and DeleteRowItem (the CSS transition); the two must match so the row finishes fading before htmx detaches it.',
+    source: { badge: "htmx", label: "hx-swap (swap: modifier)", href: "https://htmx.org/attributes/hx-swap/" },
+  },
+  {
+    prop: "as",
+    type: ['"tbody"', '"ul"', '"ol"', '"div"', '"tr"', '"li"'],
+    default: '"tbody" (list) / "tr" (item)',
+    description:
+      "Element the host (DeleteRowList) or row (DeleteRowItem) renders as. Defaults suit a table; switch to ul/li (etc.) for non-table lists and set the matching target.",
+    source: { badge: "MDN", label: "<tbody>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody" },
+  },
+  {
+    prop: "variant",
+    type: ['"default"', '"secondary"', '"destructive"', '"outline"', '"ghost"', '"link"'],
+    default: '"ghost"',
+    description:
+      "Visual style of the Delete button (on DeleteRow). Ghost sits quietly in a cell; destructive makes the affordance louder.",
+  },
+  {
+    prop: "size",
+    type: ['"xs"', '"sm"', '"default"', '"lg"', '"icon"', '"icon-xs"', '"icon-sm"', '"icon-lg"'],
+    default: '"sm"',
+    description: "Size of the Delete button (on DeleteRow). Use an icon-* size with ariaLabel for an icon-only affordance.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the Delete button — skipped from tab order, no request fires.",
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      'Accessible name for the Delete button (on DeleteRow). Set this when the visible label is an icon or when several Delete buttons need to be distinguished (e.g. "Delete Joe Smith").',
+    source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const OPTIMISTIC_TOGGLE_PROPS: ApiRow[] = [
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description: "Unique id. Seeds the button id and the optimistic <template> id (`{id}-optimistic`) that the data-optimistic behaviour script points at.",
+  },
+  {
+    prop: "pressed",
+    type: "boolean",
+    default: "false",
+    description: "Current persisted state from your server/DB. Sets aria-pressed and the pressed visual treatment.",
+    source: { badge: "MDN", label: "aria-pressed", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" },
+  },
+  {
+    prop: "children",
+    type: "Child",
+    required: true,
+    description: "Visible content for the current (resting) state — icon and/or label.",
+  },
+  {
+    prop: "optimistic",
+    type: "Child",
+    required: true,
+    description: "Visible content for the just-toggled state, rendered into a <template> and swapped in instantly on click before the server responds.",
+    source: { badge: "MDN", label: "<template> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template" },
+  },
+  {
+    prop: "hx-post / hx-put / hx-patch / hx-delete",
+    type: "string",
+    description: "Where to send the toggle request. The server should reply with a fresh toggle button in the new state.",
+    source: { badge: "htmx", label: "hx-post", href: "https://htmx.org/attributes/hx-post/" },
+  },
+  {
+    prop: "hx-target",
+    type: "string",
+    default: '"this"',
+    description: "Swap target. Defaults to the button itself so the server response replaces the whole control.",
+    source: { badge: "htmx", label: "hx-target", href: "https://htmx.org/attributes/hx-target/" },
+  },
+  {
+    prop: "hx-swap",
+    type: "string",
+    default: '"outerHTML"',
+    description: "Swap strategy. Defaults to outerHTML so the authoritative server button replaces the optimistic one.",
+    source: { badge: "htmx", label: "hx-swap", href: "https://htmx.org/attributes/hx-swap/" },
+  },
+  {
+    prop: "variant",
+    type: ['"default"', '"outline"', '"ghost"'],
+    default: '"default"',
+    description: "Pressed-state visual treatment: default fills with primary, outline tints, ghost uses the secondary surface.",
+  },
+  {
+    prop: "size",
+    type: ['"default"', '"sm"', '"lg"', '"icon"'],
+    default: '"default"',
+    description: "Size variant. icon is square with no horizontal padding.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the toggle — skipped from tab order, no click handling.",
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const STATUS_PROPS: ApiRow[] = [
+  { prop: "as", type: ['"status"', '"log"'], default: '"status"', description: "Structural role. status = single advisory message (atomic); log = append-only ordered sequence (only new entries announced).",
+    source: { badge: "APG", label: "Structural Roles", href: "https://www.w3.org/WAI/ARIA/apg/practices/structural-roles/" } },
+  { prop: "tone", type: ['"default"', '"muted"', '"success"', '"destructive"'], default: '"muted"', description: "Text tone. Status text is supporting by default." },
+  { prop: "ariaAtomic", type: "boolean", description: "Override aria-atomic. Defaults to the role implicit value: status=true, log=false.",
+    source: { badge: "MDN", label: "aria-atomic", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-atomic" } },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const SPLIT_BUTTON_PROPS: ApiRow[] = [
+  {
+    prop: "menuId",
+    type: "string",
+    description: "Required. Id of the SplitButtonMenu popup; matched by popovertarget on the toggle.",
+    required: true,
+    source: { badge: "MDN", label: "popovertarget", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/popovertarget" },
+  },
+  {
+    prop: "label",
+    type: "string",
+    description: "Visible text of the primary action button. Falls back to children when omitted.",
+  },
+  {
+    prop: "variant",
+    type: ['"default"', '"secondary"', '"destructive"', '"outline"'],
+    default: '"default"',
+    description: "Visual skin shared by both segments.",
+  },
+  {
+    prop: "size",
+    type: ['"sm"', '"default"', '"lg"'],
+    default: '"default"',
+    description: "Height of the action; the toggle stays square and tracks it.",
+  },
+  {
+    prop: "side",
+    type: ['"top"', '"right"', '"bottom"', '"left"'],
+    default: '"bottom"',
+    description: "Which side of the toggle the popup opens on (positioned by site.js).",
+  },
+  {
+    prop: "toggleLabel",
+    type: "string",
+    default: '"More actions"',
+    description: "Accessible name for the icon-only disclosure toggle.",
+    source: { badge: "APG", label: "Menu button pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable both the action and the toggle.",
+  },
+  {
+    prop: "type",
+    type: ['"button"', '"submit"', '"reset"'],
+    default: '"button"',
+    description: "Submit / reset semantics for the primary action when nested in a form.",
+    source: { badge: "MDN", label: "<button type>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#type" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const LAZY_LOAD_PROPS: ApiRow[] = [
+  {
+    prop: "src",
+    type: "string",
+    description:
+      "URL this container fetches its own contents from. Sets hx-get. With the default innerHTML swap the response must NOT repeat hx-trigger=\"load\", or the request loops.",
+    source: { badge: "htmx", label: "hx-get", href: "https://htmx.org/attributes/hx-get/" },
+  },
+  {
+    prop: "trigger",
+    type: ['"load"', '"revealed"', '"intersect"'],
+    default: '"load"',
+    description:
+      "When the fetch fires. \"load\" fires immediately when the element enters the DOM (deferred but eager); \"revealed\" fires when it scrolls into the page viewport; \"intersect\" fires once inside an overflow-y:scroll container (intersect once).",
+    source: { badge: "htmx", label: "hx-trigger (load / revealed / intersect)", href: "https://htmx.org/attributes/hx-trigger/" },
+  },
+  {
+    prop: "swap",
+    type: ['"innerHTML"', '"outerHTML"'],
+    default: '"innerHTML"',
+    description:
+      "How the response lands. \"innerHTML\" replaces the contents and keeps this reserved-space wrapper; \"outerHTML\" replaces the wrapper wholesale (use when the response brings its own box).",
+    source: { badge: "htmx", label: "hx-swap", href: "https://htmx.org/attributes/hx-swap/" },
+  },
+  {
+    prop: "reserve",
+    type: "string",
+    description:
+      "Reserved minimum height (any CSS length, e.g. \"12rem\" or \"200px\"). Sets min-height inline so the box holds its size before content arrives — prevents Cumulative Layout Shift (CLS).",
+    source: { badge: "MDN", label: "min-height", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/min-height" },
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    default: '"Loading"',
+    description:
+      "Accessible name for the loading region (e.g. \"Loading sales report\"). The wrapper is a role=\"status\" + aria-busy=\"true\" live region while content is in flight.",
+    source: { badge: "MDN", label: "aria-busy", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+// ---- Sidebar (navigation) ----
+export const SIDEBAR_PROPS: ApiRow[] = [
+  {
+    prop: "id",
+    type: "string",
+    required: true,
+    description:
+      "On <Sidebar>: the id targeted by the trigger's href fragment (#id). Drives the no-JS :target open/close. Triggers/scrims reference it via sidebarFor.",
+    source: { badge: "MDN", label: ":target", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/:target" },
+  },
+  {
+    prop: "sidebarFor",
+    type: "string",
+    required: true,
+    description:
+      "On <SidebarTrigger> / <SidebarScrim>: the id of the <Sidebar> to open/close. The trigger renders <a href=\"#sidebarFor\">; the scrim renders <a href=\"#\">.",
+  },
+  {
+    prop: "label",
+    type: "string",
+    default: '"Menu"',
+    description:
+      "<SidebarTrigger> only. Visible hamburger text and the source of its accessible name (aria-label=\"Open {label}\").",
+  },
+  {
+    prop: "href",
+    type: "string",
+    required: true,
+    description:
+      "<SidebarItem> only. Destination of the nav link, rendered as a real <a href> (role=link + Enter-to-activate come from the platform).",
+    source: { badge: "MDN", label: "<a href>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#href" },
+  },
+  {
+    prop: "current",
+    type: "boolean",
+    default: "false",
+    description:
+      "<SidebarItem> only. Marks the link to the current page — sets aria-current=\"page\" and the active (primary-filled) styling.",
+    source: { badge: "MDN", label: "aria-current", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" },
+  },
+  {
+    prop: "icon",
+    type: "Child",
+    description: "<SidebarItem> only. Optional leading icon rendered before the label.",
+  },
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "<Sidebar> only. Accessible name for the <nav> landmark. Give each navigation landmark a unique name when a page has more than one.",
+    source: { badge: "MDN", label: "navigation role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/navigation_role" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "<Sidebar> only. Id of a visible element (e.g. the header) that names the nav landmark, used instead of ariaLabel.",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "--sidebar-w",
+    type: "CSS length",
+    default: "16rem",
+    description: "Custom property on <SidebarLayout> setting the rail's minimum width in the grid track minmax(--sidebar-w, 20rem).",
+    source: { badge: "MDN", label: "minmax()", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/minmax" },
+  },
+  {
+    prop: "--sidebar-h",
+    type: "CSS length",
+    default: "100svh",
+    description: "Custom property on <SidebarLayout> setting the shell + rail height. Lower it (e.g. 22rem) to fit a bounded container instead of the full viewport.",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const ASPECT_RATIO_PROPS: ApiRow[] = [
+  { prop: "ratio", type: ["number", "string"], default: '"16/9"', description: "Width-to-height ratio. A number (1.778) or a \"w/h\" string (\"16/9\", \"4/3\", \"1/1\"). Maps to Tailwind's aspect-* utility; \"1/1\" -> aspect-square, \"16/9\" -> aspect-video, anything else -> aspect-[w/h].",
+    source: { badge: "MDN", label: "aspect-ratio", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" } },
+  { prop: "fit", type: ['"cover"', '"contain"'], default: '"cover"', description: "How a replaced child (img/video) fills the box. cover scales up and crops; contain letterboxes so nothing is cut off. Has no effect on iframe/embed children.",
+    source: { badge: "MDN", label: "object-fit", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit" } },
+  { prop: "children", type: "Child", required: true, description: "The locked element: an <img>, <video>, <iframe>, <embed>, or any block. A single valid element child is cloned so size-full + object-fit classes land directly on it." },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const AUTO_GRID_PROPS: ApiRow[] = [
+  {
+    prop: "min",
+    type: "string",
+    default: '"16rem"',
+    description: "Minimum per-item width (any CSS length, e.g. \"16rem\", \"200px\", \"20ch\"). Drives how many columns fit. Published as the --auto-grid-min custom property and read inside minmax().",
+    source: { badge: "MDN", label: "minmax()", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/minmax" },
+  },
+  {
+    prop: "gap",
+    type: ["number", "string"],
+    default: "4",
+    description: "Gap between cells. A number maps to gap-<n> (0,1,2,3,4,5,6,8,10,12); a string is appended verbatim as a class.",
+  },
+  {
+    prop: "fill",
+    type: "boolean",
+    default: "false",
+    description: "Use auto-fill (keep empty trailing tracks) instead of auto-fit (collapse them so real items stretch to fill the row).",
+    source: { badge: "MDN", label: "repeat()", href: "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat" },
+  },
+  {
+    prop: "as",
+    type: ['"div"', '"ul"', '"ol"', '"section"'],
+    default: '"div"',
+    description: "Semantic element / role for the grid container. Use ul/ol when the cells are a genuine list (children should be <li>).",
+  },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+  HX_ROW,
+]

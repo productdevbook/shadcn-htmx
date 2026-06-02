@@ -1,0 +1,29 @@
+{{/*
+  Auto Grid template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/auto-grid.tsx.
+
+  A responsive, intrinsically-wrapping grid of equal cells with no media
+  queries (the RAM pattern: repeat, auto-fit/auto-fill, minmax). Pure CSS.
+
+      type AutoGridArgs struct {
+          Min   string // per-item minimum width (any CSS length); default "16rem"
+          Gap   string // a gap-* class; default "gap-4"
+          Fill  bool   // true = auto-fill (keep empty tracks); false = auto-fit
+          Tag   string // div | ul | ol | section; default "div"
+          Class string // extra classes appended to the root
+          Body  string // inner HTML (use htmlSafe)
+      }
+
+  Usage:
+      {{template "auto-grid" (dict "Body" (htmlSafe $cards))}}
+      {{template "auto-grid" (dict "Min" "20rem" "Gap" "gap-6" "Fill" true "Tag" "ul" "Body" (htmlSafe $items))}}
+*/}}
+
+{{define "auto-grid"}}
+{{- $min := or .Min "16rem" -}}
+{{- $gap := or .Gap "gap-4" -}}
+{{- $tag := or .Tag "div" -}}
+{{- $tracks := "repeat(auto-fit,minmax(min(var(--auto-grid-min,16rem),100%),1fr))" -}}
+{{- if .Fill}}{{- $tracks = "repeat(auto-fill,minmax(min(var(--auto-grid-min,16rem),100%),1fr))"}}{{end -}}
+<{{$tag}} data-slot="auto-grid"{{if .Fill}} data-fill="true"{{end}} style="--auto-grid-min:{{$min}}"{{if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}{{if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}} class="grid [grid-template-columns:{{$tracks}}] {{$gap}}{{if .Class}} {{.Class}}{{end}}">{{htmlSafe .Body}}</{{$tag}}>
+{{end}}

@@ -1,0 +1,61 @@
+{# Status macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/status.tsx.
+
+   Persistent POLITE live region for non-urgent updates ("Saved",
+   "3 results"). Swap text INTO it (hx-swap="innerHTML") — never move focus.
+
+   - role="status" (default) → aria-live="polite", aria-atomic="true"
+                               single advisory message, read wholesale.
+   - role="log"              → aria-live="polite", aria-atomic="false"
+                               append-only ordered sequence; only the new
+                               entry is announced.
+
+   Refs:
+     repos/aria-practices/.../practices/structural-roles/structural-roles-practice.html
+     repos/mdn/.../roles/status_role/  repos/mdn/.../roles/log_role/
+
+   Usage:
+     {% from "components/status.html" import status, status_item %}
+
+     {% call status(aria_label="Save status") %}Saved{% endcall %}
+
+     {% call status(as="log", aria_label="Activity") %}
+       {{ status_item("Connected") }}
+       {{ status_item("Synced 3 files") }}
+     {% endcall %} #}
+
+{% macro status(
+    as="status",
+    tone="muted",
+    aria_atomic=none,
+    aria_label=none,
+    aria_labelledby=none,
+    id=none,
+    extra_class="",
+    attrs={}
+) -%}
+{%- set base = "block min-h-5 text-sm" -%}
+{%- set tones = {
+    "default": "text-foreground",
+    "muted": "text-muted-foreground",
+    "success": "text-emerald-700 dark:text-emerald-300",
+    "destructive": "text-destructive"
+} -%}
+{%- set role_atomic = {"status": "true", "log": "false"} -%}
+{%- set atomic = role_atomic[as] if aria_atomic is none else ("true" if aria_atomic else "false") -%}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="status"
+  data-role="{{ as }}"
+  role="{{ as }}"
+  aria-live="polite"
+  aria-atomic="{{ atomic }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+  class="{{ base }} {{ tones[tone] }} {{ extra_class }}">{{ caller() }}</div>
+{%- endmacro %}
+
+{% macro status_item(text, id=none, extra_class="") -%}
+<div{% if id %} id="{{ id }}"{% endif %} data-slot="status-item" class="py-0.5 {{ extra_class }}">{{ text }}</div>
+{%- endmacro %}

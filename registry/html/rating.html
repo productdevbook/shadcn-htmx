@@ -1,0 +1,70 @@
+<!--
+  shadcn-htmx — raw HTML rating snippet.
+
+  Mirrors registry/ui/rating.tsx. A star rating built as a single-select
+  radio group: one native <input type="radio"> per star, all sharing a
+  `name`. The browser handles arrow-key navigation, focus management,
+  one-selected-at-a-time, and form submission — no JavaScript.
+
+  How the fill works (pure CSS, no script):
+    - Stars are laid out in REVERSE DOM order (5,4,3,2,1) inside a
+      flex-row-reverse track, so they paint left-to-right as 1..5.
+    - Each <label> reacts to its preceding <input> peer. Because CSS sibling
+      combinators only reach *later* siblings, checking or hovering star N
+      lights N and every star after it in DOM (= every star to its visual
+      left). That gives the cumulative star fill for free.
+
+  Relies only on theme tokens: text-muted-foreground (empty),
+  text-primary (filled), ring-ring/50 (focus).
+-->
+
+<div role="radiogroup" aria-label="Rating" data-slot="rating" class="inline-flex w-fit items-center">
+  <span class="flex flex-row-reverse items-center justify-end gap-0.5">
+
+    <input type="radio" id="score-star-5" name="score" value="5" data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="score-star-5" aria-label="5 stars out of 5"
+           class="cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50">
+      <svg class="size-6 shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+
+    <input type="radio" id="score-star-4" name="score" value="4" data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="score-star-4" aria-label="4 stars out of 5"
+           class="cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50">
+      <svg class="size-6 shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+
+    <input type="radio" id="score-star-3" name="score" value="3" checked data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="score-star-3" aria-label="3 stars out of 5"
+           class="cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50">
+      <svg class="size-6 shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+
+    <input type="radio" id="score-star-2" name="score" value="2" data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="score-star-2" aria-label="2 stars out of 5"
+           class="cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50">
+      <svg class="size-6 shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+
+    <input type="radio" id="score-star-1" name="score" value="1" data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="score-star-1" aria-label="1 star out of 5"
+           class="cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50">
+      <svg class="size-6 shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+
+  </span>
+</div>

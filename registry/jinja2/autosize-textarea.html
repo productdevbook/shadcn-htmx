@@ -1,0 +1,79 @@
+{# Autosize Textarea macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/autosize-textarea.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   A <textarea> that grows/shrinks to fit its content between min/max bounds via
+   the single CSS rule `field-sizing: content` — no scrollHeight JS hack. See
+   repos/mdn/files/en-us/web/css/reference/properties/field-sizing/index.md.
+   Tailwind utility: field-sizing-content (repos/tailwindcss/.../utilities.ts).
+
+   Usage:
+       {% from "components/autosize-textarea.html" import autosize_textarea %}
+       {{ autosize_textarea(name="reply", placeholder="Write a reply…") }}
+
+   Pass autosize=false for a plain bounded textarea (field-sizing: fixed).
+   minheight/maxheight are Tailwind height utilities (default min-h-16 / max-h-80). #}
+
+{% macro autosize_textarea(
+    id=none,
+    name=none,
+    value=none,
+    placeholder=none,
+    required=false,
+    disabled=false,
+    readonly=false,
+    autosize=true,
+    minheight="min-h-16",
+    maxheight="max-h-80",
+    rows=none,
+    cols=none,
+    minlength=none,
+    maxlength=none,
+    autocomplete=none,
+    autocapitalize=none,
+    autocorrect=none,
+    autofocus=false,
+    spellcheck=none,
+    dirname=none,
+    wrap=none,
+    form=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    aria_invalid=none,
+    aria_required=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70
+{%- endset -%}
+{%- set sizing = "field-sizing-content resize-none" if autosize else "field-sizing-fixed resize-y" -%}
+<textarea class="{{ base }} {{ sizing }} {{ minheight }} {{ maxheight }} overflow-auto {{ extra_class }}"
+          {%- if id %} id="{{ id }}"{% endif %}
+          {%- if name %} name="{{ name }}"{% endif %}
+          {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
+          {%- if required %} required{% endif %}
+          {%- if disabled %} disabled{% endif %}
+          {%- if readonly %} readonly{% endif %}
+          {%- if rows is not none %} rows="{{ rows }}"{% endif %}
+          {%- if cols is not none %} cols="{{ cols }}"{% endif %}
+          {%- if minlength is not none %} minlength="{{ minlength }}"{% endif %}
+          {%- if maxlength is not none %} maxlength="{{ maxlength }}"{% endif %}
+          {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}
+          {%- if autocapitalize %} autocapitalize="{{ autocapitalize }}"{% endif %}
+          {%- if autocorrect %} autocorrect="{{ autocorrect }}"{% endif %}
+          {%- if autofocus %} autofocus{% endif %}
+          {%- if spellcheck is not none %} spellcheck="{{ 'true' if spellcheck else 'false' }}"{% endif %}
+          {%- if dirname %} dirname="{{ dirname }}"{% endif %}
+          {%- if wrap %} wrap="{{ wrap }}"{% endif %}
+          {%- if form %} form="{{ form }}"{% endif %}
+          {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+          {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+          {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+          {%- if aria_invalid is not none %} aria-invalid="{{ aria_invalid|string|lower }}"{% endif %}
+          {%- if aria_required is not none %} aria-required="{{ aria_required|string|lower }}"{% endif %}
+          data-slot="autosize-textarea"
+          data-autosize="{{ 'false' if not autosize else 'true' }}"
+          {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{% if value is not none %}{{ value }}{% endif %}</textarea>
+{% endmacro %}

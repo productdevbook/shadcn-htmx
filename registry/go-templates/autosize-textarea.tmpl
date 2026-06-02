@@ -1,0 +1,67 @@
+{{/*
+  Autosize Textarea template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/autosize-textarea.tsx.
+
+  A <textarea> that grows/shrinks to fit its content between min/max bounds via
+  the single CSS rule `field-sizing: content` — no scrollHeight JS hack. See
+  repos/mdn/files/en-us/web/css/reference/properties/field-sizing/index.md.
+  Tailwind utility: field-sizing-content (repos/tailwindcss/.../utilities.ts).
+
+  Usage:
+
+      type AutosizeTextareaArgs struct {
+          ID, Name, Value, Placeholder string
+          Required, Disabled, Readonly, Autofocus bool
+          Autosize *bool             // tri-state; nil => autosize on
+          MinHeight, MaxHeight string // Tailwind height utils
+          Rows, Cols int
+          MinLength, MaxLength int
+          Autocomplete, Autocapitalize, Autocorrect, Wrap, Dirname string
+          Spellcheck *bool           // tri-state
+          Form, AriaLabel, AriaLabelledby, AriaDescribedby string
+          AriaInvalid, AriaRequired string
+          Attrs map[string]string
+      }
+
+      tpl.ExecuteTemplate(w, "autosize-textarea", AutosizeTextareaArgs{
+          Name: "reply", Placeholder: "Write a reply…",
+      })
+
+  Pass Autosize=&false for a plain bounded textarea (field-sizing: fixed).
+*/}}
+
+{{define "autosize-textarea"}}
+{{- $base := "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70" -}}
+{{- $autosize := true -}}{{- if .Autosize}}{{- $autosize = deref .Autosize -}}{{- end -}}
+{{- $sizing := "field-sizing-content resize-none" -}}{{- if not $autosize}}{{- $sizing = "field-sizing-fixed resize-y" -}}{{- end -}}
+{{- $minH := or .MinHeight "min-h-16" -}}
+{{- $maxH := or .MaxHeight "max-h-80" -}}
+<textarea class="{{$base}} {{$sizing}} {{$minH}} {{$maxH}} overflow-auto"
+          {{- if .ID}} id="{{.ID}}"{{end}}
+          {{- if .Name}} name="{{.Name}}"{{end}}
+          {{- if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
+          {{- if .Required}} required{{end}}
+          {{- if .Disabled}} disabled{{end}}
+          {{- if .Readonly}} readonly{{end}}
+          {{- if .Rows}} rows="{{.Rows}}"{{end}}
+          {{- if .Cols}} cols="{{.Cols}}"{{end}}
+          {{- if .MinLength}} minlength="{{.MinLength}}"{{end}}
+          {{- if .MaxLength}} maxlength="{{.MaxLength}}"{{end}}
+          {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+          {{- if .Autocapitalize}} autocapitalize="{{.Autocapitalize}}"{{end}}
+          {{- if .Autocorrect}} autocorrect="{{.Autocorrect}}"{{end}}
+          {{- if .Autofocus}} autofocus{{end}}
+          {{- if .Spellcheck}} spellcheck="{{if deref .Spellcheck}}true{{else}}false{{end}}"{{end}}
+          {{- if .Dirname}} dirname="{{.Dirname}}"{{end}}
+          {{- if .Wrap}} wrap="{{.Wrap}}"{{end}}
+          {{- if .Form}} form="{{.Form}}"{{end}}
+          {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+          {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+          {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+          {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+          {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+          data-slot="autosize-textarea"
+          data-autosize="{{if $autosize}}true{{else}}false{{end}}"
+          {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Value}}</textarea>
+{{end}}

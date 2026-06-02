@@ -1,0 +1,90 @@
+<!--
+  shadcn-htmx — raw HTML selectable-table snippet.
+  Mirrors registry/ui/selectable-table.tsx (same elements, roles, data-slots,
+  classes — only the templating wrapper differs).
+
+  A <form>-wrapped <table> with row checkboxes (name="selected"), a header
+  select-all, a live <output> count, and a contextual bulk-action bar revealed
+  PURELY in CSS via :has(:checked) — no JS decides visibility. Bulk-action
+  <button>s sit inside the form, so htmx serialises every checked value on
+  hx-post; hx-target/hx-swap on the form replace it with the server re-render.
+
+  Two pieces still need JS: the header select-all toggle and the running
+  count. Those are handled by the shared site.js keyed on
+  data-slot="selectable-table" (it toggles every row box from the header box,
+  keeps the header in sync incl. indeterminate, and writes the count into the
+  <output>). The table degrades gracefully without it — every checkbox still
+  toggles and submits natively; you only lose the convenience toggle + count.
+
+  Sources (read, never copied):
+    repos/htmx/.../patterns/03-records/01-bulk-actions.md
+    repos/htmx/.../reference/01-attributes/{02-hx-post,07-hx-swap,08-hx-target,22-hx-confirm}.md
+    repos/mdn/.../web/css/reference/selectors/_colon_has/index.md
+    repos/mdn/.../web/html/reference/elements/output/index.md
+  Relies only on the theme tokens in styles.css.
+-->
+
+<!-- htmx v4 inheritance is explicit, so the form carries no hx-target/hx-swap;
+     each bulk-action button targets the closest form itself (see buttons). -->
+<form data-slot="selectable-table" aria-label="Users"
+      class="group/selectable-table w-full space-y-3">
+
+  <!-- Bulk-action bar. Hidden until any row checkbox is checked (pure CSS). -->
+  <div data-slot="selectable-table-actions"
+       class="hidden items-center gap-2 rounded-md border bg-muted px-3 py-2 group-has-[input[name=selected]:checked]/selectable-table:flex">
+    <span class="mr-1 text-xs font-medium text-muted-foreground">With selected:</span>
+    <button type="button" data-slot="selectable-table-action" hx-post="/users/activate" hx-target="closest [data-slot='selectable-table']" hx-swap="outerHTML"
+            class="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-medium whitespace-nowrap outline-none transition-colors bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">Activate</button>
+    <button type="button" data-slot="selectable-table-action" hx-post="/users/delete" hx-target="closest [data-slot='selectable-table']" hx-swap="outerHTML" hx-confirm="Delete the selected users?"
+            class="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-xs font-medium whitespace-nowrap outline-none transition-colors border-destructive/40 text-destructive hover:bg-destructive/10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">Delete</button>
+  </div>
+
+  <div class="relative w-full overflow-auto rounded-md border">
+    <table data-slot="selectable-table-content" class="w-full caption-bottom text-sm">
+      <thead data-slot="selectable-table-header" class="[&_tr]:border-b">
+        <tr data-slot="selectable-table-row" class="border-b transition-colors hover:bg-muted/50">
+          <th scope="col" data-slot="selectable-table-head" class="h-10 w-10 px-3 text-left align-middle font-medium text-muted-foreground">
+            <span class="relative inline-flex size-4 shrink-0 align-middle">
+              <input type="checkbox" data-slot="selectable-table-select-all" aria-label="Select all rows"
+                     class="peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30">
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            </span>
+          </th>
+          <th scope="col" data-slot="selectable-table-head" class="h-10 px-3 text-left align-middle font-medium text-muted-foreground">Name</th>
+          <th scope="col" data-slot="selectable-table-head" class="h-10 px-3 text-left align-middle font-medium text-muted-foreground">Email</th>
+        </tr>
+      </thead>
+      <tbody data-slot="selectable-table-body" class="[&_tr:last-child]:border-0">
+        <tr data-slot="selectable-table-row" class="border-b transition-colors hover:bg-muted/50 has-[input[name=selected]:checked]:bg-muted">
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle">
+            <span class="relative inline-flex size-4 shrink-0 align-middle">
+              <input type="checkbox" name="selected" value="ada@analytical.org" data-slot="selectable-table-select-row" aria-label="Select Ada Lovelace"
+                     class="peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30">
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            </span>
+          </td>
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle font-medium text-foreground">Ada Lovelace</td>
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle text-muted-foreground">ada@analytical.org</td>
+        </tr>
+        <tr data-slot="selectable-table-row" class="border-b transition-colors hover:bg-muted/50 has-[input[name=selected]:checked]:bg-muted">
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle">
+            <span class="relative inline-flex size-4 shrink-0 align-middle">
+              <input type="checkbox" name="selected" value="grace@navy.mil" data-slot="selectable-table-select-row" aria-label="Select Grace Hopper"
+                     class="peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30">
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+              <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            </span>
+          </td>
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle font-medium text-foreground">Grace Hopper</td>
+          <td data-slot="selectable-table-cell" class="px-3 py-2 align-middle text-muted-foreground">grace@navy.mil</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Live region: site.js writes the running count here; the server can also
+       render a result message into it after a bulk POST. -->
+  <output data-slot="selectable-table-count" class="block text-sm text-muted-foreground"></output>
+</form>

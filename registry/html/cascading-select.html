@@ -1,0 +1,76 @@
+<!--
+  shadcn-htmx — raw HTML cascading-select snippet.
+
+  Mirrors registry/ui/cascading-select.tsx. A pair of dependent native
+  <select>s in a <fieldset>: picking the parent reloads the child's
+  <option>s (and an optional detail panel via hx-swap-oob) from the server.
+
+  No hx-trigger: htmx defaults <select> to `change`.
+  See repos/htmx/www/src/content/patterns/02-forms/04-linked-selects.md
+
+  WIRING:
+    - Parent <select> hx-get="/models" hx-target="#vehicle-child"
+      hx-include="[name='make']" — GETs the endpoint on change, swaps the
+      returned <option>s into the child (innerHTML, the default).
+    - The endpoint also returns a <div id="vehicle-detail" hx-swap-oob="innerHTML">
+      to update the detail panel out of band — one request, two updates. Using
+      innerHTML (not "true"/outerHTML) keeps the live #vehicle-detail node in the
+      DOM, swapping only its contents — so the aria-live region's identity is
+      preserved across updates.
+    - Relies only on theme tokens; no JS of its own.
+-->
+
+<fieldset data-slot="cascading-select" id="vehicle" class="grid gap-4" aria-labelledby="vehicle-legend">
+  <legend id="vehicle-legend" class="mb-1 text-sm leading-none font-medium text-foreground" data-slot="cascading-select-legend">Vehicle</legend>
+
+  <!-- Parent -->
+  <div class="grid gap-2">
+    <label for="vehicle-parent" class="text-sm leading-none font-medium text-foreground select-none">Make</label>
+    <span class="relative inline-flex w-full">
+      <select id="vehicle-parent" name="make" data-slot="cascading-select-parent"
+              hx-get="/models" hx-target="#vehicle-child" hx-include="[name='make']"
+              aria-controls="vehicle-child vehicle-detail"
+              class="peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70">
+        <option value="audi" selected>Audi</option>
+        <option value="toyota">Toyota</option>
+        <option value="bmw">BMW</option>
+      </select>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground peer-disabled:opacity-50" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
+  </div>
+
+  <!-- Child (htmx swaps fresh <option>s in here) -->
+  <div class="grid gap-2">
+    <label for="vehicle-child" class="text-sm leading-none font-medium text-foreground select-none">Model</label>
+    <span class="relative inline-flex w-full">
+      <select id="vehicle-child" name="model" data-slot="cascading-select-child"
+              class="peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70">
+        <option value="a4" selected>A4</option>
+        <option value="q5">Q5</option>
+        <option value="etron-gt">e-tron GT</option>
+      </select>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground peer-disabled:opacity-50" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
+  </div>
+
+  <!-- Detail panel (updated out of band on each parent change) -->
+  <div id="vehicle-detail" data-slot="cascading-select-detail" aria-live="polite" class="text-sm text-muted-foreground">
+    Audi A4 — Sedan, $39,900
+  </div>
+</fieldset>
+
+<!--
+  The server returns, e.g.:
+
+    <option value="a4" selected>A4</option>
+    <option value="q5">Q5</option>
+    <option value="etron-gt">e-tron GT</option>
+    <div id="vehicle-detail" hx-swap-oob="innerHTML" aria-live="polite"
+         class="text-sm text-muted-foreground">Audi A4 — Sedan, $39,900</div>
+-->

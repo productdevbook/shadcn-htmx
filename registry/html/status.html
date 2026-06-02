@@ -1,0 +1,39 @@
+<!--
+  shadcn-htmx — raw HTML status snippets. Mirrors registry/ui/status.tsx.
+
+  A persistent POLITE live region for non-urgent updates ("Saved",
+  "3 results"). Render it ONCE; then swap text INTO it (htmx innerHTML, or
+  set .textContent) so AT announces the change when the user is idle.
+  Never move focus to it.
+
+    role="status" + aria-live="polite" + aria-atomic="true"
+      → single advisory message, re-read in full on change. ("Saved")
+    role="log"    + aria-live="polite" + aria-atomic="false"
+      → append-only ordered sequence; only the NEW entry is announced.
+
+  Relies only on theme tokens. No script.
+
+  BASE: block min-h-5 text-sm
+  TONES:
+    default     text-foreground
+    muted       text-muted-foreground   (default — supporting text)
+    success     text-emerald-700 dark:text-emerald-300
+    destructive text-destructive
+-->
+
+<!-- status — single advisory message (atomic). Swap text into it. -->
+<div data-slot="status" data-role="status"
+     role="status" aria-live="polite" aria-atomic="true"
+     aria-label="Save status"
+     class="block min-h-5 text-sm text-muted-foreground">
+  Saved
+</div>
+
+<!-- log — append-only ordered sequence; only new entries are announced. -->
+<div data-slot="status" data-role="log"
+     role="log" aria-live="polite" aria-atomic="false"
+     aria-label="Activity"
+     class="block min-h-5 text-sm text-muted-foreground">
+  <div data-slot="status-item" class="py-0.5">Connected</div>
+  <div data-slot="status-item" class="py-0.5">Synced 3 files</div>
+</div>

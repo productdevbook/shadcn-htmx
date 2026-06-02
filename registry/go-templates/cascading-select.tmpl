@@ -1,0 +1,85 @@
+{{/*
+  Cascading Select template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/cascading-select.tsx. A pair of dependent native
+  <select>s: picking the parent reloads the child's <option>s (and an
+  optional detail panel via hx-swap-oob) from the server.
+
+  No hx-trigger: htmx defaults <select> to `change`.
+  See repos/htmx/www/src/content/patterns/02-forms/04-linked-selects.md
+
+  Usage:
+
+      type CascadingSelectArgs struct {
+          ID, Endpoint              string
+          ParentName, ChildName     string // default "parent" / "child"
+          Legend                    string
+          ParentLabel, ChildLabel   string
+          Method                    string // "get" (default) | "post"
+          Disabled                  bool
+          Detail                    bool   // render the OOB detail panel
+          ExtraClass                string
+          // PARENT <option>s, pre-rendered.
+          Body template.HTML
+          // Initial CHILD <option>s for the selected parent, pre-rendered.
+          ChildBody template.HTML
+          Attrs map[string]string
+      }
+*/}}
+
+{{define "cascading-select"}}
+{{- $base := "peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70" -}}
+{{- $parentName := or .ParentName "parent" -}}
+{{- $childName := or .ChildName "child" -}}
+{{- $hx := "hx-get" -}}{{- if eq .Method "post" }}{{- $hx = "hx-post" -}}{{- end -}}
+<fieldset data-slot="cascading-select" id="{{.ID}}" class="grid gap-4 {{.ExtraClass}}"
+          {{- if .Disabled}} disabled{{end}}
+          {{- if .Legend}} aria-labelledby="{{.ID}}-legend"{{end -}}
+>
+  {{- if .Legend}}
+  <legend id="{{.ID}}-legend" class="mb-1 text-sm leading-none font-medium text-foreground" data-slot="cascading-select-legend">{{.Legend}}</legend>
+  {{- end}}
+  <div class="grid gap-2">
+    {{- if .ParentLabel}}
+    <label for="{{.ID}}-parent" class="text-sm leading-none font-medium text-foreground select-none">{{.ParentLabel}}</label>
+    {{- end}}
+    <span class="relative inline-flex w-full">
+      <select id="{{.ID}}-parent" name="{{$parentName}}" data-slot="cascading-select-parent"
+              class="{{$base}}"
+              {{$hx}}="{{.Endpoint}}"
+              hx-target="#{{.ID}}-child"
+              hx-include="[name='{{$parentName}}']"
+              aria-controls="{{if .Detail}}{{.ID}}-child {{.ID}}-detail{{else}}{{.ID}}-child{{end}}"
+              {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+      >{{.Body}}</select>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground peer-disabled:opacity-50" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
+  </div>
+  <div class="grid gap-2">
+    {{- if .ChildLabel}}
+    <label for="{{.ID}}-child" class="text-sm leading-none font-medium text-foreground select-none">{{.ChildLabel}}</label>
+    {{- end}}
+    <span class="relative inline-flex w-full">
+      <select id="{{.ID}}-child" name="{{$childName}}" data-slot="cascading-select-child" class="{{$base}}">{{.ChildBody}}</select>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground peer-disabled:opacity-50" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
+  </div>
+  {{- if .Detail}}
+  <div id="{{.ID}}-detail" data-slot="cascading-select-detail" aria-live="polite" class="text-sm text-muted-foreground"></div>
+  {{- end}}
+</fieldset>
+{{end}}
+
+{{/* Detail fragment for the OOB swap — return alongside the child <option>s.
+     hx-swap-oob="innerHTML" (not "true"/outerHTML) keeps the live #ID-detail
+     node in the DOM and swaps only its contents, preserving the aria-live
+     region's identity across updates.
+     Args: (dict "ID" "vehicle" "Body" (htmlSafe "…")) */}}
+{{define "cascading-select-detail"}}
+<div id="{{.ID}}-detail" data-slot="cascading-select-detail" hx-swap-oob="innerHTML" aria-live="polite" class="text-sm text-muted-foreground">{{.Body}}</div>
+{{end}}

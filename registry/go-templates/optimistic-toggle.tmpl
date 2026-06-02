@@ -1,0 +1,122 @@
+{{/*
+  Optimistic Toggle template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/optimistic-toggle.tsx for Go projects using html/template.
+
+  A server-backed action toggle (like / star / follow / pin). Clicking flips
+  the appearance instantly via a native <template> of the toggled state, then
+  reconciles with the server's HTML response (rolling back on error).
+
+  No htmx extension needed. The behaviour <script> at the end of this template
+  wires the optimistic flip + rollback with real htmx v4 events
+  (htmx:before:request to flip, htmx:before:swap to cancel + roll back on a
+  4xx/5xx). It self-guards with window.__shadcnOptimisticToggle so it attaches
+  once page-wide. (htmx v4's bundled hx-optimistic extension is an unfinished
+  stub that neither flips aria-pressed nor cancels the error swap.)
+  A real <button> + aria-pressed follows the APG Button (toggle) pattern: the
+  accessible name stays constant; only aria-pressed flips.
+  repos/aria-practices/content/patterns/button/examples/button.html
+
+  Usage in your code:
+
+      type OptimisticToggleArgs struct {
+          ID         string
+          Pressed    bool
+          Variant    string // default | outline | ghost
+          Size       string // default | sm | lg | icon
+          Disabled   bool
+          AriaLabel  string
+          Current    template.HTML // resting-state inner markup
+          Optimistic template.HTML // just-toggled inner markup
+          HxTarget   string // default "this"
+          HxSwap     string // default "outerHTML"
+          Attrs      map[string]string // hx-post, hx-confirm, …
+      }
+
+      tpl.ExecuteTemplate(w, "optimistic-toggle", OptimisticToggleArgs{
+          ID: "like-42", AriaLabel: "Like",
+          Current: template.HTML("Like"), Optimistic: template.HTML("Liked"),
+          Attrs: map[string]string{"hx-post": "/posts/42/like"},
+      })
+
+  Uses sprig's `dict`. Current/Optimistic are rendered with htmlSafe.
+*/}}
+
+{{define "optimistic-toggle"}}
+{{- $variants := dict
+    "default" "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90"
+    "outline" "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground aria-pressed:border-primary aria-pressed:text-primary aria-pressed:bg-primary/10 aria-pressed:hover:bg-primary/15"
+    "ghost" "hover:bg-accent hover:text-accent-foreground aria-pressed:bg-secondary aria-pressed:text-secondary-foreground aria-pressed:hover:bg-secondary/80" -}}
+{{- $sizes := dict
+    "default" "h-9 px-4 py-2 has-[>svg]:px-3"
+    "sm" "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5"
+    "lg" "h-10 rounded-md px-6 has-[>svg]:px-4"
+    "icon" "size-9" -}}
+{{- $variant := or .Variant "default" -}}
+{{- $size := or .Size "default" -}}
+{{- $base := "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:opacity-80" -}}
+{{- $classes := printf "%s %s %s" $base (index $variants $variant) (index $sizes $size) -}}
+{{- $target := or .HxTarget "this" -}}
+{{- $swap := or .HxSwap "outerHTML" -}}
+{{- $templateId := printf "%s-optimistic" .ID -}}
+<span data-slot="optimistic-toggle" class="contents">
+  <button type="button" id="{{.ID}}"
+          class="{{$classes}}"
+          {{- if .Disabled}} disabled{{end}}
+          aria-pressed="{{if .Pressed}}true{{else}}false{{end}}"
+          {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+          {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+          {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+          data-variant="{{$variant}}" data-size="{{$size}}"
+          hx-target="{{$target}}" hx-swap="{{$swap}}"
+          data-optimistic="#{{$templateId}}"
+          {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >{{htmlSafe .Current}}</button>
+  <template id="{{$templateId}}">
+    <span data-slot="optimistic-toggle-state" class="{{$classes}} pointer-events-none" aria-pressed="true">{{htmlSafe .Optimistic}}</span>
+  </template>
+</span>
+{{/* Optimistic flip + rollback. Self-guarded so it attaches once page-wide. */}}
+<script>
+(function(){
+  if (window.__shadcnOptimisticToggle) return;
+  window.__shadcnOptimisticToggle = true;
+  function toggleFor(detail){
+    var ctx = detail && detail.ctx;
+    var src = ctx && ctx.sourceElement;
+    if (!src || !src.closest) return null;
+    var btn = src.closest('[data-slot="optimistic-toggle"] > button[aria-pressed]');
+    return btn || (src.matches && src.matches('button[aria-pressed]') &&
+      src.closest('[data-slot="optimistic-toggle"]') ? src : null);
+  }
+  document.body.addEventListener('htmx:before:request', function(e){
+    var btn = toggleFor(e.detail);
+    if (!btn) return;
+    btn.__optHTML = btn.innerHTML;
+    btn.__optPressed = btn.getAttribute('aria-pressed');
+    var sel = btn.getAttribute('data-optimistic');
+    var tmpl = sel && document.querySelector(sel);
+    var inner = tmpl && tmpl.content ? tmpl.content.querySelector('[data-slot="optimistic-toggle-state"]') : null;
+    if (inner) btn.innerHTML = inner.innerHTML;
+    btn.setAttribute('aria-pressed', btn.__optPressed === 'true' ? 'false' : 'true');
+  }, true);
+  document.body.addEventListener('htmx:before:swap', function(e){
+    var btn = toggleFor(e.detail);
+    if (!btn || btn.__optHTML == null) return;
+    var status = e.detail && e.detail.ctx && e.detail.ctx.response && e.detail.ctx.response.status;
+    if (status >= 400){
+      e.preventDefault();
+      btn.innerHTML = btn.__optHTML;
+      btn.setAttribute('aria-pressed', btn.__optPressed);
+    }
+    btn.__optHTML = null;
+  }, true);
+  document.body.addEventListener('htmx:error', function(e){
+    var btn = toggleFor(e.detail);
+    if (!btn || btn.__optHTML == null) return;
+    btn.innerHTML = btn.__optHTML;
+    btn.setAttribute('aria-pressed', btn.__optPressed);
+    btn.__optHTML = null;
+  }, true);
+})();
+</script>
+{{end}}

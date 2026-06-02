@@ -1,0 +1,42 @@
+<!--
+  shadcn-htmx — raw HTML output snippets.
+
+  Mirrors registry/ui/output.tsx. The native <output> element carries the
+  implicit role="status" — an aria-live="polite", aria-atomic="true" live
+  region. Do NOT add role/aria-live: the browser supplies them. Start with
+  initial content, then let htmx swap the output's innerHTML in place and the
+  update is announced automatically. No JS.
+
+  Target THIS <output> with hx-swap="innerHTML" so the live region element
+  persists across requests (an outerHTML swap would replace the region and
+  break the announcement contract).
+
+  Source: repos/mdn/.../elements/output/index.md (for / form / name; implicit
+  role="status").
+
+  BASE: inline-flex min-h-9 w-fit items-center gap-2 rounded-md border px-3 py-1.5
+        text-sm font-medium tabular-nums transition-colors [&.htmx-request]:opacity-60
+  TONES:
+    default     border-border bg-card text-card-foreground
+    muted       border-transparent bg-muted text-muted-foreground
+    primary     border-transparent bg-primary text-primary-foreground
+    destructive border-destructive/30 bg-destructive/5 text-destructive dark:bg-destructive/10
+-->
+
+<!-- Native — output tied to its inputs via for, updated by the browser -->
+<form>
+  <input type="range" id="o-b" name="b" value="50" /> +
+  <input type="number" id="o-a" name="a" value="10" /> =
+  <output for="o-a o-b" name="result" data-slot="output" data-tone="default"
+          class="inline-flex min-h-9 w-fit items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium tabular-nums text-card-foreground transition-colors [&.htmx-request]:opacity-60">60</output>
+</form>
+
+<!-- htmx — server-computed result swapped into the same live region -->
+<form hx-post="/cart/total" hx-trigger="change, input delay:300ms"
+      hx-target="#cart-total" hx-swap="innerHTML">
+  <label for="o-qty" class="text-sm font-medium">Quantity</label>
+  <input type="number" id="o-qty" name="qty" value="1" min="1"
+         class="h-9 w-20 rounded-md border bg-transparent px-3 text-sm" />
+  <output id="cart-total" for="o-qty" data-slot="output" data-tone="primary"
+          class="inline-flex min-h-9 w-fit items-center gap-2 rounded-md border border-transparent bg-primary px-3 py-1.5 text-sm font-medium tabular-nums text-primary-foreground transition-colors [&.htmx-request]:opacity-60">$0.00</output>
+</form>

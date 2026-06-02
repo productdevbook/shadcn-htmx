@@ -1,0 +1,76 @@
+{# SegmentedControl macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/segmented-control.tsx. A <fieldset> groups native
+   <input type="radio"> options sharing a `name`; the browser handles
+   arrow-key navigation + one-selected-at-a-time. Picks a value, not a panel.
+
+   Sources: web.dev settings pattern (grouped fieldset + appearance:none
+   inputs styled via :checked) and learn/forms/accessibility; APG radio
+   group. See the .tsx header for exact paths.
+
+   Usage:
+     {% from "components/segmented-control.html" import segmented_control_open, segmented_control_close, segmented_control_item %}
+
+     {{ segmented_control_open(name="view", aria_label="View", default_value="list") }}
+       {{ segmented_control_item("List", value="list", name="view", id="view-list", checked=true) }}
+       {{ segmented_control_item("Grid", value="grid", name="view", id="view-grid") }}
+     {{ segmented_control_close() }} #}
+
+{% macro segmented_control_open(
+    name,
+    default_value=none,
+    size="default",
+    disabled=false,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    extra_class="",
+    **attrs
+) -%}
+{%- set track -%}
+group/segmented inline-flex w-fit items-center gap-1 rounded-lg bg-muted p-[3px] text-muted-foreground has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 {% if size == "sm" %}h-8 text-xs{% else %}h-9{% endif %}
+{%- endset -%}
+<fieldset data-slot="segmented-control"
+     data-name="{{ name }}"
+     data-size="{{ size }}"
+     {%- if default_value %} data-default-value="{{ default_value }}"{% endif %}
+     {%- if disabled %} data-disabled="true" disabled{% endif %}
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+     class="{{ track }} {{ extra_class }}"
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{%- if aria_label %}<legend class="sr-only">{{ aria_label }}</legend>{% endif %}
+{%- endmacro %}
+
+{% macro segmented_control_close() %}</fieldset>{% endmacro %}
+
+{% macro segmented_control_item(
+    text,
+    value,
+    name,
+    id=none,
+    checked=false,
+    disabled=false,
+    required=false,
+    aria_label=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set item -%}
+relative inline-flex h-[calc(100%-2px)] flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-3 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all select-none hover:text-foreground has-[:checked]:bg-background has-[:checked]:text-foreground has-[:checked]:shadow-sm dark:has-[:checked]:border-input dark:has-[:checked]:bg-input/30 dark:has-[:checked]:text-foreground has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4
+{%- endset -%}
+<label data-slot="segmented-control-item" data-value="{{ value }}" class="{{ item }} {{ extra_class }}">
+  <input type="radio" class="peer sr-only"
+         value="{{ value }}" name="{{ name }}"
+         {%- if id %} id="{{ id }}"{% endif %}
+         {%- if checked %} checked{% endif %}
+         {%- if disabled %} disabled{% endif %}
+         {%- if required %} required{% endif %}
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         data-slot="segmented-control-input"
+         {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >
+  <span data-slot="segmented-control-label">{{ text }}</span>
+</label>
+{% endmacro %}

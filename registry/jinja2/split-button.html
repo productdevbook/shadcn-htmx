@@ -1,0 +1,81 @@
+{# SplitButton macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Primary action <button> joined to a disclosure toggle that opens a popup
+   of secondary actions. Native [popover] + the APG menu keyboard contract
+   from public/site.js (the popup carries data-slot="dropdown-menu"); a tiny
+   split-button block in site.js mirrors open state onto aria-expanded.
+   Built on Adam Argyle's web.dev split-button pattern. #}
+
+{%- set _seg -%}
+inline-flex items-center justify-center font-medium whitespace-nowrap outline-none transition-colors focus-visible:z-10 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70
+{%- endset -%}
+
+{%- set _variants = {
+  "default":     "bg-primary text-primary-foreground hover:bg-primary/90",
+  "secondary":   "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+  "destructive": "bg-destructive text-white hover:bg-destructive/90",
+  "outline":     "border bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+} -%}
+{%- set _action_sizes = {
+  "sm":      "h-8 gap-1.5 px-3 text-xs has-[>svg]:px-2.5",
+  "default": "h-9 gap-2 px-4 text-sm has-[>svg]:px-3",
+  "lg":      "h-10 gap-2 px-6 text-sm has-[>svg]:px-4"
+} -%}
+{%- set _toggle_sizes = { "sm": "w-8", "default": "w-9", "lg": "w-10" } -%}
+{%- set _dividers = {
+  "default":     "border-l border-primary-foreground/20",
+  "secondary":   "border-l border-foreground/15",
+  "destructive": "border-l border-white/25",
+  "outline":     "border-l-0"
+} -%}
+
+{% macro split_button(label, menu_id, variant="default", size="default", toggle_label="More actions", disabled=false, class_="", **attrs) %}
+<div data-slot="split-button" class="inline-flex items-stretch rounded-md shadow-xs outline-none isolate {{ class_ }}">
+  <button type="button"{% if disabled %} disabled{% endif %}
+          data-slot="split-button-action"
+          class="{{ _seg }} {{ _variants[variant] }} {{ _action_sizes[size] }} rounded-l-md rounded-r-none"
+          {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >{{ label }}</button>
+  <button type="button"{% if disabled %} disabled{% endif %}
+          popovertarget="{{ menu_id }}" popovertargetaction="toggle"
+          aria-haspopup="menu" aria-expanded="false" aria-label="{{ toggle_label }}"
+          data-slot="split-button-toggle"
+          class="{{ _seg }} {{ _variants[variant] }} {{ _toggle_sizes[size] }} {{ _dividers[variant] }} rounded-r-md rounded-l-none">
+    <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
+  </button>
+</div>
+{% endmacro %}
+
+{% macro split_button_menu_open(id, side="bottom", extra_class="") %}
+<ul id="{{ id }}" popover="auto" role="menu"
+    data-slot="dropdown-menu" data-side="{{ side }}"
+    class="z-50 m-0 min-w-[12rem] list-none rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{ extra_class }}">
+{% endmacro %}
+
+{% macro split_button_menu_close() %}</ul>{% endmacro %}
+
+{% macro split_button_item(label, href=none, onclick=none, disabled=false, variant="default", extra_class="", **attrs) %}
+{%- set base -%}
+relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0
+{%- endset -%}
+{%- set destructive -%}
+{% if variant == "destructive" %}text-destructive focus:bg-destructive/10 focus:text-destructive{% endif %}
+{%- endset -%}
+<li role="none" class="contents">
+{% if href %}
+  <a role="menuitem" tabindex="-1" href="{{ href }}"
+     data-slot="split-button-item"
+     {%- if disabled %} data-disabled="true"{% endif %}
+     class="{{ base }} {{ destructive }} {{ extra_class }}"
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >{{ label }}</a>
+{% else %}
+  <button type="button" role="menuitem" tabindex="-1"
+          {% if onclick %}onclick="{{ onclick }}"{% endif %}
+          data-slot="split-button-item"
+          {%- if disabled %} data-disabled="true"{% endif %}
+          class="{{ base }} {{ destructive }} {{ extra_class }}"
+          {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >{{ label }}</button>
+{% endif %}
+</li>
+{% endmacro %}

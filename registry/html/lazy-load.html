@@ -1,0 +1,40 @@
+<!--
+  shadcn-htmx — raw HTML lazy-load snippet.
+  A deferred-content container. It renders a placeholder immediately, then
+  fetches its own contents after the page paints (hx-get + hx-trigger="load")
+  and swaps them in. The inline style="min-height:…" reserves vertical space
+  so the swap does not shift the page (Cumulative Layout Shift).
+
+  Triggers:
+    - hx-trigger="load"          → fires immediately on insertion (deferred,
+                                    but eager — the default).
+    - hx-trigger="revealed"      → fires when scrolled into the page viewport.
+    - hx-trigger="intersect once"→ fires once inside an overflow-y:scroll box.
+
+  Swap: hx-swap="innerHTML" (default) replaces the contents and keeps this
+  reserved-space wrapper in the DOM — so the server response must NOT repeat
+  hx-trigger="load" or it loops (see the htmx "Infinite loops" note). Use
+  hx-swap="outerHTML" if the response brings its own container.
+
+  role="status" + aria-busy="true" tell assistive tech the region is still
+  loading. Relies only on the theme tokens in styles.css — no JS of its own.
+
+  Sources (read, not copied):
+    repos/htmx/.../patterns/01-loading/03-lazy-load.md
+    repos/htmx/.../reference/01-attributes/{01-hx-get,06-hx-trigger,07-hx-swap}.md
+    repos/mdn/.../web/accessibility/aria/reference/attributes/aria-busy/index.md
+    repos/mdn/.../web/api/intersection_observer_api/index.md
+-->
+
+<!-- On insertion it GETs /dashboard/sales and replaces its own contents with
+     the response. The reserved 12rem height holds the box steady until then. -->
+<div data-slot="lazy-load" data-trigger="load"
+     role="status" aria-busy="true" aria-label="Loading sales report"
+     hx-get="/dashboard/sales" hx-trigger="load" hx-swap="innerHTML"
+     style="min-height:12rem"
+     class="flex w-full items-center justify-center text-sm text-muted-foreground">
+  <span class="flex items-center gap-2">
+    <span class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" aria-hidden="true"></span>
+    Loading…
+  </span>
+</div>

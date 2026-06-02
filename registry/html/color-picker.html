@@ -1,0 +1,65 @@
+<!--
+  shadcn-htmx — raw Color Picker snippets.
+
+  Mirrors registry/ui/color-picker.tsx. Drop onto any page that loads Tailwind
+  CSS v4 and the shadcn theme variables (background, foreground, input, ring,
+  destructive, muted-foreground). See app/styles/input.css for defaults.
+
+  The control is a native <input type="color"> — the browser owns the whole
+  picker UI and validates the CSS color value (see MDN). It has no implicit ARIA
+  role, so pair it with a visible <label for> or aria-label. The hex <output>
+  next to the swatch is mirrored from the input's value by the inline boot
+  script below (data-slot="color-picker"). In the docs app the same handler
+  lives in public/site.js, so you can delete the script there. The bare-swatch
+  variant has no JS at all.
+
+  SWATCH BASE (native <input type=color> styled as one rounded swatch; strips
+  the platform swatch chrome via -webkit-/-moz- pseudo-elements):
+    size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent
+    p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50
+    [&.htmx-request]:opacity-70
+    [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm
+    [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm
+    [&::-moz-color-swatch]:border-0
+-->
+
+<!-- ─── With hex readout (default) ──────────────────────────────────── -->
+<span data-slot="color-picker" class="inline-flex items-center gap-2">
+  <input type="color" name="brand" value="#e66465" aria-label="Brand color" data-slot="color-picker-swatch"
+    class="size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.htmx-request]:opacity-70 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-0">
+  <output data-slot="color-picker-value" aria-hidden="true" class="font-mono text-sm tabular-nums text-muted-foreground uppercase select-none">#e66465</output>
+</span>
+
+<!-- ─── Bare swatch, no readout — zero JS ───────────────────────────── -->
+<input type="color" name="bg" value="#1d4ed8" aria-label="Background color" data-slot="color-picker"
+  class="size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.htmx-request]:opacity-70 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-0">
+
+<!-- ─── Alpha + a <datalist> of preset swatches ─────────────────────── -->
+<input type="color" name="accent" value="#22c55e" alpha list="brand-swatches" aria-label="Accent color" data-slot="color-picker"
+  class="size-9 shrink-0 cursor-pointer rounded-md border border-input bg-transparent p-1 shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-0 [&::-moz-color-swatch]:rounded-sm [&::-moz-color-swatch]:border-0">
+<datalist id="brand-swatches">
+  <option value="#e66465"></option>
+  <option value="#1d4ed8"></option>
+  <option value="#22c55e"></option>
+</datalist>
+
+<!--
+  Boot script — mirrors each color-picker's hex <output> from its input value.
+  Self-contained; safe to include once per page. (The docs site ships the same
+  logic in public/site.js, so omit this there.)
+-->
+<script>
+  (function () {
+    document.addEventListener('input', function (e) {
+      var input = e.target
+      if (!input.matches || !input.matches('[data-slot="color-picker"] input[type="color"], input[data-slot="color-picker-swatch"]')) return
+      var root = input.closest('[data-slot="color-picker"]')
+      var out = root && root.querySelector('[data-slot="color-picker-value"]')
+      if (out) out.textContent = input.value
+    })
+  })()
+</script>

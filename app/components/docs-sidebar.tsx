@@ -18,6 +18,12 @@ const sections: Section[] = [
   {
     title: "Forms",
     items: [
+      { label: "Output", href: "/docs/output" },
+      { label: "Segmented Control", href: "/docs/segmented-control" },
+      { label: "Rating", href: "/docs/rating" },
+      { label: "Color Picker", href: "/docs/color-picker" },
+      { label: "Autosize Textarea", href: "/docs/autosize-textarea" },
+      { label: "Cascading Select", href: "/docs/cascading-select" },
       { label: "Form Field", href: "/docs/form-field" },
       { label: "File Upload", href: "/docs/file-upload" },
       { label: "Date Time Picker", href: "/docs/date-time-picker" },
@@ -41,6 +47,8 @@ const sections: Section[] = [
   {
     title: "Layout",
     items: [
+      { label: "Aspect Ratio", href: "/docs/aspect-ratio" },
+      { label: "Auto Grid", href: "/docs/auto-grid" },
       { label: "Card", href: "/docs/card" },
       { label: "Table", href: "/docs/table" },
       { label: "Collapsible", href: "/docs/collapsible" },
@@ -54,6 +62,8 @@ const sections: Section[] = [
   {
     title: "Display",
     items: [
+      { label: "Selectable Table", href: "/docs/selectable-table" },
+      { label: "Delete Row", href: "/docs/delete-row" },
       { label: "Copy Button", href: "/docs/copy-button" },
       { label: "Avatar", href: "/docs/avatar" },
       { label: "Badge", href: "/docs/badge" },
@@ -64,6 +74,9 @@ const sections: Section[] = [
   {
     title: "Feedback",
     items: [
+      { label: "Optimistic Toggle", href: "/docs/optimistic-toggle" },
+      { label: "Status", href: "/docs/status" },
+      { label: "Lazy Load", href: "/docs/lazy-load" },
       { label: "Alert", href: "/docs/alert" },
       { label: "Progress", href: "/docs/progress" },
       { label: "Skeleton", href: "/docs/skeleton" },
@@ -87,6 +100,8 @@ const sections: Section[] = [
   {
     title: "Navigation",
     items: [
+      { label: "Split Button", href: "/docs/split-button" },
+      { label: "Sidebar", href: "/docs/sidebar" },
       { label: "Load More", href: "/docs/load-more" },
       { label: "Skip Link", href: "/docs/skip-link" },
       { label: "Theme Toggle", href: "/docs/theme-toggle" },

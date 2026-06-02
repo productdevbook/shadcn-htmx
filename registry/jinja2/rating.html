@@ -1,0 +1,58 @@
+{# Rating macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/rating.tsx. A star rating built as a single-select
+   radio group: one native <input type="radio"> per star sharing a `name`.
+   The browser handles arrow keys, focus, one-at-a-time, and form submit.
+   Fill + hover preview are pure CSS via reversed DOM order + named peers.
+
+   APG: repos/aria-practices/content/patterns/radio/examples/radio-rating.html
+
+   Usage:
+     {% from "components/rating.html" import rating %}
+     {{ rating(name="score", value=3) }}
+     {{ rating(name="score", max=5, size="lg", required=true) }} #}
+
+{% macro rating(
+    name,
+    max=5,
+    value=none,
+    size="default",
+    disabled=false,
+    required=false,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    extra_class="",
+    **attrs
+) -%}
+{%- set sizes = {"sm": "size-4", "default": "size-6", "lg": "size-7"} -%}
+{%- set gaps  = {"sm": "gap-0.5", "default": "gap-0.5", "lg": "gap-1"} -%}
+{%- set sz = sizes[size] or sizes["default"] -%}
+{%- set gap = gaps[size] or gaps["default"] -%}
+{%- set label_base = "cursor-pointer p-0.5 text-muted-foreground transition-colors peer-disabled/star:cursor-not-allowed peer-disabled/star:opacity-50 peer-checked/star:text-primary peer-checked/star:[&_svg]:fill-current peer-hover/star:text-primary peer-hover/star:[&_svg]:fill-current peer-focus-visible/star:[&_svg]:ring-2 peer-focus-visible/star:[&_svg]:ring-ring/50" -%}
+<div role="radiogroup"
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ aria_label or 'Rating' }}"{% endif %}
+     {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+     {%- if disabled %} aria-disabled="true"{% endif %}
+     {%- if required %} aria-required="true"{% endif %}
+     data-slot="rating"
+     class="inline-flex w-fit items-center {{ extra_class }}"
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor %}>
+  <span class="flex flex-row-reverse items-center justify-end {{ gap }}">
+    {%- for n in range(max, 0, -1) %}
+    {%- set id = name ~ "-star-" ~ n -%}
+    <input type="radio" id="{{ id }}" name="{{ name }}" value="{{ n }}"
+           {%- if value == n %} checked{% endif %}
+           {%- if disabled %} disabled{% endif %}
+           {%- if required and n == 1 %} required{% endif %}
+           data-slot="rating-item"
+           class="peer/star sr-only">
+    <label for="{{ id }}" aria-label="{{ n }} {{ 'star' if n == 1 else 'stars' }} out of {{ max }}" class="{{ label_base }}">
+      <svg class="{{ sz }} shrink-0 rounded-sm stroke-current" viewBox="0 0 24 24"
+           fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </label>
+    {%- endfor %}
+  </span>
+</div>
+{%- endmacro %}

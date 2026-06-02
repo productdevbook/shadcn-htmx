@@ -1,0 +1,26 @@
+{{/*
+  Aspect Ratio template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/aspect-ratio.tsx.
+
+  Locks the slotted child to a fixed width-to-height ratio with the native
+  CSS `aspect-ratio` property (no padding-top hack) and `object-fit` for
+  replaced elements. Zero JS.
+    MDN aspect-ratio: repos/mdn/files/en-us/web/css/reference/properties/aspect-ratio/index.md
+    MDN object-fit:   repos/mdn/files/en-us/web/css/reference/properties/object-fit/index.md
+    web.dev pattern:  repos/web.dev/src/site/content/en/patterns/layout/aspect-ratio-image-card/index.md
+
+      type AspectRatioArgs struct {
+          Ratio string      // "16/9" (default) | "1/1" | "4/3" | …
+          ID    string
+          Class string
+          Body  template.HTML // the slotted child, already carrying
+                              // size-full object-cover / object-contain
+      }
+*/}}
+
+{{define "aspect-ratio"}}
+{{- $ratio := or .Ratio "16/9" -}}
+{{- $ratioClass := printf "aspect-[%s]" $ratio -}}
+{{- if eq $ratio "1/1" -}}{{- $ratioClass = "aspect-square" -}}{{- else if eq $ratio "16/9" -}}{{- $ratioClass = "aspect-video" -}}{{- end -}}
+<div {{if .ID}}id="{{.ID}}" {{end}}data-slot="aspect-ratio" data-ratio="{{$ratio}}" class="relative block w-full overflow-hidden {{$ratioClass}} {{.Class}}">{{htmlSafe .Body}}</div>
+{{end}}

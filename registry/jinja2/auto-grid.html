@@ -1,0 +1,48 @@
+{# Auto Grid macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/auto-grid.tsx.
+
+   A responsive, intrinsically-wrapping grid of equal cells with no media
+   queries (the RAM pattern: repeat, auto-fit/auto-fill, minmax). Pure CSS.
+
+   Usage:
+     {% from "components/auto-grid.html" import auto_grid %}
+
+     {% call auto_grid() %}                      {# default: 16rem min, gap-4 #}
+       <div>…card…</div>
+     {% endcall %}
+
+     {% call auto_grid(min="20rem", gap="gap-6", fill=true, tag="ul") %}
+       <li>…</li>
+     {% endcall %}
+
+   Args:
+     min       per-item minimum width (any CSS length). Default "16rem".
+     gap       a gap-* class (string). Default "gap-4".
+     fill      true → auto-fill (keep empty tracks); false → auto-fit. Default false.
+     tag       div | ul | ol | section. Default "div".
+     attrs     dict of extra attributes (hx-*, data-*, aria-*). #}
+
+{% macro auto_grid(
+    min="16rem",
+    gap="gap-4",
+    fill=false,
+    tag="div",
+    aria_label=none,
+    aria_labelledby=none,
+    extra_class="",
+    attrs={}
+) %}
+{%- set tracks -%}
+{% if fill %}repeat(auto-fill,minmax(min(var(--auto-grid-min,16rem),100%),1fr)){% else %}repeat(auto-fit,minmax(min(var(--auto-grid-min,16rem),100%),1fr)){% endif %}
+{%- endset -%}
+<{{ tag }}
+  data-slot="auto-grid"
+  {%- if fill %} data-fill="true"{% endif %}
+  style="--auto-grid-min:{{ min }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+  class="grid [grid-template-columns:{{ tracks }}] {{ gap }} {{ extra_class }}">
+  {{ caller() }}
+</{{ tag }}>
+{% endmacro %}
