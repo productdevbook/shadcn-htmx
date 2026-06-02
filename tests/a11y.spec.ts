@@ -53,6 +53,7 @@ const SLUGS = [
   "grid",
   "treegrid",
   "splitter",
+  "landmarks",
 ]
 
 for (const slug of SLUGS) {

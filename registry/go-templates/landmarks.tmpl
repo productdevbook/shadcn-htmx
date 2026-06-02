@@ -1,0 +1,88 @@
+{{/*
+  Landmarks templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/landmarks.tsx.
+
+  An accessible page-shell built from the native HTML landmark elements.
+  Each native element exposes the matching ARIA landmark role implicitly:
+
+    <header>  -> banner          <aside>    -> complementary
+    <nav>     -> navigation       <section>  -> region (only when labelled)
+    <search>  -> search           <footer>   -> contentinfo
+    <main>    -> main
+
+  Labelling rules from the APG (pass AriaLabel / AriaLabelledby where the
+  practice calls for one — always for region; once there is more than one
+  navigation/complementary/search landmark, each needs a unique label).
+    repos/aria-practices/content/patterns/landmarks/examples/*.html
+  The native <search> element defines a search landmark (no role=search):
+    repos/mdn/files/en-us/web/html/reference/elements/search/index.md:20-22
+
+  Each named template takes a (dict ...) and renders one landmark. Pass the
+  inner markup as a pre-rendered template.HTML via (htmlSafe ...):
+
+      {{template "landmark_main" (dict
+        "Body" (htmlSafe `<h1>Dashboard</h1>…`)
+      )}}
+
+      {{template "landmark_nav" (dict
+        "AriaLabel" "Primary"
+        "Body" (htmlSafe `<ul>…</ul>`)
+      )}}
+*/}}
+
+{{/* banner — <header> in body context. Top-level only; one per page. */}}
+{{define "landmark_banner"}}
+<header data-slot="landmark-banner"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="border-b bg-card px-4 py-3 text-card-foreground{{with .Class}} {{.}}{{end}}">{{.Body}}</header>
+{{end}}
+
+{{/* navigation — <nav>. Each nav should have a unique label when >1 on a page. */}}
+{{define "landmark_nav"}}
+<nav data-slot="landmark-navigation"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="text-sm{{with .Class}} {{.}}{{end}}">{{.Body}}</nav>
+{{end}}
+
+{{/* search — native <search> element. Wrap a <form>; defines a search
+     landmark so no role=search on the form is needed. */}}
+{{define "landmark_search"}}
+<search data-slot="landmark-search"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="{{with .Class}}{{.}}{{end}}">{{.Body}}</search>
+{{end}}
+
+{{/* main — <main>. Exactly one per page; top-level. */}}
+{{define "landmark_main"}}
+<main data-slot="landmark-main"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="min-w-0 flex-1{{with .Class}} {{.}}{{end}}">{{.Body}}</main>
+{{end}}
+
+{{/* complementary — <aside>. Top-level; unique label when >1. */}}
+{{define "landmark_complementary"}}
+<aside data-slot="landmark-complementary"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="rounded-lg border bg-card p-4 text-sm text-card-foreground{{with .Class}} {{.}}{{end}}">{{.Body}}</aside>
+{{end}}
+
+{{/* region — <section> WITH a label (a region landmark must be named). */}}
+{{define "landmark_region"}}
+<section data-slot="landmark-region"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="rounded-lg border bg-card p-4 text-card-foreground{{with .Class}} {{.}}{{end}}">{{.Body}}</section>
+{{end}}
+
+{{/* contentinfo — <footer> in body context. Top-level only; one per page. */}}
+{{define "landmark_contentinfo"}}
+<footer data-slot="landmark-contentinfo"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  class="border-t bg-card px-4 py-3 text-sm text-muted-foreground{{with .Class}} {{.}}{{end}}">{{.Body}}</footer>
+{{end}}

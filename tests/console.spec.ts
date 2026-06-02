@@ -23,6 +23,8 @@ const SLUGS = [
   "range-slider", "toolbar",
   // APG batch B
   "listbox", "menubar", "tree", "carousel", "feed", "grid", "treegrid", "splitter",
+  // Landmarks (page-shell)
+  "landmarks",
 ]
 
 // Console "error" lines that aren't our fault (network/resource fetches).

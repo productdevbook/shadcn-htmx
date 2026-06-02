@@ -1,0 +1,85 @@
+{# Landmarks macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/landmarks.tsx.
+
+   An accessible page-shell built from the native HTML landmark elements.
+   Each native element exposes the matching ARIA landmark role implicitly:
+
+     <header>  →  banner          <aside>    →  complementary
+     <nav>     →  navigation      <section>  →  region (only when labelled)
+     <search>  →  search          <footer>   →  contentinfo
+     <main>    →  main
+
+   Labelling rules from the APG (pass aria_label / aria_labelledby where the
+   practice calls for one — always for region; once there is more than one
+   navigation/complementary/search landmark each needs a unique label).
+     repos/aria-practices/content/patterns/landmarks/examples/*.html
+   The native <search> element defines a search landmark (no role=search):
+     repos/mdn/files/en-us/web/html/reference/elements/search/index.md:20-22
+
+   Usage:
+     {% from "components/landmarks.html" import
+        banner_open, banner_close, nav_open, nav_close,
+        search_open, search_close, main_open, main_close,
+        complementary_open, complementary_close,
+        region_open, region_close, contentinfo_open, contentinfo_close %}
+
+     {{ banner_open() }} … {{ banner_close() }}
+     {{ nav_open(aria_label="Primary") }} … {{ nav_close() }}
+     {{ search_open(aria_label="Site") }}<form …>…</form>{{ search_close() }}
+     {{ main_open() }} … {{ main_close() }}
+     {{ complementary_open(aria_label="Related") }} … {{ complementary_close() }}
+     {{ region_open(aria_label="Stats") }} … {{ region_close() }}
+     {{ contentinfo_open() }} … {{ contentinfo_close() }}
+#}
+
+{% macro _attrs(extra) -%}
+{%- for k, v in extra.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+{%- endmacro %}
+
+{% macro _label(aria_label, aria_labelledby) -%}
+{%- if aria_label %} aria-label="{{ aria_label }}"{% endif -%}
+{%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif -%}
+{%- endmacro %}
+
+{# banner — <header> in body context. Top-level only; one per page. #}
+{% macro banner_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<header data-slot="landmark-banner"{{ _label(aria_label, aria_labelledby) }} class="border-b bg-card px-4 py-3 text-card-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro banner_close() %}</header>{% endmacro %}
+
+{# navigation — <nav>. Each nav should have a unique label when >1 on a page. #}
+{% macro nav_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<nav data-slot="landmark-navigation"{{ _label(aria_label, aria_labelledby) }} class="text-sm {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro nav_close() %}</nav>{% endmacro %}
+
+{# search — native <search> element. Wrap a <form>. Defines a search landmark
+   so no role=search on the form is needed. #}
+{% macro search_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<search data-slot="landmark-search"{{ _label(aria_label, aria_labelledby) }} class="{{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro search_close() %}</search>{% endmacro %}
+
+{# main — <main>. Exactly one per page; top-level. #}
+{% macro main_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<main data-slot="landmark-main"{{ _label(aria_label, aria_labelledby) }} class="min-w-0 flex-1 {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro main_close() %}</main>{% endmacro %}
+
+{# complementary — <aside>. Top-level; unique label when >1. #}
+{% macro complementary_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<aside data-slot="landmark-complementary"{{ _label(aria_label, aria_labelledby) }} class="rounded-lg border bg-card p-4 text-sm text-card-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro complementary_close() %}</aside>{% endmacro %}
+
+{# region — <section> WITH a label (a region landmark must be named). #}
+{% macro region_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<section data-slot="landmark-region"{{ _label(aria_label, aria_labelledby) }} class="rounded-lg border bg-card p-4 text-card-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro region_close() %}</section>{% endmacro %}
+
+{# contentinfo — <footer> in body context. Top-level only; one per page. #}
+{% macro contentinfo_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<footer data-slot="landmark-contentinfo"{{ _label(aria_label, aria_labelledby) }} class="border-t bg-card px-4 py-3 text-sm text-muted-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro contentinfo_close() %}</footer>{% endmacro %}

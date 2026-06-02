@@ -260,6 +260,12 @@
       "type": "registry:ui",
       "title": "Splitter",
       "description": "A resizable two-pane split whose divider is a focusable role=\"separator\" widget — drag it or use the arrow keys — driving a single CSS variable (--split) that sizes a grid track."
+    },
+    {
+      "name": "landmarks",
+      "type": "registry:ui",
+      "title": "Landmarks",
+      "description": "An accessible page-shell from the native HTML landmark elements (header, nav, search, main, aside, section, footer). Thin semantic wrappers that expose the matching ARIA landmark role, with aria-label/aria-labelledby where the APG Landmarks practice requires a unique name. Zero JS."
     }
   ]
 }

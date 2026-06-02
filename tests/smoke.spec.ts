@@ -495,3 +495,40 @@ test.describe("APG components — batch B", () => {
       expect(split).toMatch(/%$/)
     })
 })
+
+test.describe("Landmarks", () => {
+  test("exactly one main landmark", async ({ page }) => {
+    await gotoDoc(page, "landmarks")
+    const shell = page.locator('[data-slot="landmark-shell"]').first()
+    await expect(shell).toBeVisible()
+    await expect(shell.locator('main[data-slot="landmark-main"]')).toHaveCount(1)
+  })
+
+  test("nav landmark has an accessible name", async ({ page }) => {
+    await gotoDoc(page, "landmarks")
+    const nav = page
+      .locator('[data-slot="landmark-shell"] nav[data-slot="landmark-navigation"]')
+      .first()
+    await expect(nav).toHaveAttribute("aria-label", "Primary")
+  })
+
+  test("native <search> landmark wraps a form", async ({ page }) => {
+    await gotoDoc(page, "landmarks")
+    const search = page.locator('search[data-slot="landmark-search"]').first()
+    await expect(search.locator("form")).toHaveCount(1)
+    await expect(search).toHaveAttribute("aria-label", "Site")
+  })
+
+  test("region <section> is labelled", async ({ page }) => {
+    await gotoDoc(page, "landmarks")
+    const region = page.locator('section[data-slot="landmark-region"]').first()
+    await expect(region).toHaveAttribute("aria-labelledby", /.+/)
+  })
+
+  test("banner and contentinfo are present", async ({ page }) => {
+    await gotoDoc(page, "landmarks")
+    const shell = page.locator('[data-slot="landmark-shell"]').first()
+    await expect(shell.locator('header[data-slot="landmark-banner"]')).toHaveCount(1)
+    await expect(shell.locator('footer[data-slot="landmark-contentinfo"]')).toHaveCount(1)
+  })
+})

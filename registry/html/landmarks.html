@@ -1,0 +1,81 @@
+<!--
+  shadcn-htmx — raw HTML landmarks page-shell.
+
+  Mirrors registry/ui/landmarks.tsx. One self-contained, correctly
+  landmarked page shell built from native HTML elements — no JS, no special
+  CSS, just Tailwind utilities + theme tokens.
+
+  Native element -> implicit ARIA landmark role:
+    <header>  -> banner          <aside>    -> complementary
+    <nav>     -> navigation       <section>  -> region (only when labelled)
+    <search>  -> search           <footer>   -> contentinfo
+    <main>    -> main
+
+  Labelling rules (APG):
+    - <main> and the body-level <header>/<footer> need no label (one each).
+    - Each <nav> carries a unique aria-label so AT can tell them apart.
+    - <search> wraps the <form>; the element itself is the search landmark
+      (no role=search needed). See MDN <search>.
+    - <aside> (complementary) is labelled when there is more than one.
+    - <section> is ONLY a region landmark when it has an accessible name
+      (aria-label / aria-labelledby) — a bare <section> exposes no role.
+
+  data-slot="landmark-<role>" hangs off each root element.
+-->
+
+<div data-slot="landmark-shell" class="flex min-h-0 flex-col overflow-hidden rounded-lg border">
+  <!-- banner: top-level <header> -->
+  <header data-slot="landmark-banner" class="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 text-card-foreground">
+    <span class="font-semibold tracking-tight">Acme Console</span>
+
+    <!-- search landmark: the native <search> element wraps the form -->
+    <search data-slot="landmark-search" aria-label="Site" class="hidden sm:block">
+      <form action="/search" role="none" class="flex items-center gap-2">
+        <label for="lm-q" class="sr-only">Search the site</label>
+        <input id="lm-q" type="search" name="q" placeholder="Search…"
+          class="h-8 w-48 rounded-md border bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" />
+        <button type="submit" class="inline-flex h-8 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">Go</button>
+      </form>
+    </search>
+  </header>
+
+  <div class="flex flex-1 flex-col gap-4 bg-background p-4 md:flex-row">
+    <!-- navigation: labelled so it is distinguishable from other navs -->
+    <nav data-slot="landmark-navigation" aria-label="Primary" class="shrink-0 text-sm md:w-44">
+      <ul class="space-y-1">
+        <li><a href="#" aria-current="page" class="block rounded-md bg-accent px-2 py-1.5 font-medium text-accent-foreground">Overview</a></li>
+        <li><a href="#" class="block rounded-md px-2 py-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground">Reports</a></li>
+        <li><a href="#" class="block rounded-md px-2 py-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground">Settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- main: exactly one per page, top-level -->
+    <main data-slot="landmark-main" class="min-w-0 flex-1 space-y-4">
+      <h1 class="text-lg font-semibold tracking-tight">Overview</h1>
+      <p class="text-sm text-muted-foreground">
+        The primary content of the page. There is exactly one
+        <code>&lt;main&gt;</code> landmark per document.
+      </p>
+
+      <!-- region: a labelled <section> is a region landmark -->
+      <section data-slot="landmark-region" aria-labelledby="lm-usage-title" class="rounded-lg border bg-card p-4 text-card-foreground">
+        <h2 id="lm-usage-title" class="text-sm font-semibold">Usage this month</h2>
+        <p class="mt-1 text-sm text-muted-foreground">42,318 requests · 7.1 GB transferred</p>
+      </section>
+    </main>
+
+    <!-- complementary: top-level supporting content, labelled -->
+    <aside data-slot="landmark-complementary" aria-label="Related" class="shrink-0 rounded-lg border bg-card p-4 text-sm text-card-foreground md:w-56">
+      <h2 class="font-semibold">Related</h2>
+      <ul class="mt-2 space-y-1 text-muted-foreground">
+        <li><a href="#" class="underline-offset-4 hover:underline">Billing history</a></li>
+        <li><a href="#" class="underline-offset-4 hover:underline">API keys</a></li>
+      </ul>
+    </aside>
+  </div>
+
+  <!-- contentinfo: top-level <footer> -->
+  <footer data-slot="landmark-contentinfo" class="border-t bg-card px-4 py-3 text-sm text-muted-foreground">
+    © 2026 Acme, Inc. · <a href="#" class="underline-offset-4 hover:underline">Privacy</a> · <a href="#" class="underline-offset-4 hover:underline">Accessibility</a>
+  </footer>
+</div>

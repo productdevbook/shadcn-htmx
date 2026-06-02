@@ -1038,3 +1038,17 @@ export const SPLITTER_PROPS: ApiRow[] = [
   CLASS_ROW,
   HX_ROW,
 ]
+
+// ---- Landmarks (APG landmark practice) ----
+export const LANDMARKS_PROPS: ApiRow[] = [
+  { prop: "<Banner>", type: "<header>", description: "Banner landmark — top-level only; one per page. A <header> nested in article/aside/main/nav/section is just a sectioning header.", source: { badge: "APG", label: "Banner landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/banner.html" } },
+  { prop: "<NavLandmark>", type: "<nav>", description: "Navigation landmark. Give each a unique ariaLabel when a page has more than one nav.", source: { badge: "APG", label: "Navigation landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/navigation.html" } },
+  { prop: "<SearchLandmark>", type: "<search>", description: "Search landmark via the native <search> element wrapping a <form>; no role=\"search\" needed.", source: { badge: "MDN", label: "<search> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search" } },
+  { prop: "<MainLandmark>", type: "<main>", description: "Main landmark — exactly one per page, top-level.", source: { badge: "APG", label: "Main landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/main.html" } },
+  { prop: "<Complementary>", type: "<aside>", description: "Complementary landmark for supporting content; label each when more than one.", source: { badge: "APG", label: "Complementary landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/complementary.html" } },
+  { prop: "<RegionLandmark>", type: "<section>", description: "Region landmark. A bare <section> exposes NO role — always pass ariaLabel or ariaLabelledby.", source: { badge: "APG", label: "Region landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/region.html" } },
+  { prop: "<ContentInfo>", type: "<footer>", description: "Contentinfo landmark (copyright, privacy/accessibility links) — top-level only; one per page.", source: { badge: "APG", label: "Contentinfo landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/contentinfo.html" } },
+  { prop: "ariaLabel", type: "string", description: "Accessible name. Required for region; recommended for navigation/complementary/search once there is more than one of that type.", source: { badge: "MDN", label: "aria-label", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label" } },
+  { prop: "ariaLabelledby", type: "string", description: "Id of a visible heading that names the landmark. Preferred over ariaLabel when a title is on screen.", source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" } },
+  CLASS_ROW,
+]

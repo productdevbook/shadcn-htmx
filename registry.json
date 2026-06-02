@@ -798,6 +798,20 @@
         { "path": "registry/phoenix/splitter.ex", "type": "registry:file", "target": "lib/my_app_web/components/splitter.ex" },
         { "path": "registry/html/splitter.html", "type": "registry:file", "target": "snippets/splitter.html" }
       ]
+    },
+    {
+      "name": "landmarks",
+      "type": "registry:ui",
+      "title": "Landmarks",
+      "description": "An accessible page-shell from the native HTML landmark elements (header, nav, search, main, aside, section, footer). Thin semantic wrappers that expose the matching ARIA landmark role, with aria-label/aria-labelledby where the APG Landmarks practice requires a unique name. Zero JS.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/landmarks.tsx", "type": "registry:ui", "target": "components/ui/landmarks.tsx" },
+        { "path": "registry/jinja2/landmarks.html", "type": "registry:file", "target": "templates/components/landmarks.html" },
+        { "path": "registry/go-templates/landmarks.tmpl", "type": "registry:file", "target": "components/landmarks.tmpl" },
+        { "path": "registry/phoenix/landmarks.ex", "type": "registry:file", "target": "lib/my_app_web/components/landmarks.ex" },
+        { "path": "registry/html/landmarks.html", "type": "registry:file", "target": "snippets/landmarks.html" }
+      ]
     }
   ]
 }

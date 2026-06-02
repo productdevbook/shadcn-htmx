@@ -45,14 +45,15 @@ to your stack, and copy the source. Your code, your repo, no runtime dependency.
 
 ## Components
 
-26 components across six categories:
+43 components across six categories — every interactive one mapped to its
+WAI-ARIA APG pattern:
 
-- **Forms** — Button, Input, Textarea, Label, Checkbox, Combobox, Switch, Radio Group, Select, Slider
-- **Layout** — Card, Table
-- **Display** — Avatar, Badge, Separator
-- **Feedback** — Alert, Progress, Skeleton, Toast
-- **Overlays** — Dialog, Dropdown Menu, Popover, Tooltip
-- **Navigation** — Accordion, Pagination, Tabs
+- **Forms** — Button, Input, Textarea, Label, Checkbox, Combobox, Switch, Radio Group, Select, Slider, Number Input, Range Slider, Listbox
+- **Layout** — Card, Table, Collapsible, Toolbar, Grid, Treegrid, Splitter, Landmarks
+- **Display** — Avatar, Badge, Separator, Carousel
+- **Feedback** — Alert, Progress, Skeleton, Toast, Meter, Feed
+- **Overlays** — Dialog, Dropdown Menu, Popover, Tooltip, Alert Dialog
+- **Navigation** — Accordion, Pagination, Tabs, Breadcrumb, Link, Menubar, Tree
 
 ## Local development
 

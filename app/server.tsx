@@ -44,6 +44,7 @@ import { feedRoutes } from "@/app/routes/feed"
 import { gridRoutes } from "@/app/routes/grid"
 import { treegridRoutes } from "@/app/routes/treegrid"
 import { splitterRoutes } from "@/app/routes/splitter"
+import { landmarksRoutes } from "@/app/routes/landmarks"
 
 const app = new Hono()
 
@@ -99,6 +100,7 @@ app.route("/docs/feed", feedRoutes)
 app.route("/docs/grid", gridRoutes)
 app.route("/docs/treegrid", treegridRoutes)
 app.route("/docs/splitter", splitterRoutes)
+app.route("/docs/landmarks", landmarksRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -144,6 +146,7 @@ app.route("/feed", feedRoutes)
 app.route("/grid", gridRoutes)
 app.route("/treegrid", treegridRoutes)
 app.route("/splitter", splitterRoutes)
+app.route("/landmarks", landmarksRoutes)
 
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
@@ -178,6 +181,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Grid", href: "/docs/grid", blurb: "Interactive data grid with 2-D arrow-key cell navigation" },
       { label: "Treegrid", href: "/docs/treegrid", blurb: "Expandable hierarchical grid (role=treegrid)" },
       { label: "Splitter", href: "/docs/splitter", blurb: "Resizable two-pane split with a draggable divider" },
+      { label: "Landmarks", href: "/docs/landmarks", blurb: "Accessible landmark page-shell, native elements" },
     ],
   },
   {
@@ -391,7 +395,7 @@ app.get("/", (c) =>
                 Components
               </p>
               <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
-                Twenty-six components. Every one, every flavour.
+                Forty-three components. Every one, every flavour.
               </h2>
               <p class="text-sm text-muted-foreground">
                 Each ships with the same install, live examples, and source view

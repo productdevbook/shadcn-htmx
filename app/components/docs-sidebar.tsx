@@ -43,6 +43,7 @@ const sections: Section[] = [
       { label: "Grid", href: "/docs/grid" },
       { label: "Treegrid", href: "/docs/treegrid" },
       { label: "Splitter", href: "/docs/splitter" },
+      { label: "Landmarks", href: "/docs/landmarks" },
     ],
   },
   {
