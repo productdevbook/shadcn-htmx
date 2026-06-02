@@ -1,0 +1,35 @@
+{{/*
+  Meter template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/meter.tsx. Renders the native <meter> element
+  (implicit role="meter"); fill/track theming lives in input.css scoped
+  to [data-slot="meter"].
+
+  Usage:
+
+      {{template "meter" (dict
+          "ID" "disk" "Value" 0.62 "Low" 0.25 "High" 0.85 "Optimum" 0.1
+          "ValueText" "12.4 GB of 16 GB")}}
+
+  Low / High / Optimum are optional; pass them only when zoning the gauge.
+*/}}
+
+{{define "meter"}}
+{{- $base := "block h-2 w-full overflow-hidden rounded-full bg-primary/20 align-middle" -}}
+{{- $value := or .Value 0 -}}
+{{- $min := or .Min 0 -}}
+{{- $max := or .Max 1 -}}
+{{- $text := or .Text (printf "%v / %v" $value $max) -}}
+<meter class="{{$base}}{{if .Class}} {{.Class}}{{end}}"
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       value="{{$value}}" min="{{$min}}" max="{{$max}}"
+       {{- if .Low}} low="{{.Low}}"{{end}}
+       {{- if .High}} high="{{.High}}"{{end}}
+       {{- if .Optimum}} optimum="{{.Optimum}}"{{end}}
+       {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+       {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+       {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- if .ValueText}} aria-valuetext="{{.ValueText}}"{{end}}
+       data-slot="meter"
+       {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >{{$text}}</meter>
+{{end}}

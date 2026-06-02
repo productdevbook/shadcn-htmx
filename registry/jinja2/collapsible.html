@@ -1,0 +1,45 @@
+{# Collapsible macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/collapsible.tsx. Native <details>/<summary> single
+   disclosure (WAI-ARIA Disclosure pattern). Enter/Space toggle and
+   aria-expanded are all native to <summary> — zero JS.
+
+   Distinct from accordion: a standalone show/hide, no group `name`.
+
+   Usage:
+     {% from "components/collapsible.html" import collapsible_open, collapsible_close,
+        collapsible_trigger, collapsible_content_open, collapsible_content_close %}
+
+     {{ collapsible_open(open=true) }}
+       {{ collapsible_trigger("Can I use this without JS?") }}
+       {{ collapsible_content_open() }}
+         Yes — it is native <details>/<summary>.
+       {{ collapsible_content_close() }}
+     {{ collapsible_close() }} #}
+
+{% macro collapsible_open(open=false, disabled=false, extra_class="", attrs={}) -%}
+<details data-slot="collapsible"
+         {%- if disabled %} data-disabled="true"{% endif %}
+         {%- if open %} open{% endif %}
+         class="w-full {% if disabled %}pointer-events-none opacity-50{% endif %} {{ extra_class }}"
+         {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}>
+{%- endmacro %}
+
+{% macro collapsible_close() %}</details>{% endmacro %}
+
+{% macro collapsible_trigger(text, extra_class="") -%}
+<summary data-slot="collapsible-trigger"
+  class="flex cursor-pointer items-center justify-between gap-4 rounded-md py-2 text-left text-sm font-medium transition-all outline-none select-none marker:hidden hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 list-none [&::-webkit-details-marker]:hidden [details[open]>&_[data-slot=collapsible-chevron]]:rotate-180 {{ extra_class }}">
+  {{ text }}
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       data-slot="collapsible-chevron"
+       class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</summary>
+{%- endmacro %}
+
+{% macro collapsible_content_open(extra_class="") -%}
+<div data-slot="collapsible-content" class="overflow-hidden pt-2 pb-1 text-sm {{ extra_class }}">
+{%- endmacro %}
+
+{% macro collapsible_content_close() %}</div>{% endmacro %}

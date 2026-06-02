@@ -486,4 +486,153 @@
     window.addEventListener('scroll', updateActive, { passive: true })
     window.addEventListener('resize', updateActive)
   }
+
+  // ===== New APG components (batch A) =====
+
+  // Number Input (registry/ui/number-input.tsx).
+    //
+    // The control is a native <input type="number">, so it is already a
+    // role=spinbutton with the full APG keyboard contract (ArrowUp/ArrowDown
+    // step, value clamping) — see
+    // repos/aria-practices/content/patterns/spinbutton/spinbutton-pattern.html.
+    // The only thing the platform doesn't give us is click handlers for our
+    // custom −/+ buttons, so we wire those to the native stepUp()/stepDown()
+    // DOM methods. The buttons are tabindex="-1" (redundant with the arrow
+    // keys, per the APG quantity-spinbutton example), so keyboard users never
+    // tab onto them — focus stays on the input.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('[data-slot="number-input"] [data-step]')
+      if (!btn || btn.disabled) return
+      var root = btn.closest('[data-slot="number-input"]')
+      var input = root && root.querySelector('input[type="number"]')
+      if (!input || input.disabled || input.readOnly) return
+      try {
+        if (btn.getAttribute('data-step') === 'up') input.stepUp()
+        else input.stepDown()
+      } catch (err) { return }
+      // Fire input + change so listeners (and htmx hx-trigger="change") react
+      // exactly as if the user had typed or pressed an arrow key.
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+  // Link — APG fallback only. A native <a href> needs no JS: role=link and
+    // Enter-activates-the-link come from the platform (APG Link pattern,
+    // repos/aria-practices/content/patterns/link/link-pattern.html). This boots
+    // ONLY the non-anchor fallback (as="span"/"button" + role="link"), which the
+    // APG examples build by hand and which the browser will NOT navigate for us.
+    // We honour the APG keyboard contract: Enter executes the link and moves to
+    // its target. The navigation target comes from a data-href hook.
+    document
+      .querySelectorAll('[data-slot="link"][role="link"][data-href]')
+      .forEach(function (el) {
+        if (el.tagName === "A") return // real anchors are native; skip
+        var go = function () {
+          var href = el.getAttribute("data-href")
+          if (href) window.location.assign(href)
+        }
+        el.addEventListener("click", go)
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            go()
+          }
+        })
+      })
+
+  // Range Slider (registry/ui/range-slider.tsx).
+    //
+    // Two native <input type="range"> stacked on one track give us role=slider,
+    // aria-valuemin/max/now and the full arrow/Home/End/PageUp/Down keyboard
+    // contract for free (WAI-ARIA APG Multi-Thumb Slider pattern). The platform
+    // does NOT know the two inputs are related, so here we:
+    //   - stop the thumbs crossing. APG: "the maximum value of the thumb that
+    //     sets the lower end of the range is limited by the current value of the
+    //     thumb that sets the upper end" (and vice versa). Whichever thumb the
+    //     user is moving is the one we pin to the other's value.
+    //   - publish --range-min / --range-max (percentages) on the root so the
+    //     coloured fill paints the segment between the two thumbs.
+    document.querySelectorAll('[data-slot="range-slider"]').forEach(function (root) {
+      var lo = root.querySelector('input[data-range="min"]')
+      var hi = root.querySelector('input[data-range="max"]')
+      if (!lo || !hi || root.dataset.rangeBound === 'true') return
+      root.dataset.rangeBound = 'true'
+      var pct = function (input) {
+        var min = +input.min
+        var max = +input.max
+        return ((+input.value - min) / ((max - min) || 1)) * 100
+      }
+      var paint = function () {
+        root.style.setProperty('--range-min', pct(lo) + '%')
+        root.style.setProperty('--range-max', pct(hi) + '%')
+      }
+      var clamp = function (active) {
+        if (+lo.value <= +hi.value) return
+        // The thumb the user is driving wins; pin the other one to it.
+        if (active === lo) hi.value = lo.value
+        else lo.value = hi.value
+      }
+      lo.addEventListener('input', function () { clamp(lo); paint() })
+      hi.addEventListener('input', function () { clamp(hi); paint() })
+      paint()
+    })
+
+  // Toolbar (registry/ui/toolbar.tsx).
+    //
+    // role="toolbar" is a SINGLE tab stop. An inline boot script (next to each
+    // toolbar) sets the initial roving tabindex — one control at tabindex="0",
+    // the rest at -1. Here we own the live keyboard contract, modelled on how
+    // Tabs handles arrows and on the APG example's roving tabindex:
+    //   repos/aria-practices/content/patterns/toolbar/toolbar-pattern.html
+    //   repos/aria-practices/content/patterns/toolbar/examples/js/FormatToolbar.js
+    //
+    // Keyboard:
+    //   - ArrowLeft / ArrowRight on horizontal toolbars (Up/Down on vertical)
+    //     move focus between controls, wrapping at the ends.
+    //   - Home -> first control, End -> last control.
+    //   - Moving focus rolls the tabindex="0" onto the new control so Tab/
+    //     Shift+Tab always re-enters where focus last was.
+    // Separators (role="separator") carry no data-toolbar-item, so they are
+    // skipped. Disabled buttons ([disabled]) are skipped too.
+    var rollToolbarFocus = function (bar, target) {
+      bar.querySelectorAll('[data-toolbar-item]').forEach(function (it) {
+        it.setAttribute('tabindex', '-1')
+      })
+      target.setAttribute('tabindex', '0')
+      target.focus()
+    }
+    document.addEventListener('keydown', function (e) {
+      var item = e.target.closest && e.target.closest('[data-toolbar-item]')
+      if (!item) return
+      var bar = item.closest('[data-slot="toolbar"]')
+      if (!bar) return
+      var vertical = bar.getAttribute('data-orientation') === 'vertical'
+      var prev = vertical ? 'ArrowUp' : 'ArrowLeft'
+      var next = vertical ? 'ArrowDown' : 'ArrowRight'
+      if (e.key !== prev && e.key !== next && e.key !== 'Home' && e.key !== 'End') return
+      e.preventDefault()
+      var items = [].slice.call(
+        bar.querySelectorAll('[data-toolbar-item]:not([disabled])'),
+      )
+      if (!items.length) return
+      var idx = items.indexOf(item)
+      var target
+      if (e.key === prev) target = items[(idx - 1 + items.length) % items.length]
+      else if (e.key === next) target = items[(idx + 1) % items.length]
+      else if (e.key === 'Home') target = items[0]
+      else if (e.key === 'End') target = items[items.length - 1]
+      if (target) rollToolbarFocus(bar, target)
+    })
+    // Clicking a control also makes it the roving-tabindex owner, so a
+    // subsequent Tab away + Shift+Tab back returns to the last-used control.
+    document.addEventListener('click', function (e) {
+      var item = e.target.closest && e.target.closest('[data-toolbar-item]')
+      if (!item || item.hasAttribute('disabled')) return
+      var bar = item.closest('[data-slot="toolbar"]')
+      if (!bar) return
+      bar.querySelectorAll('[data-toolbar-item]').forEach(function (it) {
+        it.setAttribute('tabindex', it === item ? '0' : '-1')
+      })
+    })
+
 })()

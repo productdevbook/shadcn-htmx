@@ -1,0 +1,62 @@
+{# Range Slider (two-thumb) macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/range-slider.tsx. Two native <input type="range">
+   overlaid on one track; site.js (data-slot="range-slider") clamps the
+   thumbs so they can't cross and keeps --range-min/--range-max in sync. #}
+
+{% macro range_slider(
+    id=none, min_name="min", max_name="max",
+    min_value=none, max_value=none, min=0, max=100, step=none,
+    disabled=false, form=none,
+    min_label="Minimum", max_label="Maximum",
+    aria_labelledby=none, aria_describedby=none,
+    min_valuetext=none, max_valuetext=none,
+    extra_class="", **attrs
+) %}
+{% set lo = min_value if min_value is not none else min %}
+{% set hi = max_value if max_value is not none else max %}
+{% set span = (max - min) if (max - min) != 0 else 1 %}
+{% set min_pct = ((lo - min) / span * 100) ~ "%" %}
+{% set max_pct = ((hi - min) / span * 100) ~ "%" %}
+<span data-slot="range-slider"
+      {%- if disabled %} data-disabled="true"{% endif %}
+      style="--range-min:{{ min_pct }};--range-max:{{ max_pct }}"
+      class="relative flex h-4 w-full touch-none items-center select-none {% if disabled %}opacity-50{% endif %} {{ extra_class }}"
+      {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor %}>
+  <span class="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden="true"></span>
+  <span class="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary [left:var(--range-min,0%)] [right:calc(100%-var(--range-max,100%))]" aria-hidden="true"></span>
+  <input type="range" data-range="min"
+    {%- if id %} id="{{ id }}-min"{% endif %}
+    name="{{ min_name }}" value="{{ lo }}"
+    min="{{ min }}" max="{{ max }}"
+    {%- if step %} step="{{ step }}"{% endif %}
+    {%- if disabled %} disabled{% endif %}
+    {%- if form %} form="{{ form }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ min_label }}"{% endif %}
+    {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+    {%- if min_valuetext %} aria-valuetext="{{ min_valuetext }}"{% endif %}
+    class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
+           [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
+           [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
+           [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm
+           [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
+           focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
+           disabled:cursor-not-allowed">
+  <input type="range" data-range="max"
+    {%- if id %} id="{{ id }}-max"{% endif %}
+    name="{{ max_name }}" value="{{ hi }}"
+    min="{{ min }}" max="{{ max }}"
+    {%- if step %} step="{{ step }}"{% endif %}
+    {%- if disabled %} disabled{% endif %}
+    {%- if form %} form="{{ form }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ max_label }}"{% endif %}
+    {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+    {%- if max_valuetext %} aria-valuetext="{{ max_valuetext }}"{% endif %}
+    class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
+           [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
+           [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
+           [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm
+           [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
+           focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
+           disabled:cursor-not-allowed">
+</span>
+{% endmacro %}

@@ -1,0 +1,85 @@
+<!--
+  shadcn-htmx — raw Number Input snippets.
+
+  Mirrors registry/ui/number-input.tsx. Drop onto any page that loads Tailwind
+  CSS v4 and the shadcn theme variables (background, foreground, input, ring,
+  destructive, accent, muted-foreground). See app/styles/input.css for defaults.
+
+  The control is a native <input type="number"> — role=spinbutton,
+  aria-valuenow/min/max, and the ArrowUp/ArrowDown stepping contract all come
+  from the platform (see MDN). The −/+ buttons call stepDown()/stepUp(); the
+  inline boot script below wires them (data-slot="number-input"). In the docs
+  app the same handler lives in public/site.js, so you can delete the script
+  there. With the bare-field variant there is no JS at all.
+
+  INPUT BASE (shared with Input + hides native spinners):
+    flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent
+    px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none
+    selection:bg-primary selection:text-primary-foreground
+    placeholder:text-muted-foreground
+    disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50
+    md:text-sm dark:bg-input/30
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70
+    [&::-webkit-inner-spin-button]:appearance-none
+    [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]
+-->
+
+<!-- ─── With steppers (default) ─────────────────────────────────────── -->
+<div data-slot="number-input"
+  class="flex h-9 w-full min-w-0 items-stretch overflow-hidden rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] dark:bg-input/30 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-[input[aria-invalid=true]]:border-destructive has-[input[aria-invalid=true]]:ring-destructive/20 dark:has-[input[aria-invalid=true]]:ring-destructive/40 has-[input:disabled]:pointer-events-none has-[input:disabled]:opacity-50">
+  <button type="button" data-step="down" tabindex="-1" aria-label="Decrease" title="Decrease"
+    class="inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors outline-none select-none hover:text-foreground hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:relative focus-visible:z-10 disabled:pointer-events-none disabled:opacity-50 rounded-l-md border-r border-input">
+    <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M5 12h14"/></svg></span>
+  </button>
+  <input type="number" name="qty" value="1" min="0" max="10" data-slot="number-input-field"
+    class="flex h-9 w-full min-w-0 rounded-none border-0 bg-transparent px-3 py-1 text-base text-center shadow-none outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]">
+  <button type="button" data-step="up" tabindex="-1" aria-label="Increase" title="Increase"
+    class="inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors outline-none select-none hover:text-foreground hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:relative focus-visible:z-10 disabled:pointer-events-none disabled:opacity-50 rounded-r-md border-l border-input">
+    <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span>
+  </button>
+</div>
+
+<!-- ─── Bare field, no buttons — zero JS ────────────────────────────── -->
+<!-- Still a full spinbutton: ArrowUp/ArrowDown step, native value clamping. -->
+<input type="number" name="amount" min="0" step="0.01" inputmode="decimal" placeholder="0.00" data-slot="number-input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]">
+
+<!-- ─── Disabled ────────────────────────────────────────────────────── -->
+<div data-slot="number-input" data-disabled="true"
+  class="flex h-9 w-full min-w-0 items-stretch overflow-hidden rounded-md border border-input bg-transparent shadow-xs dark:bg-input/30 has-[input:disabled]:pointer-events-none has-[input:disabled]:opacity-50">
+  <button type="button" data-step="down" tabindex="-1" disabled aria-label="Decrease" title="Decrease"
+    class="inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground select-none disabled:pointer-events-none disabled:opacity-50 rounded-l-md border-r border-input">
+    <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M5 12h14"/></svg></span>
+  </button>
+  <input type="number" value="3" disabled data-slot="number-input-field"
+    class="flex h-9 w-full min-w-0 rounded-none border-0 bg-transparent px-3 py-1 text-base text-center shadow-none outline-none md:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]">
+  <button type="button" data-step="up" tabindex="-1" disabled aria-label="Increase" title="Increase"
+    class="inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground select-none disabled:pointer-events-none disabled:opacity-50 rounded-r-md border-l border-input">
+    <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span>
+  </button>
+</div>
+
+<!--
+  Boot script — wires the −/+ buttons to the native stepDown()/stepUp().
+  Self-contained; safe to include once per page. (The docs site ships the
+  same logic in public/site.js, so omit this there.)
+-->
+<script>
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('[data-slot="number-input"] [data-step]')
+      if (!btn || btn.disabled) return
+      var root = btn.closest('[data-slot="number-input"]')
+      var input = root && root.querySelector('input[type="number"]')
+      if (!input || input.disabled || input.readOnly) return
+      try {
+        if (btn.getAttribute('data-step') === 'up') input.stepUp()
+        else input.stepDown()
+      } catch (err) { return }
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+  })()
+</script>

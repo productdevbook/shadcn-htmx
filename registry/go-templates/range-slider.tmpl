@@ -1,0 +1,49 @@
+{{/*
+  Range Slider (two-thumb) template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/range-slider.tsx. Two native <input type="range">
+  overlaid on one track; site.js (data-slot="range-slider") clamps the
+  thumbs so they can't cross and keeps --range-min/--range-max in sync.
+
+      type RangeSliderArgs struct {
+          ID, MinName, MaxName string
+          MinValue, MaxValue, Min, Max, Step *int
+          Disabled bool
+          Form string
+          MinLabel, MaxLabel string
+          AriaLabelledby, AriaDescribedby string
+          MinValuetext, MaxValuetext string
+          // Everything else (hx-get, data-*, …) goes here.
+          Attrs map[string]string
+      }
+*/}}
+{{define "range-slider"}}
+{{- $min := or .Min 0 -}}{{- $max := or .Max 100 -}}
+{{- $minName := or .MinName "min" -}}{{- $maxName := or .MaxName "max" -}}
+{{- $minLabel := or .MinLabel "Minimum" -}}{{- $maxLabel := or .MaxLabel "Maximum" -}}
+{{- $lo := $min -}}{{- if .MinValue}}{{- $lo = deref .MinValue -}}{{end -}}
+{{- $hi := $max -}}{{- if .MaxValue}}{{- $hi = deref .MaxValue -}}{{end -}}
+{{- $span := sub $max $min -}}{{- if eq $span 0}}{{- $span = 1 -}}{{end -}}
+<span data-slot="range-slider" {{if .Disabled}}data-disabled="true"{{end}}
+      style="--range-min:{{div (mul (sub $lo $min) 100) $span}}%;--range-max:{{div (mul (sub $hi $min) 100) $span}}%"
+      class="relative flex h-4 w-full touch-none items-center select-none {{if .Disabled}}opacity-50{{end}}"
+      {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}>
+  <span class="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden="true"></span>
+  <span class="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary [left:var(--range-min,0%)] [right:calc(100%-var(--range-max,100%))]" aria-hidden="true"></span>
+  <input type="range" data-range="min"
+    {{if .ID}}id="{{.ID}}-min"{{end}} name="{{$minName}}" value="{{$lo}}"
+    min="{{$min}}" max="{{$max}}" {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{if .Disabled}}disabled{{end}} {{if .Form}}form="{{.Form}}"{{end}}
+    {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else}}aria-label="{{$minLabel}}"{{end}}
+    {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
+    {{if .MinValuetext}}aria-valuetext="{{.MinValuetext}}"{{end}}
+    class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)] disabled:cursor-not-allowed">
+  <input type="range" data-range="max"
+    {{if .ID}}id="{{.ID}}-max"{{end}} name="{{$maxName}}" value="{{$hi}}"
+    min="{{$min}}" max="{{$max}}" {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{if .Disabled}}disabled{{end}} {{if .Form}}form="{{.Form}}"{{end}}
+    {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else}}aria-label="{{$maxLabel}}"{{end}}
+    {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
+    {{if .MaxValuetext}}aria-valuetext="{{.MaxValuetext}}"{{end}}
+    class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)] disabled:cursor-not-allowed">
+</span>
+{{end}}

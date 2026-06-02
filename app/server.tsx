@@ -28,6 +28,14 @@ import { sliderRoutes } from "@/app/routes/slider"
 import { paginationRoutes } from "@/app/routes/pagination"
 import { tableRoutes } from "@/app/routes/table"
 import { comboboxRoutes } from "@/app/routes/combobox"
+import { meterRoutes } from "@/app/routes/meter"
+import { numberInputRoutes } from "@/app/routes/number-input"
+import { breadcrumbRoutes } from "@/app/routes/breadcrumb"
+import { linkRoutes } from "@/app/routes/link"
+import { collapsibleRoutes } from "@/app/routes/collapsible"
+import { alertDialogRoutes } from "@/app/routes/alert-dialog"
+import { rangeSliderRoutes } from "@/app/routes/range-slider"
+import { toolbarRoutes } from "@/app/routes/toolbar"
 
 const app = new Hono()
 
@@ -67,6 +75,14 @@ app.route("/docs/slider", sliderRoutes)
 app.route("/docs/pagination", paginationRoutes)
 app.route("/docs/table", tableRoutes)
 app.route("/docs/combobox", comboboxRoutes)
+app.route("/docs/meter", meterRoutes)
+app.route("/docs/number-input", numberInputRoutes)
+app.route("/docs/breadcrumb", breadcrumbRoutes)
+app.route("/docs/link", linkRoutes)
+app.route("/docs/collapsible", collapsibleRoutes)
+app.route("/docs/alert-dialog", alertDialogRoutes)
+app.route("/docs/range-slider", rangeSliderRoutes)
+app.route("/docs/toolbar", toolbarRoutes)
 // Aliases: each component's docs router also handles its htmx demo endpoints
 // (hx-post="/input/validate-email", etc.). Mount under both so the page can
 // be browsed at /docs/<name> and the form-action URLs read naturally.
@@ -96,6 +112,14 @@ app.route("/slider", sliderRoutes)
 app.route("/pagination", paginationRoutes)
 app.route("/table", tableRoutes)
 app.route("/combobox", comboboxRoutes)
+app.route("/meter", meterRoutes)
+app.route("/number-input", numberInputRoutes)
+app.route("/breadcrumb", breadcrumbRoutes)
+app.route("/link", linkRoutes)
+app.route("/collapsible", collapsibleRoutes)
+app.route("/alert-dialog", alertDialogRoutes)
+app.route("/range-slider", rangeSliderRoutes)
+app.route("/toolbar", toolbarRoutes)
 
 const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
@@ -115,6 +139,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Radio Group", href: "/docs/radio-group", blurb: "Arrow-key cycle straight from the platform." },
       { label: "Select", href: "/docs/select", blurb: "Native dropdown, cascading htmx demo." },
       { label: "Slider", href: "/docs/slider", blurb: "Native range, full keyboard contract." },
+      { label: "Number Input", href: "/docs/number-input", blurb: "Native number spinbutton with −/+ steppers" },
+      { label: "Range Slider", href: "/docs/range-slider", blurb: "Two-thumb range from native range inputs" },
     ],
   },
   {
@@ -122,6 +148,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
     items: [
       { label: "Card", href: "/docs/card", blurb: "Header / Content / Footer slots." },
       { label: "Table", href: "/docs/table", blurb: "Semantic table, sortable via aria-sort." },
+      { label: "Collapsible", href: "/docs/collapsible", blurb: "Native single show/hide disclosure" },
+      { label: "Toolbar", href: "/docs/toolbar", blurb: "Group controls in one arrow-navigable tab stop" },
     ],
   },
   {
@@ -139,6 +167,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Progress", href: "/docs/progress", blurb: "role=progressbar, htmx polling demo." },
       { label: "Skeleton", href: "/docs/skeleton", blurb: "role=status placeholder, outerHTML swap." },
       { label: "Toast", href: "/docs/toast", blurb: "Server-driven via htmx beforeend swap." },
+      { label: "Meter", href: "/docs/meter", blurb: "Native <meter> gauge, low/high/optimum zones." },
     ],
   },
   {
@@ -148,6 +177,7 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Dropdown Menu", href: "/docs/dropdown-menu", blurb: "Popover API + APG menu keyboard contract." },
       { label: "Popover", href: "/docs/popover", blurb: "Native Popover API, light dismiss + ESC." },
       { label: "Tooltip", href: "/docs/tooltip", blurb: "CSS hover/focus reveal, ESC to dismiss." },
+      { label: "Alert Dialog", href: "/docs/alert-dialog", blurb: "Confirm consequential actions, no backdrop dismiss" },
     ],
   },
   {
@@ -156,6 +186,8 @@ const COMPONENT_GROUPS: { title: string; items: { label: string; href: string; b
       { label: "Accordion", href: "/docs/accordion", blurb: "Native details/summary, exclusive via name." },
       { label: "Pagination", href: "/docs/pagination", blurb: "nav landmark, aria-current on active page." },
       { label: "Tabs", href: "/docs/tabs", blurb: "role=tab, arrow / Home / End contract." },
+      { label: "Breadcrumb", href: "/docs/breadcrumb", blurb: "Path-to-page trail: native nav + ol of links" },
+      { label: "Link", href: "/docs/link", blurb: "Native anchor; underlined/muted/hover + external." },
     ],
   },
 ]

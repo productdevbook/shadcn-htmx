@@ -1,0 +1,26 @@
+<!--
+  shadcn-htmx — raw HTML collapsible snippet.
+
+  Native <details> + <summary> single disclosure (WAI-ARIA Disclosure
+  pattern). Click / Space / Enter toggle open, the summary is focusable and
+  implicitly role="button", and the browser mirrors aria-expanded — all with
+  zero JavaScript. Distinct from accordion: a single standalone show/hide,
+  with no `name` group attribute.
+
+  Relies only on the theme tokens in styles.css.
+-->
+
+<details data-slot="collapsible" open class="w-full">
+  <summary data-slot="collapsible-trigger"
+    class="flex cursor-pointer items-center justify-between gap-4 rounded-md py-2 text-left text-sm font-medium transition-all outline-none select-none marker:hidden hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 list-none [&::-webkit-details-marker]:hidden [details[open]>&_[data-slot=collapsible-chevron]]:rotate-180">
+    Can I use this without JavaScript?
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         data-slot="collapsible-chevron" class="pointer-events-none size-4 shrink-0 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </summary>
+  <div data-slot="collapsible-content" class="overflow-hidden pt-2 pb-1 text-sm">
+    Yes. The open/close toggle, keyboard handling (Space / Enter), focus, and
+    aria-expanded are all native to &lt;details&gt;/&lt;summary&gt;.
+  </div>
+</details>

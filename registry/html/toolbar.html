@@ -1,0 +1,101 @@
+<!--
+  shadcn-htmx — raw HTML toolbar snippet.
+
+  Mirrors registry/ui/toolbar.tsx. The container has role="toolbar" and is a
+  SINGLE tab stop: exactly one control carries tabindex="0", the rest
+  tabindex="-1" (a roving tabindex). The inline <script> right after the
+  toolbar sets that on first paint; the keyboard contract (ArrowLeft/Right or
+  Up/Down + Home/End moving the 0 between controls) needs the wiring in
+  public/site.js.
+
+  Accessibility contract:
+    repos/aria-practices/content/patterns/toolbar/toolbar-pattern.html
+
+  Required CSS theme variables: --card, --border, --foreground, --accent,
+  --accent-foreground, --ring. See app/styles/input.css.
+
+  Minimal inline JS for keyboard navigation (if you are not loading site.js):
+
+    <script>
+      document.addEventListener('keydown', function (e) {
+        var item = e.target.closest('[data-toolbar-item]')
+        if (!item) return
+        var bar = item.closest('[data-slot="toolbar"]')
+        if (!bar) return
+        var vertical = bar.getAttribute('data-orientation') === 'vertical'
+        var prev = vertical ? 'ArrowUp' : 'ArrowLeft'
+        var next = vertical ? 'ArrowDown' : 'ArrowRight'
+        if ([prev, next, 'Home', 'End'].indexOf(e.key) === -1) return
+        e.preventDefault()
+        var items = [].slice.call(
+          bar.querySelectorAll('[data-toolbar-item]:not([disabled])')
+        )
+        var i = items.indexOf(item)
+        var t =
+          e.key === prev ? items[(i - 1 + items.length) % items.length] :
+          e.key === next ? items[(i + 1) % items.length] :
+          e.key === 'Home' ? items[0] : items[items.length - 1]
+        items.forEach(function (x) { x.setAttribute('tabindex', '-1') })
+        t.setAttribute('tabindex', '0')
+        t.focus()
+      })
+    </script>
+-->
+
+<div role="toolbar"
+     data-slot="toolbar"
+     data-orientation="horizontal"
+     aria-orientation="horizontal"
+     aria-label="Text formatting"
+     class="group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch">
+
+  <button type="button" data-slot="toolbar-toggle" data-toolbar-item=""
+          aria-pressed="true" aria-label="Bold"
+          class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+    Bold
+  </button>
+
+  <button type="button" data-slot="toolbar-toggle" data-toolbar-item=""
+          aria-pressed="false" aria-label="Italic"
+          class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+    Italic
+  </button>
+
+  <div role="separator" data-slot="toolbar-separator" aria-orientation="vertical"
+       class="shrink-0 bg-border mx-0.5 h-5 w-px"></div>
+
+  <div role="group" data-slot="toolbar-group" aria-label="Alignment"
+       class="flex items-center gap-1 group-data-[orientation=vertical]/toolbar:flex-col group-data-[orientation=vertical]/toolbar:items-stretch">
+
+    <button type="button" data-slot="toolbar-button" data-toolbar-item=""
+            class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+      Left
+    </button>
+
+    <button type="button" data-slot="toolbar-button" data-toolbar-item=""
+            class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+      Center
+    </button>
+
+    <button type="button" data-slot="toolbar-button" data-toolbar-item=""
+            class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">
+      Right
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+  (function (el) {
+    var items = el.querySelectorAll('[data-toolbar-item]')
+    var set = false
+    items.forEach(function (it) {
+      var off = it.hasAttribute('disabled') || it.getAttribute('aria-disabled') === 'true'
+      if (!set && !off) { it.setAttribute('tabindex', '0'); set = true }
+      else { it.setAttribute('tabindex', '-1') }
+    })
+    if (!set && items.length) items[0].setAttribute('tabindex', '0')
+    el.setAttribute('data-toolbar-ready', 'true')
+  })(document.currentScript.previousElementSibling)
+</script>

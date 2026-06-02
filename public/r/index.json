@@ -164,6 +164,54 @@
       "type": "registry:ui",
       "title": "Combobox",
       "description": "Autocomplete text input. Native <datalist> variant (zero JS) + APG role=combobox + htmx-filtered listbox variant."
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "title": "Meter",
+      "description": "The native <meter> element (ARIA role=\"meter\") — a gauge of a value within a known range with low/high/optimum zoning. Cross-browser fill colors via the meter pseudo-elements; includes an htmx live-gauge demo."
+    },
+    {
+      "name": "number-input",
+      "type": "registry:ui",
+      "title": "Number Input",
+      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in five flavours."
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in five flavours and follows the WAI-ARIA APG breadcrumb pattern."
+    },
+    {
+      "name": "link",
+      "type": "registry:ui",
+      "title": "Link",
+      "description": "A native <a href> with shadcn styling — default (underlined), muted, and hover-underline variants, plus an external treatment that opens a new tab, sets rel=\"noopener noreferrer\", and announces \"(opens in new tab)\"."
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A single show/hide disclosure built on native <details>/<summary> — click, Space, or Enter toggle and the browser mirrors aria-expanded, all with zero JavaScript. A standalone disclosure, distinct from the grouped Accordion."
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "A modal that interrupts the user to confirm a consequential action. Native HTML <dialog> opened with showModal() and role=\"alertdialog\"; not light-dismissible — the user must choose Cancel or the confirming action."
+    },
+    {
+      "name": "range-slider",
+      "type": "registry:ui",
+      "title": "Range Slider",
+      "description": "A two-thumb range slider built from two overlaid native <input type=\"range\"> on one track, each form-submittable (name=min/max), with the platform-provided role=slider and arrow/Home/End/PageUp/Down keyboard contract."
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "A role=\"toolbar\" container that groups related controls (buttons, toggle buttons, separators) into a single tab stop with APG roving-tabindex arrow-key navigation. Ships ToolbarButton, ToolbarToggle, ToolbarSeparator, and ToolbarGroup subcomponents."
     }
   ]
 }

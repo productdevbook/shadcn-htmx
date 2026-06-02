@@ -28,6 +28,8 @@ const sections: Section[] = [
       { label: "Radio Group", href: "/docs/radio-group" },
       { label: "Select", href: "/docs/select" },
       { label: "Slider", href: "/docs/slider" },
+      { label: "Number Input", href: "/docs/number-input" },
+      { label: "Range Slider", href: "/docs/range-slider" },
     ],
   },
   {
@@ -35,6 +37,8 @@ const sections: Section[] = [
     items: [
       { label: "Card", href: "/docs/card" },
       { label: "Table", href: "/docs/table" },
+      { label: "Collapsible", href: "/docs/collapsible" },
+      { label: "Toolbar", href: "/docs/toolbar" },
     ],
   },
   {
@@ -52,6 +56,7 @@ const sections: Section[] = [
       { label: "Progress", href: "/docs/progress" },
       { label: "Skeleton", href: "/docs/skeleton" },
       { label: "Toast", href: "/docs/toast" },
+      { label: "Meter", href: "/docs/meter" },
     ],
   },
   {
@@ -61,6 +66,7 @@ const sections: Section[] = [
       { label: "Dropdown Menu", href: "/docs/dropdown-menu" },
       { label: "Popover", href: "/docs/popover" },
       { label: "Tooltip", href: "/docs/tooltip" },
+      { label: "Alert Dialog", href: "/docs/alert-dialog" },
     ],
   },
   {
@@ -69,6 +75,8 @@ const sections: Section[] = [
       { label: "Accordion", href: "/docs/accordion" },
       { label: "Pagination", href: "/docs/pagination" },
       { label: "Tabs", href: "/docs/tabs" },
+      { label: "Breadcrumb", href: "/docs/breadcrumb" },
+      { label: "Link", href: "/docs/link" },
     ],
   },
 ]

@@ -1,0 +1,61 @@
+{{/*
+  Link template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/link.tsx. Emits a native <a href>, so the WAI-ARIA APG
+  Link pattern's keyboard contract (Enter activates) and the implicit link
+  role come from the platform. See
+  repos/aria-practices/content/patterns/link/link-pattern.html.
+
+  Usage:
+
+      type LinkArgs struct {
+          Text     string
+          Href     string
+          Variant  string // default | muted | hover
+          External bool   // target=_blank rel="noopener noreferrer" + icon
+          Target   string
+          Rel      string
+          As       string // "a" (default) | "span" | "button"  (role=link fallback)
+          ID       string
+          AriaLabel      string
+          AriaLabelledby string
+          AriaCurrent    string // page | step | location | date | time | true | false
+          Body     template.HTML // optional rich body; falls back to .Text
+          Attrs    map[string]string // hx-*, download, etc.
+      }
+
+      tpl.ExecuteTemplate(w, "link", LinkArgs{
+          Text: "Documentation", Href: "/docs",
+      })
+
+  external=true follows MDN "External links" guidance: visible icon + SR-only
+  "(opens in new tab)" text.
+*/}}
+
+{{define "link"}}
+{{- $variant := or .Variant "default" -}}
+{{- $as := or .As "a" -}}
+{{- $isAnchor := eq $as "a" -}}
+{{- $base := "inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0" -}}
+{{- $variants := dict
+    "default" "underline decoration-primary/40 hover:decoration-primary"
+    "muted" "text-muted-foreground underline decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground"
+    "hover" "no-underline hover:underline" -}}
+{{- $target := .Target -}}
+{{- if and .External (eq $target "")}}{{$target = "_blank"}}{{end -}}
+{{- $rel := .Rel -}}
+{{- if and .External (eq $rel "")}}{{$rel = "noopener noreferrer"}}{{end -}}
+<{{$as}}
+  {{- if .ID}} id="{{.ID}}"{{end}}
+  {{- if and $isAnchor .Href}} href="{{.Href}}"{{end}}
+  {{- if and $isAnchor $target}} target="{{$target}}"{{end}}
+  {{- if and $isAnchor $rel}} rel="{{$rel}}"{{end}}
+  {{- if not $isAnchor}} role="link" tabindex="0"{{end}}
+  data-slot="link" data-variant="{{$variant}}"
+  {{- if .External}} data-external="true"{{end}}
+  class="{{$base}} {{index $variants $variant}}"
+  {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+  {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  {{- if .AriaCurrent}} aria-current="{{.AriaCurrent}}"{{end}}
+  {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{if .Body}}{{htmlSafe .Body}}{{else}}{{.Text}}{{end}}{{if .External}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg><span class="sr-only"> (opens in new tab)</span>{{end}}</{{$as}}>
+{{end}}

@@ -1,0 +1,65 @@
+<!--
+  shadcn-htmx — raw HTML range slider (two-thumb) snippet.
+
+  Two native <input type="range"> overlaid on one track, each
+  form-submittable (name="min" / name="max"). The platform gives each
+  thumb role=slider, aria-valuemin/max/now and the arrow/Home/End/
+  PageUp/Down keyboard contract for free (WAI-ARIA APG Multi-Thumb
+  Slider pattern).
+
+  The inline IIFE below is the only JS needed: it stops the thumbs
+  crossing (APG: the lower thumb's max is bounded by the upper thumb,
+  and vice versa) and keeps --range-min / --range-max in sync so the
+  coloured fill paints between the thumbs. It relies only on the theme
+  tokens in styles.css.
+-->
+
+<span data-slot="range-slider" style="--range-min:20%;--range-max:80%"
+      class="relative flex h-4 w-full touch-none items-center select-none">
+  <span class="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden="true"></span>
+  <span class="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary [left:var(--range-min,0%)] [right:calc(100%-var(--range-max,100%))]" aria-hidden="true"></span>
+  <input type="range" data-range="min" name="min" value="20" min="0" max="100"
+         aria-label="Minimum"
+         class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
+                [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
+                [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
+                [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm
+                [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
+                focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
+                disabled:cursor-not-allowed">
+  <input type="range" data-range="max" name="max" value="80" min="0" max="100"
+         aria-label="Maximum"
+         class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
+                [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
+                [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
+                [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm
+                [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
+                focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
+                disabled:cursor-not-allowed">
+</span>
+
+<script>
+  // Minimal standalone boot for the snippet. In the full library this lives
+  // in public/site.js (keyed on data-slot="range-slider").
+  document.querySelectorAll('[data-slot="range-slider"]').forEach(function (root) {
+    var lo = root.querySelector('input[data-range="min"]')
+    var hi = root.querySelector('input[data-range="max"]')
+    if (!lo || !hi) return
+    var pct = function (input) {
+      var min = +input.min, max = +input.max
+      return ((+input.value - min) / ((max - min) || 1)) * 100
+    }
+    var sync = function () {
+      // Thumbs must not cross (APG Multi-Thumb Slider).
+      if (+lo.value > +hi.value) {
+        if (document.activeElement === lo) lo.value = hi.value
+        else hi.value = lo.value
+      }
+      root.style.setProperty('--range-min', pct(lo) + '%')
+      root.style.setProperty('--range-max', pct(hi) + '%')
+    }
+    lo.addEventListener('input', sync)
+    hi.addEventListener('input', sync)
+    sync()
+  })
+</script>

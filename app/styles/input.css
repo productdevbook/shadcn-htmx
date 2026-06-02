@@ -235,3 +235,58 @@
     background-color: var(--shiki-dark-bg);
   }
 }
+
+/* ===== New APG components (batch A) ===== */
+/* Meter (registry/ui/meter.tsx). The native <meter> gauge needs
+     appearance:none to accept custom styling, then we paint the track and the
+     three value zones via the cross-browser meter pseudo-elements. Tailwind
+     can't target pseudo-elements, so the theming lives here, scoped to
+     [data-slot="meter"]. Colours reuse the theme tokens (track = primary/20,
+     optimal fill = primary, danger = destructive) plus an amber for the
+     suboptimal band to match the Toast "warning" variant (amber-500).
+     Refs: repos/mdn/.../selectors/_doublecolon_-webkit-meter-bar,
+           -webkit-meter-optimum-value / -suboptimum-value /
+           -even-less-good-value, _doublecolon_-moz-meter-bar (all require
+           appearance:none; Safari + Firefox + modern Blink). */
+  [data-slot="meter"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+  }
+  /* Track background (Blink/WebKit). */
+  [data-slot="meter"]::-webkit-meter-bar {
+    background: color-mix(in oklab, var(--color-primary) 20%, transparent);
+    border: none;
+    border-radius: 9999px;
+  }
+  /* Value zones (Blink/WebKit). */
+  [data-slot="meter"]::-webkit-meter-optimum-value {
+    background: var(--color-primary);
+    border-radius: 9999px;
+  }
+  [data-slot="meter"]::-webkit-meter-suboptimum-value {
+    background: oklch(0.769 0.188 70.08); /* amber-500, matches Toast warning */
+    border-radius: 9999px;
+  }
+  [data-slot="meter"]::-webkit-meter-even-less-good-value {
+    background: var(--color-destructive);
+    border-radius: 9999px;
+  }
+  /* Firefox: a single fill pseudo-element. We can't read the zone here, so the
+     fill follows accent-color, which Gecko maps to the optimum colour. */
+  [data-slot="meter"] {
+    accent-color: var(--color-primary);
+  }
+  [data-slot="meter"]::-moz-meter-bar {
+    border-radius: 9999px;
+  }
+  [data-slot="meter"]:-moz-meter-optimum::-moz-meter-bar {
+    background: var(--color-primary);
+  }
+  [data-slot="meter"]:-moz-meter-sub-optimum::-moz-meter-bar {
+    background: oklch(0.769 0.188 70.08);
+  }
+  [data-slot="meter"]:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: var(--color-destructive);
+  }

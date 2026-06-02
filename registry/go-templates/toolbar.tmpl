@@ -1,0 +1,80 @@
+{{/*
+  Toolbar template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/toolbar.tsx. Named templates:
+    - "toolbar"            — wrapper open + boot script (pass .Body HTML)
+    - "toolbar_button"     — one <button> control
+    - "toolbar_toggle"     — one aria-pressed toggle button
+    - "toolbar_separator"  — a role="separator" rule (not focusable)
+    - "toolbar_group"      — a labelled role="group" cluster (pass .Body)
+
+  The boot script sets the roving tabindex (single tab stop) on first paint;
+  public/site.js (keyed on data-slot="toolbar") owns the arrow-key contract.
+  Accessibility contract:
+    repos/aria-practices/content/patterns/toolbar/toolbar-pattern.html
+
+  Hand-compose the inner HTML so you can interleave buttons / separators /
+  groups, then pass it as .Body (template.HTML).
+*/}}
+
+{{define "toolbar"}}
+{{- $orientation := or .Orientation "horizontal" -}}
+<div role="toolbar"
+     data-slot="toolbar"
+     data-orientation="{{$orientation}}"
+     aria-orientation="{{$orientation}}"
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     class="group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch">
+  {{.Body}}
+</div>
+<script>(function(el){
+  var items = el.querySelectorAll('[data-toolbar-item]');
+  var set = false;
+  items.forEach(function(it){
+    var off = it.hasAttribute('disabled') || it.getAttribute('aria-disabled') === 'true';
+    if (!set && !off) { it.setAttribute('tabindex','0'); set = true; }
+    else { it.setAttribute('tabindex','-1'); }
+  });
+  if (!set && items.length) items[0].setAttribute('tabindex','0');
+  el.setAttribute('data-toolbar-ready','true');
+})(document.currentScript.previousElementSibling);</script>
+{{end}}
+
+{{define "toolbar_button"}}
+<button type="button"
+        data-slot="toolbar-button"
+        data-toolbar-item=""
+        {{- if .Disabled}} disabled{{end}}
+        {{- if .AriaDisabled}} aria-disabled="true"{{end}}
+        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+        class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">{{.Label}}</button>
+{{end}}
+
+{{define "toolbar_toggle"}}
+<button type="button"
+        data-slot="toolbar-toggle"
+        data-toolbar-item=""
+        aria-pressed="{{if .Pressed}}true{{else}}false{{end}}"
+        {{- if .Disabled}} disabled{{end}}
+        {{- if .AriaDisabled}} aria-disabled="true"{{end}}
+        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+        class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70">{{.Label}}</button>
+{{end}}
+
+{{define "toolbar_separator"}}
+{{- $orientation := or .Orientation "horizontal" -}}
+{{- $sep := "vertical" -}}{{- if eq $orientation "vertical" -}}{{- $sep = "horizontal" -}}{{- end -}}
+<div role="separator"
+     data-slot="toolbar-separator"
+     aria-orientation="{{$sep}}"
+     class="shrink-0 bg-border {{if eq $sep "vertical"}}mx-0.5 h-5 w-px{{else}}my-0.5 h-px w-full{{end}}"></div>
+{{end}}
+
+{{define "toolbar_group"}}
+<div role="group"
+     data-slot="toolbar-group"
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     class="flex items-center gap-1 group-data-[orientation=vertical]/toolbar:flex-col group-data-[orientation=vertical]/toolbar:items-stretch">
+  {{.Body}}
+</div>
+{{end}}

@@ -18,6 +18,9 @@ const SLUGS = [
   "radio-group", "select", "slider", "card", "avatar", "badge", "separator",
   "alert", "progress", "pagination", "skeleton", "table", "toast", "dialog",
   "dropdown-menu", "popover", "tooltip", "tabs", "accordion",
+  // APG batch A
+  "meter", "number-input", "breadcrumb", "link", "collapsible", "alert-dialog",
+  "range-slider", "toolbar",
 ]
 
 // Console "error" lines that aren't our fault (network/resource fetches).

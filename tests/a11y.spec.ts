@@ -35,6 +35,15 @@ const SLUGS = [
   "tooltip",
   "tabs",
   "accordion",
+  // APG batch A
+  "meter",
+  "number-input",
+  "breadcrumb",
+  "link",
+  "collapsible",
+  "alert-dialog",
+  "range-slider",
+  "toolbar",
 ]
 
 for (const slug of SLUGS) {

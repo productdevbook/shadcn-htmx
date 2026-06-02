@@ -1,0 +1,89 @@
+{# Toolbar macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/toolbar.tsx. Renders role="toolbar" container + the
+   button / toggle / separator / group controls. The boot <script> right
+   after the container sets the roving tabindex (single tab stop) on first
+   paint; public/site.js (keyed on data-slot="toolbar") owns the arrow-key
+   contract. Accessibility contract:
+     repos/aria-practices/content/patterns/toolbar/toolbar-pattern.html
+
+   Usage:
+     {% from "components/toolbar.html" import toolbar_open, toolbar_close,
+          toolbar_button, toolbar_toggle, toolbar_separator,
+          toolbar_group_open, toolbar_group_close %}
+
+     {{ toolbar_open(aria_label="Text formatting") }}
+       {{ toolbar_toggle("Bold",   pressed=true) }}
+       {{ toolbar_toggle("Italic") }}
+       {{ toolbar_separator() }}
+       {{ toolbar_group_open(aria_label="Alignment") }}
+         {{ toolbar_button("Left") }}
+         {{ toolbar_button("Center") }}
+       {{ toolbar_group_close() }}
+     {{ toolbar_close() }} #}
+
+{% macro toolbar_open(aria_label=none, aria_labelledby=none, orientation="horizontal", extra_class="", attrs={}) -%}
+<div role="toolbar"
+     data-slot="toolbar"
+     data-orientation="{{ orientation }}"
+     aria-orientation="{{ orientation }}"
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+     class="group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch {{ extra_class }}">
+{%- endmacro %}
+
+{% macro toolbar_close() -%}
+</div>
+<script>(function(el){
+  var items = el.querySelectorAll('[data-toolbar-item]');
+  var set = false;
+  items.forEach(function(it){
+    var off = it.hasAttribute('disabled') || it.getAttribute('aria-disabled') === 'true';
+    if (!set && !off) { it.setAttribute('tabindex','0'); set = true; }
+    else { it.setAttribute('tabindex','-1'); }
+  });
+  if (!set && items.length) items[0].setAttribute('tabindex','0');
+  el.setAttribute('data-toolbar-ready','true');
+})(document.currentScript.previousElementSibling);</script>
+{%- endmacro %}
+
+{% macro toolbar_button(label, disabled=false, aria_disabled=false, aria_label=none, extra_class="", attrs={}) -%}
+<button type="button"
+        data-slot="toolbar-button"
+        data-toolbar-item=""
+        {%- if disabled %} disabled{% endif %}
+        {%- if aria_disabled %} aria-disabled="true"{% endif %}
+        {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+        {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+        class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 {{ extra_class }}">{{ label }}</button>
+{%- endmacro %}
+
+{% macro toolbar_toggle(label, pressed=false, disabled=false, aria_disabled=false, aria_label=none, extra_class="", attrs={}) -%}
+<button type="button"
+        data-slot="toolbar-toggle"
+        data-toolbar-item=""
+        aria-pressed="{{ 'true' if pressed else 'false' }}"
+        {%- if disabled %} disabled{% endif %}
+        {%- if aria_disabled %} aria-disabled="true"{% endif %}
+        {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+        {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
+        class="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-sm px-2.5 text-sm font-medium whitespace-nowrap text-foreground transition-all outline-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-pressed:bg-accent aria-pressed:text-accent-foreground dark:aria-pressed:bg-accent/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 {{ extra_class }}">{{ label }}</button>
+{%- endmacro %}
+
+{# A separator inside a horizontal toolbar draws vertically (and vice versa);
+   role="separator", not focusable, skipped by the arrow navigation. #}
+{% macro toolbar_separator(orientation="horizontal", extra_class="") -%}
+{% set sep = "vertical" if orientation == "horizontal" else "horizontal" -%}
+<div role="separator"
+     data-slot="toolbar-separator"
+     aria-orientation="{{ sep }}"
+     class="shrink-0 bg-border {{ 'mx-0.5 h-5 w-px' if sep == 'vertical' else 'my-0.5 h-px w-full' }} {{ extra_class }}"></div>
+{%- endmacro %}
+
+{% macro toolbar_group_open(aria_label=none, extra_class="") -%}
+<div role="group"
+     data-slot="toolbar-group"
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     class="flex items-center gap-1 group-data-[orientation=vertical]/toolbar:flex-col group-data-[orientation=vertical]/toolbar:items-stretch {{ extra_class }}">
+{%- endmacro %}
+{% macro toolbar_group_close() %}</div>{% endmacro %}

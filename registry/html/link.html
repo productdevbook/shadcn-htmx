@@ -1,0 +1,98 @@
+<!--
+  shadcn-htmx — raw HTML link snippets.
+
+  No template engine, no JavaScript framework. Just a native <a href> with the
+  class strings you need, ready to drop into any HTML file that loads
+  Tailwind CSS v4.
+
+  Why a real <a>? The WAI-ARIA APG Link pattern strongly encourages the native
+  element: role=link and Enter-to-activate come from the browser, and you keep
+  open-in-new-tab, copy-link, and the context menu — all of which break when
+  you fake a link with role=link on a <span>. See
+  repos/aria-practices/content/patterns/link/link-pattern.html.
+
+  Requirements:
+    1. Tailwind CSS v4 (or the Play CDN for quick experiments).
+    2. The shadcn CSS variables (--primary, --muted-foreground, --ring, …).
+       Copy the :root / .dark blocks from app/styles/input.css.
+
+  BASE (shared by every variant):
+    inline-flex items-center gap-1 rounded-sm font-medium text-primary
+    underline-offset-4 transition-colors outline-none
+    focus-visible:ring-[3px] focus-visible:ring-ring/50
+    [&[role=link]]:cursor-pointer
+    [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0
+-->
+
+<!-- ─── Variants ────────────────────────────────────────────────────── -->
+
+<!-- default — underlined, primary colour; reads as a link in prose -->
+<a href="/docs" data-slot="link" data-variant="default"
+  class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0 underline decoration-primary/40 hover:decoration-primary">
+  Documentation
+</a>
+
+<!-- muted — low-emphasis inline link -->
+<a href="/changelog" data-slot="link" data-variant="muted"
+  class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0 text-muted-foreground underline decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground">
+  Changelog
+</a>
+
+<!-- hover — no underline at rest, underline on hover/focus; nav / menu link -->
+<a href="/settings" data-slot="link" data-variant="hover"
+  class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0 no-underline hover:underline">
+  Settings
+</a>
+
+<!-- ─── External (opens in new tab) ─────────────────────────────────── -->
+<!--
+  target="_blank" implicitly behaves like rel="noopener" in modern browsers;
+  we still write rel="noopener noreferrer" so it's explicit. The icon is
+  aria-hidden; the SR-only span tells screen-reader users what will happen.
+-->
+<a href="https://htmx.org" target="_blank" rel="noopener noreferrer"
+  data-slot="link" data-variant="default" data-external="true"
+  class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0 underline decoration-primary/40 hover:decoration-primary">
+  htmx.org
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M7 17 17 7" /><path d="M7 7h10v10" />
+  </svg>
+  <span class="sr-only"> (opens in new tab)</span>
+</a>
+
+<!-- ─── In prose ────────────────────────────────────────────────────── -->
+<p class="text-sm text-muted-foreground">
+  Learn more
+  <a href="/docs/link" data-slot="link" data-variant="default"
+    class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0 underline decoration-primary/40 hover:decoration-primary">about links</a>.
+</p>
+
+<!-- ─── APG fallback (only when an <a> is impossible) ───────────────── -->
+<!--
+  The APG link examples (link/examples/link.html) use a <span> with
+  role="link" + tabindex="0" + a keydown handler ONLY when the element cannot
+  be an anchor. The platform does NOT navigate for you here — wire it up with
+  JS. This is the exception, not the rule. Prefer the native <a> above.
+-->
+<span role="link" tabindex="0" data-slot="link" data-variant="default"
+  data-href="/docs"
+  class="inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer underline decoration-primary/40 hover:decoration-primary">
+  Span pretending to be a link
+</span>
+
+<script>
+  // Minimal boot for the role=link fallback only. Native <a href> needs none
+  // of this. Mirrors the APG example contract: Enter activates the link.
+  (function () {
+    function go(el) {
+      var href = el.getAttribute("data-href")
+      if (href) window.location.href = href
+    }
+    document.querySelectorAll('[data-slot="link"][role="link"]').forEach(function (el) {
+      el.addEventListener("click", function () { go(el) })
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); go(el) }
+      })
+    })
+  })()
+</script>

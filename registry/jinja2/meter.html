@@ -1,0 +1,45 @@
+{# Meter macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/meter.tsx. Renders the native <meter> element
+   (implicit role="meter"); cross-browser fill/track theming lives in
+   input.css scoped to [data-slot="meter"].
+
+   Usage:
+       {% from "components/meter.html" import meter %}
+       <label for="disk" class="text-sm font-medium">Disk usage</label>
+       {{ meter(id="disk", value=0.62, low=0.25, high=0.85, optimum=0.1,
+                value_text="12.4 GB of 16 GB") }}
+#}
+
+{% macro meter(
+    value=0,
+    min=0,
+    max=1,
+    low=none,
+    high=none,
+    optimum=none,
+    id=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    value_text=none,
+    text=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+block h-2 w-full overflow-hidden rounded-full bg-primary/20 align-middle
+{%- endset -%}
+<meter class="{{ base }} {{ extra_class }}"
+       {%- if id %} id="{{ id }}"{% endif %}
+       value="{{ value }}" min="{{ min }}" max="{{ max }}"
+       {%- if low is not none %} low="{{ low }}"{% endif %}
+       {%- if high is not none %} high="{{ high }}"{% endif %}
+       {%- if optimum is not none %} optimum="{{ optimum }}"{% endif %}
+       {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+       {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+       {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+       {%- if value_text %} aria-valuetext="{{ value_text }}"{% endif %}
+       data-slot="meter"
+       {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >{{ text if text is not none else (value ~ ' / ' ~ max) }}</meter>
+{% endmacro %}

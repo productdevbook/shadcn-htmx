@@ -574,6 +574,118 @@
         { "path": "registry/phoenix/combobox.ex",        "type": "registry:file", "target": "lib/my_app_web/components/combobox.ex" },
         { "path": "registry/html/combobox.html",         "type": "registry:file", "target": "snippets/combobox.html" }
       ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "title": "Meter",
+      "description": "The native <meter> element (ARIA role=\"meter\") — a gauge of a value within a known range with low/high/optimum zoning. Cross-browser fill colors via the meter pseudo-elements; includes an htmx live-gauge demo.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/meter.tsx", "type": "registry:ui", "target": "components/ui/meter.tsx" },
+        { "path": "registry/jinja2/meter.html", "type": "registry:file", "target": "templates/components/meter.html" },
+        { "path": "registry/go-templates/meter.tmpl", "type": "registry:file", "target": "components/meter.tmpl" },
+        { "path": "registry/phoenix/meter.ex", "type": "registry:file", "target": "lib/my_app_web/components/meter.ex" },
+        { "path": "registry/html/meter.html", "type": "registry:file", "target": "snippets/meter.html" }
+      ]
+    },
+    {
+      "name": "number-input",
+      "type": "registry:ui",
+      "title": "Number Input",
+      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in five flavours.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/number-input.tsx", "type": "registry:ui", "target": "components/ui/number-input.tsx" },
+        { "path": "registry/jinja2/number-input.html", "type": "registry:file", "target": "templates/components/number-input.html" },
+        { "path": "registry/go-templates/number-input.tmpl", "type": "registry:file", "target": "components/number-input.tmpl" },
+        { "path": "registry/phoenix/number_input.ex", "type": "registry:file", "target": "lib/my_app_web/components/number_input.ex" },
+        { "path": "registry/html/number-input.html", "type": "registry:file", "target": "snippets/number-input.html" }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in five flavours and follows the WAI-ARIA APG breadcrumb pattern.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/breadcrumb.tsx", "type": "registry:ui", "target": "components/ui/breadcrumb.tsx" },
+        { "path": "registry/jinja2/breadcrumb.html", "type": "registry:file", "target": "templates/components/breadcrumb.html" },
+        { "path": "registry/go-templates/breadcrumb.tmpl", "type": "registry:file", "target": "components/breadcrumb.tmpl" },
+        { "path": "registry/phoenix/breadcrumb.ex", "type": "registry:file", "target": "lib/my_app_web/components/breadcrumb.ex" },
+        { "path": "registry/html/breadcrumb.html", "type": "registry:file", "target": "snippets/breadcrumb.html" }
+      ]
+    },
+    {
+      "name": "link",
+      "type": "registry:ui",
+      "title": "Link",
+      "description": "A native <a href> with shadcn styling — default (underlined), muted, and hover-underline variants, plus an external treatment that opens a new tab, sets rel=\"noopener noreferrer\", and announces \"(opens in new tab)\".",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/link.tsx", "type": "registry:ui", "target": "components/ui/link.tsx" },
+        { "path": "registry/jinja2/link.html", "type": "registry:file", "target": "templates/components/link.html" },
+        { "path": "registry/go-templates/link.tmpl", "type": "registry:file", "target": "components/link.tmpl" },
+        { "path": "registry/phoenix/link.ex", "type": "registry:file", "target": "lib/my_app_web/components/link.ex" },
+        { "path": "registry/html/link.html", "type": "registry:file", "target": "snippets/link.html" }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A single show/hide disclosure built on native <details>/<summary> — click, Space, or Enter toggle and the browser mirrors aria-expanded, all with zero JavaScript. A standalone disclosure, distinct from the grouped Accordion.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/collapsible.tsx", "type": "registry:ui", "target": "components/ui/collapsible.tsx" },
+        { "path": "registry/jinja2/collapsible.html", "type": "registry:file", "target": "templates/components/collapsible.html" },
+        { "path": "registry/go-templates/collapsible.tmpl", "type": "registry:file", "target": "components/collapsible.tmpl" },
+        { "path": "registry/phoenix/collapsible.ex", "type": "registry:file", "target": "lib/my_app_web/components/collapsible.ex" },
+        { "path": "registry/html/collapsible.html", "type": "registry:file", "target": "snippets/collapsible.html" }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "A modal that interrupts the user to confirm a consequential action. Native HTML <dialog> opened with showModal() and role=\"alertdialog\"; not light-dismissible — the user must choose Cancel or the confirming action.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/alert-dialog.tsx", "type": "registry:ui", "target": "components/ui/alert-dialog.tsx" },
+        { "path": "registry/jinja2/alert-dialog.html", "type": "registry:file", "target": "templates/components/alert-dialog.html" },
+        { "path": "registry/go-templates/alert-dialog.tmpl", "type": "registry:file", "target": "components/alert-dialog.tmpl" },
+        { "path": "registry/phoenix/alert_dialog.ex", "type": "registry:file", "target": "lib/my_app_web/components/alert_dialog.ex" },
+        { "path": "registry/html/alert-dialog.html", "type": "registry:file", "target": "snippets/alert-dialog.html" }
+      ]
+    },
+    {
+      "name": "range-slider",
+      "type": "registry:ui",
+      "title": "Range Slider",
+      "description": "A two-thumb range slider built from two overlaid native <input type=\"range\"> on one track, each form-submittable (name=min/max), with the platform-provided role=slider and arrow/Home/End/PageUp/Down keyboard contract.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/range-slider.tsx", "type": "registry:ui", "target": "components/ui/range-slider.tsx" },
+        { "path": "registry/jinja2/range-slider.html", "type": "registry:file", "target": "templates/components/range-slider.html" },
+        { "path": "registry/go-templates/range-slider.tmpl", "type": "registry:file", "target": "components/range-slider.tmpl" },
+        { "path": "registry/phoenix/range_slider.ex", "type": "registry:file", "target": "lib/my_app_web/components/range_slider.ex" },
+        { "path": "registry/html/range-slider.html", "type": "registry:file", "target": "snippets/range-slider.html" }
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "A role=\"toolbar\" container that groups related controls (buttons, toggle buttons, separators) into a single tab stop with APG roving-tabindex arrow-key navigation. Ships ToolbarButton, ToolbarToggle, ToolbarSeparator, and ToolbarGroup subcomponents.",
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/ui/toolbar.tsx", "type": "registry:ui", "target": "components/ui/toolbar.tsx" },
+        { "path": "registry/jinja2/toolbar.html", "type": "registry:file", "target": "templates/components/toolbar.html" },
+        { "path": "registry/go-templates/toolbar.tmpl", "type": "registry:file", "target": "components/toolbar.tmpl" },
+        { "path": "registry/phoenix/toolbar.ex", "type": "registry:file", "target": "lib/my_app_web/components/toolbar.ex" },
+        { "path": "registry/html/toolbar.html", "type": "registry:file", "target": "snippets/toolbar.html" }
+      ]
     }
   ]
 }

@@ -335,3 +335,254 @@ export const TABLE_PROPS: ApiRow[] = [
   { prop: "wrapperClass", type: "string", description: "Tailwind classes appended to the overflow-x wrapper." },
   CLASS_ROW,
 ]
+
+// ---- New APG components (batch A) ----
+
+export const METER_PROPS: ApiRow[] = [
+  {
+    prop: "value",
+    type: "number",
+    required: true,
+    description: "Current reading. The browser clamps it into [min, max].",
+    source: { badge: "MDN", label: "<meter value>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter#value" },
+  },
+  { prop: "min", type: "number", default: "0", description: "Lower bound of the range." },
+  { prop: "max", type: "number", default: "1", description: "Upper bound of the range. Default 1, so value=0.75 reads as 75%." },
+  {
+    prop: "low",
+    type: "number",
+    description: "Upper bound of the low zone. Values below it render in the low colour band.",
+    source: { badge: "MDN", label: "<meter low>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter#low" },
+  },
+  {
+    prop: "high",
+    type: "number",
+    description: "Lower bound of the high zone. Values above it render in the high colour band.",
+    source: { badge: "MDN", label: "<meter high>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter#high" },
+  },
+  {
+    prop: "optimum",
+    type: "number",
+    description: "The preferred value. Tells the browser which zone is \"good\" (green), making the others suboptimal (amber) or far-off (red).",
+    source: { badge: "MDN", label: "<meter optimum>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter#optimum" },
+  },
+  {
+    prop: "valuetext",
+    type: "string",
+    description: "Human-readable value for AT (e.g. \"12.4 GB of 16 GB\"). Sets aria-valuetext. Per APG, use it when a bare percentage isn't user-friendly.",
+    source: { badge: "APG", label: "Meter pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/meter/" },
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description: "Fallback text shown by legacy AT and browsers without <meter> support. Defaults to a \"value / max\" string.",
+  },
+  ...COMMON_ARIA,
+  HX_ROW,
+  CLASS_ROW,
+]
+
+export const NUMBER_INPUT_PROPS: ApiRow[] = [
+  {
+    prop: "steppers",
+    type: "boolean",
+    default: "true",
+    description:
+      "Render the styled −/+ buttons around the field. false renders a bare native spinbutton (zero JS) — arrow keys still step.",
+  },
+  {
+    prop: "value",
+    type: ["number", "string"],
+    description: "Initial value. Reflected to aria-valuenow by the browser.",
+  },
+  {
+    prop: "min",
+    type: ["number", "string"],
+    description: "Minimum allowed value; the browser clamps and exposes it as aria-valuemin.",
+    source: { badge: "MDN", label: "min", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/min" },
+  },
+  {
+    prop: "max",
+    type: ["number", "string"],
+    description: "Maximum allowed value; the browser clamps and exposes it as aria-valuemax.",
+    source: { badge: "MDN", label: "max", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/max" },
+  },
+  {
+    prop: "step",
+    type: ["number", "string"],
+    default: '"1"',
+    description: 'Increment per arrow press / button click. Use "any" to allow arbitrary decimals.',
+    source: { badge: "MDN", label: "step", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/step" },
+  },
+  {
+    prop: "inputmode",
+    type: ['"none"', '"numeric"', '"decimal"'],
+    description: "Mobile keyboard hint — decimal for prices, numeric for integers.",
+    source: { badge: "MDN", label: "inputmode", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inputmode" },
+  },
+  {
+    prop: "readonly",
+    type: "boolean",
+    default: "false",
+    description: "Read-only — focusable + selectable but not editable, and not stepped by the buttons.",
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Disable the field and both stepper buttons; not submitted with the form.",
+  },
+  ...COMMON_ARIA,
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const BREADCRUMB_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    default: '"Breadcrumb"',
+    description: "Accessible name for the <nav> landmark (Breadcrumb root).",
+    source: { badge: "APG", label: "Breadcrumb pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/" },
+  },
+  {
+    prop: "href",
+    type: "string",
+    description: "Destination for a BreadcrumbLink. Rendered as a real <a href>; omit on the current page (use BreadcrumbPage instead).",
+    source: { badge: "MDN", label: "<a> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a" },
+  },
+  {
+    prop: "children",
+    type: "Child",
+    description: "Trail content. BreadcrumbSeparator accepts children to override the default chevron glyph.",
+  },
+  HX_ROW,
+  CLASS_ROW,
+]
+
+export const LINK_PROPS: ApiRow[] = [
+  {
+    prop: "href",
+    type: "string",
+    description: "Destination URL. Renders a native <a href> with the implicit link role and Enter-to-activate from the platform.",
+    source: { badge: "MDN", label: "<a href>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#href" },
+  },
+  {
+    prop: "variant",
+    type: ['"default"', '"muted"', '"hover"'],
+    default: '"default"',
+    description: "Emphasis: default (underlined primary), muted (low-emphasis), hover (underline only on hover/focus — for nav, not prose).",
+  },
+  {
+    prop: "external",
+    type: "boolean",
+    default: "false",
+    description: "Open in a new tab. Sets target=\"_blank\" rel=\"noopener noreferrer\" and appends an icon + visually-hidden \"(opens in new tab)\" text.",
+    source: { badge: "MDN", label: "External links", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#external_links_and_linking_to_non-html_resources" },
+  },
+  {
+    prop: "target / rel",
+    type: "string",
+    description: "Standard <a> attributes. Managed by `external`, but settable explicitly.",
+    source: { badge: "MDN", label: "<a target>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#target" },
+  },
+  {
+    prop: "download / hreflang / referrerpolicy / ping / type",
+    type: "string",
+    description: "Pass-through native <a> attributes.",
+    source: { badge: "MDN", label: "<a> attributes", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a#attributes" },
+  },
+  {
+    prop: "ariaCurrent",
+    type: ['"page"', '"step"', '"location"', '"date"', '"time"', '"true"', '"false"'],
+    description: "Marks the link to the current resource (e.g. the active nav item).",
+    source: { badge: "MDN", label: "aria-current", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current" },
+  },
+  {
+    prop: "as",
+    type: ['"a"', '"span"', '"button"'],
+    default: '"a"',
+    description: "APG fallback only — render a non-anchor with role=\"link\" + tabindex=0 when an <a> is impossible. The platform will NOT navigate for you; site.js wires Enter/click on [data-slot=\"link\"][role=\"link\"] via a data-href hook.",
+    source: { badge: "APG", label: "Link pattern note", href: "https://www.w3.org/WAI/ARIA/apg/patterns/link/" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const COLLAPSIBLE_PROPS: ApiRow[] = [
+  {
+    prop: "open",
+    type: "boolean",
+    default: "false",
+    description: "Render expanded on initial load. Maps to the native boolean <details open> attribute — omit it (don't pass the string \"false\") to start collapsed.",
+    source: { badge: "MDN", label: "<details open>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#open" },
+  },
+  {
+    prop: "disabled",
+    type: "boolean",
+    default: "false",
+    description: "Visually mute the disclosure and block pointer interaction (pointer-events-none, reduced opacity).",
+  },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const ALERT_DIALOG_PROPS: ApiRow[] = [
+  { prop: "id", type: "string", required: true, description: "Used by AlertDialogTrigger's dialogFor prop to open this alert dialog. Also seeds the title/description ids (`{id}-title`, `{id}-description`)." },
+  { prop: "open", type: "boolean", default: "false", description: "Pre-open at initial render (for htmx-fetched alert dialogs; site.js promotes <dialog open> to .showModal())." },
+  { prop: "closedby", type: '"closerequest"', default: '"closerequest"', description: "Pinned by the component. ESC + code only — never a backdrop click — so an alert dialog always requires an explicit response.",
+    source: { badge: "MDN", label: "<dialog closedby>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog#closedby" } },
+  { prop: "role", type: '"alertdialog"', default: '"alertdialog"', description: "Fixed by the component. Announced with higher urgency than a plain dialog and requires aria-describedby.",
+    source: { badge: "APG", label: "Alert and Message Dialogs", href: "https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/" } },
+  ...COMMON_ARIA.slice(0, 2),
+  CLASS_ROW,
+]
+
+export const RANGE_SLIDER_PROPS: ApiRow[] = [
+  { prop: "min", type: "number", default: "0", description: "Track minimum (shared by both thumbs)." },
+  { prop: "max", type: "number", default: "100", description: "Track maximum (shared by both thumbs)." },
+  { prop: "step", type: "number", description: "Increment per arrow press, applied to both thumbs." },
+  { prop: "minValue", type: "number", default: "min", description: "Initial value of the lower thumb." },
+  { prop: "maxValue", type: "number", default: "max", description: "Initial value of the upper thumb." },
+  { prop: "minName", type: "string", default: '"min"', description: "Form field name submitted for the lower thumb." },
+  { prop: "maxName", type: "string", default: '"max"', description: "Form field name submitted for the upper thumb." },
+  { prop: "minLabel", type: "string", default: '"Minimum"', description: "Accessible name for the lower thumb (aria-label).",
+    source: { badge: "APG", label: "Slider (Multi-Thumb)", href: "https://www.w3.org/WAI/ARIA/apg/patterns/slider-multithumb/" } },
+  { prop: "maxLabel", type: "string", default: '"Maximum"', description: "Accessible name for the upper thumb (aria-label)." },
+  { prop: "minValuetext", type: "string", description: "Human-readable value for the lower thumb (e.g. \"$120\").",
+    source: { badge: "MDN", label: "aria-valuetext", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-valuetext" } },
+  { prop: "maxValuetext", type: "string", description: "Human-readable value for the upper thumb (e.g. \"$380\")." },
+  { prop: "ariaLabelledby", type: "string", description: "Id of a visible element naming the whole control; applied to both thumbs in place of the per-thumb labels." },
+  { prop: "ariaDescribedby", type: "string", description: "Id of an element describing the control; applied to both thumbs." },
+  { prop: "id", type: "string", description: "Base id; the thumbs become id-min / id-max." },
+  { prop: "form", type: "string", description: "Associate both inputs with a <form> by id." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Disable both thumbs — unfocusable, not submitted." },
+  CLASS_ROW,
+  HX_ROW,
+]
+
+export const TOOLBAR_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabel",
+    type: "string",
+    description:
+      "Accessible name for the toolbar when there's no visible label. APG requires every toolbar to be labelled via aria-label or aria-labelledby.",
+    source: { badge: "APG", label: "Toolbar roles, states & properties", href: "https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#wai-ariaroles,states,andproperties" },
+  },
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element that names the toolbar (alternative to ariaLabel).",
+    source: { badge: "MDN", label: "aria-labelledby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby" },
+  },
+  {
+    prop: "orientation",
+    type: ['"horizontal"', '"vertical"'],
+    default: '"horizontal"',
+    description:
+      "Layout axis. Sets aria-orientation and selects the arrow-key axis: Left/Right when horizontal, Up/Down when vertical. The role's implicit orientation is horizontal.",
+    source: { badge: "MDN", label: "toolbar role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/toolbar_role" },
+  },
+  CLASS_ROW,
+  HX_ROW,
+]

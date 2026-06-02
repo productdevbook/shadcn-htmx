@@ -1,0 +1,59 @@
+{# Breadcrumb macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/breadcrumb.tsx EXACTLY (same elements, ARIA,
+   data-slot, classes). Zero JS — a breadcrumb is just a list of links.
+
+   APG: repos/aria-practices/content/patterns/breadcrumb/breadcrumb-pattern.html
+   The current page is a plain <span aria-current="page">, not a link.
+
+   Usage:
+     {% from "components/breadcrumb.html" import breadcrumb_open, breadcrumb_close,
+        breadcrumb_list_open, breadcrumb_list_close, breadcrumb_item,
+        breadcrumb_link, breadcrumb_page, breadcrumb_separator, breadcrumb_ellipsis %}
+
+     {{ breadcrumb_open(aria_label="Breadcrumb") }}{{ breadcrumb_list_open() }}
+       {{ breadcrumb_item(breadcrumb_link("Home", href="/")) }}
+       {{ breadcrumb_separator() }}
+       {{ breadcrumb_item(breadcrumb_link("Components", href="/components")) }}
+       {{ breadcrumb_separator() }}
+       {{ breadcrumb_item(breadcrumb_page("Breadcrumb")) }}
+     {{ breadcrumb_list_close() }}{{ breadcrumb_close() }} #}
+
+{% macro breadcrumb_open(aria_label="Breadcrumb", extra_class="", **attrs) %}
+<nav data-slot="breadcrumb" aria-label="{{ aria_label }}" class="{{ extra_class }}"
+     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}>
+{% endmacro %}
+
+{% macro breadcrumb_close() %}
+</nav>
+{% endmacro %}
+
+{% macro breadcrumb_list_open() %}
+<ol data-slot="breadcrumb-list" class="flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5">
+{% endmacro %}
+
+{% macro breadcrumb_list_close() %}
+</ol>
+{% endmacro %}
+
+{% macro breadcrumb_item(body, **attrs) %}
+<li data-slot="breadcrumb-item" class="inline-flex items-center gap-1.5"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}>{{ body|safe }}</li>
+{% endmacro %}
+
+{% macro breadcrumb_link(label, href=none, **attrs) %}
+<a {% if href %}href="{{ href }}"{% endif %} data-slot="breadcrumb-link"
+   class="transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}>{{ label|safe }}</a>
+{% endmacro %}
+
+{% macro breadcrumb_page(label) %}
+<span data-slot="breadcrumb-page" aria-current="page" class="font-normal text-foreground">{{ label|safe }}</span>
+{% endmacro %}
+
+{% macro breadcrumb_separator(body=none) %}
+<li data-slot="breadcrumb-separator" aria-hidden="true" class="[&>svg]:size-3.5">{% if body %}{{ body|safe }}{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>{% endif %}</li>
+{% endmacro %}
+
+{% macro breadcrumb_ellipsis() %}
+<span data-slot="breadcrumb-ellipsis" aria-hidden="true" class="flex size-9 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg><span class="sr-only">More</span></span>
+{% endmacro %}

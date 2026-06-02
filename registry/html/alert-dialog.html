@@ -1,0 +1,72 @@
+<!--
+  shadcn-htmx — raw HTML alert-dialog snippet.
+
+  Native <dialog> + .showModal(). The open/close wiring is JS-driven because
+  <dialog> has no built-in trigger attributes; a tiny script (see public/site.js
+  in the docs, or the inline snippet below) listens for data-dialog-trigger /
+  data-dialog-close clicks.
+
+  This is an *alert* dialog (APG alertdialog pattern):
+    - role="alertdialog", aria-describedby is required (the alert message).
+    - NOT light-dismissible: no data-close-on-backdrop, closedby="closerequest".
+      A modal opened with showModal() does not close on a backdrop click; the
+      user must choose Cancel or the confirming action.
+    - No X close button.
+
+  Minimal inline JS to copy alongside this snippet (open + button-close only —
+  note there is NO backdrop-click closer for alert dialogs):
+
+    <script>
+      document.addEventListener('click', (e) => {
+        const t = e.target.closest('[data-dialog-trigger]')
+        if (t) document.getElementById(t.dataset.dialogTarget)?.showModal()
+        const c = e.target.closest('[data-dialog-close]')
+        if (c) c.closest('dialog')?.close()
+      })
+    </script>
+-->
+
+<!-- Trigger button -->
+<button type="button"
+        data-dialog-trigger="true"
+        data-dialog-target="confirm-delete"
+        aria-haspopup="dialog"
+        class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+  Delete item
+</button>
+
+<!-- The alert dialog itself -->
+<dialog id="confirm-delete"
+        closedby="closerequest"
+        role="alertdialog"
+        data-slot="alert-dialog"
+        aria-labelledby="confirm-delete-title"
+        aria-describedby="confirm-delete-description"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm">
+
+  <div data-slot="alert-dialog-header" class="flex flex-col gap-1.5 text-left">
+    <h2 id="confirm-delete-title" data-slot="alert-dialog-title"
+        class="text-lg leading-none font-semibold">
+      Are you absolutely sure?
+    </h2>
+    <p id="confirm-delete-description" data-slot="alert-dialog-description"
+       class="text-sm text-muted-foreground">
+      This action cannot be undone. This will permanently delete the item and
+      remove its data from our servers.
+    </p>
+  </div>
+
+  <div data-slot="alert-dialog-footer"
+       class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <button type="button" data-dialog-close="true" autofocus
+            class="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+      Cancel
+    </button>
+    <button type="button"
+            hx-post="/items/42" hx-target="closest dialog" hx-swap="none"
+            data-dialog-close="true"
+            class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+      Delete
+    </button>
+  </div>
+</dialog>

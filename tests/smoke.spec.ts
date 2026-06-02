@@ -230,3 +230,131 @@ test.describe("Smoke — display + feedback", () => {
     ).toBeVisible()
   })
 })
+
+test.describe("APG components — batch A", () => {
+
+  test("Meter live gauge updates value via htmx polling", async ({ page }) => {
+    await gotoDoc(page, "meter")
+    const live = page.locator("#m-mem")
+    await expect(live).toBeVisible()
+    // First htmx tick (hx-trigger="load") swaps in a server reading whose
+    // aria-valuetext carries a "<n> GB of 16 GB" string the placeholder lacks.
+    await expect(live).toHaveAttribute("aria-valuetext", /GB of 16 GB/, {
+      timeout: 4000,
+    })
+    // The swapped-in value sits in the server's drift band (0.55–0.75), i.e.
+    // strictly above the 0.4 placeholder — proving the gauge actually moved.
+    const value = Number(await live.getAttribute("value"))
+    expect(value).toBeGreaterThan(0.5)
+    expect(value).toBeLessThanOrEqual(0.75)
+  })
+
+  test("Number Input + button steps the value via stepUp()", async ({ page }) => {
+      await gotoDoc(page, "number-input")
+      // First steppered field on the page (#ex-basic-qty, value=1, max=10).
+      const root = page.locator('[data-slot="number-input"]').first()
+      const input = root.locator('input[type="number"]')
+      const before = await input.inputValue()
+      await root.locator('[data-step="up"]').click()
+      const after = await input.inputValue()
+      expect(Number(after)).toBe(Number(before) + 1)
+    })
+
+  test("Breadcrumb marks the current page and keeps it non-interactive", async ({ page }) => {
+    await gotoDoc(page, "breadcrumb")
+    const nav = page.locator('nav[data-slot="breadcrumb"]').first()
+    await expect(nav).toHaveAttribute("aria-label", "Breadcrumb")
+  
+    // The current page is a real <span aria-current="page"> — not a link.
+    const current = nav.locator('[data-slot="breadcrumb-page"]').first()
+    await expect(current).toHaveAttribute("aria-current", "page")
+    expect(await current.evaluate((el) => el.tagName)).toBe("SPAN")
+  
+    // Parent links are real, focusable anchors; tabbing reaches the first one.
+    const firstLink = nav.locator('a[data-slot="breadcrumb-link"]').first()
+    await firstLink.focus()
+    await expect(firstLink).toBeFocused()
+    expect(await firstLink.evaluate((el) => el.tagName)).toBe("A")
+  })
+
+  test("Link is a native anchor; external link sets target + rel", async ({ page }) => {
+    await gotoDoc(page, "link")
+    // Default variant renders a real <a href> with the implicit link role.
+    const def = page.locator('a[data-slot="link"][data-variant="default"]').first()
+    await expect(def).toBeVisible()
+    await expect(def).toHaveAttribute("href", /.+/)
+    // External link opts into a new tab and severs window.opener + referrer.
+    const ext = page.locator('a[data-slot="link"][data-external="true"]').first()
+    await expect(ext).toHaveAttribute("target", "_blank")
+    await expect(ext).toHaveAttribute("rel", /noopener/)
+    await expect(ext).toHaveAttribute("rel", /noreferrer/)
+    // The "opens in new tab" affordance is announced to assistive tech.
+    await expect(ext.locator(".sr-only")).toHaveText(/opens in new tab/i)
+  })
+
+  test("Collapsible toggles open on trigger click", async ({ page }) => {
+      await gotoDoc(page, "collapsible")
+      const trigger = page
+        .locator('[data-slot="collapsible-trigger"]')
+        .first()
+      const details = trigger.locator("xpath=..")
+      // First example renders collapsed; clicking the summary opens it.
+      await expect(details).not.toHaveAttribute("open", "")
+      await trigger.click()
+      await expect(details).toHaveAttribute("open", "")
+    })
+
+  test("AlertDialog opens, ignores backdrop click, closes on Cancel", async ({ page }) => {
+      await gotoDoc(page, "alert-dialog")
+      const trigger = page.locator("[data-dialog-trigger]").first()
+      await trigger.click()
+      const dialog = page.locator('dialog[role="alertdialog"][open]').first()
+      await expect(dialog).toBeVisible()
+      // Distinguishing behaviour vs Dialog: an alert dialog is NOT
+      // light-dismissible. Click the backdrop (top-left corner, outside the
+      // centred content box) and assert it stays open.
+      await page.mouse.click(4, 4)
+      await expect(dialog).toBeVisible()
+      // An explicit response closes it.
+      await dialog.locator('[data-dialog-close="true"]').first().click()
+      await expect(dialog).toBeHidden()
+    })
+
+  test("RangeSlider clamps thumbs and updates the fill", async ({ page }) => {
+      await gotoDoc(page, "range-slider")
+      const root = page.locator('[data-slot="range-slider"]').first()
+      const lo = root.locator('input[data-range="min"]')
+      const hi = root.locator('input[data-range="max"]')
+      // Drive the lower thumb past the upper thumb's value; it must clamp.
+      const hiVal = await hi.inputValue()
+      await lo.fill(String(Number(await hi.getAttribute("max"))))
+      await lo.dispatchEvent("input")
+      expect(Number(await lo.inputValue())).toBeLessThanOrEqual(Number(await hi.inputValue()))
+      // The fill CSS variable tracks the lower thumb after interaction.
+      const minVar = await root.evaluate((el) =>
+        getComputedStyle(el).getPropertyValue("--range-min").trim(),
+      )
+      expect(minVar).toMatch(/%$/)
+      expect(await hi.inputValue()).not.toBe("")
+      void hiVal
+    })
+
+  test("Toolbar arrow keys roll the tabindex between controls", async ({ page }) => {
+      await gotoDoc(page, "toolbar")
+      // Scope to the first live toolbar preview (Example puts the id on the
+      // heading, not a wrapper, so query the toolbar by its data-slot).
+      const bar = page.locator('[data-slot="toolbar"]').first()
+      const items = bar.locator('[data-toolbar-item]')
+      const first = items.nth(0)
+      const second = items.nth(1)
+      // Single tab stop: only the first non-disabled control is focusable.
+      await expect(first).toHaveAttribute("tabindex", "0")
+      await expect(second).toHaveAttribute("tabindex", "-1")
+      await first.focus()
+      await page.keyboard.press("ArrowRight")
+      // Focus AND the roving tabindex move to the next control.
+      await expect(second).toBeFocused()
+      await expect(second).toHaveAttribute("tabindex", "0")
+      await expect(first).toHaveAttribute("tabindex", "-1")
+    })
+})

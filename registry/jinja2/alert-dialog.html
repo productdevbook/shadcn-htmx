@@ -1,0 +1,60 @@
+{# AlertDialog macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/alert-dialog.tsx. Native <dialog> + .showModal()
+   (wiring in public/site.js: data-dialog-trigger / data-dialog-close).
+
+   Unlike dialog.html this is an *alert* dialog (APG alertdialog pattern):
+     - role="alertdialog", aria-describedby is required (the message).
+     - NOT light-dismissible: no data-close-on-backdrop, closedby="closerequest".
+     - No X button — the user must pick Cancel or the confirming action.
+
+   Usage:
+     {% from "components/alert-dialog.html" import alert_dialog, alert_dialog_trigger %}
+
+     {{ alert_dialog_trigger("Delete", dialog_for="confirm", class_="…btn classes") }}
+
+     {% call alert_dialog(id="confirm", title="Are you absolutely sure?",
+                          description="This action cannot be undone.") %}
+       <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+         <button type="button" data-dialog-close="true"
+                 class="… button outline classes …" autofocus>Cancel</button>
+         <button type="button" data-dialog-close="true"
+                 class="… button destructive classes …"
+                 hx-post="/items/42/delete">Delete</button>
+       </div>
+     {% endcall %} #}
+
+{% macro alert_dialog(
+    id,
+    title=none,
+    description=none,
+    open=false
+) %}
+{%- set base -%}
+fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm
+{%- endset -%}
+<dialog id="{{ id }}"
+        {%- if open %} open{% endif %}
+        closedby="closerequest"
+        role="alertdialog"
+        class="{{ base }}"
+        data-slot="alert-dialog"
+        aria-labelledby="{{ id }}-title"
+        aria-describedby="{{ id }}-description">
+  {%- if title or description %}
+  <div data-slot="alert-dialog-header" class="flex flex-col gap-1.5 text-left">
+    {% if title %}<h2 id="{{ id }}-title" data-slot="alert-dialog-title" class="text-lg leading-none font-semibold">{{ title }}</h2>{% endif %}
+    {% if description %}<p id="{{ id }}-description" data-slot="alert-dialog-description" class="text-sm text-muted-foreground">{{ description }}</p>{% endif %}
+  </div>
+  {%- endif %}
+  {{ caller() }}
+</dialog>
+{% endmacro %}
+
+{% macro alert_dialog_trigger(label, dialog_for, type="button", id=none, class_="") %}
+<button {% if id %} id="{{ id }}"{% endif %}
+        type="{{ type }}"
+        class="{{ class_ }}"
+        data-dialog-trigger="true"
+        data-dialog-target="{{ dialog_for }}"
+        aria-haspopup="dialog">{{ label }}</button>
+{% endmacro %}

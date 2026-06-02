@@ -1,0 +1,60 @@
+{# Link macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/link.tsx. Renders a native <a href> — the WAI-ARIA APG
+   Link pattern (repos/aria-practices/content/patterns/link/link-pattern.html)
+   "strongly encourages" a real <a>, so role=link and Enter activation come
+   from the platform.
+
+   Usage:
+     {% from "components/link.html" import link %}
+     {{ link("Documentation", href="/docs") }}
+     {{ link("Settings", href="/settings", variant="hover") }}
+     {{ link("htmx.org", href="https://htmx.org", external=true) }}
+
+   external=true sets target="_blank" rel="noopener noreferrer" and appends the
+   "opens in new tab" icon + visually-hidden text (MDN: External links).
+
+   as="span"/"button" + role="link" is the APG fallback for markup that cannot
+   be an <a>; you must wire navigation yourself. Prefer the native <a>. #}
+
+{% macro link(
+    text,
+    href=none,
+    variant="default",
+    external=false,
+    target=none,
+    rel=none,
+    as="a",
+    id=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_current=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-offset-4 transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&[role=link]]:cursor-pointer [&>svg]:pointer-events-none [&>svg]:size-3.5 [&>svg]:shrink-0
+{%- endset -%}
+{%- set variants = {
+    "default": "underline decoration-primary/40 hover:decoration-primary",
+    "muted": "text-muted-foreground underline decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground",
+    "hover": "no-underline hover:underline"
+} -%}
+{%- set is_anchor = (as == "a") -%}
+{%- set resolved_target = target if target is not none else ("_blank" if external else none) -%}
+{%- set resolved_rel = rel if rel is not none else ("noopener noreferrer" if external else none) -%}
+<{{ as }}
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if is_anchor and href %} href="{{ href }}"{% endif %}
+  {%- if is_anchor and resolved_target %} target="{{ resolved_target }}"{% endif %}
+  {%- if is_anchor and resolved_rel %} rel="{{ resolved_rel }}"{% endif %}
+  {%- if not is_anchor %} role="link" tabindex="0"{% endif %}
+  data-slot="link"
+  data-variant="{{ variant }}"
+  {%- if external %} data-external="true"{% endif %}
+  class="{{ base }} {{ variants[variant] }} {{ extra_class }}"
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- if aria_current %} aria-current="{{ aria_current }}"{% endif %}
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ text }}{% if external %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg><span class="sr-only"> (opens in new tab)</span>{% endif %}</{{ as }}>
+{% endmacro %}

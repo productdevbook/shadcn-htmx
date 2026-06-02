@@ -1,0 +1,95 @@
+{{/*
+  Number Input template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/number-input.tsx for Go projects using html/template.
+
+  The control is a native <input type="number">: role=spinbutton,
+  aria-valuenow/min/max, and the ArrowUp/ArrowDown stepping contract all come
+  from the platform. The optional −/+ buttons call stepDown()/stepUp() via the
+  shared handler in public/site.js (keyed on data-slot="number-input").
+
+  Args (via dict):
+      ID, Name, Value, Placeholder string
+      Min, Max, Step               string  // numeric attrs, as strings
+      Required, Disabled, Readonly bool
+      Autofocus                    bool
+      Form, List                   string
+      NoSteppers                   bool    // omit the −/+ buttons (bare field)
+      InputMode                    string  // "" | "numeric" | "decimal"
+      AriaLabel, AriaLabelledby    string
+      AriaDescribedby              string
+      AriaInvalid, AriaRequired    string  // "true" | "false"
+      Attrs                        map[string]string // hx-*, data-*, …
+
+      {{template "number-input" (dict "Name" "qty" "Value" "1" "Min" "0" "Max" "10")}}
+
+  See repos/mdn/files/en-us/web/html/reference/elements/input/number/index.md.
+*/}}
+
+{{define "number-input"}}
+{{- $steppers := not .NoSteppers -}}
+{{- $inputBase := "flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]" -}}
+{{- $stepperBtn := "inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors outline-none select-none hover:text-foreground hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:relative focus-visible:z-10 disabled:pointer-events-none disabled:opacity-50" -}}
+{{- if $steppers -}}
+<div data-slot="number-input"
+     {{- if .Disabled}} data-disabled="true"{{end}}
+     class="flex h-9 w-full min-w-0 items-stretch overflow-hidden rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] dark:bg-input/30 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-[input[aria-invalid=true]]:border-destructive has-[input[aria-invalid=true]]:ring-destructive/20 dark:has-[input[aria-invalid=true]]:ring-destructive/40 has-[input:disabled]:pointer-events-none has-[input:disabled]:opacity-50"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+  <button type="button" data-step="down" tabindex="-1"{{if .Disabled}} disabled{{end}} aria-label="Decrease" title="Decrease"
+          class="{{$stepperBtn}} rounded-l-md border-r border-input">
+    <span aria-hidden="true">{{htmlSafe "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"size-4\"><path d=\"M5 12h14\"/></svg>"}}</span>
+  </button>
+  <input type="number"
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       {{- if .Name}} name="{{.Name}}"{{end}}
+       {{- if .Value}} value="{{.Value}}"{{end}}
+       {{- if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
+       {{- if .Min}} min="{{.Min}}"{{end}}
+       {{- if .Max}} max="{{.Max}}"{{end}}
+       {{- if .Step}} step="{{.Step}}"{{end}}
+       {{- if .Required}} required{{end}}
+       {{- if .Disabled}} disabled{{end}}
+       {{- if .Readonly}} readonly{{end}}
+       {{- if .Autofocus}} autofocus{{end}}
+       {{- if .Form}} form="{{.Form}}"{{end}}
+       {{- if .List}} list="{{.List}}"{{end}}
+       {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
+       {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+       {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+       {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+       {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+       data-slot="number-input-field"
+       class="{{$inputBase}} rounded-none border-0 text-center shadow-none focus-visible:ring-0">
+  <button type="button" data-step="up" tabindex="-1"{{if .Disabled}} disabled{{end}} aria-label="Increase" title="Increase"
+          class="{{$stepperBtn}} rounded-r-md border-l border-input">
+    <span aria-hidden="true">{{htmlSafe "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"size-4\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>"}}</span>
+  </button>
+</div>
+{{- else -}}
+<input type="number"
+     {{- if .ID}} id="{{.ID}}"{{end}}
+     {{- if .Name}} name="{{.Name}}"{{end}}
+     {{- if .Value}} value="{{.Value}}"{{end}}
+     {{- if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
+     {{- if .Min}} min="{{.Min}}"{{end}}
+     {{- if .Max}} max="{{.Max}}"{{end}}
+     {{- if .Step}} step="{{.Step}}"{{end}}
+     {{- if .Required}} required{{end}}
+     {{- if .Disabled}} disabled{{end}}
+     {{- if .Readonly}} readonly{{end}}
+     {{- if .Autofocus}} autofocus{{end}}
+     {{- if .Form}} form="{{.Form}}"{{end}}
+     {{- if .List}} list="{{.List}}"{{end}}
+     {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+     {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+     data-slot="number-input"
+     class="{{$inputBase}}"
+     {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+{{- end -}}
+{{end}}

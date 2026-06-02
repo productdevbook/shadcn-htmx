@@ -1,0 +1,32 @@
+<!--
+  shadcn-htmx — raw HTML breadcrumb snippet.
+  A <nav> landmark with aria-label wrapping an <ol> of links. The current
+  page is a plain <span aria-current="page"> (not a link). Separators are
+  decorative <li aria-hidden="true">. Zero JS — relies only on theme tokens
+  in styles.css.
+
+  APG: https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
+-->
+
+<nav data-slot="breadcrumb" aria-label="Breadcrumb">
+  <ol data-slot="breadcrumb-list"
+      class="flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5">
+    <li data-slot="breadcrumb-item" class="inline-flex items-center gap-1.5">
+      <a href="/" data-slot="breadcrumb-link"
+         class="transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">Home</a>
+    </li>
+    <li data-slot="breadcrumb-separator" aria-hidden="true" class="[&>svg]:size-3.5">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+    </li>
+    <li data-slot="breadcrumb-item" class="inline-flex items-center gap-1.5">
+      <a href="/components" data-slot="breadcrumb-link"
+         class="transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">Components</a>
+    </li>
+    <li data-slot="breadcrumb-separator" aria-hidden="true" class="[&>svg]:size-3.5">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+    </li>
+    <li data-slot="breadcrumb-item" class="inline-flex items-center gap-1.5">
+      <span data-slot="breadcrumb-page" aria-current="page" class="font-normal text-foreground">Breadcrumb</span>
+    </li>
+  </ol>
+</nav>
