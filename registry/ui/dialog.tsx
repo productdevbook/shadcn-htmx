@@ -202,9 +202,38 @@ type DialogCloseProps = PropsWithChildren<{
   // Set false to attach to a non-child (e.g. when you render your own button
   // here and add data-dialog-close yourself).
   attachToChild?: boolean
+  // Native Invoker Commands mode (opt-in). When set, render a real <button>
+  // that closes the dialog with zero JS — the platform equivalent of
+  // .close()/.requestClose():
+  //   - "close"         → declarative HTMLDialogElement.close()
+  //   - "request-close" → fires a cancelable `cancel` event first, so an
+  //                       unsaved-changes guard can preventDefault() it.
+  // The data-dialog-close + site.js path remains the default fallback.
+  // See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74
+  //     repos/mdn/files/en-us/web/html/reference/elements/dialog/index.md:55-71
+  command?: "close" | "request-close"
+  // Target dialog id for the invoker button. Defaults to the closest <dialog>
+  // ancestor (browsers resolve commandfor up the tree), but pass it when the
+  // button lives outside the dialog.
+  commandfor?: string
+  // Button `value` — with the close/request-close commands the platform copies
+  // this into HTMLDialogElement.returnValue, so the `close` event can tell
+  // which control closed the dialog (e.g. "confirm" vs "cancel").
+  // See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:149-152
+  value?: string
+  class?: ClassValue
 }>
 export function DialogClose(props: DialogCloseProps) {
-  const { children, attachToChild = true } = props
+  const { children, attachToChild = true, command, commandfor, value, class: className } = props
+  // Native invoker mode: render a real <button> with command/commandfor so the
+  // browser closes the dialog (and copies `value` into returnValue) with no JS.
+  if (command) {
+    return (
+      <button type="button" command={command} commandfor={commandfor} value={value} class={cn(className)}>
+        {children}
+      </button>
+    )
+  }
   if (!attachToChild) return <>{children}</>
   // The simpler pattern: render a span with data-dialog-close="true"; the JS
   // event listener walks up to find the closest <dialog>. This way we don't
@@ -227,9 +256,31 @@ type DialogTriggerProps = PropsWithChildren<{
   type?: "button" | "submit"
   id?: string
   ariaHaspopup?: string
+  // Native Invoker Commands mode (opt-in). When true, render a real <button
+  // command="show-modal" commandfor={dialogFor}> that opens the dialog as a
+  // modal with zero JS — the declarative equivalent of .showModal(). The
+  // browser also wires implicit control↔dialog accessibility. The data-* +
+  // site.js path stays the default fallback.
+  // See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74
+  //     repos/mdn/files/en-us/web/html/reference/elements/dialog/index.md:55-71
+  native?: boolean
 }>
 export function DialogTrigger(props: DialogTriggerProps) {
-  const { dialogFor, render = "wrapper", children, class: className, id, type = "button", ariaHaspopup = "dialog" } = props
+  const { dialogFor, render = "wrapper", children, class: className, id, type = "button", ariaHaspopup = "dialog", native } = props
+  if (native) {
+    return (
+      <button
+        id={id}
+        type={type}
+        class={cn(className)}
+        command="show-modal"
+        commandfor={dialogFor}
+        aria-haspopup={ariaHaspopup}
+      >
+        {children}
+      </button>
+    )
+  }
   if (render === "button") {
     return (
       <button

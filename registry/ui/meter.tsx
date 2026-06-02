@@ -50,6 +50,10 @@ type MeterProps = {
   high?: number
   optimum?: number
   id?: string
+  // Free-form units hint. The WHATWG HTML spec notes <meter> has no units
+  // attribute and that title is the only standard way to convey units
+  // (e.g. title="gigabytes"). repos/whatwg-html/source meter section.
+  title?: string
   // Accessible name — required when there's no linked <label>.
   ariaLabel?: string
   ariaLabelledby?: string
@@ -79,6 +83,7 @@ export function Meter(props: MeterProps) {
     high,
     optimum,
     id,
+    title,
     ariaLabel,
     ariaLabelledby,
     ariaDescribedby,
@@ -92,6 +97,7 @@ export function Meter(props: MeterProps) {
     <meter
       id={id}
       data-slot="meter"
+      title={title}
       value={value}
       min={min}
       max={max}

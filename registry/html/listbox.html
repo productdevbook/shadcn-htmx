@@ -12,6 +12,16 @@
   Accessibility contract:
     repos/aria-practices/content/patterns/listbox/listbox-pattern.html
 
+  Optional state attributes on the <ul role="listbox"> (add as needed):
+    aria-required="true"           group-level "one option must be chosen"
+                                   (listbox supports aria-required)
+    aria-invalid="true"            mark invalid for the WCAG error-id pattern
+    aria-errormessage="errId"      id of the visible error message element
+    aria-readonly="true"           locked-but-operable (focusable/navigable,
+                                   selection cannot change) — distinct from
+                                   aria-disabled which makes options inert
+    See repos/mdn/files/en-us/web/accessibility/aria/reference/roles/listbox_role/index.md
+
   Required CSS theme variables: --background, --foreground, --primary,
   --primary-foreground, --accent, --accent-foreground, --muted-foreground,
   --border, --ring. See app/styles/input.css.

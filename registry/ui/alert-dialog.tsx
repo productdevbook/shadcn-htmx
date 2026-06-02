@@ -69,6 +69,11 @@ type AlertDialogProps = PropsWithChildren<{
   // already-open alert dialog; site.js promotes <dialog open> to .showModal()).
   open?: boolean
   class?: ClassValue
+  // APG: name the alertdialog with EITHER aria-labelledby -> a visible title OR
+  // aria-label when there is no visible AlertDialogTitle (e.g. a short error
+  // alert). See alertdialog-pattern.html:47-57. When ariaLabel is set we omit
+  // the auto aria-labelledby fallback so the two naming mechanisms don't collide.
+  ariaLabel?: string
   ariaLabelledby?: string
   ariaDescribedby?: string
 }>
@@ -79,6 +84,7 @@ export function AlertDialog(props: AlertDialogProps) {
     children,
     open,
     class: className,
+    ariaLabel,
     ariaLabelledby,
     ariaDescribedby,
   } = props
@@ -97,7 +103,11 @@ export function AlertDialog(props: AlertDialogProps) {
       // APG: the container carries role="alertdialog"; .showModal() adds
       // aria-modal="true". See alertdialog-pattern.html:44-46.
       role="alertdialog"
-      aria-labelledby={ariaLabelledby ?? `${id}-title`}
+      // APG (alertdialog-pattern.html:47-57): aria-label OR aria-labelledby.
+      // An explicit ariaLabel wins and suppresses the id-title fallback so the
+      // dialog isn't named twice (and doesn't reference a missing title id).
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabel ? undefined : (ariaLabelledby ?? `${id}-title`)}
       // REQUIRED by APG (alertdialog-pattern.html:58-60): the description
       // refers to the element containing the alert message.
       aria-describedby={ariaDescribedby ?? `${id}-description`}

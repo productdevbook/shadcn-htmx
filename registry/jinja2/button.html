@@ -24,10 +24,14 @@
     size="default",
     type="button",
     disabled=false,
+    aria_disabled=false,
     pressed=none,
     aria_label=none,
     aria_labelledby=none,
     aria_describedby=none,
+    aria_expanded=none,
+    aria_haspopup=none,
+    aria_controls=none,
     id=none,
     name=none,
     value=none,
@@ -80,10 +84,21 @@ inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-m
         {%- if popovertarget %} popovertarget="{{ popovertarget }}"{% endif %}
         {%- if popovertargetaction %} popovertargetaction="{{ popovertargetaction }}"{% endif %}
         {%- if disabled %} disabled{% endif %}
-        {%- if pressed is not none %} aria-pressed="{{ 'true' if pressed else 'false' }}"{% endif %}
+        {# aria-disabled stays focusable while unavailable, unlike `disabled`.
+           See repos/aria-practices/content/patterns/button/button-pattern.html #}
+        {%- if aria_disabled %} aria-disabled="true"{% endif %}
+        {# aria-pressed is tri-state: true | false | "mixed". See
+           repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-pressed/ #}
+        {%- if pressed is not none %} aria-pressed="{{ pressed if pressed is string else ('true' if pressed else 'false') }}"{% endif %}
         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
         {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
         {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+        {# Disclosure / menu trigger contract. See
+           repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-expanded/
+           and .../aria-haspopup/ #}
+        {%- if aria_expanded is not none %} aria-expanded="{{ aria_expanded if aria_expanded is string else ('true' if aria_expanded else 'false') }}"{% endif %}
+        {%- if aria_haspopup is not none %} aria-haspopup="{{ aria_haspopup if aria_haspopup is string else ('true' if aria_haspopup else 'false') }}"{% endif %}
+        {%- if aria_controls %} aria-controls="{{ aria_controls }}"{% endif %}
         data-slot="button" data-variant="{{ variant }}" data-size="{{ size }}"
         {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
 >{{ label }}</button>

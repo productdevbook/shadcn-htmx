@@ -1,6 +1,17 @@
 <!--
   shadcn-htmx — raw HTML skeleton snippet.
   Loading placeholder with role="status" + aria-busy + pulse animation.
+
+  Naming: use aria-label for a standalone string. If a visible label
+  already exists (e.g. a heading), reference it with aria-labelledby
+  instead — it supersedes aria-label. Per the status role spec:
+  "If a name is visible, reference it using aria-labelledby."
+  repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md
+
+    <h2 id="activity-heading">Recent activity</h2>
+    <div role="status" aria-busy="true" aria-labelledby="activity-heading"
+         data-slot="skeleton"
+         class="animate-pulse rounded-md bg-muted h-4 w-64"></div>
 -->
 
 <div role="status" aria-busy="true" aria-label="Loading user profile"

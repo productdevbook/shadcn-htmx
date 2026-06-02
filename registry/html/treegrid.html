@@ -17,6 +17,14 @@
   Collapsed descendant rows carry the native `hidden` attribute, which removes
   them from layout AND the accessibility tree.
 
+  Sortable columns: when a column header offers a sort function, set aria-sort
+  ("ascending" | "descending" | "none") on that <th role="columnheader"> — the
+  attribute belongs on the header cell, not the <table>. Hang hx-get on the
+  same <th> to re-fetch the sorted data. APG Treegrid pattern:
+    repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html
+    (e.g. <th role="columnheader" scope="col" aria-sort="ascending"
+            hx-get="/inbox?sort=date">Date</th>)
+
   Required CSS theme variables: --muted, --muted-foreground, --accent,
   --accent-foreground, --border. See app/styles/input.css (plus the
   [data-slot="treegrid"] chevron rule there that rotates the expand icon).

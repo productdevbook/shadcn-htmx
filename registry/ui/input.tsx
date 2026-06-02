@@ -82,6 +82,18 @@ type InputProps = {
   // most useful as "off" for email/password/url where auto-caps is wrong.
   autocapitalize?: "off" | "none" | "on" | "sentences" | "words" | "characters"
 
+  // Spellcheck hint (enumerated global attribute). Set "false" for fields
+  // holding PII, codes, usernames, or tokens — spellcheck content may be
+  // sent to a third party ("spell-jacking").
+  // See repos/mdn/files/en-us/web/html/reference/global_attributes/spellcheck/index.md
+  spellcheck?: boolean
+
+  // Autocorrect hint (enumerated global attribute, on/off). Disable for
+  // names, usernames, addresses, or coupon/API codes where OS autocorrect
+  // is harmful. password/email/url are always "off" per spec.
+  // See repos/mdn/files/en-us/web/html/reference/global_attributes/autocorrect/index.md
+  autocorrect?: "on" | "off"
+
   // Visible width in characters for text/email/password/tel/url. Mostly
   // superseded by CSS but useful for graceful fallback rendering.
   size?: number

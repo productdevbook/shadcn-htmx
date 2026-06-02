@@ -13,14 +13,20 @@
 <li><a href="{{.Href}}" data-slot="pagination-link" {{if .Active}}aria-current="page"{{end}} class="{{$base}} {{$on}}">{{.N}}</a></li>
 {{end}}
 
+{{/* Disabled prev/next render as <button disabled> not <a>: aria-disabled alone
+     does not suppress keyboard activation (aria-disabled spec), and the native
+     disabled attr is invalid on <a>. rel="prev"/"next" are the WHATWG sequence
+     link types, emitted on the enabled <a>. Override .Rel to change them. */}}
 {{define "pagination_prev"}}
 {{- $base := "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" -}}
-<li><a href="{{.Href}}" data-slot="pagination-prev" aria-label="Previous page" {{if .Disabled}}aria-disabled="true" {{end}}class="{{$base}} gap-1 pl-2.5 {{if .Disabled}}pointer-events-none opacity-50{{end}}">‹ Previous</a></li>
+{{- $rel := or .Rel "prev" -}}
+{{if .Disabled}}<li><button type="button" data-slot="pagination-prev" aria-label="Previous page" aria-disabled="true" disabled class="{{$base}} gap-1 pl-2.5 pointer-events-none opacity-50">‹ Previous</button></li>{{else}}<li><a href="{{.Href}}" data-slot="pagination-prev" aria-label="Previous page" rel="{{$rel}}" class="{{$base}} gap-1 pl-2.5">‹ Previous</a></li>{{end}}
 {{end}}
 
 {{define "pagination_next"}}
 {{- $base := "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" -}}
-<li><a href="{{.Href}}" data-slot="pagination-next" aria-label="Next page" {{if .Disabled}}aria-disabled="true" {{end}}class="{{$base}} gap-1 pr-2.5 {{if .Disabled}}pointer-events-none opacity-50{{end}}">Next ›</a></li>
+{{- $rel := or .Rel "next" -}}
+{{if .Disabled}}<li><button type="button" data-slot="pagination-next" aria-label="Next page" aria-disabled="true" disabled class="{{$base}} gap-1 pr-2.5 pointer-events-none opacity-50">Next ›</button></li>{{else}}<li><a href="{{.Href}}" data-slot="pagination-next" aria-label="Next page" rel="{{$rel}}" class="{{$base}} gap-1 pr-2.5">Next ›</a></li>{{end}}
 {{end}}
 
 {{define "pagination_ellipsis"}}

@@ -8,8 +8,8 @@
   Native element -> implicit ARIA landmark role:
     <header>  -> banner          <aside>    -> complementary
     <nav>     -> navigation       <section>  -> region (only when labelled)
-    <search>  -> search           <footer>   -> contentinfo
-    <main>    -> main
+    <search>  -> search           <form>     -> form   (only when labelled)
+    <main>    -> main             <footer>   -> contentinfo
 
   Labelling rules (APG):
     - <main> and the body-level <header>/<footer> need no label (one each).
@@ -19,6 +19,9 @@
     - <aside> (complementary) is labelled when there is more than one.
     - <section> is ONLY a region landmark when it has an accessible name
       (aria-label / aria-labelledby) — a bare <section> exposes no role.
+    - <form> is ONLY a form landmark when it has an accessible name
+      (aria-label / aria-labelledby / title); use <search> for search forms.
+      MDN: repos/mdn/files/en-us/web/accessibility/aria/reference/roles/form_role/index.md:12,31,33,101
 
   data-slot="landmark-<role>" hangs off each root element.
 -->
@@ -62,6 +65,16 @@
         <h2 id="lm-usage-title" class="text-sm font-semibold">Usage this month</h2>
         <p class="mt-1 text-sm text-muted-foreground">42,318 requests · 7.1 GB transferred</p>
       </section>
+
+      <!-- form: a labelled <form> is a form landmark (only when named).
+           Use <search> instead when the form performs a search. -->
+      <form data-slot="landmark-form" aria-labelledby="lm-contact-title" action="/contact" method="post" class="rounded-lg border bg-card p-4 text-card-foreground">
+        <h2 id="lm-contact-title" class="text-sm font-semibold">Contact support</h2>
+        <label for="lm-msg" class="mt-2 block text-sm text-muted-foreground">Message</label>
+        <textarea id="lm-msg" name="message" rows="3"
+          class="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"></textarea>
+        <button type="submit" class="mt-2 inline-flex h-8 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90">Send</button>
+      </form>
     </main>
 
     <!-- complementary: top-level supporting content, labelled -->

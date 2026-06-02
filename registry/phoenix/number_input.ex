@@ -40,9 +40,11 @@ defmodule ShadcnHtmx.Components.NumberInput do
 
   attr :rest, :global,
     include:
+      # autocomplete: supported common attr on <input type=number> (MDN input/number).
+      # aria-valuetext: human-readable spinbutton value (APG spinbutton pattern).
       ~w(hx-get hx-post hx-put hx-patch hx-delete hx-target hx-swap hx-trigger hx-indicator hx-vals hx-include
-         id name value placeholder min max step required readonly autofocus form list inputmode
-         aria-label aria-labelledby aria-describedby aria-invalid aria-required)
+         id name value placeholder min max step required readonly autofocus form list autocomplete inputmode
+         aria-label aria-labelledby aria-describedby aria-valuetext aria-invalid aria-required)
 
   def number_input(assigns) do
     assigns =

@@ -8,7 +8,8 @@
      class="mx-auto flex w-full justify-center">
   <ul class="flex flex-row items-center gap-1">
     <li>
-      <a href="/articles?page=1" data-slot="pagination-prev" aria-label="Previous page"
+      <!-- rel="prev"/"next": WHATWG sequence link types for paged content. -->
+      <a href="/articles?page=1" data-slot="pagination-prev" aria-label="Previous page" rel="prev"
          class="inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-md px-3 pl-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
         ‹ Previous
       </a>
@@ -30,7 +31,7 @@
             class="flex h-9 w-9 items-center justify-center text-muted-foreground">…</span>
     </li>
     <li>
-      <a href="/articles?page=3" data-slot="pagination-next" aria-label="Next page"
+      <a href="/articles?page=3" data-slot="pagination-next" aria-label="Next page" rel="next"
          class="inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-md px-3 pr-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
         Next ›
       </a>

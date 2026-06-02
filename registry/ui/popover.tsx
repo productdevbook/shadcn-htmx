@@ -41,21 +41,48 @@ type PopoverProps = PropsWithChildren<{
   // Required — used by the trigger via popovertarget.
   id: string
   // "auto" (default): light dismiss + ESC. "manual": only code can toggle.
-  mode?: "auto" | "manual"
+  // "hint": light-dismissable but does NOT close an open `auto` popover —
+  // for tooltip/teaching-UI that should coexist with an open menu. Falls
+  // back to manual in non-supporting browsers (progressive enhancement).
+  // repos/mdn/files/en-us/web/html/reference/global_attributes/popover/index.md:22-24
+  mode?: "auto" | "hint" | "manual"
   // Side hint — used for anchor positioning if the browser supports it.
   side?: PopoverSide
   class?: ClassValue
+  // The native popover attribute assigns NO role and NO accessible name to
+  // the popover element itself — only an implicit aria relationship on the
+  // invoker. Supply these for menu/listbox/labelled-dialog popovers.
+  // repos/mdn/files/en-us/web/api/popover_api/using/index.md:79-86
+  role?: string
+  ariaLabelledby?: string
+  ariaLabel?: string
 }>
 
 export function Popover(props: PopoverProps) {
-  const { id, mode = "auto", side = "bottom", class: className, children } = props
+  const {
+    id,
+    mode = "auto",
+    side = "bottom",
+    class: className,
+    role,
+    ariaLabelledby,
+    ariaLabel,
+    children,
+  } = props
   return (
     <div
       id={id}
       // Native popover attribute. `popover=""` is equivalent to popover="auto".
-      popover={mode === "manual" ? "manual" : "auto"}
+      // Cast: "hint" is a valid platform keyword the Hono JSX types don't list yet.
+      popover={
+        (mode === "manual" ? "manual" : mode === "hint" ? "hint" : "auto") as "auto" | "manual"
+      }
       data-slot="popover"
       data-side={side}
+      // role / accessible name emitted only when provided.
+      role={role}
+      aria-labelledby={ariaLabelledby}
+      aria-label={ariaLabel}
       class={cn(popoverClasses(), className)}
     >
       {children}

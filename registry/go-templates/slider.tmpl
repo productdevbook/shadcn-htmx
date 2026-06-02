@@ -5,7 +5,10 @@
           ID, Name, AriaLabel string
           AriaLabelledby, AriaDescribedby, AriaValuetext string
           Form, List string
-          Value, Min, Max, Step *int
+          Value, Min, Max *int
+          // Step is a string so it can hold a number ("0.5") or the special
+          // value "any" (continuous range) — MDN input/range "Setting step to any".
+          Step string
           Disabled, Required bool
           // Everything else (hx-get, hx-target, data-*, …) goes here.
           Attrs map[string]string
@@ -19,7 +22,7 @@
     {{if .ID}}id="{{.ID}}"{{end}} {{if .Name}}name="{{.Name}}"{{end}}
     {{if .Value}}value="{{deref .Value}}"{{end}}
     min="{{$min}}" max="{{$max}}"
-    {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{if .Step}}step="{{.Step}}"{{end}}
     {{if .Disabled}}disabled{{end}} {{if .Required}}required{{end}}
     {{if .Form}}form="{{.Form}}"{{end}} {{if .List}}list="{{.List}}"{{end}}
     {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}

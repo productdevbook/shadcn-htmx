@@ -100,6 +100,16 @@ type TableHeadProps = PropsWithChildren<{
   scope?: "col" | "row" | "colgroup" | "rowgroup"
   // Sort state. Omit for non-sortable columns.
   sort?: Sort
+  // Native <th> spanning + association attrs (MDN: web/html/reference/elements/th).
+  colspan?: number
+  rowspan?: number
+  // id / headers let complex tables explicitly associate cells with headers
+  // (MDN th: "Associate header cells with other header cells").
+  id?: string
+  headers?: string
+  // Short spoken label AT announces in place of verbose header text
+  // (MDN th: abbr — non-deprecated on <th>).
+  abbr?: string
   // htmx attrs for the sort button (e.g. hx-get to re-fetch with new sort).
   [key: `hx-${string}`]: any
   // Click handler — used when sort button needs custom JS instead of htmx.
@@ -107,12 +117,29 @@ type TableHeadProps = PropsWithChildren<{
 }>
 
 export function TableHead(props: TableHeadProps) {
-  const { children, class: className, scope = "col", sort, onclick, ...rest } = props
+  const {
+    children,
+    class: className,
+    scope = "col",
+    sort,
+    onclick,
+    colspan,
+    rowspan,
+    id,
+    headers,
+    abbr,
+    ...rest
+  } = props
   const sortable = sort !== undefined
   if (!sortable) {
     return (
       <th
         scope={scope}
+        colspan={colspan}
+        rowspan={rowspan}
+        id={id}
+        headers={headers}
+        abbr={abbr}
         data-slot="table-head"
         class={cn(
           "h-10 px-2 text-left align-middle font-medium text-muted-foreground",
@@ -126,6 +153,11 @@ export function TableHead(props: TableHeadProps) {
   return (
     <th
       scope={scope}
+      colspan={colspan}
+      rowspan={rowspan}
+      id={id}
+      headers={headers}
+      abbr={abbr}
       data-slot="table-head"
       data-sortable="true"
       aria-sort={sort}
@@ -162,12 +194,25 @@ export function TableHead(props: TableHeadProps) {
 }
 
 export function TableCell(
-  props: PropsWithChildren<{ class?: ClassValue; colspan?: number; scope?: "row" }>,
+  props: PropsWithChildren<{
+    class?: ClassValue
+    colspan?: number
+    // Native <td> spanning + association attrs (MDN: web/html/reference/elements/td).
+    rowspan?: number
+    scope?: "row"
+    id?: string
+    // headers: space-separated list of header cell ids for complex tables
+    // (MDN td: "Associate data cells with header cells").
+    headers?: string
+  }>,
 ) {
   return (
     <td
       colspan={props.colspan}
+      rowspan={props.rowspan}
       scope={props.scope}
+      id={props.id}
+      headers={props.headers}
       data-slot="table-cell"
       class={cn("p-2 align-middle", props.class)}
     >

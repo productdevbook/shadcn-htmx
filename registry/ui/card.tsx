@@ -66,13 +66,29 @@ export function CardHeader(
   )
 }
 
+type CardTitleAs = "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+
 export function CardTitle(
-  props: PropsWithChildren<{ class?: ClassValue }>,
+  props: PropsWithChildren<{
+    class?: ClassValue
+    // Render as a real heading so an `as="article"|"section"` Card gets a
+    // child heading and contributes to the document outline. Default "div"
+    // preserves shadcn upstream behaviour.
+    // See repos/mdn/files/en-us/web/html/reference/elements/article/index.md:66
+    //     repos/mdn/files/en-us/web/html/reference/elements/section/index.md:55
+    as?: CardTitleAs
+    // Lets Card's aria-labelledby reference this visible title, giving a
+    // section/article card its accessible name (region landmark naming).
+    // See repos/mdn/files/en-us/web/accessibility/aria/reference/roles/region_role/index.md:25,29
+    id?: string
+  }>,
 ) {
+  const { class: className, children, as = "div", id } = props
+  const Tag: any = as
   return (
-    <div data-slot="card-title" class={cn("leading-none font-semibold", props.class)}>
-      {props.children}
-    </div>
+    <Tag data-slot="card-title" id={id} class={cn("leading-none font-semibold", className)}>
+      {children}
+    </Tag>
   )
 }
 

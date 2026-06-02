@@ -53,20 +53,31 @@
 })(document.currentScript.previousElementSibling);</script>
 {% endmacro %}
 
-{% macro tabs_list_open(aria_label=none, extra_class="") -%}
+{# APG prefers aria_labelledby pointing at a visible heading when one exists;
+   aria_label is the fallback for an unlabelled tablist. See
+   repos/aria-practices/content/patterns/tabs/tabs-pattern.html:129-130. #}
+{% macro tabs_list_open(aria_label=none, aria_labelledby=none, extra_class="") -%}
 <div role="tablist"
      {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
      data-slot="tabs-list"
      class="inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col {{ extra_class }}">
 {%- endmacro %}
 {% macro tabs_list_close() %}</div>{% endmacro %}
 
-{% macro tab_trigger(value, label, disabled=false, extra_class="") %}
+{# **attrs passes hx-* and other attributes through onto the tab button
+   (underscores become dashes), mirroring how button.html forwards attrs. This
+   is the idiomatic host for the htmx lazy-load pattern (hx_get + hx_trigger=
+   "click once" to fetch the panel only when the tab is activated); panels
+   render hidden so hooks there fire on load. See
+   repos/htmx/www/src/content/patterns/01-loading/03-lazy-load.md. #}
+{% macro tab_trigger(value, label, disabled=false, extra_class="", **attrs) %}
 <button type="button"
         role="tab"
         data-slot="tabs-trigger"
         data-tab-trigger="{{ value }}"
         {% if disabled %} disabled{% endif %}
+        {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor %}
         class="relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm dark:aria-selected:border-input dark:aria-selected:bg-input/30 dark:aria-selected:text-foreground group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 {{ extra_class }}">{{ label }}</button>
 {% endmacro %}
 

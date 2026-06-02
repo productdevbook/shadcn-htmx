@@ -31,8 +31,13 @@
 {%- endmacro %}
 {% macro card_header_close() %}</div>{% endmacro %}
 
-{% macro card_title(text, extra_class="") -%}
-<div data-slot="card-title" class="leading-none font-semibold {{ extra_class }}">{{ text }}</div>
+{# `as` renders a real heading (h1-h6) so an as="article"/"section" card gets a
+   child heading per the document-outline guidance; default "div" keeps shadcn
+   upstream behaviour. `id` lets card_open(aria_labelledby=...) name the card.
+   See repos/mdn/files/en-us/web/html/reference/elements/article/index.md:66
+       repos/mdn/files/en-us/web/accessibility/aria/reference/roles/region_role/index.md:25,29 #}
+{% macro card_title(text, extra_class="", as="div", id="") -%}
+<{{ as }} data-slot="card-title"{% if id %} id="{{ id }}"{% endif %} class="leading-none font-semibold {{ extra_class }}">{{ text }}</{{ as }}>
 {%- endmacro %}
 
 {% macro card_description(text, extra_class="") -%}

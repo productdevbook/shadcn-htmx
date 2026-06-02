@@ -26,9 +26,18 @@ defmodule ShadcnHtmx.Components.Popover do
   }
 
   attr :id, :string, required: true
-  attr :mode, :string, default: "auto", values: ~w(auto manual)
+  # "hint" = light-dismissable but does NOT close an open auto popover (falls
+  # back to manual in non-supporting browsers).
+  # mdn .../global_attributes/popover/index.md:22-24
+  attr :mode, :string, default: "auto", values: ~w(auto hint manual)
   attr :side, :string, default: "bottom", values: ~w(top right bottom left)
   attr :class, :string, default: nil
+  # The native popover attribute assigns no role or accessible name to the
+  # popover element itself — supply these for menu/listbox popovers.
+  # mdn .../api/popover_api/using/index.md:79-86
+  attr :role, :string, default: nil
+  attr :aria_labelledby, :string, default: nil
+  attr :aria_label, :string, default: nil
   slot :inner_block, required: true
 
   def popover(assigns) do
@@ -40,6 +49,9 @@ defmodule ShadcnHtmx.Components.Popover do
       popover={@mode}
       data-slot="popover"
       data-side={@side}
+      role={@role}
+      aria-labelledby={@aria_labelledby}
+      aria-label={@aria_label}
       class={[
         "z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
         "[&:not(:popover-open)]:hidden",

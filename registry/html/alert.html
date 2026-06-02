@@ -43,3 +43,14 @@
     Trying to reconnect…
   </div>
 </div>
+
+<!-- Named live region: aria-labelledby points at the title so AT prefaces
+     the announcement with it. status_role associated properties —
+     repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md:28-29 -->
+<div data-slot="alert" data-variant="info" role="status" aria-live="polite" aria-atomic="true" aria-labelledby="alert-deploy-title"
+  class="relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-800 dark:text-sky-200 has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current">
+  <div id="alert-deploy-title" data-slot="alert-title" class="col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight">Deploy finished</div>
+  <div data-slot="alert-description" class="col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed">
+    Your site is live.
+  </div>
+</div>

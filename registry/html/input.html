@@ -60,3 +60,10 @@
 <!-- ─── File ────────────────────────────────────────────────────────── -->
 <input type="file" name="avatar" accept="image/*" data-slot="input"
   class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+
+<!-- ─── Sensitive / no-correction ───────────────────────────────────── -->
+<!-- spellcheck="false" + autocorrect="off": codes, usernames, tokens, API keys.
+     spellcheck content may be sent to a third party ("spell-jacking"); both are
+     enumerated global attributes (MDN global_attributes/spellcheck, /autocorrect). -->
+<input type="text" name="coupon" placeholder="Coupon code" spellcheck="false" autocorrect="off" autocapitalize="characters" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">

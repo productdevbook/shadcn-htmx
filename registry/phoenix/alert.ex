@@ -42,6 +42,11 @@ defmodule ShadcnHtmx.Components.Alert do
   attr :live, :string, default: "polite", values: ~w(off polite assertive)
   attr :role, :string, default: nil
   attr :aria_atomic, :boolean, default: true
+  # Name the live region for AT: aria_labelledby points at an alert_title id,
+  # aria_label is a literal name. status_role associated properties —
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md:28-29
+  attr :aria_labelledby, :string, default: nil
+  attr :aria_label, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -68,6 +73,8 @@ defmodule ShadcnHtmx.Components.Alert do
       role={@computed_role}
       aria-live={if @live != "off", do: @live}
       aria-atomic={if @aria_atomic, do: "true"}
+      aria-labelledby={@aria_labelledby}
+      aria-label={@aria_label}
       class={[@base, @variant_class, @class]}
       {@rest}
     >

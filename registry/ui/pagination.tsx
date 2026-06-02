@@ -42,6 +42,11 @@ export function PaginationItem(props: PaginationItemProps) {
 type PaginationLinkProps = PropsWithChildren<{
   href?: string
   active?: boolean
+  // HTML link type forwarded to the <a>. Pagination prev/next default this to
+  // "prev"/"next" — the normative sequence link types:
+  //   repos/whatwg-html/source (link types next/prev)
+  rel?: string
+  disabled?: boolean
   class?: ClassValue
   // htmx attrs ride along.
   [key: `hx-${string}`]: any
@@ -49,11 +54,17 @@ type PaginationLinkProps = PropsWithChildren<{
   [key: `aria-${string}`]: any
 }>
 export function PaginationLink(props: PaginationLinkProps) {
-  const { href, active, class: className, children, ...rest } = props
+  const { href, active, rel, disabled, class: className, children, ...rest } = props
   const Tag: any = href ? "a" : "button"
   return (
     <Tag
       href={href}
+      rel={href ? rel : undefined}
+      // aria-disabled only exposes the state; per the aria-disabled spec it does
+      // NOT suppress activation or remove focus. On the <button> branch use the
+      // native disabled attribute so a keyboard user can't fire the hx-* attrs:
+      //   repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-disabled/index.md
+      disabled={href ? undefined : disabled ? true : undefined}
       type={href ? undefined : "button"}
       data-slot="pagination-link"
       aria-current={active ? "page" : undefined}
@@ -76,15 +87,22 @@ export function PaginationLink(props: PaginationLinkProps) {
 type PaginationNavProps = PropsWithChildren<{
   href?: string
   disabled?: boolean
+  // rel defaults to "prev"/"next" (the WHATWG sequence link types) but is
+  // overridable. Widened from hx-* only so anchor attrs can be forwarded.
+  rel?: string
   class?: ClassValue
   [key: `hx-${string}`]: any
+  [key: `data-${string}`]: any
+  [key: `aria-${string}`]: any
 }>
 
 export function PaginationPrevious(props: PaginationNavProps) {
-  const { href, disabled, class: className, children, ...rest } = props
+  const { href, disabled, rel = "prev", class: className, children, ...rest } = props
   return (
     <PaginationLink
       href={disabled ? undefined : href}
+      rel={rel}
+      disabled={disabled}
       class={cn("gap-1 pl-2.5", disabled && "pointer-events-none opacity-50", className)}
       data-slot="pagination-prev"
       aria-label="Previous page"
@@ -100,10 +118,12 @@ export function PaginationPrevious(props: PaginationNavProps) {
 }
 
 export function PaginationNext(props: PaginationNavProps) {
-  const { href, disabled, class: className, children, ...rest } = props
+  const { href, disabled, rel = "next", class: className, children, ...rest } = props
   return (
     <PaginationLink
       href={disabled ? undefined : href}
+      rel={rel}
+      disabled={disabled}
       class={cn("gap-1 pr-2.5", disabled && "pointer-events-none opacity-50", className)}
       data-slot="pagination-next"
       aria-label="Next page"

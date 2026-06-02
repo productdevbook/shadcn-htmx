@@ -64,20 +64,38 @@ defmodule ShadcnHtmx.Components.Pagination do
 
   attr :href, :string, default: nil
   attr :disabled, :boolean, default: false
+  # WHATWG sequence link type, emitted on the enabled <a>. Overridable.
+  attr :rel, :string, default: "prev"
   attr :class, :string, default: nil
   attr :rest, :global
 
   def pagination_prev(assigns) do
     assigns = assign(assigns, base: @base)
 
+    # Disabled renders a native <button disabled>, not an <a>: per the
+    # aria-disabled spec, aria-disabled alone does not suppress keyboard
+    # activation, and the native disabled attr is invalid on <a>.
     ~H"""
     <li>
-      <a
-        href={!@disabled && @href}
+      <button
+        :if={@disabled}
+        type="button"
         data-slot="pagination-prev"
         aria-label="Previous page"
-        aria-disabled={@disabled && "true"}
-        class={[@base, "gap-1 pl-2.5", @disabled && "pointer-events-none opacity-50", @class]}
+        aria-disabled="true"
+        disabled
+        class={[@base, "gap-1 pl-2.5 pointer-events-none opacity-50", @class]}
+        {@rest}
+      >
+        ‹ Previous
+      </button>
+      <a
+        :if={!@disabled}
+        href={@href}
+        data-slot="pagination-prev"
+        aria-label="Previous page"
+        rel={@rel}
+        class={[@base, "gap-1 pl-2.5", @class]}
         {@rest}
       >
         ‹ Previous
@@ -88,6 +106,7 @@ defmodule ShadcnHtmx.Components.Pagination do
 
   attr :href, :string, default: nil
   attr :disabled, :boolean, default: false
+  attr :rel, :string, default: "next"
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -96,12 +115,25 @@ defmodule ShadcnHtmx.Components.Pagination do
 
     ~H"""
     <li>
-      <a
-        href={!@disabled && @href}
+      <button
+        :if={@disabled}
+        type="button"
         data-slot="pagination-next"
         aria-label="Next page"
-        aria-disabled={@disabled && "true"}
-        class={[@base, "gap-1 pr-2.5", @disabled && "pointer-events-none opacity-50", @class]}
+        aria-disabled="true"
+        disabled
+        class={[@base, "gap-1 pr-2.5 pointer-events-none opacity-50", @class]}
+        {@rest}
+      >
+        Next ›
+      </button>
+      <a
+        :if={!@disabled}
+        href={@href}
+        data-slot="pagination-next"
+        aria-label="Next page"
+        rel={@rel}
+        class={[@base, "gap-1 pr-2.5", @class]}
         {@rest}
       >
         Next ›

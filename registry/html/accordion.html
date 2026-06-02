@@ -7,6 +7,11 @@
 
   For arrow-key navigation between summaries and Home/End shortcuts copy
   the inline JS at the bottom.
+
+  Zero-JS lazy loading: <details> fires a native `toggle` event just after it
+  opens/closes, and htmx hx-trigger accepts any DOM event — so adding
+  hx-trigger="toggle once" hx-get="/panel" to a <details> (or its content
+  <div>) fetches the panel only on first open. Add hx-* / aria-* inline.
 -->
 
 <!-- Single-expand: items share data-group-name=name attribute -->

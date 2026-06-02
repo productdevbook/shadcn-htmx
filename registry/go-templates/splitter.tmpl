@@ -11,7 +11,7 @@
           ID, PrimaryID string
           Orientation string // "horizontal" | "vertical"
           Value, Min, Max, Step int
-          AriaLabel, AriaLabelledby string
+          AriaLabel, AriaLabelledby, AriaValuetext string
           Primary, Secondary template.HTML // pane bodies via htmlSafe
           // Everything else (hx-get, data-*, …) goes here.
           Attrs map[string]string
@@ -36,6 +36,8 @@
        {{if $paneId}}aria-controls="{{$paneId}}"{{end}}
        {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
        aria-valuenow="{{$now}}" aria-valuemin="{{$min}}" aria-valuemax="{{$max}}"
+       {{/* aria-valuetext: announced in place of aria-valuenow when set (MDN separator_role) */}}
+       {{if .AriaValuetext}}aria-valuetext="{{.AriaValuetext}}"{{end}}
        class="group/splitter relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors select-none hover:bg-ring/40 focus-visible:bg-ring/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[orientation=horizontal]:w-1.5 data-[orientation=horizontal]:cursor-col-resize data-[orientation=horizontal]:h-full data-[orientation=vertical]:h-1.5 data-[orientation=vertical]:cursor-row-resize data-[orientation=vertical]:w-full">
     <span class="pointer-events-none rounded-full bg-muted-foreground/40 transition-colors group-hover/splitter:bg-muted-foreground/70 group-data-[orientation=horizontal]/splitter:h-6 group-data-[orientation=horizontal]/splitter:w-0.5 group-data-[orientation=vertical]/splitter:w-6 group-data-[orientation=vertical]/splitter:h-0.5" aria-hidden="true"></span>
   </div>

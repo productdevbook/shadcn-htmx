@@ -2,20 +2,27 @@
    Native [popover] + APG menu keyboard contract via public/site.js. #}
 
 {% macro dropdown_trigger(label, menu_for, class_="", id=none) %}
+{# menu-button pattern: aria-controls + aria-expanded advertise the menu and
+   its state. Initial state collapsed; site.js flips aria-expanded on toggle. #}
 <button {% if id %}id="{{ id }}"{% endif %} type="button"
         popovertarget="{{ menu_for }}" popovertargetaction="toggle"
         data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        aria-controls="{{ menu_for }}" aria-expanded="false"
         class="{{ class_ }}">{{ label }}</button>
 {% endmacro %}
 
-{% macro dropdown_open(id, side="bottom", extra_class="") %}
+{% macro dropdown_open(id, side="bottom", extra_class="", aria_labelledby=none, aria_label=none) %}
 {%- set sides = {
     "top":    "anchor-popover-top",
     "bottom": "anchor-popover-bottom",
     "left":   "anchor-popover-left",
     "right":  "anchor-popover-right"
 } -%}
+{# role="menu" REQUIRES an accessible name: aria-labelledby (canonical, points
+   at the trigger id) or aria-label for icon-only triggers. menu_role. #}
 <div id="{{ id }}" popover="auto" role="menu"
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
      data-slot="dropdown-menu" data-side="{{ side }}"
      class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{ sides[side] }} {{ extra_class }}">
 {% endmacro %}
@@ -32,7 +39,8 @@ relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 te
 {% if href %}
 <a role="menuitem" tabindex="-1" href="{{ href }}"
    data-slot="dropdown-menu-item"
-   {%- if disabled %} data-disabled="true"{% endif %}
+   {#- menuitem_role: a disabled menuitem MUST set aria-disabled="true". #}
+   {%- if disabled %} data-disabled="true" aria-disabled="true"{% endif %}
    class="{{ base }} {{ destructive }} {{ extra_class }}"
    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
 >{{ label }}</a>
@@ -40,7 +48,8 @@ relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 te
 <button type="button" role="menuitem" tabindex="-1"
         {% if onclick %}onclick="{{ onclick }}"{% endif %}
         data-slot="dropdown-menu-item"
-        {%- if disabled %} data-disabled="true"{% endif %}
+        {#- menuitem_role: a disabled menuitem MUST set aria-disabled="true". #}
+        {%- if disabled %} data-disabled="true" aria-disabled="true"{% endif %}
         class="{{ base }} {{ destructive }} {{ extra_class }}"
         {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
 >{{ label }}</button>

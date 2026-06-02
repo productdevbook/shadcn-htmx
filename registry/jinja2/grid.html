@@ -26,7 +26,7 @@
        {{ grow_close() }}{{ gbody_close() }}
      {{ grid_close() }} #}
 
-{% macro grid_open(aria_label=none, aria_labelledby=none, aria_describedby=none, aria_rowcount=none, aria_colcount=none, aria_readonly=false, extra_class="", wrapper_class="", attrs={}) -%}
+{% macro grid_open(aria_label=none, aria_labelledby=none, aria_describedby=none, aria_rowcount=none, aria_colcount=none, aria_readonly=false, aria_multiselectable=false, extra_class="", wrapper_class="", attrs={}) -%}
 <div class="relative w-full overflow-auto rounded-md border {{ wrapper_class }}">
   <table role="grid"
          data-slot="grid"
@@ -36,6 +36,8 @@
          {%- if aria_rowcount is not none %} aria-rowcount="{{ aria_rowcount }}"{% endif %}
          {%- if aria_colcount is not none %} aria-colcount="{{ aria_colcount }}"{% endif %}
          {%- if aria_readonly %} aria-readonly="true"{% endif %}
+         {#- grid supports multi-selection: w3c.github.io/aria/#aria-multiselectable -#}
+         {%- if aria_multiselectable %} aria-multiselectable="true"{% endif %}
          {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
          class="w-full caption-bottom border-separate border-spacing-0 text-sm {{ extra_class }}">
 {%- endmacro %}
@@ -57,9 +59,11 @@
 {% macro gbody_open() %}<tbody data-slot="grid-body">{% endmacro %}
 {% macro gbody_close() %}</tbody>{% endmacro %}
 
-{% macro grow_open(aria_rowindex=none, selected=false, extra_class="", attrs={}) -%}
+{% macro grow_open(aria_rowindex=none, aria_colindex=none, selected=false, extra_class="", attrs={}) -%}
 <tr data-slot="grid-row"
     {%- if aria_rowindex is not none %} aria-rowindex="{{ aria_rowindex }}"{% endif %}
+    {#- contiguous-columns form: aria-colindex once on the row. w3c.github.io/aria/#aria-colindex -#}
+    {%- if aria_colindex is not none %} aria-colindex="{{ aria_colindex }}"{% endif %}
     {%- if selected %} aria-selected="true"{% endif %}
     {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
     class="transition-colors {{ extra_class }}">

@@ -13,11 +13,17 @@
        {{ alert_description("Your changes have been recorded.") }}
      {{ alert_close() }} #}
 
+{# aria_labelledby / aria_label name the live region for AT — point
+   aria_labelledby at the id of an alert_title, or pass aria_label.
+   status_role associated properties:
+   repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md:28-29 #}
 {% macro alert_open(
     variant="default",
     live="polite",
     role=none,
     aria_atomic=true,
+    aria_labelledby=none,
+    aria_label=none,
     id=none,
     extra_class=""
 ) -%}
@@ -39,6 +45,8 @@ relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border p
   {%- if computed_role %} role="{{ computed_role }}"{% endif %}
   {%- if live != "off" %} aria-live="{{ live }}"{% endif %}
   {%- if aria_atomic %} aria-atomic="true"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
   class="{{ base }} {{ variants[variant] }} {{ extra_class }}">
 {%- endmacro %}
 

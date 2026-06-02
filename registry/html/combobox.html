@@ -8,6 +8,20 @@
     1. Static options — fill the <datalist> at render time.
     2. Server-filter — leave the <datalist> empty and let htmx populate
        it on input. Server returns <option> tags.
+
+  Native attrs you can add to the <input> (all optional):
+    - type: `list` is valid on 13 types (text/search/url/tel/email/number/
+      date/datetime-local/month/week/time/range/color), so swap type="text"
+      for e.g. type="url" to get a URL combobox.
+      repos/mdn/files/en-us/web/html/reference/elements/input/index.md:492
+    - maxlength / minlength / pattern / title: constrain the free-typed value
+      — datalist suggestions are not requirements, the user can type anything
+      that passes validation.
+      repos/mdn/files/en-us/web/html/reference/elements/input/index.md:505
+    - readonly: focusable + copy-selectable but not editable (not on range/color).
+    - aria-describedby: id of a hint / error element announced after the name.
+  An <option> can carry `disabled` to render a non-checkable suggestion.
+    repos/mdn/files/en-us/web/html/reference/elements/option/index.md:45
 -->
 
 <!-- 1. Static options -->
@@ -21,6 +35,8 @@
     <option value="Python">
     <option value="Go">
     <option value="Rust">
+    <!-- A non-checkable suggestion (greyed out, no click/focus). -->
+    <option value="COBOL" disabled>
   </datalist>
 </span>
 

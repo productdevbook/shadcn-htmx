@@ -91,6 +91,10 @@ type LinkProps = PropsWithChildren<{
   id?: string
   ariaLabel?: string
   ariaLabelledby?: string
+  // aria-describedby is a global ARIA attribute valid on the implicit `link`
+  // role (MDN: <a href> exposes role=link). Reference a description distinct
+  // from the link text — e.g. "PDF, 2MB" / "opens in new tab".
+  ariaDescribedby?: string
   ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false"
 
   // APG fallback only: render a non-anchor element with role="link". The
@@ -121,6 +125,7 @@ export function Link(props: LinkProps) {
     role,
     ariaLabel,
     ariaLabelledby,
+    ariaDescribedby,
     ariaCurrent,
     ...rest
   } = props
@@ -150,12 +155,17 @@ export function Link(props: LinkProps) {
       rel={isAnchor ? resolvedRel : undefined}
       role={resolvedRole}
       tabindex={tabindex}
+      // APG fallback: href is invalid on a non-anchor, so the browser won't
+      // navigate (APG link/examples/link.html). Pass the destination through as
+      // data-href so site.js can wire Enter/click on [role=link][data-href].
+      data-href={!isAnchor ? href : undefined}
       data-slot="link"
       data-variant={variant ?? "default"}
       data-external={external ? "true" : undefined}
       class={classes}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
+      aria-describedby={ariaDescribedby}
       aria-current={ariaCurrent}
       {...rest}
     >

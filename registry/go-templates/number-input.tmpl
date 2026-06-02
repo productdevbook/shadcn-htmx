@@ -13,10 +13,12 @@
       Required, Disabled, Readonly bool
       Autofocus                    bool
       Form, List                   string
+      Autocomplete                 string  // browser autofill hint, e.g. "postal-code"
       NoSteppers                   bool    // omit the −/+ buttons (bare field)
       InputMode                    string  // "" | "numeric" | "decimal"
       AriaLabel, AriaLabelledby    string
       AriaDescribedby              string
+      AriaValuetext                string  // human-readable value for screen readers
       AriaInvalid, AriaRequired    string  // "true" | "false"
       Attrs                        map[string]string // hx-*, data-*, …
 
@@ -53,10 +55,14 @@
        {{- if .Autofocus}} autofocus{{end}}
        {{- if .Form}} form="{{.Form}}"{{end}}
        {{- if .List}} list="{{.List}}"{{end}}
+       {{- /* autocomplete: supported common attr on <input type=number> — MDN input/number */ -}}
+       {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
        {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
        {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
        {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- /* aria-valuetext: human-readable spinbutton value — APG spinbutton pattern */ -}}
+       {{- if .AriaValuetext}} aria-valuetext="{{.AriaValuetext}}"{{end}}
        {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
        {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
        data-slot="number-input-field"
@@ -81,10 +87,14 @@
      {{- if .Autofocus}} autofocus{{end}}
      {{- if .Form}} form="{{.Form}}"{{end}}
      {{- if .List}} list="{{.List}}"{{end}}
+     {{- /* autocomplete: supported common attr on <input type=number> — MDN input/number */ -}}
+     {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
      {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
      {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
      {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
      {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+     {{- /* aria-valuetext: human-readable spinbutton value — APG spinbutton pattern */ -}}
+     {{- if .AriaValuetext}} aria-valuetext="{{.AriaValuetext}}"{{end}}
      {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
      {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
      data-slot="number-input"

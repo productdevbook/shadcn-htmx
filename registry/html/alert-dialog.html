@@ -36,6 +36,10 @@
 </button>
 
 <!-- The alert dialog itself -->
+<!-- This dialog has a visible title, so it is named via aria-labelledby.
+     APG (alertdialog-pattern.html:47-57): if you DROP the AlertDialogTitle
+     (e.g. a short error alert), name the dialog with aria-label="…" instead
+     and remove aria-labelledby so it isn't named twice / left dangling. -->
 <dialog id="confirm-delete"
         closedby="closerequest"
         role="alertdialog"

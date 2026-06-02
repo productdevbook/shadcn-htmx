@@ -94,6 +94,12 @@ type FeedArticleProps = PropsWithChildren<{
   labelledby: string
   // Id(s) of the element(s) providing the primary content, so AT can skim.
   describedby?: string
+  // 0 (default) or -1. MDN's feed role allows each article to be focusable
+  // "with tabindex of 0 or -1"; pass -1 to keep a long feed to a single Tab
+  // stop via a roving tabindex (the active article alone stays in the Tab
+  // sequence; Page Up/Down moves between articles).
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/roles/feed_role/index.md
+  tabindex?: 0 | -1
   class?: ClassValue
   id?: string
   [key: `hx-${string}`]: any
@@ -107,6 +113,7 @@ export function FeedArticle(props: FeedArticleProps) {
     setsize,
     labelledby,
     describedby,
+    tabindex = 0,
     class: className,
     id,
     children,
@@ -118,8 +125,9 @@ export function FeedArticle(props: FeedArticleProps) {
       role="article"
       data-slot="feed-article"
       // Focusable so the AT reading cursor can rest on it and the page can
-      // scroll it into view (APG tabindex="0" on each article).
-      tabindex={0}
+      // scroll it into view (APG tabindex="0" on each article; MDN allows -1
+      // for a roving-tabindex feed).
+      tabindex={tabindex}
       aria-posinset={posinset}
       aria-setsize={setsize}
       aria-labelledby={labelledby}
@@ -147,6 +155,13 @@ type FeedSentinelProps = PropsWithChildren<{
   // Default "revealed"; pass "intersect once" when the feed scrolls inside an
   // overflow container (htmx docs note).
   trigger?: string
+  // Marks the in-flight placeholder busy with aria-busy="true" while a batch
+  // loads — the documented "aria-busy rides on the sentinel" contract. The
+  // outerHTML swap clears it by replacing this element with the response, so
+  // busy never has to be reset to false manually (APG: aria-busy must be
+  // false once the operation completes).
+  //   repos/aria-practices/content/patterns/feed/feed-pattern.html
+  busy?: boolean
   class?: ClassValue
   id?: string
   [key: `hx-${string}`]: any
@@ -154,7 +169,7 @@ type FeedSentinelProps = PropsWithChildren<{
 }>
 
 export function FeedSentinel(props: FeedSentinelProps) {
-  const { href, trigger = "revealed", class: className, id, children, ...rest } =
+  const { href, trigger = "revealed", busy, class: className, id, children, ...rest } =
     props as any
   return (
     <div
@@ -163,6 +178,7 @@ export function FeedSentinel(props: FeedSentinelProps) {
       hx-get={href}
       hx-trigger={trigger}
       hx-swap="outerHTML"
+      aria-busy={busy ? "true" : undefined}
       class={cn(
         "flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground",
         className,

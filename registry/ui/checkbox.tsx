@@ -33,6 +33,13 @@ type CheckboxProps = {
   value?: string
   checked?: boolean
   defaultChecked?: boolean
+  // Render the SSR hook for an initially-indeterminate checkbox. `indeterminate`
+  // is an IDL-only property with no HTML content attribute (WHATWG HTML: it is
+  // initially false and "cannot be set using an HTML attribute"), so an SSR
+  // component emits data-initial-indeterminate="true" and a tiny on-mount
+  // script flips el.indeterminate. See repos/whatwg-html/source (indeterminate
+  // IDL attribute) and the input/checkbox MDN reference.
+  indeterminate?: boolean
   required?: boolean
   disabled?: boolean
   readonly?: boolean
@@ -87,6 +94,7 @@ export function Checkbox(props: CheckboxProps) {
     ariaControls,
     checked,
     defaultChecked,
+    indeterminate,
     ...rest
   } = props
 
@@ -108,6 +116,9 @@ export function Checkbox(props: CheckboxProps) {
         // here so the prop is real: explicit `checked` wins, then `defaultChecked`,
         // and `false` serializes to no attribute (never an invalid defaultChecked="...").
         checked={(checked ?? defaultChecked) || undefined}
+        // indeterminate has no HTML content attribute; emit the on-mount hook
+        // a script reads to set el.indeterminate. See repos/whatwg-html/source.
+        data-initial-indeterminate={indeterminate ? "true" : undefined}
         {...rest}
       />
       {/* Check icon — visible only when peer (the input) is :checked. */}

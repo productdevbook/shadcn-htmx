@@ -11,8 +11,11 @@
           MinLength, MaxLength int
           Autocomplete, Wrap string
           Spellcheck *bool   // tri-state
+          InputMode    string // none | text | decimal | numeric | tel | search | email | url
+          EnterKeyHint string // enter | done | go | next | previous | search | send
           Form, AriaLabel, AriaLabelledby, AriaDescribedby string
           AriaInvalid, AriaRequired string
+          AriaErrormessage string // id of a visible error message; use with AriaInvalid
           Attrs map[string]string
       }
 
@@ -39,6 +42,8 @@
           {{- if .Autocorrect}} autocorrect="{{.Autocorrect}}"{{end}}
           {{- if .Autofocus}} autofocus{{end}}
           {{- if .Spellcheck}} spellcheck="{{if deref .Spellcheck}}true{{else}}false{{end}}"{{end}}
+          {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
+          {{- if .EnterKeyHint}} enterkeyhint="{{.EnterKeyHint}}"{{end}}
           {{- if .Dirname}} dirname="{{.Dirname}}"{{end}}
           {{- if .Wrap}} wrap="{{.Wrap}}"{{end}}
           {{- if .Form}} form="{{.Form}}"{{end}}
@@ -47,6 +52,7 @@
           {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
           {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
           {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+          {{- if .AriaErrormessage}} aria-errormessage="{{.AriaErrormessage}}"{{end}}
           data-slot="textarea"
           {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
 >{{.Value}}</textarea>

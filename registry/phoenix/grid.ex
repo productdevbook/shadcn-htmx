@@ -47,6 +47,8 @@ defmodule ShadcnHtmx.Components.Grid do
   attr :"aria-rowcount", :integer, default: nil
   attr :"aria-colcount", :integer, default: nil
   attr :"aria-readonly", :boolean, default: false
+  # grid supports selecting more than one cell/row: w3c.github.io/aria/#aria-multiselectable
+  attr :"aria-multiselectable", :boolean, default: false
   attr :class, :string, default: nil
   attr :wrapper_class, :string, default: nil
   attr :rest, :global
@@ -64,6 +66,7 @@ defmodule ShadcnHtmx.Components.Grid do
         aria-rowcount={assigns[:"aria-rowcount"]}
         aria-colcount={assigns[:"aria-colcount"]}
         aria-readonly={assigns[:"aria-readonly"] && "true"}
+        aria-multiselectable={assigns[:"aria-multiselectable"] && "true"}
         class={["w-full caption-bottom border-separate border-spacing-0 text-sm", @class]}
         {@rest}
       >
@@ -88,6 +91,8 @@ defmodule ShadcnHtmx.Components.Grid do
   def grid_body(assigns), do: ~H"<tbody data-slot=\"grid-body\">{render_slot(@inner_block)}</tbody>"
 
   attr :"aria-rowindex", :integer, default: nil
+  # contiguous-columns form: aria-colindex once on the row. w3c.github.io/aria/#aria-colindex
+  attr :"aria-colindex", :integer, default: nil
   attr :selected, :boolean, default: false
   attr :class, :string, default: nil
   attr :rest, :global
@@ -98,6 +103,7 @@ defmodule ShadcnHtmx.Components.Grid do
     <tr
       data-slot="grid-row"
       aria-rowindex={assigns[:"aria-rowindex"]}
+      aria-colindex={assigns[:"aria-colindex"]}
       aria-selected={@selected && "true"}
       class={["transition-colors", @class]}
       {@rest}

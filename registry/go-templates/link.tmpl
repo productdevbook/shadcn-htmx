@@ -18,6 +18,7 @@
           ID       string
           AriaLabel      string
           AriaLabelledby string
+          AriaDescribedby string // id of an element describing the link
           AriaCurrent    string // page | step | location | date | time | true | false
           Body     template.HTML // optional rich body; falls back to .Text
           Attrs    map[string]string // hx-*, download, etc.
@@ -49,12 +50,15 @@
   {{- if and $isAnchor .Href}} href="{{.Href}}"{{end}}
   {{- if and $isAnchor $target}} target="{{$target}}"{{end}}
   {{- if and $isAnchor $rel}} rel="{{$rel}}"{{end}}
-  {{- if not $isAnchor}} role="link" tabindex="0"{{end}}
+  {{- /* APG fallback: href is invalid on a non-anchor; expose it as data-href so
+         site.js can navigate [role=link][data-href] (link/examples/link.html). */ -}}
+  {{- if not $isAnchor}} role="link" tabindex="0"{{if .Href}} data-href="{{.Href}}"{{end}}{{end}}
   data-slot="link" data-variant="{{$variant}}"
   {{- if .External}} data-external="true"{{end}}
   class="{{$base}} {{index $variants $variant}}"
   {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
   {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+  {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
   {{- if .AriaCurrent}} aria-current="{{.AriaCurrent}}"{{end}}
   {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
 >{{if .Body}}{{htmlSafe .Body}}{{else}}{{.Text}}{{end}}{{if .External}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg><span class="sr-only"> (opens in new tab)</span>{{end}}</{{$as}}>

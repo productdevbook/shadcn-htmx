@@ -13,8 +13,13 @@
        `))}}
 */}}
 
+{{/* Pass AriaLabelledby to point the <nav> at a visible heading id; when set,
+     the defaulted aria-label is NOT emitted so the landmark never carries two
+     competing names. APG: the landmark "is labelled via aria-label or
+     aria-labelledby".
+     repos/aria-practices/content/patterns/breadcrumb/breadcrumb-pattern.html */}}
 {{define "breadcrumb"}}
-<nav data-slot="breadcrumb" aria-label="{{or .AriaLabel "Breadcrumb"}}" class="{{.Class}}">{{.Body}}</nav>
+<nav data-slot="breadcrumb"{{if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{else}} aria-label="{{or .AriaLabel "Breadcrumb"}}"{{end}} class="{{.Class}}">{{.Body}}</nav>
 {{end}}
 
 {{define "breadcrumb_list"}}
@@ -33,10 +38,14 @@
 <span data-slot="breadcrumb-page" aria-current="page" class="font-normal text-foreground">{{.Label}}</span>
 {{end}}
 
+{{/* .Attrs forwards data-* (a global attribute valid on every element) so
+     callers can attach CSS/JS hooks, matching the other subcomponents. Pass an
+     htmlSafe-wrapped attribute string (e.g. ` data-variant="slash"`).
+     repos/mdn/files/en-us/web/html/reference/global_attributes/index.md */}}
 {{define "breadcrumb_separator"}}
-<li data-slot="breadcrumb-separator" aria-hidden="true" class="[&>svg]:size-3.5">{{if .Body}}{{.Body}}{{else}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>{{end}}</li>
+<li data-slot="breadcrumb-separator" aria-hidden="true" class="[&>svg]:size-3.5"{{with .Attrs}}{{.}}{{end}}>{{if .Body}}{{.Body}}{{else}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>{{end}}</li>
 {{end}}
 
 {{define "breadcrumb_ellipsis"}}
-<span data-slot="breadcrumb-ellipsis" aria-hidden="true" class="flex size-9 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg><span class="sr-only">More</span></span>
+<span data-slot="breadcrumb-ellipsis" aria-hidden="true" class="flex size-9 items-center justify-center"{{with .Attrs}}{{.}}{{end}}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg><span class="sr-only">More</span></span>
 {{end}}

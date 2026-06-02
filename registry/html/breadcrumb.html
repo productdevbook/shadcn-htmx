@@ -5,6 +5,14 @@
   decorative <li aria-hidden="true">. Zero JS — relies only on theme tokens
   in styles.css.
 
+  Labelling: the landmark is named via aria-label OR aria-labelledby — both
+  are first-class per the APG. To point the <nav> at an existing visible
+  heading instead, drop aria-label and use aria-labelledby="heading-id" (do
+  not set both, or the <nav> carries two competing names).
+
+  Separators / ellipsis are decorative and accept any global attribute
+  (e.g. a data-* hook for CSS/JS) directly on the <li>/<span>.
+
   APG: https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
 -->
 

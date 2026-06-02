@@ -27,6 +27,11 @@ type ProgressProps = {
   ariaValuetext?: string
   class?: ClassValue
   id?: string
+  // Forwarded to the root <div role="progressbar">. Progress is the textbook
+  // htmx polling target — re-render the bar from the server on a recurring
+  // trigger (hx-get + hx-trigger="every 2s", repos/htmx htmx-guidance.md Polling).
+  [key: `hx-${string}`]: any
+  [key: `data-${string}`]: any
 }
 
 export function Progress(props: ProgressProps) {
@@ -39,6 +44,7 @@ export function Progress(props: ProgressProps) {
     ariaValuetext,
     class: className,
     id,
+    ...rest
   } = props
   const determinate = value !== undefined
   const pct = determinate ? Math.min(100, Math.max(0, ((value! - min) / (max - min)) * 100)) : 0
@@ -58,6 +64,7 @@ export function Progress(props: ProgressProps) {
         "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
         className,
       )}
+      {...rest}
     >
       <div
         data-slot="progress-indicator"

@@ -34,6 +34,13 @@
 <script>(function(el){var items=el.querySelectorAll('[role="treeitem"]');items.forEach(function(it,i){it.setAttribute('tabindex',i===0?'0':'-1');});el.setAttribute('data-tree-ready','true');})(document.currentScript.previousElementSibling);</script>
 {{end}}
 
+{{/*
+  Current ("page", or true → "page") marks the current-location node — APG
+  treeview-navigation example, distinct from Selected.
+  Level/Posinset/Setsize emit aria-level/-posinset/-setsize, REQUIRED only for
+  lazy-loaded (htmx) trees whose full node set is not yet in the DOM (APG
+  treeview pattern + MDN treeitem role); declared in the treeview-1b example.
+*/}}
 {{define "tree_item"}}
 {{- $isParent := or .Parent (ne (printf "%v" .Expanded) "<no value>") -}}
 <li role="treeitem" data-slot="tree-item"
@@ -41,6 +48,10 @@
     tabindex="-1"
     {{if $isParent}}aria-expanded="{{if .Expanded}}true{{else}}false{{end}}"{{end}}
     aria-selected="{{if .Selected}}true{{else}}false{{end}}"
+    {{if eq (printf "%v" .Current) "true"}}aria-current="page"{{else if and .Current (ne (printf "%v" .Current) "<no value>") (ne (printf "%v" .Current) "false")}}aria-current="{{.Current}}"{{end}}
+    {{if and .Level (ne (printf "%v" .Level) "<no value>")}}aria-level="{{.Level}}"{{end}}
+    {{if and .Posinset (ne (printf "%v" .Posinset) "<no value>")}}aria-posinset="{{.Posinset}}"{{end}}
+    {{if and .Setsize (ne (printf "%v" .Setsize) "<no value>")}}aria-setsize="{{.Setsize}}"{{end}}
     {{if .Disabled}}aria-disabled="true"{{end}}
     class="{{or .Class ""}}">
   <span data-slot="tree-label"

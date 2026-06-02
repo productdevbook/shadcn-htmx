@@ -34,13 +34,25 @@ defmodule ShadcnHtmx.Components.Breadcrumb do
   use Phoenix.Component
 
   attr :"aria-label", :string, default: "Breadcrumb"
+  # Id of a visible heading that labels the landmark. When set, that heading is
+  # the name source and the defaulted aria-label is NOT emitted, so the <nav>
+  # never carries two competing names. APG: the landmark "is labelled via
+  # aria-label or aria-labelledby".
+  # repos/aria-practices/content/patterns/breadcrumb/breadcrumb-pattern.html
+  attr :"aria-labelledby", :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
 
   def breadcrumb(assigns) do
     ~H"""
-    <nav data-slot="breadcrumb" aria-label={assigns[:"aria-label"]} class={[@class]} {@rest}>
+    <nav
+      data-slot="breadcrumb"
+      aria-label={if assigns[:"aria-labelledby"], do: nil, else: assigns[:"aria-label"]}
+      aria-labelledby={assigns[:"aria-labelledby"]}
+      class={[@class]}
+      {@rest}
+    >
       {render_slot(@inner_block)}
     </nav>
     """
@@ -111,11 +123,15 @@ defmodule ShadcnHtmx.Components.Breadcrumb do
   end
 
   attr :class, :string, default: nil
+  # :rest forwards data-* (a global attribute valid on every element) so callers
+  # can attach CSS/JS hooks, matching the other subcomponents.
+  # repos/mdn/files/en-us/web/html/reference/global_attributes/index.md
+  attr :rest, :global
   slot :inner_block
 
   def breadcrumb_separator(assigns) do
     ~H"""
-    <li data-slot="breadcrumb-separator" aria-hidden="true" class={["[&>svg]:size-3.5", @class]}>
+    <li data-slot="breadcrumb-separator" aria-hidden="true" class={["[&>svg]:size-3.5", @class]} {@rest}>
       <%= if @inner_block != [] do %>
         {render_slot(@inner_block)}
       <% else %>
@@ -137,6 +153,10 @@ defmodule ShadcnHtmx.Components.Breadcrumb do
   end
 
   attr :class, :string, default: nil
+  # :rest forwards data-* (a global attribute valid on every element) so callers
+  # can attach CSS/JS hooks, matching the other subcomponents.
+  # repos/mdn/files/en-us/web/html/reference/global_attributes/index.md
+  attr :rest, :global
 
   def breadcrumb_ellipsis(assigns) do
     ~H"""
@@ -144,6 +164,7 @@ defmodule ShadcnHtmx.Components.Breadcrumb do
       data-slot="breadcrumb-ellipsis"
       aria-hidden="true"
       class={["flex size-9 items-center justify-center", @class]}
+      {@rest}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

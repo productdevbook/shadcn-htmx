@@ -10,7 +10,7 @@
     orientation="horizontal",
     primary="", secondary="",
     value=50, min=0, max=100, step=10,
-    aria_label=none, aria_labelledby=none,
+    aria_label=none, aria_labelledby=none, aria_valuetext=none,
     primary_id=none, id=none,
     extra_class="", **attrs
 ) %}
@@ -31,6 +31,8 @@
        {%- if pane_id %} aria-controls="{{ pane_id }}"{% endif %}
        {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% elif aria_label %} aria-label="{{ aria_label }}"{% endif %}
        aria-valuenow="{{ now }}" aria-valuemin="{{ min }}" aria-valuemax="{{ max }}"
+       {#- aria-valuetext: announced in place of aria-valuenow when set (MDN separator_role) #}
+       {%- if aria_valuetext %} aria-valuetext="{{ aria_valuetext }}"{% endif %}
        class="group/splitter relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors select-none hover:bg-ring/40 focus-visible:bg-ring/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[orientation=horizontal]:w-1.5 data-[orientation=horizontal]:cursor-col-resize data-[orientation=horizontal]:h-full data-[orientation=vertical]:h-1.5 data-[orientation=vertical]:cursor-row-resize data-[orientation=vertical]:w-full">
     <span class="pointer-events-none rounded-full bg-muted-foreground/40 transition-colors group-hover/splitter:bg-muted-foreground/70 group-data-[orientation=horizontal]/splitter:h-6 group-data-[orientation=horizontal]/splitter:w-0.5 group-data-[orientation=vertical]/splitter:w-6 group-data-[orientation=vertical]/splitter:h-0.5" aria-hidden="true"></span>
   </div>

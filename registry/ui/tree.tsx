@@ -110,6 +110,20 @@ export type TreeItemProps = PropsWithChildren<{
   parent?: boolean
   // Single-select trees indicate the chosen node with aria-selected.
   selected?: boolean
+  // Mark the node that represents the current page/location (distinct from
+  // `selected`: current = where you ARE, selected = what an action targets).
+  // Emits aria-current; the navigation treeview example marks the current-page
+  // node this way. APG treeview-navigation example (aria-current="page").
+  current?: boolean | "page"
+  // aria-level / aria-posinset / aria-setsize. REQUIRED only for lazy-loaded
+  // (htmx) trees where the full node set is not yet in the DOM — the browser
+  // cannot then compute position/size from a missing subtree. Static, fully
+  // rendered trees can omit these and rely on browser computation.
+  // APG treeview pattern + MDN treeitem role (required under dynamic loading);
+  // declared explicitly in the treeview-1b "declared properties" example.
+  level?: number
+  posinset?: number
+  setsize?: number
   disabled?: boolean
   // Visible label. Prefer this over free children so type-ahead has clean text;
   // children render after it (e.g. a nested <TreeGroup>).
@@ -136,12 +150,20 @@ export function TreeItem(props: TreeItemProps) {
     expanded,
     parent,
     selected,
+    current,
+    level,
+    posinset,
+    setsize,
     disabled,
     label,
     class: className,
     children,
     ...rest
   } = props as any
+  // aria-current: "page" is the canonical value for the current-location node
+  // (APG treeview-navigation); accept the boolean shorthand for current=true.
+  const ariaCurrent =
+    current === true ? "page" : current === false ? undefined : current
   // A node is a parent when it is explicitly marked `parent` or given an
   // `expanded` value. End nodes get NO aria-expanded (APG: an end node with
   // aria-expanded would be mis-announced as a parent). We require the flag
@@ -158,6 +180,10 @@ export function TreeItem(props: TreeItemProps) {
       tabindex="-1"
       aria-expanded={ariaExpanded}
       aria-selected={selected ? "true" : "false"}
+      aria-current={ariaCurrent}
+      aria-level={level}
+      aria-posinset={posinset}
+      aria-setsize={setsize}
       aria-disabled={disabled ? "true" : undefined}
       class={cn(className)}
       {...rest}

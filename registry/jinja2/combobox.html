@@ -15,22 +15,34 @@
      <datalist id="user-list"></datalist>
 #}
 
+{# `type`: `list` is valid on 13 input types, not just text.
+   repos/mdn/files/en-us/web/html/reference/elements/input/index.md:492
+   maxlength/minlength/pattern constrain the free-typed value (datalist
+   suggestions are not requirements); readonly is not supported on range/color.
+   repos/mdn/files/en-us/web/html/reference/elements/input/index.md:505,588 #}
 {% macro combobox(
     id,
     name=none,
     options=[],
+    type="text",
     placeholder=none,
     value=none,
     required=false,
     disabled=false,
+    maxlength=none,
+    minlength=none,
+    pattern=none,
+    title=none,
+    readonly=false,
     aria_label=none,
     aria_labelledby=none,
+    aria_describedby=none,
     extra_class="",
     **attrs
 ) %}
 <span data-slot="combobox" class="inline-block w-full {{ extra_class }}">
   <input
-    type="text"
+    type="{{ type }}"
     id="{{ id }}"
     {%- if name %} name="{{ name }}"{% endif %}
     list="{{ id }}-list"
@@ -38,19 +50,27 @@
     {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
     {%- if required %} required{% endif %}
     {%- if disabled %} disabled{% endif %}
+    {%- if maxlength is not none %} maxlength="{{ maxlength }}"{% endif %}
+    {%- if minlength is not none %} minlength="{{ minlength }}"{% endif %}
+    {%- if pattern %} pattern="{{ pattern }}"{% endif %}
+    {%- if title %} title="{{ title }}"{% endif %}
+    {%- if readonly %} readonly{% endif %}
     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
     autocomplete="off"
     class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
     {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
   >
   <datalist id="{{ id }}-list" data-slot="combobox-list">
-    {% for opt in options %}<option value="{{ opt.value }}"{% if opt.label %} label="{{ opt.label }}"{% endif %}>{% endfor %}
+    {% for opt in options %}<option value="{{ opt.value }}"{% if opt.label %} label="{{ opt.label }}"{% endif %}{% if opt.disabled %} disabled{% endif %}>{% endfor %}
   </datalist>
 </span>
 {% endmacro %}
 
-{# A single <option> — useful when an htmx endpoint returns one. #}
-{% macro combobox_option(value, label=none) -%}
-<option value="{{ value }}"{% if label %} label="{{ label }}"{% endif %}>
+{# A single <option> — useful when an htmx endpoint returns one.
+   `disabled` marks it non-checkable.
+   repos/mdn/files/en-us/web/html/reference/elements/option/index.md:45 #}
+{% macro combobox_option(value, label=none, disabled=false) -%}
+<option value="{{ value }}"{% if label %} label="{{ label }}"{% endif %}{% if disabled %} disabled{% endif %}>
 {%- endmacro %}

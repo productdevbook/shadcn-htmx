@@ -14,6 +14,10 @@ defmodule ShadcnHtmx.Components.Skeleton do
   use Phoenix.Component
 
   attr :"aria-label", :string, default: "Loading"
+  # aria-labelledby references a visible label (e.g. heading) and, per the
+  # status role spec, supersedes the hardcoded "Loading" aria-label.
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md
+  attr :"aria-labelledby", :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -22,7 +26,8 @@ defmodule ShadcnHtmx.Components.Skeleton do
     <div
       role="status"
       aria-busy="true"
-      aria-label={assigns[:"aria-label"]}
+      aria-label={!assigns[:"aria-labelledby"] && assigns[:"aria-label"]}
+      aria-labelledby={assigns[:"aria-labelledby"]}
       data-slot="skeleton"
       class={["animate-pulse rounded-md bg-muted", @class]}
       {@rest}

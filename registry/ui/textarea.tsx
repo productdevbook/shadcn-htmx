@@ -47,6 +47,15 @@ type TextareaProps = {
   autofocus?: boolean
   spellcheck?: boolean
 
+  // Mobile keyboard hints. inputmode picks the OS keyboard layout (e.g.
+  // numeric/decimal for a multi-line numeric entry); enterkeyhint labels the
+  // soft-keyboard Enter key — relevant when Enter inserts a newline vs submits.
+  // Both are enumerated global attributes valid on <textarea>. See
+  //   repos/mdn/files/en-us/web/html/reference/global_attributes/inputmode/index.md
+  //   repos/mdn/files/en-us/web/html/reference/global_attributes/enterkeyhint/index.md
+  inputmode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url"
+  enterkeyhint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send"
+
   // Submits the text directionality (ltr/rtl) as a separate form field.
   // Same as <input>: critical for multilingual content where the server
   // needs to preserve the writer's direction. See
@@ -69,6 +78,10 @@ type TextareaProps = {
   ariaDescribedby?: string
   ariaInvalid?: boolean | "grammar" | "spelling"
   ariaRequired?: boolean
+  // Id of a visible error-message element; meaningful only alongside
+  // ariaInvalid="true". See
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-errormessage/index.md
+  ariaErrormessage?: string
 
   // Form metadata
   form?: string
@@ -98,6 +111,7 @@ export function Textarea(props: TextareaProps) {
     ariaDescribedby,
     ariaInvalid,
     ariaRequired,
+    ariaErrormessage,
     ...rest
   } = props
 
@@ -109,6 +123,7 @@ export function Textarea(props: TextareaProps) {
       aria-describedby={ariaDescribedby}
       aria-invalid={ariaInvalid === undefined ? undefined : String(ariaInvalid)}
       aria-required={ariaRequired === undefined ? undefined : String(ariaRequired)}
+      aria-errormessage={ariaErrormessage}
       data-slot="textarea"
       {...rest}
     >{value ?? defaultValue}</textarea>

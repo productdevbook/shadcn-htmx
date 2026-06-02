@@ -76,6 +76,11 @@ type GridProps = PropsWithChildren<{
   ariaColcount?: number
   // Editing is disabled across the whole grid (read-only data grid).
   ariaReadonly?: boolean
+  // The grid supports selecting more than one cell/row. Pair with the
+  // `selected` props on GridRow/GridCell; selectable-but-unselected nodes
+  // should then carry aria-selected="false" so AT advertises selectability.
+  // aria-multiselectable: w3c.github.io/aria/#aria-multiselectable
+  ariaMultiselectable?: boolean
   class?: ClassValue
   wrapperClass?: ClassValue
   [key: `hx-${string}`]: any
@@ -91,6 +96,7 @@ export function Grid(props: GridProps) {
     ariaRowcount,
     ariaColcount,
     ariaReadonly,
+    ariaMultiselectable,
     class: className,
     wrapperClass,
     children,
@@ -116,6 +122,7 @@ export function Grid(props: GridProps) {
         aria-rowcount={ariaRowcount}
         aria-colcount={ariaColcount}
         aria-readonly={ariaReadonly ? "true" : undefined}
+        aria-multiselectable={ariaMultiselectable ? "true" : undefined}
         class={cn(gridBase, className)}
         {...rest}
       >
@@ -149,17 +156,23 @@ type GridRowProps = PropsWithChildren<{
   class?: ClassValue
   // 1-based row position when not all rows are in the DOM (virtualised).
   ariaRowindex?: number
+  // 1-based column index of the row's first cell when the visible columns are
+  // contiguous: set aria-colindex ONCE on the row and browsers compute each
+  // cell's column number (preferred over per-cell when columns are contiguous).
+  // aria-colindex: w3c.github.io/aria/#aria-colindex
+  ariaColindex?: number
   selected?: boolean
   [key: `hx-${string}`]: any
   [key: `data-${string}`]: any
 }>
 
 export function GridRow(props: GridRowProps) {
-  const { children, class: className, ariaRowindex, selected, ...rest } = props as any
+  const { children, class: className, ariaRowindex, ariaColindex, selected, ...rest } = props as any
   return (
     <tr
       data-slot="grid-row"
       aria-rowindex={ariaRowindex}
+      aria-colindex={ariaColindex}
       aria-selected={selected ? "true" : undefined}
       class={cn("transition-colors", className)}
       {...rest}

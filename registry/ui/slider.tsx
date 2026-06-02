@@ -24,7 +24,9 @@ type SliderProps = {
   value?: number
   min?: number
   max?: number
-  step?: number
+  // step="any" means no stepping — any value is allowed (barring min/max),
+  // giving a continuous range. See MDN input/range "Setting step to any".
+  step?: number | "any"
   disabled?: boolean
   required?: boolean
   // The full <input> form-attr family.

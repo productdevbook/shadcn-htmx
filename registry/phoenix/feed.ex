@@ -55,6 +55,9 @@ defmodule ShadcnHtmx.Components.Feed do
   attr :setsize, :integer, required: true
   attr :labelledby, :string, required: true
   attr :describedby, :string, default: nil
+  # 0 (default) or -1 — MDN's feed role allows each article to be focusable
+  # "with tabindex of 0 or -1"; pass -1 for a roving-tabindex feed.
+  attr :tabindex, :integer, default: 0
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -64,7 +67,7 @@ defmodule ShadcnHtmx.Components.Feed do
     <article
       role="article"
       data-slot="feed-article"
-      tabindex="0"
+      tabindex={@tabindex}
       aria-posinset={@posinset}
       aria-setsize={@setsize}
       aria-labelledby={@labelledby}
@@ -83,6 +86,10 @@ defmodule ShadcnHtmx.Components.Feed do
 
   attr :href, :string, default: nil
   attr :trigger, :string, default: "revealed"
+  # aria-busy="true" on the in-flight placeholder while a batch loads; the
+  # outerHTML swap clears it by replacing this element (APG: aria-busy must be
+  # false once the operation completes).
+  attr :busy, :boolean, default: false
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block
@@ -94,6 +101,7 @@ defmodule ShadcnHtmx.Components.Feed do
       hx-get={@href}
       hx-trigger={@trigger}
       hx-swap="outerHTML"
+      aria-busy={@busy && "true"}
       class={["flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground", @class]}
       {@rest}
     >

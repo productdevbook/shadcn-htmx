@@ -31,16 +31,24 @@ type DropdownMenuProps = PropsWithChildren<{
   // and positions the popover via JS (CSS Anchor Positioning isn't yet
   // shipped in every browser).
   side?: DropdownMenuSide
+  // role="menu" REQUIRES an accessible name. Point aria-labelledby at the
+  // trigger's id (canonical menu-button wiring) or pass aria-label for
+  // icon-only triggers.
+  // menu_role: aria-labelledby="menubutton".
+  ariaLabelledBy?: string
+  ariaLabel?: string
   class?: ClassValue
 }>
 
 export function DropdownMenu(props: DropdownMenuProps) {
-  const { id, side = "bottom", class: className, children } = props
+  const { id, side = "bottom", ariaLabelledBy, ariaLabel, class: className, children } = props
   return (
     <div
       id={id}
       popover="auto"
       role="menu"
+      aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
       data-slot="dropdown-menu"
       data-side={side}
       class={cn(
@@ -70,6 +78,10 @@ export function DropdownMenuTrigger(props: DropdownMenuTriggerProps) {
       popovertargetaction="toggle"
       data-slot="dropdown-menu-trigger"
       aria-haspopup="menu"
+      // menu-button pattern: advertise the controlled menu and its state.
+      // Initial state is collapsed; site.js flips aria-expanded on toggle.
+      aria-controls={props.menuFor}
+      aria-expanded="false"
       class={cn(props.class)}
     >
       {props.children}
@@ -115,6 +127,9 @@ export function DropdownMenuItem(props: DropdownMenuItemProps) {
       onclick={onclick}
       data-slot="dropdown-menu-item"
       data-disabled={disabled ? "true" : undefined}
+      // menuitem_role: a disabled menuitem MUST set aria-disabled="true"
+      // (data-disabled stays for the CSS/keyboard-skip selectors).
+      aria-disabled={disabled ? "true" : undefined}
       class={cn(itemBase, variantCls, className)}
       {...rest}
     >

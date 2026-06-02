@@ -27,6 +27,8 @@ defmodule ShadcnHtmx.Components.RangeSlider do
   attr :min, :integer, default: 0
   attr :max, :integer, default: 100
   attr :step, :integer, default: nil
+  # list: id of a <datalist> for native tick marks on type=range (MDN range ref)
+  attr :list, :string, default: nil
   attr :disabled, :boolean, default: false
   attr :form, :string, default: nil
   attr :min_label, :string, default: "Minimum"
@@ -83,6 +85,7 @@ defmodule ShadcnHtmx.Components.RangeSlider do
         min={@min}
         max={@max}
         step={@step}
+        list={@list}
         disabled={@disabled}
         form={@form}
         aria-label={@min_label}
@@ -98,6 +101,7 @@ defmodule ShadcnHtmx.Components.RangeSlider do
         min={@min}
         max={@max}
         step={@step}
+        list={@list}
         disabled={@disabled}
         form={@form}
         aria-label={@max_label}

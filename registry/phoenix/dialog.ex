@@ -81,6 +81,12 @@ defmodule ShadcnHtmx.Components.Dialog do
   attr :dialog_for, :string, required: true
   attr :type, :string, default: "button"
   attr :class, :string, default: nil
+  # native: true renders a native Invoker Commands button
+  # (<button command="show-modal" commandfor="…">) that opens the dialog as a
+  # modal with zero JS — the declarative equivalent of .showModal(). The
+  # data-dialog-trigger + site.js path stays the default fallback.
+  # See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74.
+  attr :native, :boolean, default: false
   attr :rest, :global
   slot :inner_block, required: true
 
@@ -89,9 +95,40 @@ defmodule ShadcnHtmx.Components.Dialog do
     <button
       type={@type}
       class={@class}
-      data-dialog-trigger="true"
-      data-dialog-target={@dialog_for}
+      command={@native && "show-modal"}
+      commandfor={@native && @dialog_for}
+      data-dialog-trigger={!@native && "true"}
+      data-dialog-target={!@native && @dialog_for}
       aria-haspopup="dialog"
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
+
+  # Native Invoker Commands close button (opt-in). `command` is "close"
+  # (declarative .close()) or "request-close" (fires a cancelable `cancel`
+  # event first, for unsaved-changes guards). `value` is copied into the
+  # dialog's returnValue so the close event can tell which control fired.
+  # `commandfor` defaults to the closest <dialog> ancestor; set it when the
+  # button lives outside the dialog.
+  # See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74,149-152.
+  attr :command, :string, default: "close", values: ~w(close request-close)
+  attr :commandfor, :string, default: nil
+  attr :value, :string, default: nil
+  attr :class, :string, default: nil
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def dialog_close(assigns) do
+    ~H"""
+    <button
+      type="button"
+      command={@command}
+      commandfor={@commandfor}
+      value={@value}
+      class={@class}
       {@rest}
     >
       {render_slot(@inner_block)}

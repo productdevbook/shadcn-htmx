@@ -17,7 +17,7 @@
        {{ listbox_option("Lithium",  value="Li") }}
      {{ listbox_close(name="element") }} #}
 
-{% macro listbox_open(aria_label=none, aria_labelledby=none, multiple=false, disabled=false, orientation="vertical", name=none, extra_class="", attrs={}) -%}
+{% macro listbox_open(aria_label=none, aria_labelledby=none, multiple=false, disabled=false, required=false, aria_invalid=none, aria_errormessage=none, aria_readonly=false, orientation="vertical", name=none, extra_class="", attrs={}) -%}
 <span class="relative inline-flex w-full flex-col">
 <ul role="listbox"
     data-slot="listbox"
@@ -27,6 +27,13 @@
     {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
     {%- if disabled %} aria-disabled="true"{% endif %}
+    {#- Group-level "one must be chosen" requirement (listbox supports aria-required). #}
+    {%- if required %} aria-required="true"{% endif %}
+    {#- WCAG error-identification: aria-invalid + aria-errormessage point at a visible error. #}
+    {%- if aria_invalid is not none %} aria-invalid="{{ 'true' if aria_invalid else 'false' }}"{% endif %}
+    {%- if aria_errormessage %} aria-errormessage="{{ aria_errormessage }}"{% endif %}
+    {#- Locked-but-operable, distinct from aria-disabled. #}
+    {%- if aria_readonly %} aria-readonly="true"{% endif %}
     tabindex="-1"
     {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
     class="max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md border bg-background p-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[orientation=horizontal]:flex data-[orientation=horizontal]:max-h-none data-[orientation=horizontal]:overflow-x-auto data-[orientation=horizontal]:overflow-y-hidden {{ extra_class }}">

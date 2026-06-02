@@ -63,10 +63,27 @@
   Disabled option
 </label>
 
-<!-- Indeterminate (set via JS once mounted) -->
+<!-- Indeterminate — IDL-only property, no HTML attribute (WHATWG HTML: initially
+     false, "cannot be set using an HTML attribute"). Mark the input with the
+     data-initial-indeterminate hook and let an on-mount script flip it; this is
+     the same hook the framework flavours emit from an `indeterminate` prop. -->
+<label class="flex items-center gap-2 text-sm font-medium">
+  <span class="relative inline-flex size-4">
+    <input id="select-all" type="checkbox" data-slot="checkbox" data-initial-indeterminate="true"
+      class="peer size-4 appearance-none rounded-[4px] border border-input bg-background shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary dark:bg-input/30">
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  </span>
+  Select all
+</label>
 <script>
-  document.getElementById('select-all')?.addEventListener('change', () => { /* … */ })
-  document.getElementById('select-all').indeterminate = true
+  document.querySelectorAll('[data-initial-indeterminate="true"]').forEach(function (el) { el.indeterminate = true })
 </script>
 
 <!-- htmx — save on toggle -->

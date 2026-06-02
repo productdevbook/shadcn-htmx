@@ -27,7 +27,8 @@
     id,
     title=none,
     description=none,
-    open=false
+    open=false,
+    aria_label=none
 ) %}
 {%- set base -%}
 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm
@@ -38,7 +39,11 @@ fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2
         role="alertdialog"
         class="{{ base }}"
         data-slot="alert-dialog"
-        aria-labelledby="{{ id }}-title"
+        {#- APG (alertdialog-pattern.html:47-57): name via aria-label OR
+            aria-labelledby. An explicit aria_label suppresses the id-title
+            fallback so the dialog isn't named twice. #}
+        {%- if aria_label %} aria-label="{{ aria_label }}"
+        {%- else %} aria-labelledby="{{ id }}-title"{% endif %}
         aria-describedby="{{ id }}-description">
   {%- if title or description %}
   <div data-slot="alert-dialog-header" class="flex flex-col gap-1.5 text-left">

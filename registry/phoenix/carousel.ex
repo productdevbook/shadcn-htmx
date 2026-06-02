@@ -84,7 +84,11 @@ defmodule ShadcnHtmx.Components.Carousel do
       aria-live="polite"
       tabindex="0"
       class={[
-        "flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none",
+        # motion-safe:scroll-smooth → smooth pan only when prefers-reduced-motion is not reduce
+        # (panning a full-width region is a vestibular trigger; MDN: prefers-reduced-motion).
+        # overscroll-x-contain → swiping past the first/last slide doesn't chain-scroll the page
+        # or trigger browser back-swipe / pull-to-refresh (MDN: overscroll-behavior).
+        "flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth scrollbar-none",
         "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg",
         @class
       ]}

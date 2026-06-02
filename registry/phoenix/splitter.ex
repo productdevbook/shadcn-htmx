@@ -27,6 +27,9 @@ defmodule ShadcnHtmx.Components.Splitter do
   attr :step, :integer, default: 10
   attr :"aria-label", :string, default: nil
   attr :"aria-labelledby", :string, default: nil
+  # Announced in place of aria-valuenow when set (MDN separator_role):
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/roles/separator_role/index.md
+  attr :"aria-valuetext", :string, default: nil
   attr :primary_id, :string, default: nil
   attr :id, :string, default: nil
   attr :class, :string, default: nil
@@ -73,6 +76,7 @@ defmodule ShadcnHtmx.Components.Splitter do
         aria-valuenow={@now}
         aria-valuemin={@min}
         aria-valuemax={@max}
+        aria-valuetext={assigns[:"aria-valuetext"]}
         class={[
           "group/splitter relative flex shrink-0 touch-none items-center justify-center bg-border outline-none transition-colors select-none",
           "hover:bg-ring/40 focus-visible:bg-ring/40 focus-visible:ring-[3px] focus-visible:ring-ring/50",

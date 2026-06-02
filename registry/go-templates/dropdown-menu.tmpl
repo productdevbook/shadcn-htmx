@@ -2,14 +2,22 @@
      Native [popover] + APG menu keyboard contract via public/site.js. */}}
 
 {{define "dropdown_trigger"}}
+{{/* menu-button pattern: aria-controls + aria-expanded advertise the menu and
+     its state. Initial state collapsed; site.js flips aria-expanded on toggle. */}}
 <button {{if .ID}}id="{{.ID}}"{{end}} type="button"
         popovertarget="{{.MenuFor}}" popovertargetaction="toggle"
         data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        aria-controls="{{.MenuFor}}" aria-expanded="false"
         class="{{.Class}}">{{.Label}}</button>
 {{end}}
 
 {{define "dropdown_menu"}}
-<div id="{{.ID}}" popover="auto" role="menu" data-slot="dropdown-menu"
+{{/* role="menu" REQUIRES an accessible name: AriaLabelledBy (canonical, points
+     at the trigger id) or AriaLabel for icon-only triggers. menu_role. */}}
+<div id="{{.ID}}" popover="auto" role="menu"
+     {{- if .AriaLabelledBy}} aria-labelledby="{{.AriaLabelledBy}}"{{end}}
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     data-slot="dropdown-menu"
      class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
   {{.Body}}
 </div>
@@ -21,13 +29,15 @@
 {{- $destr := "" -}}{{- if eq $variant "destructive" -}}{{- $destr = "text-destructive focus:bg-destructive/10 focus:text-destructive" -}}{{- end -}}
 {{if .Href}}
 <a role="menuitem" tabindex="-1" href="{{.Href}}" data-slot="dropdown-menu-item"
-   {{if .Disabled}}data-disabled="true"{{end}}
+   {{/* menuitem_role: a disabled menuitem MUST set aria-disabled="true". */}}
+   {{if .Disabled}}data-disabled="true" aria-disabled="true"{{end}}
    class="{{$base}} {{$destr}}"
    {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
 >{{.Label}}</a>
 {{else}}
 <button type="button" role="menuitem" tabindex="-1" data-slot="dropdown-menu-item"
-        {{if .Disabled}}data-disabled="true"{{end}}
+        {{/* menuitem_role: a disabled menuitem MUST set aria-disabled="true". */}}
+        {{if .Disabled}}data-disabled="true" aria-disabled="true"{{end}}
         {{- if .Onclick}} onclick="{{.Onclick}}"{{end}}
         class="{{$base}} {{$destr}}"
         {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}

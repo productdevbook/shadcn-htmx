@@ -64,3 +64,21 @@
     <polyline points="6 9 12 15 18 9" />
   </svg>
 </span>
+
+<!-- Invalid state — point AT at the visible error message.
+     Set aria-invalid="true", then aria-errormessage to the id of the
+     visible message element. See aria-errormessage spec:
+     repos/mdn/.../aria/reference/attributes/aria-errormessage/index.md -->
+<span class="relative inline-flex w-full">
+  <select name="plan" required aria-invalid="true" aria-errormessage="plan-error"
+    class="peer flex h-9 w-full appearance-none rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30">
+    <option value="">Select a plan…</option>
+    <option value="pro">Pro</option>
+    <option value="team">Team</option>
+  </select>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</span>
+<p id="plan-error" class="mt-1 text-sm text-destructive">Please choose a plan.</p>

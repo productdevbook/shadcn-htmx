@@ -3,8 +3,17 @@
   Native HTML Popover API.
 
       type PopoverArgs struct {
+          // Mode: "auto" (default) | "hint" | "manual". hint = light-dismissable
+          // but does NOT close an open auto popover (falls back to manual in
+          // non-supporting browsers).
+          // mdn .../global_attributes/popover/index.md:22-24
           ID, Mode, Side string
-          Body           template.HTML
+          // Role / AriaLabelledby / AriaLabel: the native popover attribute
+          // assigns no role or accessible name to the popover itself — supply
+          // for menu/listbox popovers.
+          // mdn .../api/popover_api/using/index.md:79-86
+          Role, AriaLabelledby, AriaLabel string
+          Body                            template.HTML
       }
       type PopoverTriggerArgs struct {
           Label, PopoverTarget, Action, Class, ID string
@@ -16,6 +25,9 @@
 {{- $side := or .Side "bottom" -}}
 {{- $sides := dict "top" "anchor-popover-top" "bottom" "anchor-popover-bottom" "left" "anchor-popover-left" "right" "anchor-popover-right" -}}
 <div id="{{.ID}}" popover="{{$mode}}" data-slot="popover" data-side="{{$side}}"
+     {{if .Role}}role="{{.Role}}"{{end}}
+     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
      class="z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{index $sides $side}}">
   {{.Body}}
 </div>

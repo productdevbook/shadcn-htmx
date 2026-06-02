@@ -22,7 +22,8 @@ import { cn, type ClassValue } from "@/registry/lib/cn"
 //     browser's own keyboard scrolling all work with zero JS, and the snap
 //     points keep slides aligned. Tailwind v4 ships these utilities natively
 //     (repos/tailwindcss/.../src/utilities.ts: snap-x, snap-mandatory,
-//     snap-center, scroll-smooth).
+//     snap-center, scroll-smooth, overscroll-x-contain; motion-safe variant in
+//     src/variants.ts).
 //   - The only thing the platform does NOT give us is "advance by exactly one
 //     slide when the Prev/Next buttons are pressed" + the buttons' disabled
 //     state at the ends. public/site.js (keyed on data-slot="carousel") owns
@@ -55,13 +56,21 @@ import { cn, type ClassValue } from "@/registry/lib/cn"
 const containerBase = "group/carousel relative"
 
 // The scroller. `snap-x snap-mandatory` turns the row into a snap container;
-// `scroll-smooth` makes scrollBy() animate; `overflow-x-auto` lets native
-// touch/wheel scrolling work. `scrollbar-none` is the Tailwind v4 utility for
-// scrollbar-width:none (Firefox/standards); app/styles/input.css adds the
-// WebKit ::-webkit-scrollbar supplement so the bar is hidden in Chrome/Safari
-// too. The region stays fully scrollable + keyboard-reachable.
+// `motion-safe:scroll-smooth` makes scrollBy() animate, but only when the user
+// has NOT requested reduced motion — panning a full-width region is a
+// vestibular-motion trigger, so under prefers-reduced-motion:reduce we drop the
+// smooth animation (motion-safe = @media (prefers-reduced-motion: no-preference);
+// repos/mdn/files/en-us/web/css/reference/at-rules/@media/prefers-reduced-motion).
+// `overflow-x-auto` lets native touch/wheel scrolling work; `overscroll-x-contain`
+// stops a swipe past the first/last slide from chain-scrolling the page or
+// triggering browser back-swipe / pull-to-refresh
+// (repos/mdn/files/en-us/web/css/reference/properties/overscroll-behavior).
+// `scrollbar-none` is the Tailwind v4 utility for scrollbar-width:none
+// (Firefox/standards); app/styles/input.css adds the WebKit ::-webkit-scrollbar
+// supplement so the bar is hidden in Chrome/Safari too. The region stays fully
+// scrollable + keyboard-reachable.
 const contentBase =
-  "flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none " +
+  "flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth scrollbar-none " +
   "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg"
 
 // Each slide centres on the snap line and never shrinks below its basis.

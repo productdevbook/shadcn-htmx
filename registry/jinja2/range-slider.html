@@ -6,7 +6,7 @@
 {% macro range_slider(
     id=none, min_name="min", max_name="max",
     min_value=none, max_value=none, min=0, max=100, step=none,
-    disabled=false, form=none,
+    list=none, disabled=false, form=none,
     min_label="Minimum", max_label="Maximum",
     aria_labelledby=none, aria_describedby=none,
     min_valuetext=none, max_valuetext=none,
@@ -29,6 +29,8 @@
     name="{{ min_name }}" value="{{ lo }}"
     min="{{ min }}" max="{{ max }}"
     {%- if step %} step="{{ step }}"{% endif %}
+    {# list: native <datalist> tick marks on type=range (MDN range ref) #}
+    {%- if list %} list="{{ list }}"{% endif %}
     {%- if disabled %} disabled{% endif %}
     {%- if form %} form="{{ form }}"{% endif %}
     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ min_label }}"{% endif %}
@@ -46,6 +48,8 @@
     name="{{ max_name }}" value="{{ hi }}"
     min="{{ min }}" max="{{ max }}"
     {%- if step %} step="{{ step }}"{% endif %}
+    {# list: native <datalist> tick marks on type=range (MDN range ref) #}
+    {%- if list %} list="{{ list }}"{% endif %}
     {%- if disabled %} disabled{% endif %}
     {%- if form %} form="{{ form }}"{% endif %}
     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ max_label }}"{% endif %}

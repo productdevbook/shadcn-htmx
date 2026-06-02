@@ -66,11 +66,35 @@
 </dialog>
 {{end}}
 
+{{/*
+  dialog_trigger — open button. Set .Native=true to render a native Invoker
+  Commands button (<button command="show-modal" commandfor="…">) that opens
+  the dialog as a modal with zero JS — the declarative equivalent of
+  .showModal(). The data-dialog-trigger + site.js path stays the default.
+  See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74
+*/}}
 {{define "dialog_trigger"}}
 <button {{if .ID}}id="{{.ID}}"{{end}}
         type="{{or .Type "button"}}"
         class="{{.Class}}"
-        data-dialog-trigger="true"
-        data-dialog-target="{{.DialogFor}}"
+        {{- if .Native}} command="show-modal" commandfor="{{.DialogFor}}"
+        {{- else}} data-dialog-trigger="true" data-dialog-target="{{.DialogFor}}"{{end}}
         aria-haspopup="dialog">{{.Label}}</button>
+{{end}}
+
+{{/*
+  dialog_close — native Invoker Commands close button (opt-in). .Command is
+  "close" (declarative .close()) or "request-close" (fires a cancelable
+  `cancel` event first, for unsaved-changes guards). .Value is copied into the
+  dialog's returnValue so the close event can tell which control fired.
+  .CommandFor defaults to the closest <dialog> ancestor; set it when the
+  button lives outside the dialog.
+  See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74,149-152
+*/}}
+{{define "dialog_close"}}
+<button type="button"
+        command="{{or .Command "close"}}"
+        {{- if .CommandFor}} commandfor="{{.CommandFor}}"{{end}}
+        {{- if .Value}} value="{{.Value}}"{{end}}
+        class="{{.Class}}">{{.Label}}</button>
 {{end}}

@@ -57,13 +57,22 @@ defmodule ShadcnHtmx.Components.Card do
   end
 
   attr :class, :string, default: nil
+  # Render as a real heading (h1-h6) so an as="article"/"section" card gets a
+  # child heading for the document outline; default "div" keeps shadcn upstream.
+  # See repos/mdn/files/en-us/web/html/reference/elements/article/index.md:66
+  #     repos/mdn/files/en-us/web/html/reference/elements/section/index.md:55
+  attr :as, :string, default: "div", values: ~w(div h1 h2 h3 h4 h5 h6)
+  # id lets a section/article card reference this title via aria-labelledby
+  # (region landmark naming).
+  # See repos/mdn/files/en-us/web/accessibility/aria/reference/roles/region_role/index.md:25,29
+  attr :id, :string, default: nil
   slot :inner_block, required: true
 
   def card_title(assigns) do
     ~H"""
-    <div data-slot="card-title" class={["leading-none font-semibold", @class]}>
+    <.dynamic_tag tag_name={@as} data-slot="card-title" id={@id} class={["leading-none font-semibold", @class]}>
       {render_slot(@inner_block)}
-    </div>
+    </.dynamic_tag>
     """
   end
 

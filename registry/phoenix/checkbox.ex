@@ -29,6 +29,12 @@ defmodule ShadcnHtmx.Components.Checkbox do
 
   attr :class, :string, default: nil
 
+  # `indeterminate` is an IDL-only property — no HTML content attribute exists
+  # for it (WHATWG HTML: initially false, "cannot be set using an HTML
+  # attribute"). Emit data-initial-indeterminate="true" so an on-mount script
+  # can set el.indeterminate. See repos/whatwg-html/source.
+  attr :indeterminate, :boolean, default: false
+
   attr :rest, :global,
     include:
       ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-vals hx-include
@@ -44,6 +50,7 @@ defmodule ShadcnHtmx.Components.Checkbox do
         type="checkbox"
         class={[@input_base, @class]}
         data-slot="checkbox"
+        data-initial-indeterminate={@indeterminate && "true"}
         {@rest}
       />
       <svg

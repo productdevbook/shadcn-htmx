@@ -31,10 +31,12 @@
 </div>
 {% endmacro %}
 
-{% macro feed_article(posinset, setsize, labelledby, describedby=none, id=none, extra_class="", **attrs) %}
+{# tabindex: 0 (default) or -1 — MDN's feed role allows each article to be
+   focusable "with tabindex of 0 or -1"; pass -1 for a roving-tabindex feed. #}
+{% macro feed_article(posinset, setsize, labelledby, describedby=none, tabindex=0, id=none, extra_class="", **attrs) %}
 <article
   {%- if id %} id="{{ id }}"{% endif %}
-  role="article" data-slot="feed-article" tabindex="0"
+  role="article" data-slot="feed-article" tabindex="{{ tabindex }}"
   aria-posinset="{{ posinset }}" aria-setsize="{{ setsize }}"
   aria-labelledby="{{ labelledby }}"
   {% if describedby %}aria-describedby="{{ describedby }}"{% endif %}
@@ -43,12 +45,16 @@
 >{{ caller() }}</article>
 {% endmacro %}
 
-{% macro feed_sentinel(href=none, trigger="revealed", id=none, extra_class="") %}
+{# busy: aria-busy="true" on the in-flight placeholder while a batch loads;
+   the outerHTML swap clears it by replacing this element (APG: aria-busy must
+   be false once the operation completes). #}
+{% macro feed_sentinel(href=none, trigger="revealed", busy=false, id=none, extra_class="") %}
 <div
   {%- if id %} id="{{ id }}"{% endif %}
   data-slot="feed-sentinel"
   {% if href %}hx-get="{{ href }}"{% endif %}
   hx-trigger="{{ trigger }}" hx-swap="outerHTML"
+  {% if busy %}aria-busy="true"{% endif %}
   class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{ extra_class }}">
   {% if caller %}{{ caller() }}{% else %}<span aria-hidden="true" class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"></span>Loading more…{% endif %}
 </div>

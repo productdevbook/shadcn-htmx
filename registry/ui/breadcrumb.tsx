@@ -39,15 +39,27 @@ import { cn, type ClassValue } from "@/registry/lib/cn"
 type BreadcrumbProps = PropsWithChildren<{
   // Accessible name for the navigation landmark.
   ariaLabel?: string
+  // Id of a visible heading that labels the landmark. When set, that heading
+  // is the name source and the defaulted aria-label is NOT emitted, so the
+  // <nav> never carries two competing names. APG: the landmark "is labelled
+  // via aria-label or aria-labelledby" — both are first-class options.
+  //   repos/aria-practices/content/patterns/breadcrumb/breadcrumb-pattern.html
+  ariaLabelledby?: string
   class?: ClassValue
   [key: `hx-${string}`]: any
   [key: `data-${string}`]: any
   [key: `aria-${string}`]: any
 }>
 export function Breadcrumb(props: BreadcrumbProps) {
-  const { ariaLabel = "Breadcrumb", class: className, children, ...rest } = props
+  const { ariaLabel = "Breadcrumb", ariaLabelledby, class: className, children, ...rest } = props
   return (
-    <nav data-slot="breadcrumb" aria-label={ariaLabel} class={cn(className)} {...rest}>
+    <nav
+      data-slot="breadcrumb"
+      aria-label={ariaLabelledby ? undefined : ariaLabel}
+      aria-labelledby={ariaLabelledby}
+      class={cn(className)}
+      {...rest}
+    >
       {children}
     </nav>
   )
@@ -134,14 +146,21 @@ export function BreadcrumbPage(props: BreadcrumbPageProps) {
 }
 
 // Decorative separator between items. aria-hidden so AT skips the glyph.
-type BreadcrumbSeparatorProps = PropsWithChildren<{ class?: ClassValue }>
+// data-* passes through (a global attribute valid on every element) so callers
+// can attach CSS/JS hooks, matching the other subcomponents.
+//   repos/mdn/files/en-us/web/html/reference/global_attributes/index.md
+type BreadcrumbSeparatorProps = PropsWithChildren<{
+  class?: ClassValue
+  [key: `data-${string}`]: any
+}>
 export function BreadcrumbSeparator(props: BreadcrumbSeparatorProps) {
-  const { class: className, children } = props
+  const { class: className, children, ...rest } = props
   return (
     <li
       data-slot="breadcrumb-separator"
       aria-hidden="true"
       class={cn("[&>svg]:size-3.5", className)}
+      {...rest}
     >
       {children ?? (
         <svg
@@ -162,13 +181,21 @@ export function BreadcrumbSeparator(props: BreadcrumbSeparatorProps) {
 }
 
 // Collapsed-range indicator. aria-hidden glyph + sr-only "More" text so AT
-// users still hear that items were omitted.
-export function BreadcrumbEllipsis(props: { class?: ClassValue }) {
+// users still hear that items were omitted. data-* passes through (a global
+// attribute valid on every element), matching the other subcomponents.
+//   repos/mdn/files/en-us/web/html/reference/global_attributes/index.md
+type BreadcrumbEllipsisProps = {
+  class?: ClassValue
+  [key: `data-${string}`]: any
+}
+export function BreadcrumbEllipsis(props: BreadcrumbEllipsisProps) {
+  const { class: className, ...rest } = props
   return (
     <span
       data-slot="breadcrumb-ellipsis"
       aria-hidden="true"
-      class={cn("flex size-9 items-center justify-center", props.class)}
+      class={cn("flex size-9 items-center justify-center", className)}
+      {...rest}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

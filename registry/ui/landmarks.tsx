@@ -17,6 +17,7 @@ import { cn, type ClassValue } from "@/registry/lib/cn"
 //   <main>                         →  main
 //   <aside>                        →  complementary
 //   <section>  (when labelled)     →  region
+//   <form>     (when labelled)      →  form
 //   <footer>  (in body context)    →  contentinfo
 //
 // Labelling rules (when to pass an aria-label / aria-labelledby) come
@@ -164,6 +165,29 @@ export function RegionLandmark(props: LandmarkProps) {
     >
       {children}
     </section>
+  )
+}
+
+// <form> = form landmark, but ONLY when it has an accessible name. A bare
+// <form> exposes NO landmark role; the form landmark appears once you pass
+// ariaLabel or ariaLabelledby — exactly like region. Give each form
+// landmark a unique label. Use SearchLandmark (<search>) instead when the
+// form performs a search. The id/...rest passthrough means action/method/
+// hx-* forward straight through to the <form>.
+//   MDN: repos/mdn/files/en-us/web/accessibility/aria/reference/roles/form_role/index.md:12,31,33,101
+//   APG: repos/aria-practices/content/patterns/landmarks/examples/form.html:79,84,85,86
+export function FormLandmark(props: LandmarkProps) {
+  const { class: className, children, ariaLabel, ariaLabelledby, ...rest } = props
+  return (
+    <form
+      data-slot="landmark-form"
+      class={cn("rounded-lg border bg-card p-4 text-card-foreground", className)}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
+      {...rest}
+    >
+      {children}
+    </form>
   )
 }
 

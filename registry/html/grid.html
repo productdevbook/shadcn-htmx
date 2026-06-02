@@ -15,6 +15,15 @@
   Accessibility contract:
     repos/aria-practices/content/patterns/grid/grid-pattern.html
 
+  Optional ARIA attributes (additive, omit unless needed):
+    - On <table role="grid">: add aria-multiselectable="true" when the grid
+      supports selecting more than one cell/row (pair with aria-selected on
+      cells/rows; selectable-but-unselected nodes carry aria-selected="false").
+      w3c.github.io/aria/#aria-multiselectable
+    - On <tr data-slot="grid-row">: when the visible columns are contiguous you
+      may set aria-colindex once on the row (the row's first column index)
+      instead of per cell. w3c.github.io/aria/#aria-colindex
+
   Required CSS theme variables: --background, --foreground, --muted,
   --muted-foreground, --border, --ring. See app/styles/input.css.
 

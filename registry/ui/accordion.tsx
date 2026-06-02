@@ -64,7 +64,7 @@ type AccordionItemProps = PropsWithChildren<{
 }>
 
 export function AccordionItem(props: AccordionItemProps) {
-  const { value, open, disabled, class: className, children } = props
+  const { value, open, disabled, class: className, children, ...rest } = props
   return (
     <details
       data-slot="accordion-item"
@@ -79,6 +79,12 @@ export function AccordionItem(props: AccordionItemProps) {
         disabled && "pointer-events-none opacity-50",
         className,
       )}
+      // Forward hx-* / global attributes so the native `toggle` event (fired
+      // by <details> just after open/close) can drive zero-JS lazy loading,
+      // e.g. hx-trigger="toggle once" hx-get=...
+      // repos/mdn/files/en-us/web/api/htmlelement/toggle_event/index.md
+      // repos/htmx hx-trigger: accepts any DOM event.
+      {...rest}
     >
       {children}
     </details>
@@ -88,6 +94,7 @@ export function AccordionItem(props: AccordionItemProps) {
 type AccordionTriggerProps = PropsWithChildren<{ class?: ClassValue }>
 
 export function AccordionTrigger(props: AccordionTriggerProps) {
+  const { class: className, children, ...rest } = props
   return (
     <summary
       data-slot="accordion-trigger"
@@ -98,10 +105,12 @@ export function AccordionTrigger(props: AccordionTriggerProps) {
           "list-none [&::-webkit-details-marker]:hidden " +
           // Rotate the chevron when the parent <details> is open.
           "[details[open]>&_[data-slot=accordion-chevron]]:rotate-180",
-        props.class,
+        className,
       )}
+      // Forward hx-* / global attributes onto the <summary> control.
+      {...rest}
     >
-      {props.children}
+      {children}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -123,12 +132,17 @@ export function AccordionTrigger(props: AccordionTriggerProps) {
 type AccordionContentProps = PropsWithChildren<{ class?: ClassValue }>
 
 export function AccordionContent(props: AccordionContentProps) {
+  const { class: className, children, ...rest } = props
   return (
     <div
       data-slot="accordion-content"
-      class={cn("overflow-hidden pt-0 pb-4 text-sm", props.class)}
+      class={cn("overflow-hidden pt-0 pb-4 text-sm", className)}
+      // Forward hx-* / global attributes so a panel can lazy-load on first
+      // open: hx-trigger="toggle once" hx-get=... on the enclosing <details>,
+      // or hx-* directly here. repos/htmx hx-trigger accepts any DOM event.
+      {...rest}
     >
-      {props.children}
+      {children}
     </div>
   )
 }

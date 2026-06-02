@@ -6,7 +6,7 @@
      {{ avatar(src="/users/mk.jpg", alt="Mehmet K", fallback="MK") }}
      {{ avatar(fallback="MK", aria_label="Mehmet K") }}              {# no image #} #}
 
-{% macro avatar(src=none, alt=none, fallback=none, size="default", aria_label=none, extra_class="") %}
+{% macro avatar(src=none, alt=none, fallback=none, size="default", aria_label=none, loading=none, referrerpolicy=none, srcset=none, sizes=none, extra_class="") %}
 {%- set sizes = {
     "sm": "size-6 [&_[data-slot=avatar-fallback]]:text-xs",
     "default": "size-8",
@@ -18,7 +18,12 @@
   <span data-slot="avatar-fallback"
     class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">{{ fallback or "" }}</span>
   {% if src %}
+  {# MDN <img>: loading (lazy off-screen), referrerpolicy (3rd-party hosts), srcset/sizes (retina 2x). #}
   <img src="{{ src }}" alt="{{ alt or '' }}" data-slot="avatar-image"
+       {%- if srcset %} srcset="{{ srcset }}"{% endif %}
+       {%- if sizes %} sizes="{{ sizes }}"{% endif %}
+       {%- if loading %} loading="{{ loading }}"{% endif %}
+       {%- if referrerpolicy %} referrerpolicy="{{ referrerpolicy }}"{% endif %}
        onerror="this.style.display='none'"
        class="absolute inset-0 aspect-square size-full object-cover">
   {% endif %}

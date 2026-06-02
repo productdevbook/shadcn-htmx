@@ -15,6 +15,7 @@
     name=none,
     value=none,
     checked=false,
+    indeterminate=false,
     required=false,
     disabled=false,
     readonly=false,
@@ -36,6 +37,9 @@ peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-backgr
          {%- if name %} name="{{ name }}"{% endif %}
          {%- if value is not none %} value="{{ value }}"{% endif %}
          {%- if checked %} checked{% endif %}
+         {#- indeterminate is IDL-only (no HTML attribute per WHATWG HTML); emit
+             the on-mount hook a script reads to set el.indeterminate. #}
+         {%- if indeterminate %} data-initial-indeterminate="true"{% endif %}
          {%- if required %} required{% endif %}
          {%- if disabled %} disabled{% endif %}
          {%- if readonly %} readonly{% endif %}

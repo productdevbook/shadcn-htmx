@@ -32,7 +32,8 @@ defmodule ShadcnHtmx.Components.Textarea do
       ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-indicator hx-vals hx-include
          id name placeholder required disabled readonly
          rows cols minlength maxlength autocomplete autocapitalize autocorrect autofocus spellcheck dirname wrap form
-         aria-label aria-labelledby aria-describedby aria-invalid aria-required)
+         inputmode enterkeyhint
+         aria-label aria-labelledby aria-describedby aria-invalid aria-required aria-errormessage)
 
   def textarea(assigns) do
     assigns = assign(assigns, :base_class, @base)

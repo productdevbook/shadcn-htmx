@@ -68,6 +68,9 @@ type NumberInputProps = {
   autofocus?: boolean
   form?: string
   list?: string
+  // Browser autofill hint — supported common attribute on <input type=number>
+  // (e.g. "postal-code"). repos/mdn/.../elements/input/number/index.md:300,449
+  autocomplete?: string
 
   // Render the styled −/+ stepper buttons around the field. Defaults to true.
   // When false the component is a bare native spinbutton (zero JS).
@@ -83,6 +86,9 @@ type NumberInputProps = {
   ariaDescribedby?: string
   ariaInvalid?: boolean | "grammar" | "spelling"
   ariaRequired?: boolean
+  // Human-readable value for screen readers when the raw number isn't friendly
+  // (currency/units). APG spinbutton: aria-practices/.../spinbutton-pattern.html:92
+  ariaValuetext?: string
 
   class?: ClassValue
 
@@ -107,6 +113,7 @@ export function NumberInput(props: NumberInputProps) {
     autofocus,
     form,
     list,
+    autocomplete,
     steppers = true,
     inputmode,
     ariaLabel,
@@ -114,6 +121,7 @@ export function NumberInput(props: NumberInputProps) {
     ariaDescribedby,
     ariaInvalid,
     ariaRequired,
+    ariaValuetext,
     class: className,
     ...rest
   } = props
@@ -134,10 +142,12 @@ export function NumberInput(props: NumberInputProps) {
       autofocus={autofocus}
       form={form}
       list={list}
+      autocomplete={autocomplete}
       inputmode={inputmode}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
       aria-describedby={ariaDescribedby}
+      aria-valuetext={ariaValuetext}
       aria-invalid={ariaInvalid === undefined ? undefined : String(ariaInvalid)}
       aria-required={ariaRequired === undefined ? undefined : String(ariaRequired)}
       data-slot={steppers ? "number-input-field" : "number-input"}

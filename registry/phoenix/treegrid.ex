@@ -71,8 +71,16 @@ defmodule ShadcnHtmx.Components.Treegrid do
       <table role="treegrid" data-slot="treegrid" class={[@table_base, @class]} {@rest}>
         <thead>
           <tr role="row" class="border-b">
-            <th :for={label <- @columns} role="columnheader" scope="col" class={@head_cell}>
-              {label}
+            <%!--
+              A column is either a plain label string (unchanged) or a map
+              %{label: "Date", sort: "ascending"} so a sortable column can
+              carry aria-sort on its header cell — APG Treegrid pattern: "If
+              the treegrid provides sort functions, aria-sort is set ... on the
+              header cell element for the sorted column."
+              repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html
+            --%>
+            <th :for={col <- @columns} role="columnheader" scope="col" aria-sort={col_sort(col)} class={@head_cell}>
+              {col_label(col)}
             </th>
           </tr>
         </thead>
@@ -82,6 +90,12 @@ defmodule ShadcnHtmx.Components.Treegrid do
     </div>
     """
   end
+
+  # A column is a plain label string or a map with :label and optional :sort.
+  defp col_label(col) when is_map(col), do: Map.get(col, :label) || Map.get(col, "label")
+  defp col_label(col), do: col
+  defp col_sort(col) when is_map(col), do: Map.get(col, :sort) || Map.get(col, "sort")
+  defp col_sort(_col), do: nil
 
   attr :level, :integer, required: true
   attr :posinset, :integer, required: true

@@ -7,6 +7,10 @@
   the APG composite keyboard contract (roving tabindex, ArrowLeft/Right along
   the bar, ArrowDown to open a menu, ArrowUp/Down inside a menu, Home/End,
   type-ahead). Relies only on the theme tokens in styles.css.
+
+  Naming: this example uses aria-label. When a VISIBLE heading names the bar,
+  prefer aria-labelledby="<heading-id>" instead (APG menu-and-menubar-pattern
+  :220-222; MDN menubar_role:32).
 -->
 
 <div role="menubar" data-slot="menubar" aria-label="Application"
@@ -21,7 +25,10 @@
     <div id="mb-file" popover="auto" role="menu" aria-label="File"
          data-slot="menubar-content" data-side="bottom"
          class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
-      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">New File</button>
+      <!-- aria-keyshortcuts exposes the accelerator to AT; the trailing
+           data-slot="menubar-shortcut" span is the aria-hidden visual hint.
+           repos/.../attributes/aria-keyshortcuts/index.md -->
+      <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" aria-keyshortcuts="Control+N" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">New File<span aria-hidden="true" data-slot="menubar-shortcut" class="ml-auto text-xs tracking-widest text-muted-foreground">⌃N</span></button>
       <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Open…</button>
       <div role="separator" aria-orientation="horizontal" data-slot="menubar-separator" class="-mx-1 my-1 h-px bg-border"></div>
       <button type="button" role="menuitem" tabindex="-1" data-slot="menubar-item" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 text-destructive focus:bg-destructive/10 focus:text-destructive">Delete project</button>

@@ -9,6 +9,12 @@
           Title     string
           Body      template.HTML
           AriaAtomic *bool  // nil = default true (read full alert); set to &false to omit
+          // Name the live region for AT: AriaLabelledby points at an
+          // alert-title id; AriaLabel is a literal name. status_role
+          // associated properties:
+          //   repos/mdn/.../roles/status_role/index.md:28-29
+          AriaLabelledby string
+          AriaLabel      string
           ID        string
       }
 */}}
@@ -35,6 +41,8 @@
      {{if $role}}role="{{$role}}"{{end}}
      {{if ne $live "off"}}aria-live="{{$live}}"{{end}}
      {{if $ariaAtomic}}aria-atomic="true"{{end}}
+     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
      class="{{$base}} {{index $variants $variant}}">
   {{- if .Title}}<div data-slot="alert-title" class="col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight">{{.Title}}</div>{{end}}
   {{- if .Body}}<div data-slot="alert-description" class="col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed">{{.Body}}</div>{{end}}

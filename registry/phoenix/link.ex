@@ -52,10 +52,13 @@ defmodule ShadcnHtmx.Components.Link do
     include:
       ~w(hx-get hx-target hx-swap hx-boost hx-push-url
          download hreflang referrerpolicy ping type
-         id aria-label aria-labelledby aria-current)
+         id aria-label aria-labelledby aria-describedby aria-current)
 
   slot :inner_block, required: true
 
+  # APG fallback: href is invalid on a non-anchor element, so the browser will
+  # not navigate (link/examples/link.html). We expose the destination as
+  # data-href below so site.js can wire Enter/click on [role=link][data-href].
   def link_(assigns) do
     is_anchor = assigns.as == "a"
     target = assigns.target || if(assigns.external, do: "_blank")
@@ -77,6 +80,7 @@ defmodule ShadcnHtmx.Components.Link do
       rel={@resolved_rel}
       role={if !@is_anchor, do: "link"}
       tabindex={if !@is_anchor, do: "0"}
+      data-href={if !@is_anchor, do: @href}
       data-slot="link"
       data-variant={@variant}
       data-external={if @external, do: "true"}

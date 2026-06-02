@@ -28,6 +28,9 @@ defmodule ShadcnHtmx.Components.Toolbar do
   attr :orientation, :string, default: "horizontal", values: ~w(horizontal vertical)
   attr :"aria-label", :string, default: nil
   attr :"aria-labelledby", :string, default: nil
+  # Id(s) of the element this toolbar operates on; APG sets aria-controls on the
+  # role="toolbar" element (.../patterns/toolbar/examples/toolbar.html).
+  attr :"aria-controls", :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -41,6 +44,7 @@ defmodule ShadcnHtmx.Components.Toolbar do
       aria-orientation={@orientation}
       aria-label={assigns[:"aria-label"]}
       aria-labelledby={assigns[:"aria-labelledby"]}
+      aria-controls={assigns[:"aria-controls"]}
       class={[
         "group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs",
         "data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch",

@@ -5,9 +5,13 @@
    wired up in public/site.js keyed on data-slot="menubar". Mirrors
    registry/ui/menubar.tsx exactly. #}
 
-{% macro menubar_open(aria_label=none, extra_class="") %}
+{# aria_labelledby: id of a visible element naming the menubar. APG prefers
+   aria-labelledby over aria-label when a visible label exists
+   (menu-and-menubar-pattern.html:220-222; MDN menubar_role:32). #}
+{% macro menubar_open(aria_label=none, aria_labelledby=none, extra_class="") %}
 <div role="menubar" data-slot="menubar"
      {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+     {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
      class="inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs {{ extra_class }}">
 {% endmacro %}
 
@@ -61,4 +65,12 @@ relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 te
 
 {% macro menubar_label(text) %}
 <div data-slot="menubar-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ text }}</div>
+{% endmacro %}
+
+{# menubar_shortcut: presentational accelerator hint (e.g. "⌘S") at the
+   trailing edge of an item. aria-hidden so AT does not announce the glyph;
+   expose the real shortcut via aria-keyshortcuts on menubar_item.
+   repos/.../attributes/aria-keyshortcuts/index.md #}
+{% macro menubar_shortcut(text) %}
+<span aria-hidden="true" data-slot="menubar-shortcut" class="ml-auto text-xs tracking-widest text-muted-foreground">{{ text }}</span>
 {% endmacro %}

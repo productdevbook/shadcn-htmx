@@ -4,23 +4,41 @@
 
       type ComboboxArgs struct {
           ID, Name, Placeholder, Value, AriaLabel string
+          // Type: `list` is valid on 13 input types, not just text (default).
+          // repos/mdn/files/en-us/web/html/reference/elements/input/index.md:492
+          Type string
           Options []ComboboxOption
-          Required, Disabled bool
+          Required, Disabled, Readonly bool
+          // Constrain the free-typed value (datalist suggestions are not
+          // requirements). Pattern explained to AT via Title.
+          // repos/mdn/files/en-us/web/html/reference/elements/input/index.md:505
+          MaxLength, MinLength int
+          Pattern, Title       string
+          AriaLabelledby, AriaDescribedby string
           // For server-filter: pass HxGet/HxTrigger/HxTarget/HxSwap and
           // an empty Options slice; the datalist will be populated by
           // htmx response.
           HxGet, HxTrigger, HxTarget, HxSwap string
       }
-      type ComboboxOption struct{ Value, Label string }
+      // Disabled marks an option non-checkable.
+      // repos/mdn/files/en-us/web/html/reference/elements/option/index.md:45
+      type ComboboxOption struct{ Value, Label string; Disabled bool }
 */}}
 
 {{define "combobox"}}
 <span data-slot="combobox" class="inline-block w-full">
-  <input type="text" id="{{.ID}}" {{if .Name}}name="{{.Name}}"{{end}} list="{{.ID}}-list"
+  <input type="{{if .Type}}{{.Type}}{{else}}text{{end}}" id="{{.ID}}" {{if .Name}}name="{{.Name}}"{{end}} list="{{.ID}}-list"
          {{if .Value}}value="{{.Value}}"{{end}}
          {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
          {{if .Required}}required{{end}} {{if .Disabled}}disabled{{end}}
+         {{if .Readonly}}readonly{{end}}
+         {{if .MaxLength}}maxlength="{{.MaxLength}}"{{end}}
+         {{if .MinLength}}minlength="{{.MinLength}}"{{end}}
+         {{if .Pattern}}pattern="{{.Pattern}}"{{end}}
+         {{if .Title}}title="{{.Title}}"{{end}}
          {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+         {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
          {{if .HxGet}}hx-get="{{.HxGet}}"{{end}}
          {{if .HxTrigger}}hx-trigger="{{.HxTrigger}}"{{end}}
          {{if .HxTarget}}hx-target="{{.HxTarget}}"{{end}}
@@ -28,11 +46,11 @@
          autocomplete="off"
          class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
   <datalist id="{{.ID}}-list" data-slot="combobox-list">
-    {{range .Options}}<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>{{end}}
+    {{range .Options}}<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}{{if .Disabled}} disabled{{end}}>{{end}}
   </datalist>
 </span>
 {{end}}
 
 {{define "combobox_option"}}
-<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>
+<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}{{if .Disabled}} disabled{{end}}>
 {{end}}

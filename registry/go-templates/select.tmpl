@@ -9,7 +9,7 @@
           Required, Disabled, Multiple bool
           Size int
           AriaLabel, AriaLabelledby, AriaDescribedby string
-          AriaInvalid, AriaRequired string
+          AriaInvalid, AriaErrormessage, AriaRequired string
           // The <option>s, pre-rendered.
           Body template.HTML
           Attrs map[string]string
@@ -32,6 +32,8 @@
           {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
           {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
           {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+          {{- /* Id of the visible error message; pair with AriaInvalid="true". aria-errormessage spec */}}
+          {{- if .AriaErrormessage}} aria-errormessage="{{.AriaErrormessage}}"{{end}}
           {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
           data-slot="select"
           {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}

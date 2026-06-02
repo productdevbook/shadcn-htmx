@@ -15,11 +15,15 @@
     )}}
 */}}
 
+{{/* .Attrs (htmlSafe) forwards hx-* / global attributes onto the <details>
+     so the native `toggle` event it fires can drive zero-JS lazy loading:
+     hx-trigger="toggle once" hx-get=...  (toggle event: HTMLElement;
+     hx-trigger accepts any DOM event). */}}
 {{define "collapsible"}}
 <details data-slot="collapsible"
          {{if .Disabled}}data-disabled="true"{{end}}
          {{if .Open}}open{{end}}
-         class="w-full{{if .Disabled}} pointer-events-none opacity-50{{end}}">
+         class="w-full{{if .Disabled}} pointer-events-none opacity-50{{end}}"{{with .Attrs}} {{.}}{{end}}>
   {{template "collapsible_trigger" (dict "Text" .Title)}}
   <div data-slot="collapsible-content" class="overflow-hidden pt-2 pb-1 text-sm">{{.Body}}</div>
 </details>

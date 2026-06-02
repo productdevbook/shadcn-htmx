@@ -26,6 +26,8 @@
           InputMode      string // none | text | decimal | numeric | tel | search | email | url
           EnterKeyHint   string // enter | done | go | next | previous | search | send
           Autocapitalize string // off | none | on | sentences | words | characters
+          Spellcheck     *bool  // tri-state spellcheck hint (enumerated global attr)
+          Autocorrect    string // "" | on | off  (enumerated global attr)
 
           // Autofill / completion
           Autocomplete string
@@ -87,6 +89,9 @@
        {{- if .EnterKeyHint}} enterkeyhint="{{.EnterKeyHint}}"{{end}}
        {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
        {{- if .Autocapitalize}} autocapitalize="{{.Autocapitalize}}"{{end}}
+       {{- /* spellcheck/autocorrect: enumerated global attrs — repos/mdn/files/en-us/web/html/reference/global_attributes/spellcheck/index.md */ -}}
+       {{- if .Spellcheck}} spellcheck="{{if deref .Spellcheck}}true{{else}}false{{end}}"{{end}}
+       {{- if .Autocorrect}} autocorrect="{{.Autocorrect}}"{{end}}
        {{- if .Autofocus}} autofocus{{end}}
        {{- if .List}} list="{{.List}}"{{end}}
        {{- if .Accept}} accept="{{.Accept}}"{{end}}

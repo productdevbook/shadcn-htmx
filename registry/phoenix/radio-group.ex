@@ -63,7 +63,12 @@ defmodule ShadcnHtmx.Components.RadioGroup do
 
   attr :rest, :global,
     include:
-      ~w(id checked disabled required form
+      # hx-* fire on the radio's change event (live filters, dependent panels).
+      #   repos/htmx/www/content/attributes/hx-trigger.md
+      # form: associate with a <form> rendered in a separate swap.
+      # autocomplete: control cross-load checked-state persistence ("off").
+      ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-vals hx-include
+         id checked disabled required form autocomplete
          aria-label aria-labelledby aria-describedby aria-invalid)
 
   def radio_group_item(assigns) do

@@ -59,3 +59,24 @@
     <p class="text-sm text-muted-foreground">3 unread comments.</p>
   </div>
 </div>
+
+<!-- As a landmark: <section> card named by its heading.
+     CardTitle is rendered as a real heading (h2) with an id, and the card
+     references it via aria-labelledby so the region landmark gets its name
+     from the visible title. A <section> with an accessible name is exposed
+     as role=region — prefer the semantic element over an explicit role.
+     See repos/mdn/.../elements/section/index.md:55
+         repos/mdn/.../roles/region_role/index.md:25,29 -->
+<section data-slot="card" aria-labelledby="card-title-billing"
+  class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm">
+  <div data-slot="card-header"
+    class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
+    <h2 data-slot="card-title" id="card-title-billing" class="leading-none font-semibold">Billing</h2>
+    <div data-slot="card-description" class="text-sm text-muted-foreground">
+      Manage your subscription and payment method.
+    </div>
+  </div>
+  <div data-slot="card-content" class="px-6">
+    <p class="text-sm">Your plan renews on the 1st of each month.</p>
+  </div>
+</section>

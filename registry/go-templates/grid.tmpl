@@ -33,6 +33,8 @@
          {{- if .AriaRowcount}} aria-rowcount="{{.AriaRowcount}}"{{end}}
          {{- if .AriaColcount}} aria-colcount="{{.AriaColcount}}"{{end}}
          {{- if .AriaReadonly}} aria-readonly="true"{{end}}
+         {{/* grid supports multi-selection: w3c.github.io/aria/#aria-multiselectable */}}
+         {{- if .AriaMultiselectable}} aria-multiselectable="true"{{end}}
          class="w-full caption-bottom border-separate border-spacing-0 text-sm">
     {{.Body}}
   </table>
@@ -48,6 +50,8 @@
 {{define "grid_row"}}
 <tr data-slot="grid-row"
     {{- if .AriaRowindex}} aria-rowindex="{{.AriaRowindex}}"{{end}}
+    {{/* contiguous-columns form: aria-colindex once on the row. w3c.github.io/aria/#aria-colindex */}}
+    {{- if .AriaColindex}} aria-colindex="{{.AriaColindex}}"{{end}}
     {{- if .Selected}} aria-selected="true"{{end}}
     class="transition-colors">{{.Body}}</tr>
 {{end}}

@@ -15,6 +15,9 @@
           ID, Title, Description string
           Body                   template.HTML // already-rendered footer HTML
           Open                   bool
+          // APG: name the dialog via aria-label when there is no visible Title
+          // (alertdialog-pattern.html:47-57). Suppresses the id-title fallback.
+          AriaLabel string
       }
 
       tpl.ExecuteTemplate(w, "alert_dialog", map[string]any{
@@ -38,7 +41,11 @@
         role="alertdialog"
         class="{{$base}}"
         data-slot="alert-dialog"
-        aria-labelledby="{{.ID}}-title"
+        {{- /* APG (alertdialog-pattern.html:47-57): name via aria-label OR
+               aria-labelledby. An explicit .AriaLabel suppresses the id-title
+               fallback so the dialog isn't named twice. */}}
+        {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"
+        {{- else}} aria-labelledby="{{.ID}}-title"{{end}}
         aria-describedby="{{.ID}}-description">
   {{- if or .Title .Description}}
   <div data-slot="alert-dialog-header" class="flex flex-col gap-1.5 text-left">

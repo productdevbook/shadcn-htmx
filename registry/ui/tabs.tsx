@@ -112,14 +112,19 @@ export function Tabs(props: TabsProps) {
 type TabsListProps = PropsWithChildren<{
   class?: ClassValue
   ariaLabel?: string
+  // APG prefers aria-labelledby pointing at a visible heading when one exists;
+  // aria-label is the fallback for an unlabelled tablist. See
+  // repos/aria-practices/content/patterns/tabs/tabs-pattern.html:129-130.
+  ariaLabelledby?: string
 }>
 
 export function TabsList(props: TabsListProps) {
-  const { class: className, ariaLabel, children } = props
+  const { class: className, ariaLabel, ariaLabelledby, children } = props
   return (
     <div
       role="tablist"
       aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
       data-slot="tabs-list"
       class={cn(
         "inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground",
@@ -136,15 +141,27 @@ type TabsTriggerProps = PropsWithChildren<{
   value: string
   disabled?: boolean
   class?: ClassValue
+  // htmx and arbitrary attributes ride along onto the underlying tab button,
+  // mirroring TabsContent. This is the idiomatic host for the htmx lazy-load
+  // pattern (hx-get + hx-trigger="click once" to fetch the panel only when the
+  // tab is activated), since panels render `hidden` so hooks there would fire
+  // on page load. See repos/htmx/www/src/content/patterns/01-loading/03-lazy-load.md.
+  [key: `hx-${string}`]: any
+  [key: `data-${string}`]: any
+  [key: `aria-${string}`]: any
 }>
 
 export function TabsTrigger(props: TabsTriggerProps) {
-  const { value, disabled, class: className, children } = props
+  const { value, disabled, class: className, children, ...rest } = props as any
   // aria-selected and tabindex are set at render time based on the parent
   // Tabs' active value. site.js maintains them on switch. Both renderings
   // (server + client) use the same source of truth.
   return (
     <button
+      // rest is spread first so the fixed contract attributes below (type,
+      // role, data-slot, data-tab-trigger, class) always win and can't be
+      // clobbered by passthrough.
+      {...rest}
       type="button"
       role="tab"
       data-slot="tabs-trigger"

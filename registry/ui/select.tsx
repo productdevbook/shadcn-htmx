@@ -45,6 +45,9 @@ type SelectProps = PropsWithChildren<{
   ariaLabelledby?: string
   ariaDescribedby?: string
   ariaInvalid?: boolean
+  // Id of the visible error message element; pair with ariaInvalid="true".
+  // See repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-errormessage/index.md
+  ariaErrormessage?: string
   ariaRequired?: boolean
 
   // htmx — fire when the user picks a new option.
@@ -67,6 +70,7 @@ export function Select(props: SelectProps) {
     ariaLabelledby,
     ariaDescribedby,
     ariaInvalid,
+    ariaErrormessage,
     ariaRequired,
     ...rest
   } = props
@@ -78,6 +82,7 @@ export function Select(props: SelectProps) {
         aria-labelledby={ariaLabelledby}
         aria-describedby={ariaDescribedby}
         aria-invalid={ariaInvalid === undefined ? undefined : String(ariaInvalid)}
+        aria-errormessage={ariaErrormessage}
         aria-required={ariaRequired === undefined ? undefined : String(ariaRequired)}
         data-slot="select"
         {...rest}

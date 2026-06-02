@@ -4,6 +4,10 @@
   Mirrors registry/ui/switch.tsx. Native <input type="checkbox" role="switch">
   + a thumb span on top, all styled with Tailwind utilities. No JS required.
 
+  The <input> accepts any valid checkbox attribute. To focus a switch on
+  initial page load (one per document) add the global `autofocus` attribute.
+  See repos/mdn/files/en-us/web/html/reference/elements/input/index.md:410-423
+
   TRACK base:  relative inline-flex shrink-0 items-center rounded-full border
                border-transparent shadow-xs transition-all align-middle
   INPUT base:  peer absolute inset-0 size-full cursor-pointer appearance-none

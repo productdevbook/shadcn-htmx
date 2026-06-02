@@ -2,6 +2,16 @@
   shadcn-htmx — raw HTML table snippet.
   Semantic <table> with <thead>/<tbody>; sortable column has aria-sort
   and a clickable button inside the <th>.
+
+  Native <th>/<td> attributes you can add as needed (no extra markup required):
+    - colspan / rowspan : span cells across columns/rows for grouped or merged
+      headers and merged data cells (MDN web/html/reference/elements/th & td).
+    - id + headers      : for complex tables where scope alone is insufficient,
+      give each header an id and list them (space-separated) in each cell's
+      headers attribute to explicitly associate data cells with their headers
+      (MDN: "Associate data cells with header cells").
+    - abbr (on <th>)    : a short label assistive tech announces in place of a
+      verbose column title (non-deprecated on <th>; do not use on <td>).
 -->
 
 <div class="relative w-full overflow-auto">

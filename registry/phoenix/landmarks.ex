@@ -8,8 +8,8 @@ defmodule ShadcnHtmx.Components.Landmarks do
 
       <header>  -> banner          <aside>    -> complementary
       <nav>     -> navigation       <section>  -> region (only when labelled)
-      <search>  -> search           <footer>   -> contentinfo
-      <main>    -> main
+      <search>  -> search           <form>     -> form   (only when labelled)
+      <main>    -> main             <footer>   -> contentinfo
 
   Labelling rules from the APG (pass `aria-label` / `aria-labelledby` where the
   practice calls for one — always for region; once there is more than one
@@ -41,6 +41,11 @@ defmodule ShadcnHtmx.Components.Landmarks do
 
       <.complementary aria-label="Related">…</.complementary>
       <.region_landmark aria-label="Usage this month">…</.region_landmark>
+
+      <.form_landmark aria-label="Contact">
+        <form action="/contact" method="post">…</form>
+      </.form_landmark>
+
       <.content_info>© 2026 Acme</.content_info>
   """
 
@@ -134,6 +139,26 @@ defmodule ShadcnHtmx.Components.Landmarks do
     >
       {render_slot(@inner_block)}
     </section>
+    """
+  end
+
+  # form — <form> WITH a label (a form landmark must be named, like region).
+  # Use search_landmark instead when the form performs a search. action/method
+  # and hx-* forward through :global onto the native <form>.
+  #   MDN repos/mdn/files/en-us/web/accessibility/aria/reference/roles/form_role/index.md:12,31,33,101
+  attr :class, :string, default: nil
+  attr :rest, :global, include: ~w(aria-label aria-labelledby action method)
+  slot :inner_block, required: true
+
+  def form_landmark(assigns) do
+    ~H"""
+    <form
+      data-slot="landmark-form"
+      class={["rounded-lg border bg-card p-4 text-card-foreground", @class]}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </form>
     """
   end
 

@@ -31,6 +31,8 @@
     enterkeyhint=none,
     autocomplete=none,
     autocapitalize=none,
+    spellcheck=none,
+    autocorrect=none,
     autofocus=false,
     list=none,
     accept=none,
@@ -69,6 +71,9 @@ flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 
        {%- if enterkeyhint %} enterkeyhint="{{ enterkeyhint }}"{% endif %}
        {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}
        {%- if autocapitalize %} autocapitalize="{{ autocapitalize }}"{% endif %}
+       {# spellcheck/autocorrect: enumerated global attrs — see repos/mdn/files/en-us/web/html/reference/global_attributes/spellcheck/index.md #}
+       {%- if spellcheck is not none %} spellcheck="{{ 'true' if spellcheck else 'false' }}"{% endif %}
+       {%- if autocorrect %} autocorrect="{{ autocorrect }}"{% endif %}
        {%- if autofocus %} autofocus{% endif %}
        {%- if list %} list="{{ list }}"{% endif %}
        {%- if accept %} accept="{{ accept }}"{% endif %}

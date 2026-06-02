@@ -29,6 +29,10 @@ defmodule ShadcnHtmx.Components.Menubar do
   use Phoenix.Component
 
   attr :aria_label, :string, default: nil
+  # aria_labelledby: id of a visible element naming the menubar. APG prefers
+  # aria-labelledby over aria-label when a visible label exists
+  # (menu-and-menubar-pattern.html:220-222; MDN menubar_role:32).
+  attr :aria_labelledby, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -39,6 +43,7 @@ defmodule ShadcnHtmx.Components.Menubar do
       role="menubar"
       data-slot="menubar"
       aria-label={@aria_label}
+      aria-labelledby={@aria_labelledby}
       class={[
         "inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs",
         @class
@@ -182,6 +187,27 @@ defmodule ShadcnHtmx.Components.Menubar do
     >
       {render_slot(@inner_block)}
     </div>
+    """
+  end
+
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  @doc """
+  Presentational accelerator hint (e.g. "⌘S") at the trailing edge of an
+  item. aria-hidden so AT does not announce the glyph; expose the real
+  shortcut via aria-keyshortcuts on menubar_item.
+  repos/.../attributes/aria-keyshortcuts/index.md
+  """
+  def menubar_shortcut(assigns) do
+    ~H"""
+    <span
+      aria-hidden="true"
+      data-slot="menubar-shortcut"
+      class={["ml-auto text-xs tracking-widest text-muted-foreground", @class]}
+    >
+      {render_slot(@inner_block)}
+    </span>
     """
   end
 end

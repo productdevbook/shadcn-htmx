@@ -6,13 +6,17 @@
 </div>
 {{end}}
 
+{{/* Native <th> attrs — colspan/rowspan (spanning), id/headers (explicit header
+     association for complex tables), abbr (short spoken label, non-deprecated on
+     <th>). MDN web/html/reference/elements/th. Emitted inline so html/template's
+     context-aware autoescaper treats each as a real HTML attribute. */}}
 {{define "table_head"}}
 {{- $base := "h-10 px-2 text-left align-middle font-medium text-muted-foreground" -}}
 {{if .Sort}}
-<th scope="col" data-slot="table-head" data-sortable="true" aria-sort="{{.Sort}}" class="{{$base}}">
+<th scope="col"{{if .Colspan}} colspan="{{.Colspan}}"{{end}}{{if .Rowspan}} rowspan="{{.Rowspan}}"{{end}}{{if .Id}} id="{{.Id}}"{{end}}{{if .Headers}} headers="{{.Headers}}"{{end}}{{if .Abbr}} abbr="{{.Abbr}}"{{end}} data-slot="table-head" data-sortable="true" aria-sort="{{.Sort}}" class="{{$base}}">
   <button type="button" class="inline-flex h-7 items-center gap-1.5 rounded-md px-2 -ml-2 hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" hx-get="{{.HxGet}}" hx-target="{{.HxTarget}}" hx-swap="outerHTML">{{.Label}}{{if eq .Sort "ascending"}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>{{else if eq .Sort "descending"}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>{{else}}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 opacity-30" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>{{end}}</button>
 </th>
 {{else}}
-<th scope="col" data-slot="table-head" class="{{$base}}">{{.Label}}</th>
+<th scope="col"{{if .Colspan}} colspan="{{.Colspan}}"{{end}}{{if .Rowspan}} rowspan="{{.Rowspan}}"{{end}}{{if .Id}} id="{{.Id}}"{{end}}{{if .Headers}} headers="{{.Headers}}"{{end}}{{if .Abbr}} abbr="{{.Abbr}}"{{end}} data-slot="table-head" class="{{$base}}">{{.Label}}</th>
 {{end}}
 {{end}}

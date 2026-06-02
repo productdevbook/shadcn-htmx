@@ -41,6 +41,15 @@ defmodule ShadcnHtmx.Components.Table do
   attr :scope, :string, default: "col"
   attr :sort, :string, default: nil, values: [nil, "none", "ascending", "descending"]
   attr :class, :string, default: nil
+  # colspan/rowspan: native <th> spanning attrs (MDN web/html/reference/elements/th).
+  attr :colspan, :integer, default: nil
+  attr :rowspan, :integer, default: nil
+  # id/headers: explicit header association for complex tables.
+  attr :id, :string, default: nil
+  attr :headers, :string, default: nil
+  # abbr: short spoken label AT announces in place of verbose header text
+  # (non-deprecated on <th>).
+  attr :abbr, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
 
@@ -52,6 +61,11 @@ defmodule ShadcnHtmx.Components.Table do
       ~H"""
       <th
         scope={@scope}
+        colspan={@colspan}
+        rowspan={@rowspan}
+        id={@id}
+        headers={@headers}
+        abbr={@abbr}
         data-slot="table-head"
         data-sortable="true"
         aria-sort={@sort}
@@ -77,7 +91,16 @@ defmodule ShadcnHtmx.Components.Table do
       """
     else
       ~H"""
-      <th scope={@scope} data-slot="table-head" class={[@base, @class]}>
+      <th
+        scope={@scope}
+        colspan={@colspan}
+        rowspan={@rowspan}
+        id={@id}
+        headers={@headers}
+        abbr={@abbr}
+        data-slot="table-head"
+        class={[@base, @class]}
+      >
         {render_slot(@inner_block)}
       </th>
       """
@@ -85,12 +108,24 @@ defmodule ShadcnHtmx.Components.Table do
   end
 
   attr :colspan, :integer, default: nil
+  # rowspan: native <td> spanning attr (MDN web/html/reference/elements/td).
+  attr :rowspan, :integer, default: nil
+  # id/headers: explicit header association for complex tables.
+  attr :id, :string, default: nil
+  attr :headers, :string, default: nil
   attr :class, :string, default: nil
   slot :inner_block, required: true
 
   def table_cell(assigns) do
     ~H"""
-    <td colspan={@colspan} data-slot="table-cell" class={["p-2 align-middle", @class]}>
+    <td
+      colspan={@colspan}
+      rowspan={@rowspan}
+      id={@id}
+      headers={@headers}
+      data-slot="table-cell"
+      class={["p-2 align-middle", @class]}
+    >
       {render_slot(@inner_block)}
     </td>
     """

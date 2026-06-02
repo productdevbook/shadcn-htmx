@@ -36,8 +36,18 @@
          class="w-full caption-bottom border-collapse text-sm{{if .Class}} {{.Class}}{{end}}">
     <thead>
       <tr role="row" class="border-b">
+        {{- /* A column is either a plain label string (unchanged) or a map
+               (dict "Label" "Date" "Sort" "ascending") so a sortable column
+               can carry aria-sort on its header cell — APG Treegrid pattern:
+               "If the treegrid provides sort functions, aria-sort is set ...
+               on the header cell element for the sorted column."
+               repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html */}}
         {{- range .Columns}}
+        {{- if kindIs "map" .}}
+        <th role="columnheader" scope="col"{{if .Sort}} aria-sort="{{.Sort}}"{{end}} class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{.Label}}</th>
+        {{- else}}
         <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{.}}</th>
+        {{- end}}
         {{- end}}
       </tr>
     </thead>

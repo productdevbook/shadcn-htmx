@@ -27,13 +27,23 @@
 
 {% macro tree_close() %}</ul>{% endmacro %}
 
-{% macro tree_item_open(label="", value="", parent=false, expanded=none, selected=false, disabled=false, extra_class="", attrs={}) -%}
+{# current: "page" (or true → "page") marks the current-location node — APG
+   treeview-navigation example, distinct from `selected`.
+   level/posinset/setsize emit aria-level/-posinset/-setsize, REQUIRED only for
+   lazy-loaded (htmx) trees whose full node set is not yet in the DOM (APG
+   treeview pattern + MDN treeitem role); declared in the treeview-1b example. #}
+{% macro tree_item_open(label="", value="", parent=false, expanded=none, selected=false, current=none, level=none, posinset=none, setsize=none, disabled=false, extra_class="", attrs={}) -%}
 {%- set is_parent = parent or expanded is not none -%}
+{%- set aria_current = ('page' if current is sameas true else (none if current is sameas false else current)) -%}
 <li role="treeitem" data-slot="tree-item"
     {%- if value %} data-value="{{ value }}"{% endif %}
     tabindex="-1"
     {%- if is_parent %} aria-expanded="{{ 'true' if expanded else 'false' }}"{% endif %}
     aria-selected="{{ 'true' if selected else 'false' }}"
+    {%- if aria_current is not none %} aria-current="{{ aria_current }}"{% endif %}
+    {%- if level is not none %} aria-level="{{ level }}"{% endif %}
+    {%- if posinset is not none %} aria-posinset="{{ posinset }}"{% endif %}
+    {%- if setsize is not none %} aria-setsize="{{ setsize }}"{% endif %}
     {%- if disabled %} aria-disabled="true"{% endif %}
     {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
     class="{{ extra_class }}">

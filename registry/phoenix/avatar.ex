@@ -24,6 +24,12 @@ defmodule ShadcnHtmx.Components.Avatar do
   attr :fallback, :string, default: nil
   attr :size, :string, default: "default", values: ~w(sm default lg)
   attr :"aria-label", :string, default: nil
+  # MDN <img>: loading (lazy off-screen), referrerpolicy (3rd-party hosts),
+  # srcset/sizes (retina 2x). All optional, forwarded to the inner <img>.
+  attr :loading, :string, default: nil
+  attr :referrerpolicy, :string, default: nil
+  attr :srcset, :string, default: nil
+  attr :sizes, :string, default: nil
   attr :class, :string, default: nil
 
   def avatar(assigns) do
@@ -53,7 +59,11 @@ defmodule ShadcnHtmx.Components.Avatar do
       <img
         :if={@src}
         src={@src}
+        srcset={@srcset}
+        sizes={@sizes}
         alt={@alt || ""}
+        loading={@loading}
+        referrerpolicy={@referrerpolicy}
         data-slot="avatar-image"
         onerror="this.style.display='none'"
         class="absolute inset-0 aspect-square size-full object-cover"

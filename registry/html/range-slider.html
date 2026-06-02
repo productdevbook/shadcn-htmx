@@ -18,8 +18,11 @@
       class="relative flex h-4 w-full touch-none items-center select-none">
   <span class="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden="true"></span>
   <span class="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary [left:var(--range-min,0%)] [right:calc(100%-var(--range-max,100%))]" aria-hidden="true"></span>
+  <!-- list: optional native tick marks via a <datalist> (MDN range ref,
+       "Adding tick marks"). One datalist applies to both thumbs since they
+       share min/max/step. Remove list="ticks" + the <datalist> to omit. -->
   <input type="range" data-range="min" name="min" value="20" min="0" max="100"
-         aria-label="Minimum"
+         list="ticks" aria-label="Minimum"
          class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
                 [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
                 [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
@@ -28,7 +31,7 @@
                 focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
                 disabled:cursor-not-allowed">
   <input type="range" data-range="max" name="max" value="80" min="0" max="100"
-         aria-label="Maximum"
+         list="ticks" aria-label="Maximum"
          class="pointer-events-none absolute inset-x-0 top-1/2 m-0 h-4 w-full -translate-y-1/2 cursor-pointer appearance-none bg-transparent outline-none
                 [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:bg-transparent
                 [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:bg-transparent
@@ -36,6 +39,13 @@
                 [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
                 focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 focus-visible:[&::-moz-range-thumb]:shadow-[0_0_0_3px_color-mix(in_oklch,var(--color-ring)_50%,transparent)]
                 disabled:cursor-not-allowed">
+  <datalist id="ticks">
+    <option value="0"></option>
+    <option value="25"></option>
+    <option value="50"></option>
+    <option value="75"></option>
+    <option value="100"></option>
+  </datalist>
 </span>
 
 <script>

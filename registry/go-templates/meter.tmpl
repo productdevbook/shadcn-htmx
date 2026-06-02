@@ -21,6 +21,8 @@
 {{- $text := or .Text (printf "%v / %v" $value $max) -}}
 <meter class="{{$base}}{{if .Class}} {{.Class}}{{end}}"
        {{- if .ID}} id="{{.ID}}"{{end}}
+       {{- /* title: spec-sanctioned way to convey units, e.g. "gigabytes" */}}
+       {{- if .Title}} title="{{.Title}}"{{end}}
        value="{{$value}}" min="{{$min}}" max="{{$max}}"
        {{- if .Low}} low="{{.Low}}"{{end}}
        {{- if .High}} high="{{.High}}"{{end}}

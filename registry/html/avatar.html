@@ -5,12 +5,15 @@
   hides a broken image so the fallback shows through.
 -->
 
-<!-- With image -->
+<!-- With image. Optional <img> attrs (MDN): loading="lazy" defers off-screen
+     fetches; referrerpolicy avoids leaking the page URL to 3rd-party hosts;
+     srcset with an "x" descriptor serves a sharper 2x source on retina. -->
 <span data-slot="avatar" data-size="default"
   class="group/avatar relative inline-flex shrink-0 overflow-hidden rounded-full select-none size-8">
   <span data-slot="avatar-fallback"
     class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">MK</span>
-  <img src="/users/mk.jpg" alt="Mehmet K" data-slot="avatar-image"
+  <img src="/users/mk.jpg" srcset="/users/mk@2x.jpg 2x" alt="Mehmet K" data-slot="avatar-image"
+       loading="lazy" referrerpolicy="no-referrer"
        onerror="this.style.display='none'"
        class="absolute inset-0 aspect-square size-full object-cover">
 </span>

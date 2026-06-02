@@ -32,10 +32,12 @@ defmodule ShadcnHtmx.Components.Meter do
   attr :text, :string, default: nil
   attr :class, :string, default: nil
 
+  # title is the spec-sanctioned way to convey units on a meter, e.g.
+  # title="gigabytes" (WHATWG HTML: <meter> has no units attribute).
   attr :rest, :global,
     include:
       ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-vals hx-include
-         id aria-label aria-labelledby aria-describedby)
+         id title aria-label aria-labelledby aria-describedby)
 
   def meter(assigns) do
     assigns =

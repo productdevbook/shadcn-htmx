@@ -21,13 +21,16 @@
        {{ toolbar_group_close() }}
      {{ toolbar_close() }} #}
 
-{% macro toolbar_open(aria_label=none, aria_labelledby=none, orientation="horizontal", extra_class="", attrs={}) -%}
+{% macro toolbar_open(aria_label=none, aria_labelledby=none, aria_controls=none, orientation="horizontal", extra_class="", attrs={}) -%}
 <div role="toolbar"
      data-slot="toolbar"
      data-orientation="{{ orientation }}"
      aria-orientation="{{ orientation }}"
      {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
      {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     {# Id(s) of the element this toolbar operates on; APG sets aria-controls
+        on the role="toolbar" element (.../patterns/toolbar/examples/toolbar.html). #}
+     {%- if aria_controls %} aria-controls="{{ aria_controls }}"{% endif %}
      {%- for k, v in attrs.items() %} {{ k|replace('_','-') }}="{{ v }}"{% endfor %}
      class="group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch {{ extra_class }}">
 {%- endmacro %}

@@ -28,12 +28,16 @@ defmodule ShadcnHtmx.Components.DropdownMenu do
 
   def dropdown_trigger(assigns) do
     ~H"""
+    <%!-- menu-button pattern: aria-controls + aria-expanded advertise the menu
+          and its state. Initial state collapsed; site.js flips aria-expanded. --%>
     <button
       type="button"
       popovertarget={@menu_for}
       popovertargetaction="toggle"
       data-slot="dropdown-menu-trigger"
       aria-haspopup="menu"
+      aria-controls={@menu_for}
+      aria-expanded="false"
       class={@class}
       {@rest}
     >
@@ -44,6 +48,10 @@ defmodule ShadcnHtmx.Components.DropdownMenu do
 
   attr :id, :string, required: true
   attr :class, :string, default: nil
+  # role="menu" REQUIRES an accessible name: aria_labelledby (canonical, points
+  # at the trigger id) or aria_label for icon-only triggers. menu_role.
+  attr :aria_labelledby, :string, default: nil
+  attr :aria_label, :string, default: nil
   slot :inner_block, required: true
 
   def dropdown_menu(assigns) do
@@ -52,6 +60,8 @@ defmodule ShadcnHtmx.Components.DropdownMenu do
       id={@id}
       popover="auto"
       role="menu"
+      aria-labelledby={@aria_labelledby}
+      aria-label={@aria_label}
       data-slot="dropdown-menu"
       class={[
         "z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none",
@@ -90,12 +100,14 @@ defmodule ShadcnHtmx.Components.DropdownMenu do
     cond do
       assigns.href ->
         ~H"""
+        <%!-- menuitem_role: a disabled menuitem MUST set aria-disabled="true". --%>
         <a
           role="menuitem"
           tabindex="-1"
           href={@href}
           data-slot="dropdown-menu-item"
           data-disabled={@disabled && "true"}
+          aria-disabled={@disabled && "true"}
           class={[@base, @destr, @class]}
           {@rest}
         >
@@ -105,12 +117,14 @@ defmodule ShadcnHtmx.Components.DropdownMenu do
 
       true ->
         ~H"""
+        <%!-- menuitem_role: a disabled menuitem MUST set aria-disabled="true". --%>
         <button
           type="button"
           role="menuitem"
           tabindex="-1"
           data-slot="dropdown-menu-item"
           data-disabled={@disabled && "true"}
+          aria-disabled={@disabled && "true"}
           class={[@base, @destr, @class]}
           {@rest}
         >

@@ -24,6 +24,7 @@
     aria_labelledby=none,
     aria_describedby=none,
     aria_invalid=none,
+    aria_errormessage=none,
     aria_required=none,
     extra_class="",
     **attrs
@@ -45,6 +46,8 @@ peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded
           {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
           {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
           {%- if aria_invalid is not none %} aria-invalid="{{ aria_invalid|string|lower }}"{% endif %}
+          {#- Id of the visible error message; pair with aria_invalid=true. aria-errormessage spec #}
+          {%- if aria_errormessage %} aria-errormessage="{{ aria_errormessage }}"{% endif %}
           {%- if aria_required is not none %} aria-required="{{ aria_required|string|lower }}"{% endif %}
           data-slot="select"
           {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}

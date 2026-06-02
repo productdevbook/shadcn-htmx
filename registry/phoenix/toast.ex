@@ -38,6 +38,14 @@ defmodule ShadcnHtmx.Components.Toast do
     values: ~w(top-right top-left top-center bottom-right bottom-left bottom-center)
 
   attr :aria_label, :string, default: "Notifications"
+
+  # Politeness of the viewport's primed live region. Because the viewport is
+  # rendered once (empty) at page load, toasts swapped in later announce as
+  # *additions* to an existing live region — which is what gets polite
+  # (role=status) toasts read out at all.
+  # See repos/mdn/.../aria/guides/live_regions/.
+  attr :live, :string, default: "polite", values: ~w(polite assertive)
+
   attr :class, :string, default: nil
 
   def toast_viewport(assigns) do
@@ -48,6 +56,8 @@ defmodule ShadcnHtmx.Components.Toast do
       id={@id}
       role="region"
       aria-label={@aria_label}
+      aria-live={@live}
+      aria-atomic="false"
       data-slot="toast-viewport"
       data-position={@position}
       class={[
@@ -83,6 +93,13 @@ defmodule ShadcnHtmx.Components.Toast do
   attr :duration, :integer, default: 5000
   attr :live, :string, default: "polite", values: ~w(polite assertive)
   attr :show_close, :boolean, default: true
+
+  # Optional htmx attrs forwarded onto the close button so dismiss can notify
+  # the server (mark-read, etc.) while site.js still removes the node, e.g.
+  # close_hx={%{"hx-post" => "/notifications/123/read"}}.
+  # See repos/htmx/www/src/content/reference/01-attributes/.
+  attr :close_hx, :map, default: %{}
+
   attr :class, :string, default: nil
   attr :id, :string, default: nil
 
@@ -118,6 +135,7 @@ defmodule ShadcnHtmx.Components.Toast do
         type="button"
         data-toast-close="true"
         aria-label="Dismiss notification"
+        {@close_hx}
         class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md text-current opacity-60 transition-opacity hover:bg-current/10 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">

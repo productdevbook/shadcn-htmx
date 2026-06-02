@@ -74,3 +74,44 @@
     </svg>
   </button>
 </dialog>
+
+<!--
+  Native Invoker Commands variant — ZERO JavaScript.
+
+  The platform now opens/closes <dialog> declaratively: command="show-modal"
+  is the equivalent of .showModal(), command="close" of .close(), and
+  command="request-close" fires a cancelable `cancel` event first (so an
+  unsaved-changes guard can preventDefault() it) before close. commandfor
+  points at the dialog id. A button's value is copied into the dialog's
+  returnValue, so the `close` event can tell which control fired.
+  See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74,149-152
+       repos/mdn/files/en-us/web/html/reference/elements/dialog/index.md:55-71
+-->
+
+<button type="button" command="show-modal" commandfor="confirm-delete-native"
+        aria-haspopup="dialog"
+        class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+  Delete item
+</button>
+
+<dialog id="confirm-delete-native"
+        data-slot="dialog"
+        aria-labelledby="confirm-delete-native-title"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm">
+  <div data-slot="dialog-header" class="flex flex-col gap-1.5 text-left">
+    <h2 id="confirm-delete-native-title" data-slot="dialog-title"
+        class="text-lg leading-none font-semibold">Delete item?</h2>
+  </div>
+  <div data-slot="dialog-footer"
+       class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <!-- value="cancel" / value="confirm" land in dialog.returnValue -->
+    <button type="button" command="request-close" commandfor="confirm-delete-native" value="cancel"
+            class="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+      Cancel
+    </button>
+    <button type="button" command="close" commandfor="confirm-delete-native" value="confirm"
+            class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+      Delete
+    </button>
+  </div>
+</dialog>

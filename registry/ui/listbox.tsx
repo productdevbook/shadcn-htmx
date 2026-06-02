@@ -79,6 +79,25 @@ type ListboxProps = PropsWithChildren<{
   multiple?: boolean
   // Disable the whole widget (sets aria-disabled; options become inert).
   disabled?: boolean
+  // Group-level requirement: "one option must be chosen". Sets aria-required
+  // on the container. The styled listbox submits via a hidden input, so the
+  // native `required` attribute cannot apply — aria-required is the only way
+  // to convey it. Mirrors RadioGroup's `required` -> aria-required.
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/roles/listbox_role/index.md (aria-required under States and Properties)
+  required?: boolean
+  // Mark the widget invalid for the WCAG error-identification pattern (e.g. a
+  // required listbox submitted empty, or server validation over htmx). Pair
+  // with ariaErrormessage pointing at a visible error element's id.
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-invalid/index.md (listbox in Associated roles)
+  ariaInvalid?: boolean
+  // Id of a visible element holding the error message. Pair with ariaInvalid.
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-errormessage/index.md (listbox in Associated roles)
+  ariaErrormessage?: string
+  // Locked-but-operable: the user cannot change the selection but the listbox
+  // stays focusable/navigable. Distinct from `disabled` (which makes options
+  // inert). Sets aria-readonly; mirrors Checkbox's `ariaReadonly`.
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-readonly/index.md (listbox in Associated roles)
+  ariaReadonly?: boolean
   // Layout axis. Default vertical; "horizontal" sets aria-orientation and
   // flips the arrow-key axis (Left/Right) in site.js.
   orientation?: ListboxOrientation
@@ -100,6 +119,10 @@ export function Listbox(props: ListboxProps) {
     ariaLabelledby,
     multiple,
     disabled,
+    required,
+    ariaInvalid,
+    ariaErrormessage,
+    ariaReadonly,
     orientation = "vertical",
     name,
     class: className,
@@ -135,6 +158,12 @@ export function Listbox(props: ListboxProps) {
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
         aria-disabled={disabled ? "true" : undefined}
+        // Group-level "one must be chosen" requirement (listbox supports aria-required).
+        aria-required={required ? "true" : undefined}
+        aria-invalid={ariaInvalid === undefined ? undefined : String(ariaInvalid)}
+        aria-errormessage={ariaErrormessage}
+        // Locked-but-operable, distinct from aria-disabled.
+        aria-readonly={ariaReadonly ? "true" : undefined}
         // The container is not in the tab order; focus lands on the options
         // (roving tabindex). tabindex="-1" lets us still programmatically
         // focus the list itself if needed without adding a tab stop.

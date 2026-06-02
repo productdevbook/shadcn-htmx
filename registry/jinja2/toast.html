@@ -11,6 +11,7 @@
     id="toast-viewport",
     position="bottom-right",
     aria_label="Notifications",
+    live="polite",
     extra_class=""
 ) %}
 {%- set positions = {
@@ -21,7 +22,13 @@
     "bottom-left":   "bottom-4 left-4 flex-col-reverse items-start",
     "bottom-center": "bottom-4 left-1/2 -translate-x-1/2 flex-col-reverse items-center"
 } -%}
+{# Primed live region: aria-live makes toasts swapped in announce as
+   *additions* to an already-existing region (polite/role=status alone on a
+   freshly-injected node is generally NOT read). aria-atomic=false so only
+   the newly-added toast is announced. aria-relevant defaults to
+   "additions text". See repos/mdn/.../aria/guides/live_regions/. #}
 <ol id="{{ id }}" role="region" aria-label="{{ aria_label }}"
+    aria-live="{{ live }}" aria-atomic="false"
     data-slot="toast-viewport" data-position="{{ position }}"
     class="pointer-events-none fixed z-50 flex w-full max-w-[420px] gap-2 p-2 {{ positions[position] }} {{ extra_class }}"></ol>
 {% endmacro %}
@@ -33,6 +40,7 @@
     duration=5000,
     live="polite",
     show_close=true,
+    close_hx={},
     id=none,
     extra_class=""
 ) %}
@@ -54,7 +62,11 @@ pointer-events-auto relative grid w-full grid-cols-[0_1fr_auto] items-start gap-
   <div data-slot="toast-title" class="col-start-2 line-clamp-1 font-medium tracking-tight">{{ title }}</div>
   {% if description %}<div data-slot="toast-description" class="col-start-2 text-sm text-muted-foreground">{{ description }}</div>{% endif %}
   {% if show_close %}
+  {# close_hx: optional htmx attrs (e.g. {"hx-post": "/notifications/123/read"})
+     forwarded onto the close button so dismiss can notify the server while
+     site.js still handles DOM removal. See repos/htmx/.../01-attributes/. #}
   <button type="button" data-toast-close="true" aria-label="Dismiss notification"
+    {%- for name, value in close_hx.items() %} {{ name }}="{{ value }}"{% endfor %}
     class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md text-current opacity-60 transition-opacity hover:bg-current/10 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
       <path d="M18 6 6 18" /><path d="m6 6 12 12" />

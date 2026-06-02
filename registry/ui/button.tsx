@@ -90,12 +90,30 @@ type ButtonProps = PropsWithChildren<{
   class?: ClassValue
   type?: "button" | "submit" | "reset"
   disabled?: boolean
+  // aria-disabled keeps the element focusable while its action is unavailable
+  // (so a screen reader can land on it and announce it), unlike native
+  // `disabled` which removes it from the a11y tree / tab order. Independent of
+  // `disabled`. See repos/aria-practices/content/patterns/button/button-pattern.html
+  // and repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-disabled/.
+  ariaDisabled?: boolean
   // APG: ARIA toggle button. When set, aria-pressed reflects the state and
-  // the label must stay constant across states.
-  pressed?: boolean
+  // the label must stay constant across states. aria-pressed is tri-state:
+  // "mixed" means the items the toggle controls don't all share one value.
+  // See repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-pressed/.
+  pressed?: boolean | "mixed"
   ariaLabel?: string
   ariaLabelledby?: string
   ariaDescribedby?: string
+
+  // Disclosure / menu / popover trigger contract. Lets a styled Button act as
+  // an expandable trigger (accordion/collapsible) or menu/listbox/dialog
+  // opener without hand-rolling a bare <button>.
+  // See repos/aria-practices/content/patterns/button/button-pattern.html
+  // and repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-expanded/
+  // and repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-haspopup/.
+  ariaExpanded?: boolean
+  ariaHaspopup?: boolean | "menu" | "listbox" | "tree" | "grid" | "dialog"
+  ariaControls?: string
 
   // Standard form attributes (MDN <button>). Useful for multi-submit-button
   // forms where one button posts to a different URL or method.
@@ -159,10 +177,14 @@ export function Button(props: ButtonProps) {
     class: className,
     type = "button",
     disabled,
+    ariaDisabled,
     pressed,
     ariaLabel,
     ariaLabelledby,
     ariaDescribedby,
+    ariaExpanded,
+    ariaHaspopup,
+    ariaControls,
     asChild,
     ...rest
   } = props
@@ -182,10 +204,14 @@ export function Button(props: ButtonProps) {
       "data-slot": "button",
       "data-variant": variant ?? "default",
       "data-size": size ?? "default",
+      "aria-disabled": ariaDisabled ? "true" : undefined,
       "aria-pressed": pressed === undefined ? undefined : pressed,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledby,
       "aria-describedby": ariaDescribedby,
+      "aria-expanded": ariaExpanded === undefined ? undefined : ariaExpanded,
+      "aria-haspopup": ariaHaspopup === undefined ? undefined : ariaHaspopup,
+      "aria-controls": ariaControls,
     })
   }
 
@@ -194,10 +220,14 @@ export function Button(props: ButtonProps) {
       type={type}
       class={classes}
       disabled={disabled}
+      aria-disabled={ariaDisabled ? "true" : undefined}
       aria-pressed={pressed === undefined ? undefined : pressed}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
       aria-describedby={ariaDescribedby}
+      aria-expanded={ariaExpanded === undefined ? undefined : ariaExpanded}
+      aria-haspopup={ariaHaspopup === undefined ? undefined : ariaHaspopup}
+      aria-controls={ariaControls}
       data-slot="button"
       data-variant={variant ?? "default"}
       data-size={size ?? "default"}

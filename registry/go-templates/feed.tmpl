@@ -20,21 +20,28 @@
      class="flex flex-col gap-4 {{.Class}}">{{.Body}}</div>
 {{end}}
 
+{{/* Tabindex: 0 (default) or -1 — MDN's feed role allows each article to be
+     focusable "with tabindex of 0 or -1"; pass -1 for a roving-tabindex feed. */}}
 {{define "feed_article"}}
 {{- $setsize := or .Setsize -1 -}}
+{{- $tabindex := or .Tabindex 0 -}}
 <article {{if .ID}}id="{{.ID}}"{{end}}
-         role="article" data-slot="feed-article" tabindex="0"
+         role="article" data-slot="feed-article" tabindex="{{$tabindex}}"
          aria-posinset="{{.Posinset}}" aria-setsize="{{$setsize}}"
          aria-labelledby="{{.Labelledby}}"
          {{if .Describedby}}aria-describedby="{{.Describedby}}"{{end}}
          class="rounded-xl border bg-card p-5 text-card-foreground shadow-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none {{.Class}}">{{.Body}}</article>
 {{end}}
 
+{{/* Busy: aria-busy="true" on the in-flight placeholder while a batch loads;
+     the outerHTML swap clears it by replacing this element (APG: aria-busy must
+     be false once the operation completes). */}}
 {{define "feed_sentinel"}}
 {{- $trigger := or .Trigger "revealed" -}}
 <div {{if .ID}}id="{{.ID}}"{{end}}
      data-slot="feed-sentinel"
      {{if .Href}}hx-get="{{.Href}}"{{end}}
      hx-trigger="{{$trigger}}" hx-swap="outerHTML"
+     {{if .Busy}}aria-busy="true"{{end}}
      class="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground {{.Class}}">{{if .Body}}{{.Body}}{{else}}<span aria-hidden="true" class="size-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"></span>Loading more…{{end}}</div>
 {{end}}

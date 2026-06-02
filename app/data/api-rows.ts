@@ -44,6 +44,38 @@ const COMMON_ARIA: ApiRow[] = [
 
 export const BUTTON_PROPS: ApiRow[] = [
   {
+    prop: "ariaDisabled",
+    type: "boolean",
+    default: "false",
+    description: "Mark the button unavailable while keeping it focusable (stays in the tab order so a screen reader can land on it). Independent of disabled.",
+    source: { badge: "MDN", label: "aria-disabled", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-disabled" },
+  },
+  {
+    prop: "pressed",
+    type: ["boolean", '"mixed"'],
+    description: "Toggle-button state forwarded to aria-pressed. Tri-state: true, false, or \"mixed\" when the controlled items do not all share one value. Keep the label constant across states.",
+    source: { badge: "MDN", label: "aria-pressed", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" },
+  },
+  {
+    prop: "ariaExpanded",
+    type: "boolean",
+    description: "Disclosure state forwarded to aria-expanded for a trigger that shows/hides a panel or menu.",
+    source: { badge: "MDN", label: "aria-expanded", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded" },
+  },
+  {
+    prop: "ariaHaspopup",
+    type: ["boolean", '"menu"', '"listbox"', '"tree"', '"grid"', '"dialog"'],
+    description: "Announces that the button opens a popup, and of what kind, via aria-haspopup. true is equivalent to \"menu\".",
+    source: { badge: "MDN", label: "aria-haspopup", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-haspopup" },
+  },
+  {
+    prop: "ariaControls",
+    type: "string",
+    description: "Id of the element this button controls (e.g. the popup or panel it expands), forwarded to aria-controls.",
+    source: { badge: "MDN", label: "aria-controls", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls" },
+  },
+
+  {
     prop: "variant",
     type: ['"default"', '"secondary"', '"destructive"', '"outline"', '"ghost"', '"link"'],
     default: '"default"',
@@ -116,6 +148,9 @@ const FORM_FIELD_COMMON: ApiRow[] = [
 ]
 
 export const INPUT_PROPS: ApiRow[] = [
+  { prop: "spellcheck", type: "boolean", description: "Browser spellchecker hint (enumerated global attribute). Set false for fields holding PII, codes, usernames, or tokens — spellcheck content may be sent to a third party (\"spell-jacking\")." },
+  { prop: "autocorrect", type: ['"on"', '"off"'], description: "Autocorrect hint (enumerated global attribute). Disable for names, usernames, addresses, or coupon/API codes where OS autocorrect is harmful. password/email/url are always off per spec." },
+
   {
     prop: "type",
     type: ['"text"', '"email"', '"password"', '"tel"', '"url"', '"search"', '"number"', '"date"', '"datetime-local"', '"month"', '"time"', '"week"', '"color"', '"file"'],
@@ -138,6 +173,10 @@ export const INPUT_PROPS: ApiRow[] = [
 ]
 
 export const TEXTAREA_PROPS: ApiRow[] = [
+  { prop: "inputmode", type: '"none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url"', default: "—", description: "Hints which virtual keyboard the OS should show for this multi-line field (e.g. numeric/decimal). Enumerated global attribute, valid on textarea." },
+{ prop: "enterkeyhint", type: '"enter" | "done" | "go" | "next" | "previous" | "search" | "send"', default: "—", description: "Labels the soft-keyboard Enter key (e.g. send for a chat composer). Relevant when deciding whether Enter inserts a newline or submits." },
+{ prop: "ariaErrormessage", type: "string", default: "—", description: "Id of a visible error-message element describing the validation error. Meaningful only alongside ariaInvalid set to true." },
+
   { prop: "rows", type: "number", description: "Initial visible row count (native default 2)." },
   { prop: "cols", type: "number", description: "Visible width in characters." },
   { prop: "minlength / maxlength", type: "number", description: "Length bounds." },
@@ -150,12 +189,16 @@ export const TEXTAREA_PROPS: ApiRow[] = [
 ]
 
 export const LABEL_PROPS: ApiRow[] = [
+  { prop: "hx-*", type: "any", description: "Any htmx attribute. Forwarded onto the underlying <label> element (already supported via attribute passthrough in all 5 flavours).", source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" } },
+
   { prop: "htmlFor", type: "string", description: "Id of the associated input. Renders as <label for=\"...\"> — clicking the label focuses the input." },
   { prop: "id", type: "string", description: "Set when another control needs aria-labelledby on this." },
   CLASS_ROW,
 ]
 
 export const CHECKBOX_PROPS: ApiRow[] = [
+  { prop: "indeterminate", type: "boolean", description: "Render data-initial-indeterminate=\"true\" on the input so an on-mount script can set the IDL-only el.indeterminate (no HTML attribute exists for it per WHATWG HTML). Use for tri-state select-all rows." },
+
   { prop: "checked", type: "boolean", description: "Controlled checked state." },
   { prop: "defaultChecked", type: "boolean", description: "Initial checked state at render." },
   { prop: "indeterminate", type: "boolean", description: "Tri-state — set via JS DOM property after mount." },
@@ -166,6 +209,8 @@ export const CHECKBOX_PROPS: ApiRow[] = [
 ]
 
 export const SWITCH_PROPS: ApiRow[] = [
+  { prop: "autofocus", type: "boolean", description: "Focus this switch on initial page load (one per document)." },
+
   { prop: "size", type: ['"default"', '"sm"'], default: '"default"', description: "Visual size variant." },
   { prop: "checked", type: "boolean", description: "Controlled checked state." },
   { prop: "ariaReadonly", type: "boolean", description: "Read-only switch — focusable but non-toggleable." },
@@ -173,6 +218,10 @@ export const SWITCH_PROPS: ApiRow[] = [
 ]
 
 export const RADIO_GROUP_PROPS: ApiRow[] = [
+  { prop: "form", type: "string", description: "Associate the radio with a <form> by its id when rendered outside that form (common in SSR/htmx swaps).", source: { badge: "MDN", label: "<input> form", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#form" } },
+  { prop: "autocomplete", type: "string", description: "Control cross-load checked-state persistence. Pass \"off\" to stop the browser re-applying a prior selection on reload / back-forward.", source: { badge: "MDN", label: "input/radio autocomplete", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/radio" } },
+  HX_ROW,
+
   { prop: "name", type: "string", required: true, description: "Shared name attribute. All radios in the group must use it." },
   { prop: "defaultValue", type: "string", description: "Initially selected value." },
   { prop: "required", type: "boolean", description: "Set aria-required at the group level + native required on the first item." },
@@ -184,6 +233,8 @@ export const RADIO_GROUP_PROPS: ApiRow[] = [
 ]
 
 export const SELECT_PROPS: ApiRow[] = [
+  { prop: "ariaErrormessage", type: "string", description: "Id of a visible error message element. Pair with ariaInvalid=\"true\" so assistive tech announces why the field is invalid." },
+
   ...FORM_FIELD_COMMON.filter((r) => !["placeholder", "readonly"].includes(r.prop)),
   { prop: "multiple", type: "boolean", default: "false", description: "Allow multi-select (renders as a listbox)." },
   { prop: "size", type: "number", default: "1", description: "Number of visible rows (>= 2 forces listbox)." },
@@ -191,6 +242,8 @@ export const SELECT_PROPS: ApiRow[] = [
 ]
 
 export const SLIDER_PROPS: ApiRow[] = [
+  { prop: "list", type: "string", description: "Id of a <datalist> whose <option> values render tick marks on the track (e.g. temperature presets).", source: { badge: "MDN", label: "range tick marks", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range#adding_tick_marks" } },
+
   { prop: "min", type: "number", default: "0", description: "Minimum value." },
   { prop: "max", type: "number", default: "100", description: "Maximum value." },
   { prop: "step", type: "number", description: "Increment per arrow press." },
@@ -203,6 +256,11 @@ export const SLIDER_PROPS: ApiRow[] = [
 // ---- Display + Feedback ---------------------------------------------
 
 export const CARD_PROPS: ApiRow[] = [
+  { prop: "CardTitle.as", type: ['"div"', '"h1"', '"h2"', '"h3"', '"h4"', '"h5"', '"h6"'], default: '"div"', description: "Element CardTitle renders. Use a heading (h1-h6) so an article/section card has a child heading in the document outline.",
+    source: { badge: "MDN", label: "section element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section" } },
+  { prop: "CardTitle.id", type: "string", description: "Id on CardTitle. Point Card's ariaLabelledby at it to name a section/article card from its visible heading.",
+    source: { badge: "MDN", label: "region role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/region_role" } },
+
   { prop: "as", type: ['"div"', '"article"', '"section"', '"li"', '"aside"'], default: '"div"', description: "Semantic element. Use article for self-contained content." },
   { prop: "ariaLabelledby", type: "string", description: "Id of a CardTitle inside to give the landmark an accessible name." },
   { prop: "ariaLabel", type: "string", description: "Accessible name when there's no CardTitle." },
@@ -210,6 +268,11 @@ export const CARD_PROPS: ApiRow[] = [
 ]
 
 export const AVATAR_PROPS: ApiRow[] = [
+  { prop: "loading", type: '"eager" | "lazy"', default: "—", description: "Native <img> loading attribute, forwarded to the inner image. Use \"lazy\" to defer fetching avatars that are off-screen in long lists until they near the viewport. Only applies when src is set." },
+{ prop: "referrerpolicy", type: '"no-referrer" | "no-referrer-when-downgrade" | "origin" | "origin-when-cross-origin" | "same-origin" | "strict-origin" | "strict-origin-when-cross-origin" | "unsafe-url"', default: "—", description: "Native <img> referrerpolicy, forwarded to the inner image. Useful when src is a third-party host (Gravatar/OAuth/CDN); e.g. \"no-referrer\" avoids leaking the page URL. Only applies when src is set." },
+{ prop: "srcset", type: "string", default: "—", description: "Native <img> srcset, forwarded to the inner image. Primarily for the retina pixel-density case, e.g. \"avatar@2x.jpg 2x\"; src acts as the 1x fallback. Only applies when src is set." },
+{ prop: "sizes", type: "string", default: "—", description: "Native <img> sizes, forwarded to the inner image. Pair with a width-descriptor srcset; not needed for the common 2x density case. Only applies when src is set." },
+
   { prop: "src", type: "string", description: "Image URL. Omit for fallback-only avatar." },
   { prop: "alt", type: "string", description: "Image alt text. Empty for decorative." },
   { prop: "fallback", type: "string", description: "Text shown when src is missing or 404s (typically initials)." },
@@ -219,6 +282,9 @@ export const AVATAR_PROPS: ApiRow[] = [
 ]
 
 export const BADGE_PROPS: ApiRow[] = [
+  { prop: "target / rel / download / referrerpolicy / hreflang / type / ping", type: "string", description: "Anchor attributes forwarded to the underlying <a> when as=\"a\" (or via asChild). Use target=\"_blank\" (with rel=\"noopener\") for new-tab link badges, and download for download badges.", source: { badge: "MDN", label: "<a>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a" } },
+  HX_ROW,
+
   { prop: "variant", type: ['"default"', '"secondary"', '"destructive"', '"outline"', '"ghost"', '"link"'], default: '"default"', description: "Visual variant." },
   { prop: "as", type: ['"span"', '"a"', '"div"', '"button"'], default: '"span"', description: "Element to render. Defaults to span (or a if href provided)." },
   { prop: "href", type: "string", description: "When set, renders as <a> and adds hover state." },
@@ -235,6 +301,9 @@ export const SEPARATOR_PROPS: ApiRow[] = [
 ]
 
 export const ALERT_PROPS: ApiRow[] = [
+  { prop: "ariaLabelledby", type: "string", default: "—", description: "id of the AlertTitle (or other visible text) that names the live region. Some screen readers announce a status region's name before its contents; aria-labelledby wires that up. Forwarded as aria-labelledby on the alert div. Omitted when unset." },
+{ prop: "ariaLabel", type: "string", default: "—", description: "Literal accessible name for the live region when no visible label element exists. Forwarded as aria-label on the alert div. Prefer ariaLabelledby when an AlertTitle is present. Omitted when unset." },
+
   { prop: "variant", type: ['"default"', '"destructive"', '"success"', '"warning"', '"info"'], default: '"default"', description: "Colour variant." },
   { prop: "live", type: ['"off"', '"polite"', '"assertive"'], default: '"polite"', description: "Live-region politeness. polite = role=status, assertive = role=alert.",
     source: { badge: "MDN", label: "aria-live", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live" } },
@@ -244,6 +313,8 @@ export const ALERT_PROPS: ApiRow[] = [
 ]
 
 export const PROGRESS_PROPS: ApiRow[] = [
+  { prop: "hx-*", type: "any", description: "Any htmx attribute, forwarded onto the root progressbar element. Progress is the textbook htmx polling target: re-render the bar from the server on a recurring trigger, e.g. hx-get=\"/upload/status\" hx-trigger=\"every 2s\" hx-swap=\"outerHTML\".", source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" } }, { prop: "data-*", type: "any", description: "Any data-* attribute, forwarded onto the root progressbar element." },
+
   { prop: "value", type: "number", description: "Current value 0-max. Omit for indeterminate." },
   { prop: "min", type: "number", default: "0", description: "Minimum value." },
   { prop: "max", type: "number", default: "100", description: "Maximum value." },
@@ -253,6 +324,8 @@ export const PROGRESS_PROPS: ApiRow[] = [
 ]
 
 export const SKELETON_PROPS: ApiRow[] = [
+  { prop: "ariaLabelledby", type: "string", default: "—", description: "References the id of a visible label (e.g. a section heading) to name the status region. Per the status role spec, prefer this over aria-label when a name is already visible on the page. When provided it supersedes the default \"Loading\" aria-label, so the two are never emitted together." },
+
   { prop: "ariaLabel", type: "string", default: '"Loading"', description: "Announced by AT while content loads. Pass a specific label (\"Loading user profile\") so multiple skeletons aren't all just \"Loading\"." },
   CLASS_ROW,
 ]
@@ -265,6 +338,8 @@ export const TOAST_VIEWPORT_PROPS: ApiRow[] = [
 ]
 
 export const TOAST_PROPS: ApiRow[] = [
+  { prop: "closeHx", type: "object", description: "Optional htmx attributes (hx-get/post/put/patch/delete/target/swap/trigger/indicator/confirm/vals) forwarded onto the close button so dismissing also notifies the server (mark-read, analytics) while site.js still removes the node.", source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" } },
+
   { prop: "variant", type: ['"default"', '"destructive"', '"success"', '"warning"', '"info"'], default: '"default"', description: "Visual variant." },
   { prop: "duration", type: "number", default: "5000", description: "Auto-dismiss timeout in ms. 0 keeps it until user clicks the X." },
   { prop: "live", type: ['"polite"', '"assertive"'], default: '"polite"', description: "Live-region politeness." },
@@ -275,6 +350,11 @@ export const TOAST_PROPS: ApiRow[] = [
 // ---- Overlays --------------------------------------------------------
 
 export const DIALOG_PROPS: ApiRow[] = [
+  { prop: "DialogTrigger native", type: "boolean", default: "false", description: "Opt-in: render a native Invoker Commands button (command=\"show-modal\" commandfor={dialogFor}) that opens the dialog as a modal with zero JS — the declarative equivalent of .showModal(). The data-dialog-trigger + site.js path stays the default fallback.", source: { badge: "MDN", label: "button command/commandfor", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command" } },
+  { prop: "DialogClose command", type: ['"close"', '"request-close"'], description: "Opt-in native invoker close button. \"close\" = declarative .close(); \"request-close\" fires a cancelable cancel event first so an unsaved-changes guard can preventDefault() it. Without this prop, DialogClose keeps its data-dialog-close + site.js behaviour.", source: { badge: "MDN", label: "button command", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#command" } },
+  { prop: "DialogClose commandfor", type: "string", description: "Target dialog id for the native invoker close button. Defaults to the closest <dialog> ancestor; set it when the button lives outside the dialog. Only used when command is set." },
+  { prop: "DialogClose value", type: "string", description: "Button value. With command=\"close\"/\"request-close\" the platform copies it into HTMLDialogElement.returnValue, so the close event can tell which control closed the dialog (e.g. \"confirm\" vs \"cancel\").", source: { badge: "MDN", label: "button value -> returnValue", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#value" } },
+
   { prop: "id", type: "string", required: true, description: "Used by DialogTrigger's dialogFor prop to open this dialog." },
   { prop: "open", type: "boolean", default: "false", description: "Pre-open at initial render (for htmx-fetched dialogs)." },
   { prop: "closeOnBackdrop", type: "boolean", default: "true", description: "Click outside the dialog box closes it." },
@@ -287,6 +367,11 @@ export const DIALOG_PROPS: ApiRow[] = [
 ]
 
 export const POPOVER_PROPS: ApiRow[] = [
+  { prop: "role", type: "string", description: "ARIA role for the popover element (e.g. menu, listbox, dialog). The native popover attribute assigns no role; emitted only when provided.",
+    source: { badge: "MDN", label: "Popover accessibility", href: "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using#accessibility_features" } },
+  { prop: "ariaLabelledby", type: "string", description: "Forwarded as aria-labelledby to give the popover an accessible name from another element. Emitted only when provided." },
+  { prop: "ariaLabel", type: "string", description: "Forwarded as aria-label to give the popover an inline accessible name. Emitted only when provided." },
+
   { prop: "id", type: "string", required: true, description: "Used by PopoverTrigger's popoverTarget." },
   { prop: "mode", type: ['"auto"', '"manual"'], default: '"auto"', description: "auto = light dismiss + ESC. manual = only code can toggle.",
     source: { badge: "MDN", label: "popover attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover" } },
@@ -295,6 +380,9 @@ export const POPOVER_PROPS: ApiRow[] = [
 ]
 
 export const DROPDOWN_MENU_PROPS: ApiRow[] = [
+  { prop: "ariaLabelledBy", type: "string", description: "ID of the trigger (or other element) whose text names the menu. role=\"menu\" requires an accessible name; this is the canonical menu-button wiring. Emits aria-labelledby on the menu.", source: { label: "menu role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/menu_role", badge: "MDN" } },
+{ prop: "ariaLabel", type: "string", description: "Accessible name for the menu when there is no visible label to reference (e.g. an icon-only trigger). Emits aria-label on the menu.", source: { label: "menu role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/menu_role", badge: "MDN" } },
+
   { prop: "id", type: "string", required: true, description: "Matches DropdownMenuTrigger's menuFor." },
   { prop: "side", type: ['"top"', '"right"', '"bottom"', '"left"'], default: '"bottom"', description: "Placement relative to trigger." },
   CLASS_ROW,
@@ -311,6 +399,11 @@ export const TOOLTIP_PROPS: ApiRow[] = [
 // ---- Navigation -----------------------------------------------------
 
 export const TABS_PROPS: ApiRow[] = [
+  { prop: "ariaLabelledby", type: "string", description: "TabsList: id of a visible heading that labels the tablist. APG prefers this over ariaLabel when a visible label exists; use ariaLabel only when there is no visible label.",
+    source: { badge: "APG", label: "Tabs labelling rule", href: "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/#wai-ariaroles,states,andproperties" } },
+  { prop: "hx-* / data-* / aria-*", type: "string", description: "TabsTrigger: extra attributes forwarded onto the underlying tab button. The idiomatic host for the htmx lazy-load pattern (hx-get + hx-trigger=\"click once\") so a panel is fetched only when its tab is activated; fixed contract attributes (type, role, data-slot, data-tab-trigger, class) cannot be overridden.",
+    source: { badge: "htmx", label: "Lazy loading", href: "https://htmx.org/examples/lazy-load/" } },
+
   { prop: "id", type: "string", required: true, description: "Used to scope keyboard handlers + assign per-trigger ids." },
   { prop: "value", type: "string", required: true, description: "Initial active tab's value." },
   { prop: "orientation", type: ['"horizontal"', '"vertical"'], default: '"horizontal"', description: "Layout + aria-orientation + arrow-key axis." },
@@ -320,6 +413,19 @@ export const TABS_PROPS: ApiRow[] = [
 ]
 
 export const ACCORDION_PROPS: ApiRow[] = [
+  {
+    prop: "hx-*",
+    type: "any",
+    description: "Any htmx attribute. Forwarded onto the underlying element via the ...rest spread on AccordionItem (<details>), AccordionTrigger (<summary>), and AccordionContent (<div>).",
+    source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" },
+  },
+  {
+    prop: "...rest (toggle lazy-load)",
+    type: "any",
+    description: "Arbitrary global / hx-* attributes pass through to the rendered element. Because <details> fires a native toggle event just after open/close and hx-trigger accepts any DOM event, hx-trigger=\"toggle once\" hx-get=\"/panel\" on an item fetches its content only on first open — the canonical zero-JS lazy-load pattern.",
+    source: { badge: "MDN", label: "toggle event", href: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event" },
+  },
+
   { prop: "id", type: "string", required: true, description: "Used as the exclusive-group name for single-expand." },
   { prop: "type", type: ['"single"', '"multiple"'], default: '"multiple"', description: "single uses the new HTML <details name> for exclusive expansion.",
     source: { badge: "MDN", label: "<details name>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#name" } },
@@ -327,11 +433,23 @@ export const ACCORDION_PROPS: ApiRow[] = [
 ]
 
 export const PAGINATION_PROPS: ApiRow[] = [
+  { prop: "rel", type: "string", default: '"prev" / "next"', description: "Forwarded to the Previous/Next <a>. Defaults to the WHATWG sequence link types rel=\"prev\" / rel=\"next\"; overridable. Only emitted on the enabled anchor (dropped when disabled renders a <button>).", source: { badge: "WHATWG", label: "Link types: prev/next", href: "https://html.spec.whatwg.org/multipage/links.html#sequential-link-types" } },
+{ prop: "disabled", type: "boolean", default: "false", description: "Dead-ends Previous/Next at the first/last page. Drops href and renders a native <button disabled> (removed from tab order, activation suppressed) while keeping aria-disabled=\"true\" — aria-disabled alone does not block keyboard activation.", source: { badge: "MDN", label: "aria-disabled", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-disabled" } },
+
   { prop: "ariaLabel", type: "string", default: '"Pagination"', description: "Landmark name for the <nav>." },
   CLASS_ROW,
 ]
 
 export const TABLE_PROPS: ApiRow[] = [
+  { prop: "TableHead · colspan", type: "number", default: "—", description: "Number of columns the header cell spans. Maps to the native <th> colspan attribute. Use for grouped column headers (e.g. a header spanning two sub-columns)." },
+{ prop: "TableHead · rowspan", type: "number", default: "—", description: "Number of rows the header cell spans. Maps to the native <th> rowspan attribute. 0 spans to the end of the row group." },
+{ prop: "TableHead · id", type: "string", default: "—", description: "id for the header cell. Reference it from a cell's headers attribute to explicitly associate data cells with their headers in complex tables." },
+{ prop: "TableHead · headers", type: "string", default: "—", description: "Space-separated list of header cell ids this header is associated with. Used for multi-level headers where scope alone is insufficient." },
+{ prop: "TableHead · abbr", type: "string", default: "—", description: "Short alternative label assistive technologies may announce in place of a verbose column title. Native <th> abbr attribute (not for data cells)." },
+{ prop: "TableCell · rowspan", type: "number", default: "—", description: "Number of rows the data cell spans. Maps to the native <td> rowspan attribute. 0 spans to the end of the row group." },
+{ prop: "TableCell · id", type: "string", default: "—", description: "id for the data cell, so other cells can reference it via their headers attribute." },
+{ prop: "TableCell · headers", type: "string", default: "—", description: "Space-separated list of header cell ids that head this data cell. Use for complex tables where scope alone cannot convey the associations." },
+
   { prop: "wrapperClass", type: "string", description: "Tailwind classes appended to the overflow-x wrapper." },
   CLASS_ROW,
 ]
@@ -339,6 +457,13 @@ export const TABLE_PROPS: ApiRow[] = [
 // ---- New APG components (batch A) ----
 
 export const METER_PROPS: ApiRow[] = [
+  {
+    prop: "title",
+    type: "string",
+    description: "Free-form units hint, e.g. title=\"gigabytes\". Per WHATWG HTML, <meter> has no units attribute and the global title is the only standard way to convey units. Forwarded to the native element.",
+    source: { badge: "MDN", label: "<meter> global attributes", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter" },
+  },
+
   {
     prop: "value",
     type: "number",
@@ -383,6 +508,8 @@ export const METER_PROPS: ApiRow[] = [
 ]
 
 export const NUMBER_INPUT_PROPS: ApiRow[] = [
+  { prop: "autocomplete", type: "string", default: "—", description: "Browser autofill hint forwarded to the native input (a supported common attribute on input type=number), e.g. \"postal-code\" or \"transaction-amount\". MDN input/number Accessibility section." }, { prop: "ariaValuetext", type: "string", default: "—", description: "Human-readable value announced by screen readers when the raw number is not user-friendly (currency, units, formatted quantities). Rendered as aria-valuetext on the spinbutton input. APG spinbutton pattern." },
+
   {
     prop: "steppers",
     type: "boolean",
@@ -439,6 +566,19 @@ export const NUMBER_INPUT_PROPS: ApiRow[] = [
 
 export const BREADCRUMB_PROPS: ApiRow[] = [
   {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible heading that names the <nav> landmark (Breadcrumb root). When set, aria-label is not emitted so the landmark has a single name source. Use aria-label OR aria-labelledby, not both.",
+    source: { badge: "APG", label: "Breadcrumb pattern", href: "https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/" },
+  },
+  {
+    prop: "data-*",
+    type: "string",
+    description: "Global data-* attribute, forwarded onto the rendered element. Now also accepted on BreadcrumbSeparator and BreadcrumbEllipsis (e.g. a CSS/JS hook), matching the other subcomponents.",
+    source: { badge: "MDN", label: "data-* global attribute", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*" },
+  },
+
+  {
     prop: "ariaLabel",
     type: "string",
     default: '"Breadcrumb"',
@@ -461,6 +601,13 @@ export const BREADCRUMB_PROPS: ApiRow[] = [
 ]
 
 export const LINK_PROPS: ApiRow[] = [
+  {
+    prop: "ariaDescribedby",
+    type: "string",
+    description: "Id of an element describing the link (announced after its name) — e.g. a \"PDF, 2MB\" or \"opens in new tab\" note. Applied to both the native anchor and the role=link fallback.",
+    source: { badge: "MDN", label: "aria-describedby", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" },
+  },
+
   {
     prop: "href",
     type: "string",
@@ -511,6 +658,13 @@ export const LINK_PROPS: ApiRow[] = [
 
 export const COLLAPSIBLE_PROPS: ApiRow[] = [
   {
+    prop: "hx-trigger=\"toggle once\"",
+    type: "string",
+    description: "Lazy-load the disclosure's contents the first time it opens. The root <details> fires a native toggle event whenever its open/closed state changes, and hx-trigger accepts any DOM event — so pairing hx-trigger=\"toggle once\" with hx-get/hx-post on the root fetches heavy panel content on first open with zero JS. Forwarded onto the underlying <details> via the standard hx-* passthrough.",
+    source: { badge: "MDN", label: "details: toggle event", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#events" },
+  },
+
+  {
     prop: "open",
     type: "boolean",
     default: "false",
@@ -539,6 +693,8 @@ export const ALERT_DIALOG_PROPS: ApiRow[] = [
 ]
 
 export const RANGE_SLIDER_PROPS: ApiRow[] = [
+  { prop: "list", type: "string", description: "Id of a <datalist> rendering tick marks / snap points on the track. Applied to both thumbs since they share min/max/step.", source: { badge: "MDN", label: "<input type=range> list", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range#list" } },
+
   { prop: "min", type: "number", default: "0", description: "Track minimum (shared by both thumbs)." },
   { prop: "max", type: "number", default: "100", description: "Track maximum (shared by both thumbs)." },
   { prop: "step", type: "number", description: "Increment per arrow press, applied to both thumbs." },
@@ -562,6 +718,13 @@ export const RANGE_SLIDER_PROPS: ApiRow[] = [
 ]
 
 export const TOOLBAR_PROPS: ApiRow[] = [
+  {
+    prop: "ariaControls",
+    type: "string",
+    description: "Id(s) of the element the toolbar operates on, set as aria-controls on the role=\"toolbar\" container. Use for a formatting/editor toolbar to name the editor or region it acts on (e.g. a textarea), as in the canonical APG toolbar example.",
+    source: { badge: "APG", label: "Toolbar example (aria-controls on the toolbar)", href: "https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/examples/toolbar/" },
+  },
+
   {
     prop: "ariaLabel",
     type: "string",
@@ -590,6 +753,37 @@ export const TOOLBAR_PROPS: ApiRow[] = [
 // ---- New APG components (batch B) ----
 
 export const LISTBOX_PROPS: ApiRow[] = [
+  {
+    prop: "required",
+    type: "boolean",
+    default: "false",
+    description:
+      "Group-level requirement that one option must be chosen. Sets aria-required on the container. The styled listbox submits via a hidden input, so the native required attribute cannot apply; aria-required is the only way to convey it (mirrors RadioGroup).",
+    source: { badge: "MDN", label: "listbox role (aria-required)", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/listbox_role" },
+  },
+  {
+    prop: "ariaInvalid",
+    type: "boolean",
+    description:
+      "Mark the widget invalid for the WCAG error-identification pattern (e.g. a required listbox submitted empty, or server validation over htmx). Emits aria-invalid on the container. Pair with ariaErrormessage.",
+    source: { badge: "MDN", label: "aria-invalid", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" },
+  },
+  {
+    prop: "ariaErrormessage",
+    type: "string",
+    description:
+      "Id of a visible element holding the error message. Emits aria-errormessage on the container. Pair with ariaInvalid for the full WCAG error-identification pattern.",
+    source: { badge: "MDN", label: "aria-errormessage", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-errormessage" },
+  },
+  {
+    prop: "ariaReadonly",
+    type: "boolean",
+    default: "false",
+    description:
+      "Locked-but-operable: the user cannot change which options are selected but the listbox stays focusable and navigable. Sets aria-readonly. Distinct from disabled, which makes the options inert.",
+    source: { badge: "MDN", label: "aria-readonly", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-readonly" },
+  },
+
   {
     prop: "ariaLabel",
     type: "string",
@@ -639,6 +833,19 @@ export const LISTBOX_PROPS: ApiRow[] = [
 // (boolean), disabled (boolean), id, class — forwarded onto <li role="option">.
 
 export const MENUBAR_PROPS: ApiRow[] = [
+  {
+    prop: "ariaLabelledby",
+    type: "string",
+    description: "Id of a visible element (e.g. a heading) that names the menubar. APG prefers aria-labelledby over aria-label when a visible label exists (alternative to ariaLabel).",
+    source: { badge: "MDN", label: "menubar role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menubar_role" },
+  },
+  {
+    prop: "<MenubarShortcut>",
+    type: "Child",
+    description: "Presentational accelerator hint (e.g. \"⌘S\") rendered at the trailing edge of a MenubarItem. It is aria-hidden; expose the real shortcut to assistive tech by passing aria-keyshortcuts on the MenubarItem (forwarded onto the element).",
+    source: { badge: "MDN", label: "aria-keyshortcuts", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-keyshortcuts" },
+  },
+
   {
     prop: "ariaLabel",
     type: "string",
@@ -709,6 +916,35 @@ export const MENUBAR_ITEM_PROPS: ApiRow[] = [
 ]
 
 export const TREE_PROPS: ApiRow[] = [
+  {
+    prop: "<TreeItem> current",
+    type: ["true", "\"page\""],
+    description:
+      "Marks the node that represents the current page/location, emitting aria-current (\"page\" for the boolean form). Distinct from selected: current is where you ARE, selected is what an action targets. Primary for trees used as htmx navigation.",
+    source: { badge: "APG", label: "Tree View navigation example (aria-current)", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treeview/examples/treeview-navigation/" },
+  },
+  {
+    prop: "<TreeItem> level",
+    type: "number",
+    description:
+      "Emits aria-level (1-based depth). Required only for lazy-loaded (htmx) trees whose full node set is not yet in the DOM; static, fully rendered trees can omit it and let the browser compute level from the DOM.",
+    source: { badge: "MDN", label: "treeitem role (aria-level under dynamic loading)", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/treeitem_role" },
+  },
+  {
+    prop: "<TreeItem> posinset",
+    type: "number",
+    description:
+      "Emits aria-posinset (1-based position among its siblings). Required only for lazy-loaded (htmx) trees where the sibling set is not fully present in the DOM; otherwise the browser computes it.",
+    source: { badge: "MDN", label: "treeitem role (aria-posinset under dynamic loading)", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/treeitem_role" },
+  },
+  {
+    prop: "<TreeItem> setsize",
+    type: "number",
+    description:
+      "Emits aria-setsize (number of nodes in the sibling set). Required only for lazy-loaded (htmx) trees where siblings are not fully present in the DOM; otherwise the browser computes it.",
+    source: { badge: "MDN", label: "treeitem role (aria-setsize under dynamic loading)", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/treeitem_role" },
+  },
+
   {
     prop: "ariaLabel",
     type: "string",
@@ -789,6 +1025,23 @@ export const CAROUSEL_PROPS: ApiRow[] = [
 ]
 
 export const FEED_PROPS: ApiRow[] = [
+  // Add to FEED_ARTICLE_PROPS (before CLASS_ROW):
+{
+  prop: "tabindex",
+  type: "0 | -1",
+  default: "0",
+  description: "Article's tabindex. MDN's feed role allows each article to be focusable with 0 or -1; pass -1 to keep a long feed to a single Tab stop via a roving tabindex (only the active article stays in the Tab sequence, Page Up/Down moves between articles).",
+  source: { badge: "MDN", label: "feed role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/feed_role" },
+},
+// Add to FEED_SENTINEL_PROPS (before CLASS_ROW):
+{
+  prop: "busy",
+  type: "boolean",
+  default: "false",
+  description: "Sets aria-busy=\"true\" on the in-flight placeholder while a batch loads — the documented \"aria-busy rides on the sentinel\" contract. The outerHTML swap clears it by replacing this element with the response, so it never has to be reset to false manually.",
+  source: { badge: "APG", label: "aria-busy", href: "https://www.w3.org/WAI/ARIA/apg/patterns/feed/#wai-ariaroles,states,andproperties" },
+},
+
   {
     prop: "ariaLabel",
     type: "string",
@@ -869,6 +1122,19 @@ export const FEED_SENTINEL_PROPS: ApiRow[] = [
 
 export const GRID_PROPS: ApiRow[] = [
   {
+    prop: "ariaMultiselectable",
+    type: "boolean",
+    description: "Set on the grid when more than one cell/row can be selected. Pair with the selected prop on GridRow/GridCell; selectable-but-unselected nodes should then carry aria-selected=\"false\" so AT advertises that multiple selection is allowed.",
+    source: { badge: "MDN", label: "aria-multiselectable", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-multiselectable" },
+  },
+  {
+    prop: "ariaColindex",
+    type: "number",
+    description: "GridRow only. 1-based column index of the row's first cell. When the visible columns are contiguous, set this once on the row (instead of per cell) and browsers compute each cell's column number; use the per-cell ariaColindex form only when columns are non-contiguous.",
+    source: { badge: "MDN", label: "aria-colindex", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-colindex" },
+  },
+
+  {
     prop: "ariaLabel",
     type: "string",
     description: "Accessible name for the grid. Required when there is no visible labelling element (APG: a grid must be named).",
@@ -910,6 +1176,14 @@ export const GRID_PROPS: ApiRow[] = [
 ]
 
 export const TREEGRID_PROPS: ApiRow[] = [
+  {
+    prop: "columns",
+    type: "(string | { label: string; sort?: \"none\" | \"ascending\" | \"descending\"; class?: string })[]",
+    description:
+      "<Treegrid> only. Column headers. Each entry is a plain label string, or a descriptor object to mark a sortable column. A descriptor's sort is emitted as aria-sort on that <th role=\"columnheader\"> (per APG, aria-sort lives on the header cell, not the grid); any hx-*/data-*/aria-* keys on the descriptor forward onto the header so the sorted column can be re-fetched via htmx. Plain-string columns render exactly as before with no aria-sort.",
+    source: { badge: "APG", label: "Treegrid roles, states & properties (aria-sort)", href: "https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/#wai-ariaroles,states,andproperties" },
+  },
+
   {
     prop: "columns",
     type: "string[]",
@@ -981,6 +1255,8 @@ export const TREEGRID_PROPS: ApiRow[] = [
 ]
 
 export const SPLITTER_PROPS: ApiRow[] = [
+  { prop: "ariaValuetext", type: "string", default: "—", description: "Human-readable value announced by assistive tech in place of the bare aria-valuenow number on the divider (e.g. \"Files, 30%\"). Per MDN, a focusable role=separator may carry aria-valuetext when aria-valuenow alone is not optimal." },
+
   {
     prop: "orientation",
     type: ['"horizontal"', '"vertical"'],
@@ -1041,6 +1317,8 @@ export const SPLITTER_PROPS: ApiRow[] = [
 
 // ---- Landmarks (APG landmark practice) ----
 export const LANDMARKS_PROPS: ApiRow[] = [
+  { prop: "<FormLandmark>", type: "<form>", description: "Form landmark. A <form> exposes the form role only when it has an accessible name — always pass ariaLabel or ariaLabelledby (give each a unique label). Use <SearchLandmark> instead when the form performs a search. action/method/hx-* forward through to the native <form>.", source: { badge: "MDN", label: "form role", href: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/form_role" } },
+
   { prop: "<Banner>", type: "<header>", description: "Banner landmark — top-level only; one per page. A <header> nested in article/aside/main/nav/section is just a sectioning header.", source: { badge: "APG", label: "Banner landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/banner.html" } },
   { prop: "<NavLandmark>", type: "<nav>", description: "Navigation landmark. Give each a unique ariaLabel when a page has more than one nav.", source: { badge: "APG", label: "Navigation landmark", href: "https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/navigation.html" } },
   { prop: "<SearchLandmark>", type: "<search>", description: "Search landmark via the native <search> element wrapping a <form>; no role=\"search\" needed.", source: { badge: "MDN", label: "<search> element", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search" } },

@@ -146,6 +146,23 @@
   Mute
 </button>
 
+<!-- Toggle (tri-state) — aria-pressed="mixed" when the controlled items don't
+     all share one value (e.g. a Bold toggle over a mixed text selection).
+     See repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-pressed/ -->
+<button type="button" aria-pressed="mixed" aria-label="Bold"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+  Bold
+</button>
+
+<!-- Menu / disclosure trigger — aria-haspopup announces the popup kind;
+     aria-expanded + aria-controls wire the trigger to the controlled element.
+     See repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-haspopup/
+     and .../aria-expanded/ -->
+<button type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="actions-menu"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+  Actions
+</button>
+
 <!-- Aria-invalid (pairs the button to a failing form field via aria-describedby) -->
 <button type="submit" aria-invalid="true" aria-describedby="email-error"
   class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">

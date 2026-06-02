@@ -81,6 +81,11 @@ type ToolbarProps = PropsWithChildren<{
   // APG: a toolbar must be labelled via aria-label or aria-labelledby.
   ariaLabel?: string
   ariaLabelledby?: string
+  // Id(s) of the element this toolbar operates on (e.g. a formatting toolbar
+  // pointing at its editor textarea). The canonical APG example sets
+  // aria-controls on the role="toolbar" element itself.
+  // repos/aria-practices/content/patterns/toolbar/examples/toolbar.html
+  ariaControls?: string
   orientation?: ToolbarOrientation
   class?: ClassValue
   id?: string
@@ -94,6 +99,7 @@ export function Toolbar(props: ToolbarProps) {
   const {
     ariaLabel,
     ariaLabelledby,
+    ariaControls,
     orientation = "horizontal",
     class: className,
     children,
@@ -128,6 +134,7 @@ export function Toolbar(props: ToolbarProps) {
         aria-orientation={orientation}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
+        aria-controls={ariaControls}
         class={cn(containerBase, className)}
         {...rest}
       >

@@ -10,12 +10,23 @@
           Size     string // default | xs | sm | lg | icon | icon-xs | icon-sm | icon-lg
           Type     string // button | submit | reset
           Disabled bool
-          Pressed  *bool
+          // AriaDisabled keeps the button focusable while its action is
+          // unavailable (unlike Disabled, which drops it from the a11y tree).
+          AriaDisabled bool
+          // Pressed is the aria-pressed toggle state. Use a *bool for true/false,
+          // or set PressedMixed=true for the tri-state "mixed" value.
+          // aria-pressed is tri-state: true | false | "mixed".
+          Pressed      *bool
+          PressedMixed bool
 
           // ARIA
           AriaLabel       string
           AriaLabelledby  string
           AriaDescribedby string
+          // Disclosure / menu trigger contract.
+          AriaExpanded     *bool
+          AriaHaspopup     string // true | menu | listbox | tree | grid | dialog
+          AriaControls     string
 
           // Standard <button> form attributes — useful for multi-submit forms.
           ID             string
@@ -82,10 +93,22 @@
         {{- if .PopoverTarget}} popovertarget="{{.PopoverTarget}}"{{end}}
         {{- if .PopoverTargetAction}} popovertargetaction="{{.PopoverTargetAction}}"{{end}}
         {{- if .Disabled}} disabled{{end}}
-        {{- if .Pressed}} aria-pressed="{{if deref .Pressed}}true{{else}}false{{end}}"{{end}}
+        {{/* aria-disabled stays focusable while unavailable, unlike disabled.
+             See repos/aria-practices/content/patterns/button/button-pattern.html */}}
+        {{- if .AriaDisabled}} aria-disabled="true"{{end}}
+        {{/* aria-pressed is tri-state: true | false | "mixed". See
+             repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-pressed/ */}}
+        {{- if .PressedMixed}} aria-pressed="mixed"
+        {{- else if .Pressed}} aria-pressed="{{if deref .Pressed}}true{{else}}false{{end}}"{{end}}
         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
         {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
         {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+        {{/* Disclosure / menu trigger contract. See
+             repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-expanded/
+             and .../aria-haspopup/ */}}
+        {{- if .AriaExpanded}} aria-expanded="{{if deref .AriaExpanded}}true{{else}}false{{end}}"{{end}}
+        {{- if .AriaHaspopup}} aria-haspopup="{{.AriaHaspopup}}"{{end}}
+        {{- if .AriaControls}} aria-controls="{{.AriaControls}}"{{end}}
         data-slot="button" data-variant="{{$variant}}" data-size="{{$size}}"
         {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
 >{{.Label}}</button>

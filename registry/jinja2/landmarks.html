@@ -6,8 +6,8 @@
 
      <header>  →  banner          <aside>    →  complementary
      <nav>     →  navigation      <section>  →  region (only when labelled)
-     <search>  →  search          <footer>   →  contentinfo
-     <main>    →  main
+     <search>  →  search          <form>     →  form   (only when labelled)
+     <main>    →  main            <footer>   →  contentinfo
 
    Labelling rules from the APG (pass aria_label / aria_labelledby where the
    practice calls for one — always for region; once there is more than one
@@ -21,7 +21,8 @@
         banner_open, banner_close, nav_open, nav_close,
         search_open, search_close, main_open, main_close,
         complementary_open, complementary_close,
-        region_open, region_close, contentinfo_open, contentinfo_close %}
+        region_open, region_close, form_open, form_close,
+        contentinfo_open, contentinfo_close %}
 
      {{ banner_open() }} … {{ banner_close() }}
      {{ nav_open(aria_label="Primary") }} … {{ nav_close() }}
@@ -29,6 +30,7 @@
      {{ main_open() }} … {{ main_close() }}
      {{ complementary_open(aria_label="Related") }} … {{ complementary_close() }}
      {{ region_open(aria_label="Stats") }} … {{ region_close() }}
+     {{ form_open(aria_label="Contact") }}<form-controls…>{{ form_close() }}
      {{ contentinfo_open() }} … {{ contentinfo_close() }}
 #}
 
@@ -77,6 +79,15 @@
 <section data-slot="landmark-region"{{ _label(aria_label, aria_labelledby) }} class="rounded-lg border bg-card p-4 text-card-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
 {%- endmacro %}
 {% macro region_close() %}</section>{% endmacro %}
+
+{# form — <form> WITH a label (a form landmark must be named, like region).
+   Use search_open instead when the form performs a search. action/method/
+   hx-* pass straight through via **attrs.
+   MDN repos/mdn/files/en-us/web/accessibility/aria/reference/roles/form_role/index.md:12,31,33,101 #}
+{% macro form_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}
+<form data-slot="landmark-form"{{ _label(aria_label, aria_labelledby) }} class="rounded-lg border bg-card p-4 text-card-foreground {{ extra_class }}"{{ _attrs(attrs) }}>
+{%- endmacro %}
+{% macro form_close() %}</form>{% endmacro %}
 
 {# contentinfo — <footer> in body context. Top-level only; one per page. #}
 {% macro contentinfo_open(aria_label=none, aria_labelledby=none, extra_class="", **attrs) -%}

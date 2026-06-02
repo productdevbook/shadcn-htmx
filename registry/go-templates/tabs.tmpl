@@ -51,12 +51,21 @@
 })(document.currentScript.previousElementSibling);</script>
 {{end}}
 
+{{/*
+  tabs_trigger args: { Value, Label string; Disabled bool; Attrs map[string]string }
+  .Attrs (e.g. {"hx-get": "/tab/account", "hx-target": "#panel", "hx-trigger": "click once"})
+  ranges onto the tab button, mirroring button.tmpl. This is the idiomatic host
+  for the htmx lazy-load pattern — fetch the panel only when the tab is
+  activated; panels render hidden so hooks there fire on load. See
+  repos/htmx/www/src/content/patterns/01-loading/03-lazy-load.md.
+*/}}
 {{define "tabs_trigger"}}
 <button type="button"
         role="tab"
         data-slot="tabs-trigger"
         data-tab-trigger="{{.Value}}"
         {{- if .Disabled}} disabled{{end}}
+        {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end}}
         class="relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm dark:aria-selected:border-input dark:aria-selected:bg-input/30 dark:aria-selected:text-foreground group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">{{.Label}}</button>
 {{end}}
 

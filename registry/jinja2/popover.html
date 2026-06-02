@@ -20,7 +20,14 @@
         class="{{ class_ }}">{{ label }}</button>
 {% endmacro %}
 
-{% macro popover_open(id, mode="auto", side="bottom", extra_class="") %}
+{# mode: "auto" (default) | "hint" | "manual".
+   hint = light-dismissable but does NOT close an open auto popover (falls
+   back to manual in non-supporting browsers).
+   repos/mdn/files/en-us/web/html/reference/global_attributes/popover/index.md:22-24
+   role / aria_labelledby / aria_label: the native popover attribute assigns
+   no role or accessible name to the popover itself — supply for menu/listbox
+   popovers. repos/mdn/files/en-us/web/api/popover_api/using/index.md:79-86 #}
+{% macro popover_open(id, mode="auto", side="bottom", extra_class="", role=none, aria_labelledby=none, aria_label=none) %}
 {%- set sides = {
     "top":    "anchor-popover-top",
     "bottom": "anchor-popover-bottom",
@@ -28,8 +35,11 @@
     "right":  "anchor-popover-right"
 } -%}
 <div id="{{ id }}"
-     popover="{{ 'manual' if mode == 'manual' else 'auto' }}"
+     popover="{{ 'manual' if mode == 'manual' else 'hint' if mode == 'hint' else 'auto' }}"
      data-slot="popover" data-side="{{ side }}"
+     {% if role %}role="{{ role }}"{% endif %}
+     {% if aria_labelledby %}aria-labelledby="{{ aria_labelledby }}"{% endif %}
+     {% if aria_label %}aria-label="{{ aria_label }}"{% endif %}
      class="z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{ sides[side] }} {{ extra_class }}">
 {% endmacro %}
 

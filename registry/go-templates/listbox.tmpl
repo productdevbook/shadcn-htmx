@@ -28,6 +28,13 @@
     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
     {{- if .Disabled}} aria-disabled="true"{{end}}
+    {{- /* Group-level "one must be chosen" requirement (listbox supports aria-required). */}}
+    {{- if .Required}} aria-required="true"{{end}}
+    {{- /* WCAG error-identification: aria-invalid + aria-errormessage point at a visible error. */}}
+    {{- if .AriaInvalid}} aria-invalid="true"{{end}}
+    {{- if .AriaErrormessage}} aria-errormessage="{{.AriaErrormessage}}"{{end}}
+    {{- /* Locked-but-operable, distinct from aria-disabled. */}}
+    {{- if .AriaReadonly}} aria-readonly="true"{{end}}
     tabindex="-1"
     class="max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md border bg-background p-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[orientation=horizontal]:flex data-[orientation=horizontal]:max-h-none data-[orientation=horizontal]:overflow-x-auto data-[orientation=horizontal]:overflow-y-hidden">
   {{.Body}}

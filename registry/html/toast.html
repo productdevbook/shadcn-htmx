@@ -11,8 +11,17 @@
 
   VIEWPORT (render once):
 -->
+<!--
+  The viewport is also the live region: aria-live (default "polite", use
+  "assertive" for urgent streams) + aria-atomic="false" so each toast
+  swapped in is announced as an *addition* to this already-existing,
+  primed region. A polite (role="status") node injected on its own is
+  generally NOT announced — the region must exist first.
+  See repos/mdn/.../aria/guides/live_regions/.
+-->
 <ol id="toast-viewport"
     role="region" aria-label="Notifications"
+    aria-live="polite" aria-atomic="false"
     data-slot="toast-viewport" data-position="bottom-right"
     class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-[420px] flex-col-reverse items-end gap-2 p-2">
 </ol>
@@ -25,6 +34,12 @@
   <div data-slot="toast-description" class="col-start-2 text-sm text-emerald-700/90 dark:text-emerald-300/90">
     Your changes have been recorded.
   </div>
+  <!--
+    Optional: add htmx attrs to the close button so dismiss also notifies
+    the server (mark-read, analytics) while the JS below still removes the
+    node, e.g.  hx-post="/notifications/123/read" hx-swap="none"
+    See repos/htmx/www/src/content/reference/01-attributes/.
+  -->
   <button type="button" data-toast-close="true" aria-label="Dismiss notification"
     class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md opacity-60 hover:bg-current/10 hover:opacity-100">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">

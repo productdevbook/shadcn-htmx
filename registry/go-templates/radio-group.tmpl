@@ -35,6 +35,10 @@
          {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
          {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
          data-slot="radio-group-item"
+         {{- /* .Attrs forwards any extra attribute onto the <input>: hx-* fire on
+                change (repos/htmx/www/content/attributes/hx-trigger.md), form to
+                associate with a <form> in a separate swap, autocomplete="off" for
+                cross-load checked-state persistence. */ -}}
          {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
   >
   <span class="pointer-events-none absolute inset-0 m-auto size-2 hidden rounded-full bg-primary peer-checked:block"

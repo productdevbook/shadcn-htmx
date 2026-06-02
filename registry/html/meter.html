@@ -18,10 +18,13 @@
 <meter id="battery" data-slot="meter" value="0.75"
        class="block h-2 w-full overflow-hidden rounded-full bg-primary/20 align-middle">75%</meter>
 
-<!-- Zoned — low/high/optimum color the fill (good / warning / danger) -->
+<!-- Zoned — low/high/optimum color the fill (good / warning / danger).
+     title carries free-form units: the only spec-sanctioned units channel
+     for <meter> (WHATWG HTML — <meter> has no units attribute). -->
 <label for="disk" class="text-sm font-medium">Disk usage</label>
 <meter id="disk" data-slot="meter" value="0.62" min="0" max="1"
        low="0.25" high="0.85" optimum="0.1" aria-valuetext="12.4 GB of 16 GB"
+       title="gigabytes"
        class="block h-2 w-full overflow-hidden rounded-full bg-primary/20 align-middle">12.4 GB of 16 GB</meter>
 
 <!-- Custom range + aria-label (no visible label) -->

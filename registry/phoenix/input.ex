@@ -42,6 +42,7 @@ defmodule ShadcnHtmx.Components.Input do
          id name value placeholder required disabled readonly
          minlength maxlength min max step pattern
          inputmode enterkeyhint autocomplete autocapitalize autofocus list accept capture multiple size dirname form
+         spellcheck autocorrect
          aria-label aria-labelledby aria-describedby aria-invalid aria-required)
 
   def input(assigns) do

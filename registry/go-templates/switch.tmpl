@@ -6,7 +6,7 @@
 
       type SwitchArgs struct {
           ID, Name, Value, Size string  // "default" | "sm"
-          Checked, Required, Disabled, Readonly bool
+          Checked, Required, Disabled, Readonly, Autofocus bool
           Form, AriaLabel, AriaLabelledby, AriaDescribedby string
           Attrs map[string]string
       }
@@ -28,6 +28,8 @@
          {{- if .Required}} required{{end}}
          {{- if .Disabled}} disabled{{end}}
          {{- if .Readonly}} readonly{{end}}
+         {{/* autofocus: global attr valid on input — MDN input reference */}}
+         {{- if .Autofocus}} autofocus{{end}}
          {{- if .Form}} form="{{.Form}}"{{end}}
          {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
          {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}

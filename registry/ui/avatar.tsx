@@ -40,11 +40,32 @@ type AvatarProps = PropsWithChildren<{
   fallback?: string
   // Accessible name for the avatar group when there's no img (no alt).
   ariaLabel?: string
+  // Native <img loading>. Avatars are often off-screen in long lists, so
+  // loading="lazy" defers fetching until near the viewport.
+  // MDN <img>: .../elements/img/index.md "loading".
+  loading?: "eager" | "lazy"
+  // Native <img referrerpolicy>. Avatar src is often a third-party host
+  // (Gravatar/OAuth/CDN); e.g. "no-referrer" avoids leaking the page URL.
+  // MDN <img>: .../elements/img/index.md "referrerpolicy".
+  referrerpolicy?:
+    | "no-referrer"
+    | "no-referrer-when-downgrade"
+    | "origin"
+    | "origin-when-cross-origin"
+    | "same-origin"
+    | "strict-origin"
+    | "strict-origin-when-cross-origin"
+    | "unsafe-url"
+  // Native <img srcset>/<img sizes>. Primarily for the retina "2x" pixel
+  // density descriptor on small fixed-size avatars; src is the 1x fallback.
+  // MDN <img>: .../elements/img/index.md "srcset".
+  srcset?: string
+  sizes?: string
   class?: ClassValue
 }>
 
 export function Avatar(props: AvatarProps) {
-  const { size = "default", src, alt, fallback, ariaLabel, class: className, children } = props
+  const { size = "default", src, alt, fallback, ariaLabel, loading, referrerpolicy, srcset, sizes, class: className, children } = props
   return (
     <span
       data-slot="avatar"
@@ -70,7 +91,11 @@ export function Avatar(props: AvatarProps) {
       {src && (
         <img
           src={src}
+          srcset={srcset}
+          sizes={sizes}
           alt={alt ?? ""}
+          loading={loading}
+          referrerpolicy={referrerpolicy}
           data-slot="avatar-image"
           // When the image fails to load (404, network error), hide it and
           // let the fallback layer underneath show through.

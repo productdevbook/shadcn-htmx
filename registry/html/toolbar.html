@@ -11,6 +11,12 @@
   Accessibility contract:
     repos/aria-practices/content/patterns/toolbar/toolbar-pattern.html
 
+  Optional: a formatting/editor toolbar can name the element it operates on by
+  adding aria-controls="<id>" to the role="toolbar" container, pointing at the
+  editor/region it acts on (e.g. a textarea). The canonical APG example does
+  exactly this — see
+    repos/aria-practices/content/patterns/toolbar/examples/toolbar.html
+
   Required CSS theme variables: --card, --border, --foreground, --accent,
   --accent-foreground, --ring. See app/styles/input.css.
 

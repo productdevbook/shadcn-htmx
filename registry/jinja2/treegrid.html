@@ -34,8 +34,20 @@
   >
     <thead>
       <tr role="row" class="border-b">
-        {%- for label in columns %}
-        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{ label }}</th>
+        {#- A column is either a plain label string (unchanged) or a mapping
+            {label, sort?} so a sortable column can carry aria-sort on its
+            header cell — APG Treegrid pattern: "If the treegrid provides sort
+            functions, aria-sort is set ... on the header cell element for the
+            sorted column."
+            repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html #}
+        {%- for col in columns %}
+        {%- if col is mapping %}
+        <th role="columnheader" scope="col"
+            {%- if col.sort %} aria-sort="{{ col.sort }}"{% endif %}
+            class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{ col.label }}</th>
+        {%- else %}
+        <th role="columnheader" scope="col" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">{{ col }}</th>
+        {%- endif %}
         {%- endfor %}
       </tr>
     </thead>

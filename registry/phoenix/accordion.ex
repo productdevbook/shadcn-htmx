@@ -44,6 +44,10 @@ defmodule ShadcnHtmx.Components.Accordion do
   attr :open, :boolean, default: false
   attr :disabled, :boolean, default: false
   attr :class, :string, default: nil
+  # Forward hx-* / global attributes so the native `toggle` event <details>
+  # fires can drive zero-JS lazy loading: hx-trigger="toggle once" hx-get=...
+  # (toggle event: HTMLElement; hx-trigger accepts any DOM event).
+  attr :rest, :global
   slot :inner_block, required: true
 
   def accordion_item(assigns) do
@@ -58,6 +62,7 @@ defmodule ShadcnHtmx.Components.Accordion do
         @disabled && "pointer-events-none opacity-50",
         @class
       ]}
+      {@rest}
     >
       {render_slot(@inner_block)}
     </details>
@@ -65,6 +70,7 @@ defmodule ShadcnHtmx.Components.Accordion do
   end
 
   attr :class, :string, default: nil
+  attr :rest, :global
   slot :inner_block, required: true
 
   def accordion_trigger(assigns) do
@@ -79,6 +85,7 @@ defmodule ShadcnHtmx.Components.Accordion do
         "[details[open]>&_[data-slot=accordion-chevron]]:rotate-180",
         @class
       ]}
+      {@rest}
     >
       {render_slot(@inner_block)}
       <svg
@@ -95,11 +102,12 @@ defmodule ShadcnHtmx.Components.Accordion do
   end
 
   attr :class, :string, default: nil
+  attr :rest, :global
   slot :inner_block, required: true
 
   def accordion_content(assigns) do
     ~H"""
-    <div data-slot="accordion-content" class={["overflow-hidden pt-0 pb-4 text-sm", @class]}>
+    <div data-slot="accordion-content" class={["overflow-hidden pt-0 pb-4 text-sm", @class]} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """

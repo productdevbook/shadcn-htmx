@@ -72,6 +72,12 @@ type AlertProps = PropsWithChildren<{
   // Most alerts contain the full message at render time, so aria-atomic
   // defaults to true (read the whole alert, not just changed bits).
   ariaAtomic?: boolean
+  // Name the live region for AT. Point ariaLabelledby at the id of the
+  // AlertTitle inside, or pass ariaLabel for a literal name.
+  // status_role lists aria-label / aria-labelledby as associated properties:
+  // repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md:28-29
+  ariaLabelledby?: string
+  ariaLabel?: string
   id?: string
   class?: ClassValue
 }>
@@ -83,6 +89,8 @@ export function Alert(props: AlertProps) {
     live = "polite",
     role: roleOverride,
     ariaAtomic = true,
+    ariaLabelledby,
+    ariaLabel,
     id,
     class: className,
   } = props
@@ -101,6 +109,8 @@ export function Alert(props: AlertProps) {
       role={role}
       aria-live={ariaLive}
       aria-atomic={ariaAtomic ? "true" : undefined}
+      aria-labelledby={ariaLabelledby}
+      aria-label={ariaLabel}
       class={alertClasses({ variant, class: className })}
     >
       {children}

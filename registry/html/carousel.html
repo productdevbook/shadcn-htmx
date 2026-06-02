@@ -4,8 +4,12 @@
   Mirrors registry/ui/carousel.tsx. A native CSS scroll-snap slideshow:
     - Container: role="group" aria-roledescription="carousel" + an accessible
       name via aria-label (must NOT contain the word "carousel", per APG).
-    - Scroller: snap-x snap-mandatory scroll-smooth overflow-x-auto, tabindex=0,
-      aria-live="polite" (a non-auto-rotating carousel announces slide changes).
+    - Scroller: snap-x snap-mandatory motion-safe:scroll-smooth overflow-x-auto
+      overscroll-x-contain, tabindex=0, aria-live="polite" (a non-auto-rotating
+      carousel announces slide changes). The smooth pan is gated on
+      prefers-reduced-motion (panning a full-width region is a vestibular trigger;
+      MDN: prefers-reduced-motion); overscroll-x-contain stops a swipe past the
+      ends from chain-scrolling the page (MDN: overscroll-behavior).
     - Each slide: role="group" aria-roledescription="slide" snap-center, with an
       "N of M" accessible name (filled in by the boot script below).
     - Prev / Next: real <button> elements (Space/Enter + disabled come free).
@@ -32,7 +36,7 @@
        aria-atomic="false"
        aria-live="polite"
        tabindex="0"
-       class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg">
+       class="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth scrollbar-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg">
 
     <div data-slot="carousel-item" role="group" aria-roledescription="slide"
          class="min-w-0 shrink-0 grow-0 basis-full snap-center">
@@ -90,6 +94,12 @@
   document.querySelectorAll('[data-slot="carousel"]').forEach(function (root) {
     var content = root.querySelector('[data-slot="carousel-content"]')
     if (!content) return
+    // Honor prefers-reduced-motion: 'smooth' animates the pan, 'auto' jumps
+    // instantly. Panning a full-width region is a vestibular-motion trigger.
+    // MDN: prefers-reduced-motion; Element.scrollBy behavior: smooth vs auto.
+    var scrollBehavior = function () {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    }
     var slideWidth = function () {
       var item = content.querySelector('[data-slot="carousel-item"]')
       return item ? item.getBoundingClientRect().width + 16 /* gap-4 */ : content.clientWidth
@@ -102,10 +112,10 @@
       if (next) next.disabled = content.scrollLeft >= max - 1
     }
     root.querySelectorAll('[data-carousel-prev]').forEach(function (b) {
-      b.addEventListener('click', function () { content.scrollBy({ left: -slideWidth(), behavior: 'smooth' }) })
+      b.addEventListener('click', function () { content.scrollBy({ left: -slideWidth(), behavior: scrollBehavior() }) })
     })
     root.querySelectorAll('[data-carousel-next]').forEach(function (b) {
-      b.addEventListener('click', function () { content.scrollBy({ left: slideWidth(), behavior: 'smooth' }) })
+      b.addEventListener('click', function () { content.scrollBy({ left: slideWidth(), behavior: scrollBehavior() }) })
     })
     content.addEventListener('scroll', function () { window.requestAnimationFrame(sync) }, { passive: true })
     sync()

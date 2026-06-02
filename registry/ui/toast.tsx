@@ -47,6 +47,13 @@ type ToastViewportProps = PropsWithChildren<{
   id?: string
   position?: ToastViewportPosition
   ariaLabel?: string
+  // Politeness of the viewport's live region. Because the viewport is
+  // rendered once and primed (empty) at page load, toasts swapped in later
+  // are announced as *additions* to an already-existing live region —
+  // which is what actually gets polite (role=status) toasts read out.
+  // See repos/mdn/.../aria/guides/live_regions/ ("Start with an empty live
+  // region, then — in a separate step — change the content").
+  live?: ToastLive
   class?: ClassValue
 }>
 
@@ -55,6 +62,7 @@ export function ToastViewport(props: ToastViewportProps) {
     id = "toast-viewport",
     position = "bottom-right",
     ariaLabel = "Notifications",
+    live = "polite",
     class: className,
     children,
   } = props
@@ -63,6 +71,11 @@ export function ToastViewport(props: ToastViewportProps) {
       id={id}
       role="region"
       aria-label={ariaLabel}
+      // Primed live region: aria-live makes additions announce; aria-atomic
+      // false so only the newly-added toast is read, not every existing one.
+      // aria-relevant defaults to "additions text" (per MDN aria-relevant).
+      aria-live={live}
+      aria-atomic="false"
       data-slot="toast-viewport"
       data-position={position}
       class={cn(
@@ -100,6 +113,26 @@ const toastVariants: Record<ToastVariant, string> = {
     "border-sky-500/30 bg-sky-500/5 text-sky-800 dark:text-sky-200 *:data-[slot=toast-description]:text-sky-800/90 dark:*:data-[slot=toast-description]:text-sky-200/90",
 }
 
+// htmx attribute surface spread onto the close button so dismiss can also
+// fire a server request (e.g. mark-notification-read / analytics) while
+// site.js still handles the DOM removal + exit animation. Mirrors the
+// allowlist on Button (see registry/ui/button.tsx). Progressive
+// enhancement: the button works without these too.
+// See repos/htmx/www/src/content/reference/01-attributes/.
+export type ToastCloseHx = {
+  "hx-get"?: string
+  "hx-post"?: string
+  "hx-put"?: string
+  "hx-patch"?: string
+  "hx-delete"?: string
+  "hx-target"?: string
+  "hx-swap"?: string
+  "hx-trigger"?: string
+  "hx-indicator"?: string
+  "hx-confirm"?: string
+  "hx-vals"?: string
+}
+
 type ToastProps = PropsWithChildren<{
   variant?: ToastVariant
   // Auto-dismiss timeout in ms. Set 0 to keep the toast until the user
@@ -110,6 +143,9 @@ type ToastProps = PropsWithChildren<{
   live?: ToastLive
   // Show the X close button (default true).
   showClose?: boolean
+  // Optional htmx attributes forwarded onto the close button so dismissing
+  // can notify the server (mark-read, etc.) in addition to local removal.
+  closeHx?: ToastCloseHx
   id?: string
   class?: ClassValue
 }>
@@ -121,6 +157,7 @@ export function Toast(props: ToastProps) {
     duration = 5000,
     live = "polite",
     showClose = true,
+    closeHx,
     id,
     class: className,
   } = props
@@ -143,6 +180,7 @@ export function Toast(props: ToastProps) {
           type="button"
           data-toast-close="true"
           aria-label="Dismiss notification"
+          {...closeHx}
           class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md text-current opacity-60 transition-opacity hover:bg-current/10 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
         >
           <svg

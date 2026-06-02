@@ -4,9 +4,13 @@
      contract lives in public/site.js keyed on data-slot="menubar".
      Mirrors registry/ui/menubar.tsx exactly. */}}
 
+{{/* AriaLabelledby: id of a visible element naming the menubar. APG prefers
+     aria-labelledby over aria-label when a visible label exists
+     (menu-and-menubar-pattern.html:220-222; MDN menubar_role:32). */}}
 {{define "menubar"}}
 <div role="menubar" data-slot="menubar"
      {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
      class="inline-flex h-9 items-center gap-0.5 rounded-md border bg-background p-1 shadow-xs {{.Class}}">
   {{.Body}}
 </div>
@@ -56,4 +60,12 @@
 
 {{define "menubar_label"}}
 <div data-slot="menubar-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{.Text}}</div>
+{{end}}
+
+{{/* menubar_shortcut: presentational accelerator hint (e.g. "⌘S") at the
+     trailing edge of an item. aria-hidden so AT does not announce the glyph;
+     expose the real shortcut via aria-keyshortcuts on menubar_item.
+     repos/.../attributes/aria-keyshortcuts/index.md */}}
+{{define "menubar_shortcut"}}
+<span aria-hidden="true" data-slot="menubar-shortcut" class="ml-auto text-xs tracking-widest text-muted-foreground">{{.Text}}</span>
 {{end}}

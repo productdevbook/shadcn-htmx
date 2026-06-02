@@ -74,6 +74,11 @@ type RangeSliderProps = {
   min?: number
   max?: number
   step?: number
+  // Id of a <datalist> rendering tick marks on the track. Native to
+  // <input type="range"> (MDN range reference, "Supported common
+  // attributes" + "Adding tick marks"). One datalist applies to both
+  // thumbs since they share min/max/step.
+  list?: string
   disabled?: boolean
   form?: string
   // ARIA / labelling. Each thumb needs its own accessible name (APG: a
@@ -100,6 +105,7 @@ export function RangeSlider(props: RangeSliderProps) {
     min = 0,
     max = 100,
     step,
+    list,
     disabled,
     form,
     minLabel = "Minimum",
@@ -138,6 +144,7 @@ export function RangeSlider(props: RangeSliderProps) {
         min={min}
         max={max}
         step={step}
+        list={list}
         disabled={disabled}
         form={form}
         aria-label={ariaLabelledby ? undefined : minLabel}
@@ -155,6 +162,7 @@ export function RangeSlider(props: RangeSliderProps) {
         min={min}
         max={max}
         step={step}
+        list={list}
         disabled={disabled}
         form={form}
         aria-label={ariaLabelledby ? undefined : maxLabel}

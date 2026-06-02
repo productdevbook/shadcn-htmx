@@ -66,7 +66,19 @@ defmodule ShadcnHtmx.Components.Button do
 
   attr :type, :string, default: "button"
   attr :disabled, :boolean, default: false
+  # aria-disabled keeps the button focusable while unavailable, unlike `disabled`
+  # which drops it from the a11y tree / tab order. Independent of `disabled`.
+  # See repos/aria-practices/content/patterns/button/button-pattern.html
+  attr :aria_disabled, :boolean, default: false
+  # aria-pressed is tri-state: true | false | "mixed". `:any` accepts a "mixed"
+  # string for toggles whose controlled items don't all share one value.
+  # See repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-pressed/
   attr :pressed, :any, default: nil
+  # Disclosure / menu trigger contract. See
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-expanded/
+  # and .../aria-haspopup/
+  attr :aria_expanded, :any, default: nil
+  attr :aria_haspopup, :any, default: nil
   attr :class, :string, default: nil
 
   attr :rest, :global,
@@ -74,7 +86,7 @@ defmodule ShadcnHtmx.Components.Button do
       ~w(hx-get hx-post hx-put hx-patch hx-delete hx-target hx-swap hx-trigger hx-indicator hx-confirm hx-vals hx-disable
          id name value form formaction formenctype formmethod formnovalidate formtarget popovertarget popovertargetaction
          command commandfor
-         aria-label aria-labelledby aria-describedby)
+         aria-label aria-labelledby aria-describedby aria-controls)
 
   slot :inner_block, required: true
 
@@ -90,7 +102,10 @@ defmodule ShadcnHtmx.Components.Button do
       type={@type}
       class={[@base_class, @variant_class, @size_class, @class]}
       disabled={@disabled}
+      aria-disabled={if @aria_disabled, do: "true", else: nil}
       aria-pressed={if is_nil(@pressed), do: nil, else: to_string(@pressed)}
+      aria-expanded={if is_nil(@aria_expanded), do: nil, else: to_string(@aria_expanded)}
+      aria-haspopup={if is_nil(@aria_haspopup), do: nil, else: to_string(@aria_haspopup)}
       data-slot="button"
       data-variant={@variant}
       data-size={@size}

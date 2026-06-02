@@ -100,11 +100,32 @@ type RadioGroupItemProps = {
   defaultChecked?: boolean
   disabled?: boolean
   required?: boolean
+  // Associate this radio with a <form> by its id when it's rendered outside
+  // that form (common in SSR/htmx swaps). The form owner participates in how
+  // the radio button group is reconciled.
+  // See repos/whatwg-html/source ("The element's form owner changes").
+  form?: string
+  // Cross-load checked-state persistence control. Pass "off" to stop the
+  // browser re-applying a prior selection on reload / back-forward.
+  // See repos/mdn/files/en-us/web/html/reference/elements/input/radio/index.md (autocomplete)
+  autocomplete?: string
   ariaLabel?: string
   ariaLabelledby?: string
   ariaDescribedby?: string
   ariaInvalid?: boolean
   class?: ClassValue
+  // htmx — fire on the input's change event, e.g. live filters or revealing
+  // dependent options when a choice is made.
+  // See repos/htmx/www/content/attributes/hx-trigger.md
+  "hx-get"?: string
+  "hx-post"?: string
+  "hx-put"?: string
+  "hx-patch"?: string
+  "hx-target"?: string
+  "hx-swap"?: string
+  "hx-trigger"?: string
+  "hx-vals"?: string
+  "hx-include"?: string
 }
 
 export function RadioGroupItem(props: RadioGroupItemProps) {

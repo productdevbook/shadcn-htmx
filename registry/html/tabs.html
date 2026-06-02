@@ -8,6 +8,19 @@
   Required CSS theme variables: --background, --foreground, --muted,
   --muted-foreground, --ring, --input. See app/styles/input.css.
 
+  Labelling the tablist (WAI-ARIA APG): if a visible heading exists above the
+  tabs, point at it with aria-labelledby instead of aria-label, e.g.
+  <h2 id="settings-heading">Settings</h2> then
+  <div role="tablist" aria-labelledby="settings-heading" …>. Use aria-label only
+  when there is no visible label. See
+  repos/aria-practices/content/patterns/tabs/tabs-pattern.html:129-130.
+
+  Lazy-loading a panel on tab activation (htmx): put the hx-* hook on the tab
+  button (NOT the panel — panels render hidden, so a hook there fires on page
+  load), e.g. <button role="tab" … hx-get="/tab/account" hx-target="#…-panel-account"
+  hx-trigger="click once">. See
+  repos/htmx/www/src/content/patterns/01-loading/03-lazy-load.md.
+
   Minimal inline JS for keyboard navigation:
 
     <script>

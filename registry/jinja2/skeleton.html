@@ -1,10 +1,14 @@
 {# Skeleton macro — shadcn-htmx, htmx v4 + Tailwind v4.
    Mirrors registry/ui/skeleton.tsx. #}
 
-{% macro skeleton(aria_label="Loading", id=none, extra_class="") %}
+{# aria_labelledby references a visible label (e.g. heading) and, per the
+   status role spec, supersedes the hardcoded "Loading" aria-label.
+   repos/mdn/files/en-us/web/accessibility/aria/reference/roles/status_role/index.md #}
+{% macro skeleton(aria_label="Loading", aria_labelledby=none, id=none, extra_class="") %}
 <div
   {%- if id %} id="{{ id }}"{% endif %}
-  role="status" aria-busy="true" aria-label="{{ aria_label }}"
+  role="status" aria-busy="true"
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% else %} aria-label="{{ aria_label }}"{% endif %}
   data-slot="skeleton"
   class="animate-pulse rounded-md bg-muted {{ extra_class }}"></div>
 {% endmacro %}

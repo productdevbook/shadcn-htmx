@@ -4,6 +4,19 @@
   Uses the native HTML Popover API — no JS required. The platform handles
   light dismiss (click outside), ESC close, top-layer rendering, and
   focus restoration when closed.
+
+  The popover attribute takes three states:
+    popover / popover="auto"  — light dismiss + ESC (shown below).
+    popover="hint"            — light-dismissable but does NOT close an open
+                                auto popover; for tooltip/teaching UI. Falls
+                                back to manual in non-supporting browsers.
+    popover="manual"          — only code can show/hide it.
+    mdn .../global_attributes/popover/index.md:22-24
+
+  The popover element gets NO role or accessible name from the platform.
+  For menu/listbox/labelled popovers, add role plus an accessible name, e.g.:
+    <div id="menu-popover" popover role="menu" aria-label="Actions">…</div>
+    mdn .../api/popover_api/using/index.md:79-86
 -->
 
 <button type="button" popovertarget="my-popover" popovertargetaction="toggle"

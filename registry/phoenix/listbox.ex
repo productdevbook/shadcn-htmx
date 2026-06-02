@@ -27,6 +27,16 @@ defmodule ShadcnHtmx.Components.Listbox do
   attr :orientation, :string, default: "vertical", values: ~w(horizontal vertical)
   attr :multiple, :boolean, default: false
   attr :disabled, :boolean, default: false
+  # Group-level "one must be chosen" requirement (listbox supports aria-required).
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/roles/listbox_role/index.md
+  attr :required, :boolean, default: false
+  # WCAG error-identification: aria-invalid + aria-errormessage point at a visible error.
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-invalid/index.md
+  attr :"aria-invalid", :boolean, default: nil
+  attr :"aria-errormessage", :string, default: nil
+  # Locked-but-operable, distinct from aria-disabled.
+  # repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-readonly/index.md
+  attr :"aria-readonly", :boolean, default: false
   attr :name, :string, default: nil
   attr :"aria-label", :string, default: nil
   attr :"aria-labelledby", :string, default: nil
@@ -46,6 +56,10 @@ defmodule ShadcnHtmx.Components.Listbox do
         aria-label={assigns[:"aria-label"]}
         aria-labelledby={assigns[:"aria-labelledby"]}
         aria-disabled={@disabled && "true"}
+        aria-required={@required && "true"}
+        aria-invalid={if assigns[:"aria-invalid"] == nil, do: nil, else: to_string(assigns[:"aria-invalid"])}
+        aria-errormessage={assigns[:"aria-errormessage"]}
+        aria-readonly={assigns[:"aria-readonly"] && "true"}
         tabindex="-1"
         class={[
           "max-h-60 w-full overflow-y-auto overflow-x-hidden rounded-md border bg-background p-1 text-sm shadow-xs outline-none",

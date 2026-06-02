@@ -17,6 +17,7 @@
     required=false,
     disabled=false,
     readonly=false,
+    autofocus=false,
     size="default",
     form=none,
     aria_label=none,
@@ -53,6 +54,8 @@ pointer-events-none absolute top-1/2 left-px -translate-y-1/2 rounded-full bg-ba
          {%- if required %} required{% endif %}
          {%- if disabled %} disabled{% endif %}
          {%- if readonly %} readonly{% endif %}
+         {# autofocus: global attr valid on input — MDN input reference #}
+         {%- if autofocus %} autofocus{% endif %}
          {%- if form %} form="{{ form }}"{% endif %}
          {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
          {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}

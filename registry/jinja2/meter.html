@@ -18,6 +18,7 @@
     high=none,
     optimum=none,
     id=none,
+    title=none,
     aria_label=none,
     aria_labelledby=none,
     aria_describedby=none,
@@ -31,6 +32,8 @@ block h-2 w-full overflow-hidden rounded-full bg-primary/20 align-middle
 {%- endset -%}
 <meter class="{{ base }} {{ extra_class }}"
        {%- if id %} id="{{ id }}"{% endif %}
+       {#- title is the spec-sanctioned way to convey units, e.g. "gigabytes" #}
+       {%- if title %} title="{{ title }}"{% endif %}
        value="{{ value }}" min="{{ min }}" max="{{ max }}"
        {%- if low is not none %} low="{{ low }}"{% endif %}
        {%- if high is not none %} high="{{ high }}"{% endif %}

@@ -94,6 +94,30 @@ const tocItems = [
 
 const COMBOBOX_NATIVE_PROPS: ApiRow[] = [
   {
+    prop: "type",
+    type: ['"text"', '"search"', '"url"', '"tel"', '"email"', '"number"', '"date"', '"datetime-local"', '"month"', '"week"', '"time"', '"range"', '"color"'],
+    default: '"text"',
+    description: "Native input type. list is valid on these 13 types, so you can build a url/email/search combobox or a number/date/time/range/color picker with suggested values.",
+    source: { badge: "MDN", label: "<input list> valid types", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#list" },
+  },
+  { prop: "minlength / maxlength", type: "number", description: "Character bounds for the free-typed value (text-like types)." },
+  {
+    prop: "pattern",
+    type: "string",
+    description: "Regex the typed value must match — datalist suggestions are not requirements, so the free-typed value still needs validation.",
+    source: { badge: "MDN", label: "pattern", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/pattern" },
+  },
+  { prop: "title", type: "string", description: "Explains the pattern constraint to assistive tech and on validation failure." },
+  { prop: "readonly", type: "boolean", default: "false", description: "Focusable + copy-selectable but not editable. Not supported on range/color types." },
+  {
+    prop: "disabled (on options)",
+    type: "boolean",
+    default: "false",
+    description: "Per-option flag on ComboboxOption — marks a suggestion non-checkable (greyed out, no click/focus).",
+    source: { badge: "MDN", label: "<option disabled>", href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option#disabled" },
+  },
+
+  {
     prop: "id",
     type: "string",
     required: true,

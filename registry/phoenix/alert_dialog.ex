@@ -43,6 +43,10 @@ defmodule ShadcnHtmx.Components.AlertDialog do
   attr :description, :string, default: nil
   attr :open, :boolean, default: false
   attr :class, :string, default: nil
+  # APG: name the alertdialog with aria-label when there is no visible title
+  # (alertdialog-pattern.html:47-57). When set, it suppresses the id-title
+  # aria-labelledby fallback so the dialog isn't named twice.
+  attr :aria_label, :string, default: nil
 
   slot :inner_block, required: true
 
@@ -57,7 +61,8 @@ defmodule ShadcnHtmx.Components.AlertDialog do
       role="alertdialog"
       class={[@base, @class]}
       data-slot="alert-dialog"
-      aria-labelledby={"#{@id}-title"}
+      aria-label={@aria_label}
+      aria-labelledby={if @aria_label, do: nil, else: "#{@id}-title"}
       aria-describedby={"#{@id}-description"}
     >
       <div :if={@title || @description} data-slot="alert-dialog-header" class="flex flex-col gap-1.5 text-left">

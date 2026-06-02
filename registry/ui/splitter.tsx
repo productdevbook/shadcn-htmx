@@ -90,6 +90,12 @@ type SplitterProps = PropsWithChildren<{
   // Provide a visible label's id via ariaLabelledby, else a literal ariaLabel.
   ariaLabel?: string
   ariaLabelledby?: string
+  // Human-readable value announced in place of the bare aria-valuenow number
+  // (e.g. "Files, 30%"). Per MDN, a focusable separator may carry aria-valuetext
+  // when aria-valuenow alone is not optimal for AT:
+  //   repos/mdn/files/en-us/web/accessibility/aria/reference/roles/separator_role/index.md
+  //   (aria-valuetext associated property for focusable separator)
+  ariaValuetext?: string
   // Id given to the primary pane; the divider's aria-controls points at it.
   // Auto-derived from `id` when omitted.
   primaryId?: string
@@ -111,6 +117,7 @@ export function Splitter(props: SplitterProps) {
     step = 10,
     ariaLabel,
     ariaLabelledby,
+    ariaValuetext,
     primaryId,
     id,
     class: className,
@@ -154,6 +161,8 @@ export function Splitter(props: SplitterProps) {
         aria-valuenow={now}
         aria-valuemin={min}
         aria-valuemax={max}
+        // Announced in place of aria-valuenow when provided (separator_role).
+        aria-valuetext={ariaValuetext}
         class={DIVIDER_CLASS}
       >
         <span class={HANDLE_CLASS} aria-hidden="true"></span>

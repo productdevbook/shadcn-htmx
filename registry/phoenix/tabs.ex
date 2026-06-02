@@ -75,6 +75,10 @@ defmodule ShadcnHtmx.Components.Tabs do
 
   attr :class, :string, default: nil
   attr :"aria-label", :string, default: nil
+  # APG prefers aria-labelledby pointing at a visible heading when one exists;
+  # aria-label is the fallback for an unlabelled tablist. See
+  # repos/aria-practices/content/patterns/tabs/tabs-pattern.html:129-130.
+  attr :"aria-labelledby", :string, default: nil
   slot :inner_block, required: true
 
   def tabs_list(assigns) do
@@ -82,6 +86,7 @@ defmodule ShadcnHtmx.Components.Tabs do
     <div
       role="tablist"
       aria-label={assigns[:"aria-label"]}
+      aria-labelledby={assigns[:"aria-labelledby"]}
       data-slot="tabs-list"
       class={[
         "inline-flex h-9 w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground",
@@ -97,6 +102,17 @@ defmodule ShadcnHtmx.Components.Tabs do
   attr :value, :string, required: true
   attr :disabled, :boolean, default: false
   attr :class, :string, default: nil
+
+  # htmx and arbitrary attributes ride along onto the underlying tab button,
+  # mirroring tabs_content. This is the idiomatic host for the htmx lazy-load
+  # pattern (hx-get + hx-trigger="click once" to fetch the panel only when the
+  # tab is activated), since panels render hidden so hooks there fire on load.
+  # See repos/htmx/www/src/content/patterns/01-loading/03-lazy-load.md.
+  attr :rest, :global,
+    include:
+      ~w(hx-get hx-post hx-put hx-patch hx-delete hx-target hx-swap hx-trigger hx-indicator hx-confirm hx-vals hx-disable
+         id aria-label aria-labelledby aria-describedby aria-haspopup)
+
   slot :inner_block, required: true
 
   def tabs_trigger(assigns) do
@@ -107,6 +123,7 @@ defmodule ShadcnHtmx.Components.Tabs do
       data-slot="tabs-trigger"
       data-tab-trigger={@value}
       disabled={@disabled}
+      {@rest}
       class={[
         "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all",
         "hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",

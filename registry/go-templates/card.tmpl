@@ -11,6 +11,15 @@
           Content     template.HTML
           Footer      template.HTML
           Action      template.HTML // optional, sits in the top-right
+          // Optional: render CardTitle as a real heading (h1-h6) so an
+          // article/section card has a child heading for the document
+          // outline; empty => "div" (shadcn upstream default).
+          // See repos/mdn/.../elements/article/index.md:66 ; section/index.md:55
+          TitleAs string
+          // Optional: id on CardTitle so a section/article card can name
+          // itself via aria-labelledby (region landmark naming).
+          // See repos/mdn/.../roles/region_role/index.md:25,29
+          TitleID string
       }
 
       tpl.ExecuteTemplate(w, "card", CardArgs{
@@ -25,7 +34,7 @@
 <div data-slot="card" class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm">
   {{- if or .Title .Description .Action}}
   <div data-slot="card-header" class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
-    {{- if .Title}}<div data-slot="card-title" class="leading-none font-semibold">{{.Title}}</div>{{end}}
+    {{- if .Title}}{{$t := or .TitleAs "div"}}<{{$t}} data-slot="card-title"{{if .TitleID}} id="{{.TitleID}}"{{end}} class="leading-none font-semibold">{{.Title}}</{{$t}}>{{end}}
     {{- if .Description}}<div data-slot="card-description" class="text-sm text-muted-foreground">{{.Description}}</div>{{end}}
     {{- if .Action}}<div data-slot="card-action" class="col-start-2 row-span-2 row-start-1 self-start justify-self-end">{{.Action}}</div>{{end}}
   </div>

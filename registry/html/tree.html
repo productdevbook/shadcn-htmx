@@ -10,6 +10,20 @@
   For the full APG keyboard contract (arrows, Home/End, type-ahead, *, Enter)
   copy the second <script> at the bottom — or use public/site.js, which wires
   every [data-slot="tree"] on the page.
+
+  Optional treeitem attributes (see the other flavours' props):
+    - aria-current="page"  — marks the node that represents the current
+      page/location, distinct from aria-selected. Shown on README.md below.
+      (APG treeview-navigation example.)
+    - aria-level / aria-posinset / aria-setsize — REQUIRED only for lazy-loaded
+      (htmx) trees whose children aren't yet in the DOM, e.g. a collapsed parent
+      that hx-get's its <ul role="group"> on expand. A fully rendered static
+      tree like this one can omit them; the browser computes them from the DOM.
+      (APG treeview pattern + MDN treeitem role; declared in treeview-1b.)
+      Example on a lazy parent:
+        <li role="treeitem" aria-expanded="false"
+            aria-level="1" aria-posinset="2" aria-setsize="3"
+            hx-get="/tree/reports/children" hx-target="next [role=group]" …>
 -->
 
 <ul role="tree" data-slot="tree" aria-label="File system"
@@ -50,7 +64,9 @@
     </ul>
   </li>
 
-  <li role="treeitem" data-slot="tree-item" data-value="readme" tabindex="-1" aria-selected="false" class="">
+  <!-- aria-current="page" marks this as the current-location node (distinct
+       from aria-selected). APG treeview-navigation example. -->
+  <li role="treeitem" data-slot="tree-item" data-value="readme" tabindex="-1" aria-selected="false" aria-current="page" class="">
     <span data-slot="tree-label" class="flex cursor-pointer items-center gap-1.5 rounded-sm px-2 py-1.5 outline-none">
       <span aria-hidden="true" class="size-4 shrink-0"></span>
       README.md

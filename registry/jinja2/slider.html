@@ -15,6 +15,7 @@
     {%- if name %} name="{{ name }}"{% endif %}
     {%- if value is not none %} value="{{ value }}"{% endif %}
     min="{{ min }}" max="{{ max }}"
+    {# step may be a number or the special string "any" (continuous range) — MDN input/range. #}
     {%- if step %} step="{{ step }}"{% endif %}
     {%- if disabled %} disabled{% endif %}
     {%- if required %} required{% endif %}

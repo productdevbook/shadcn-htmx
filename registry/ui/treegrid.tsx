@@ -79,9 +79,35 @@ const cellBase =
 // state on a descendant pseudo).
 const firstCellInnerBase = "flex items-center gap-1.5"
 
+// A sortable column's sort state. Emitted as aria-sort on the header cell.
+//   repos/mdn/.../web/accessibility/aria/reference/roles/treegrid_role
+//   (".../treegrid sorting": aria-sort is on the header cell, not the grid).
+export type TreegridSort = "none" | "ascending" | "descending"
+
+// A column can be a plain label string (unchanged) or a descriptor. The
+// descriptor lets a column carry aria-sort + htmx/data hooks so a sorted
+// column can be marked and re-fetched on click — APG Treegrid pattern:
+//   "If the treegrid provides sort functions, aria-sort is set to an
+//    appropriate value on the header cell element for the sorted column."
+//   repos/aria-practices/content/patterns/treegrid/treegrid-pattern.html
+export type TreegridColumn =
+  | string
+  | ({
+      label: string
+      // Omit on non-sortable columns; set on the sorted column(s).
+      sort?: TreegridSort
+      class?: ClassValue
+      // htmx / data attrs ride onto the header <th> (e.g. hx-get to refetch).
+      [key: `hx-${string}`]: any
+      [key: `data-${string}`]: any
+      [key: `aria-${string}`]: any
+    })
+
 export type TreegridProps = PropsWithChildren<{
-  // Column header labels. Rendered as <th role="columnheader" scope="col">.
-  columns: string[]
+  // Column headers. Each is a plain label string, or a descriptor object
+  // ({ label, sort?, ...hx }) to mark a sortable column. Rendered as
+  // <th role="columnheader" scope="col">.
+  columns: TreegridColumn[]
   // Required accessible name (APG: treegrid must be labelled).
   ariaLabel?: string
   ariaLabelledby?: string
@@ -130,11 +156,31 @@ export function Treegrid(props: TreegridProps) {
       >
         <thead>
           <tr role="row" class={headRowBase}>
-            {(columns as string[]).map((label) => (
-              <th role="columnheader" scope="col" class={headCellBase}>
-                {label}
-              </th>
-            ))}
+            {(columns as TreegridColumn[]).map((col) => {
+              // Plain string => non-sortable header, unchanged from before.
+              if (typeof col === "string") {
+                return (
+                  <th role="columnheader" scope="col" class={headCellBase}>
+                    {col}
+                  </th>
+                )
+              }
+              // Descriptor: emit aria-sort on the header cell when the column
+              // is sortable, and forward any htmx/data/aria hooks. aria-sort
+              // belongs on the header cell, not the grid (MDN treegrid role).
+              const { label, sort, class: colClass, ...colRest } = col as any
+              return (
+                <th
+                  role="columnheader"
+                  scope="col"
+                  aria-sort={sort}
+                  class={cn(headCellBase, colClass)}
+                  {...colRest}
+                >
+                  {label}
+                </th>
+              )
+            })}
           </tr>
         </thead>
         <tbody>{children}</tbody>

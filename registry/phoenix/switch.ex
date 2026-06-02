@@ -38,7 +38,7 @@ defmodule ShadcnHtmx.Components.Switch do
   attr :rest, :global,
     include:
       ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-vals hx-include
-         id name value checked required disabled readonly form
+         id name value checked required disabled readonly autofocus form
          aria-label aria-labelledby aria-describedby)
 
   def switch(assigns) do

@@ -61,11 +61,31 @@ fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2
 </dialog>
 {% endmacro %}
 
-{% macro dialog_trigger(label, dialog_for, type="button", id=none, class_="") %}
+{# native=true renders a native Invoker Commands button
+   (<button command="show-modal" commandfor="…">) that opens the dialog as a
+   modal with zero JS — the declarative equivalent of .showModal(). The
+   data-dialog-trigger + site.js path stays the default fallback.
+   See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74 #}
+{% macro dialog_trigger(label, dialog_for, type="button", id=none, class_="", native=false) %}
 <button {% if id %} id="{{ id }}"{% endif %}
         type="{{ type }}"
         class="{{ class_ }}"
-        data-dialog-trigger="true"
-        data-dialog-target="{{ dialog_for }}"
+        {%- if native %} command="show-modal" commandfor="{{ dialog_for }}"
+        {%- else %} data-dialog-trigger="true" data-dialog-target="{{ dialog_for }}"{% endif %}
         aria-haspopup="dialog">{{ label }}</button>
+{% endmacro %}
+
+{# Native Invoker Commands close button (opt-in). command is "close"
+   (declarative .close()) or "request-close" (fires a cancelable `cancel`
+   event first, for unsaved-changes guards). `value` is copied into the
+   dialog's returnValue so the close event can tell which control fired.
+   commandfor defaults to the closest <dialog> ancestor; pass it when the
+   button lives outside the dialog.
+   See repos/mdn/files/en-us/web/html/reference/elements/button/index.md:60-74,149-152 #}
+{% macro dialog_close(label, command="close", commandfor=none, value=none, class_="") %}
+<button type="button"
+        command="{{ command }}"
+        {%- if commandfor %} commandfor="{{ commandfor }}"{% endif %}
+        {%- if value is not none %} value="{{ value }}"{% endif %}
+        class="{{ class_ }}">{{ label }}</button>
 {% endmacro %}

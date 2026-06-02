@@ -24,13 +24,26 @@ defmodule ShadcnHtmx.Components.Combobox do
 
   attr :id, :string, required: true
   attr :name, :string, default: nil
+  # `list` is valid on 13 input types, not just text.
+  # repos/mdn/files/en-us/web/html/reference/elements/input/index.md:492
+  attr :type, :string, default: "text"
   attr :placeholder, :string, default: nil
   attr :value, :string, default: nil
   attr :options, :list, default: []
   attr :required, :boolean, default: false
   attr :disabled, :boolean, default: false
+  # Focusable + selectable but not editable. Not supported on range/color.
+  # repos/mdn/files/en-us/web/html/reference/elements/input/index.md:588
+  attr :readonly, :boolean, default: false
+  # Constrain the free-typed value — datalist suggestions are not requirements.
+  # repos/mdn/files/en-us/web/html/reference/elements/input/index.md:505
+  attr :maxlength, :integer, default: nil
+  attr :minlength, :integer, default: nil
+  attr :pattern, :string, default: nil
+  attr :title, :string, default: nil
   attr :"aria-label", :string, default: nil
   attr :"aria-labelledby", :string, default: nil
+  attr :"aria-describedby", :string, default: nil
   attr :class, :string, default: nil
 
   attr :rest, :global,
@@ -40,7 +53,7 @@ defmodule ShadcnHtmx.Components.Combobox do
     ~H"""
     <span data-slot="combobox" class={["inline-block w-full", @class]}>
       <input
-        type="text"
+        type={@type}
         id={@id}
         name={@name}
         list={"#{@id}-list"}
@@ -48,14 +61,25 @@ defmodule ShadcnHtmx.Components.Combobox do
         placeholder={@placeholder}
         required={@required}
         disabled={@disabled}
+        readonly={@readonly}
+        maxlength={@maxlength}
+        minlength={@minlength}
+        pattern={@pattern}
+        title={@title}
         aria-label={assigns[:"aria-label"]}
         aria-labelledby={assigns[:"aria-labelledby"]}
+        aria-describedby={assigns[:"aria-describedby"]}
         autocomplete="off"
         class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
         {@rest}
       />
       <datalist id={"#{@id}-list"} data-slot="combobox-list">
-        <option :for={opt <- @options} value={opt[:value]} label={opt[:label]} />
+        <option
+          :for={opt <- @options}
+          value={opt[:value]}
+          label={opt[:label]}
+          disabled={opt[:disabled]}
+        />
       </datalist>
     </span>
     """
@@ -63,10 +87,13 @@ defmodule ShadcnHtmx.Components.Combobox do
 
   attr :value, :string, required: true
   attr :label, :string, default: nil
+  # Marks the option non-checkable (browsers grey it out).
+  # repos/mdn/files/en-us/web/html/reference/elements/option/index.md:45
+  attr :disabled, :boolean, default: false
 
   def combobox_option(assigns) do
     ~H"""
-    <option value={@value} label={@label} />
+    <option value={@value} label={@label} disabled={@disabled} />
     """
   end
 end

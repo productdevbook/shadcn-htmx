@@ -36,7 +36,8 @@ defmodule ShadcnHtmx.Components.Select do
     include:
       ~w(hx-get hx-post hx-put hx-patch hx-target hx-swap hx-trigger hx-vals hx-include
          id name required disabled multiple size form autocomplete
-         aria-label aria-labelledby aria-describedby aria-invalid aria-required)
+         aria-label aria-labelledby aria-describedby aria-invalid
+         aria-errormessage aria-required)
 
   slot :inner_block, required: true
 

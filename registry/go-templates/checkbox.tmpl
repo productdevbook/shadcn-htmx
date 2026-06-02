@@ -6,7 +6,7 @@
 
       type CheckboxArgs struct {
           ID, Name, Value string
-          Checked, Required, Disabled, Readonly bool
+          Checked, Indeterminate, Required, Disabled, Readonly bool
           Form, AriaLabel, AriaLabelledby, AriaDescribedby string
           AriaInvalid string // "true" | "false"
           Attrs map[string]string
@@ -25,6 +25,9 @@
          {{- if .Name}} name="{{.Name}}"{{end}}
          {{- if .Value}} value="{{.Value}}"{{end}}
          {{- if .Checked}} checked{{end}}
+         {{- /* indeterminate is IDL-only (no HTML attribute per WHATWG HTML);
+                emit the on-mount hook a script reads to set el.indeterminate. */}}
+         {{- if .Indeterminate}} data-initial-indeterminate="true"{{end}}
          {{- if .Required}} required{{end}}
          {{- if .Disabled}} disabled{{end}}
          {{- if .Readonly}} readonly{{end}}

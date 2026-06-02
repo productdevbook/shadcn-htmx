@@ -4,13 +4,18 @@
   Native [popover] for open/close + APG menu keyboard nav via the inline JS.
 -->
 
-<button type="button" popovertarget="user-menu" popovertargetaction="toggle"
+<!-- menu-button pattern: aria-controls + aria-expanded advertise the menu and
+     its state. Initial state collapsed; the inline JS flips aria-expanded. -->
+<button id="user-menu-trigger" type="button" popovertarget="user-menu" popovertargetaction="toggle"
         data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        aria-controls="user-menu" aria-expanded="false"
         class="inline-flex h-9 items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
   Account
 </button>
 
-<div id="user-menu" popover="auto" role="menu" data-slot="dropdown-menu"
+<!-- role="menu" REQUIRES an accessible name: aria-labelledby points at the
+     trigger id (canonical menu-button wiring), or use aria-label. menu_role. -->
+<div id="user-menu" popover="auto" role="menu" aria-labelledby="user-menu-trigger" data-slot="dropdown-menu"
      class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
   <div data-slot="dropdown-menu-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">My account</div>
   <button type="button" role="menuitem" tabindex="-1" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Profile</button>

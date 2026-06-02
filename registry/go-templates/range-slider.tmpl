@@ -7,6 +7,7 @@
       type RangeSliderArgs struct {
           ID, MinName, MaxName string
           MinValue, MaxValue, Min, Max, Step *int
+          List string // id of a <datalist> for tick marks (MDN range ref)
           Disabled bool
           Form string
           MinLabel, MaxLabel string
@@ -32,6 +33,7 @@
   <input type="range" data-range="min"
     {{if .ID}}id="{{.ID}}-min"{{end}} name="{{$minName}}" value="{{$lo}}"
     min="{{$min}}" max="{{$max}}" {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{/* list: native <datalist> tick marks on type=range (MDN range ref) */}}{{if .List}}list="{{.List}}"{{end}}
     {{if .Disabled}}disabled{{end}} {{if .Form}}form="{{.Form}}"{{end}}
     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else}}aria-label="{{$minLabel}}"{{end}}
     {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
@@ -40,6 +42,7 @@
   <input type="range" data-range="max"
     {{if .ID}}id="{{.ID}}-max"{{end}} name="{{$maxName}}" value="{{$hi}}"
     min="{{$min}}" max="{{$max}}" {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{/* list: native <datalist> tick marks on type=range (MDN range ref) */}}{{if .List}}list="{{.List}}"{{end}}
     {{if .Disabled}}disabled{{end}} {{if .Form}}form="{{.Form}}"{{end}}
     {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{else}}aria-label="{{$maxLabel}}"{{end}}
     {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}

@@ -10,13 +10,24 @@
           Title, Description, Variant, Live string
           Duration                          int
           ShowClose                         bool
-          ID                                string
+          // CloseHx: optional htmx attrs spread onto the close button so
+          // dismiss can also notify the server, e.g.
+          //   map[string]string{"hx-post": "/notifications/123/read"}
+          CloseHx map[string]string
+          ID      string
+      }
+
+      type ToastViewportArgs struct {
+          ID, Position, AriaLabel string
+          // Live: viewport live-region politeness ("polite"|"assertive").
+          Live string
       }
 */}}
 
 {{define "toast_viewport"}}
 {{- $id := or .ID "toast-viewport" -}}
 {{- $position := or .Position "bottom-right" -}}
+{{- $live := or .Live "polite" -}}
 {{- $positions := dict
     "top-right"     "top-4 right-4 flex-col items-end"
     "top-left"      "top-4 left-4 flex-col items-start"
@@ -24,7 +35,12 @@
     "bottom-right"  "bottom-4 right-4 flex-col-reverse items-end"
     "bottom-left"   "bottom-4 left-4 flex-col-reverse items-start"
     "bottom-center" "bottom-4 left-1/2 -translate-x-1/2 flex-col-reverse items-center" -}}
+{{/* Primed live region: aria-live on the persistent viewport makes toasts
+     swapped in announce as additions; aria-atomic=false so only the new
+     toast is read. polite/role=status on a freshly-injected node alone is
+     generally NOT announced. See repos/mdn/.../aria/guides/live_regions/. */}}
 <ol id="{{$id}}" role="region" aria-label="{{or .AriaLabel "Notifications"}}"
+    aria-live="{{$live}}" aria-atomic="false"
     data-slot="toast-viewport" data-position="{{$position}}"
     class="pointer-events-none fixed z-50 flex w-full max-w-[420px] gap-2 p-2 {{index $positions $position}}"></ol>
 {{end}}
@@ -48,7 +64,11 @@
   <div data-slot="toast-title" class="col-start-2 line-clamp-1 font-medium tracking-tight">{{.Title}}</div>
   {{if .Description}}<div data-slot="toast-description" class="col-start-2 text-sm text-muted-foreground">{{.Description}}</div>{{end}}
   {{if .ShowClose}}
+  {{/* CloseHx: optional htmx attrs forwarded onto the close button so dismiss
+       can notify the server while site.js still removes the node.
+       See repos/htmx/www/src/content/reference/01-attributes/. */}}
   <button type="button" data-toast-close="true" aria-label="Dismiss notification"
+    {{- range $name, $value := .CloseHx}} {{$name}}="{{$value}}"{{end}}
     class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md text-current opacity-60 transition-opacity hover:bg-current/10 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
       <path d="M18 6 6 18"/><path d="m6 6 12 12"/>

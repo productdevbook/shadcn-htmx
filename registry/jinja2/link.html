@@ -27,6 +27,7 @@
     id=none,
     aria_label=none,
     aria_labelledby=none,
+    aria_describedby=none,
     aria_current=none,
     extra_class="",
     **attrs
@@ -47,13 +48,16 @@ inline-flex items-center gap-1 rounded-sm font-medium text-primary underline-off
   {%- if is_anchor and href %} href="{{ href }}"{% endif %}
   {%- if is_anchor and resolved_target %} target="{{ resolved_target }}"{% endif %}
   {%- if is_anchor and resolved_rel %} rel="{{ resolved_rel }}"{% endif %}
-  {%- if not is_anchor %} role="link" tabindex="0"{% endif %}
+  {#- APG fallback: href is invalid on a non-anchor; expose it as data-href so
+      site.js can navigate [role=link][data-href] (link/examples/link.html). #}
+  {%- if not is_anchor %} role="link" tabindex="0"{% if href %} data-href="{{ href }}"{% endif %}{% endif %}
   data-slot="link"
   data-variant="{{ variant }}"
   {%- if external %} data-external="true"{% endif %}
   class="{{ base }} {{ variants[variant] }} {{ extra_class }}"
   {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
   {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
   {%- if aria_current %} aria-current="{{ aria_current }}"{% endif %}
   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
 >{{ text }}{% if external %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg><span class="sr-only"> (opens in new tab)</span>{% endif %}</{{ as }}>

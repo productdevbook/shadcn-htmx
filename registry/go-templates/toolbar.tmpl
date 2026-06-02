@@ -24,6 +24,9 @@
      aria-orientation="{{$orientation}}"
      {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
      {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{- /* Id(s) of the element this toolbar operates on; APG sets aria-controls on
+            the role="toolbar" element (.../patterns/toolbar/examples/toolbar.html). */}}
+     {{- if .AriaControls}} aria-controls="{{.AriaControls}}"{{end}}
      class="group/toolbar flex w-fit items-center gap-1 rounded-md border bg-card p-1 shadow-xs data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch">
   {{.Body}}
 </div>

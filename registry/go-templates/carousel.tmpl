@@ -55,7 +55,8 @@
      aria-atomic="false"
      aria-live="polite"
      tabindex="0"
-     class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg">{{.Body}}</div>
+     {{/* motion-safe:scroll-smooth → smooth pan only when prefers-reduced-motion is not reduce (vestibular trigger); overscroll-x-contain → no scroll-chaining/back-swipe past the ends. MDN: prefers-reduced-motion, overscroll-behavior. */}}
+     class="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth scrollbar-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 rounded-lg">{{.Body}}</div>
 {{end}}
 
 {{define "carousel_item"}}

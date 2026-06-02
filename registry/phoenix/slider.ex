@@ -18,7 +18,9 @@ defmodule ShadcnHtmx.Components.Slider do
   attr :value, :integer, default: nil
   attr :min, :integer, default: 0
   attr :max, :integer, default: 100
-  attr :step, :integer, default: nil
+  # :any so step accepts a number or the special string "any" (continuous
+  # range) — MDN input/range "Setting step to any".
+  attr :step, :any, default: nil
   attr :disabled, :boolean, default: false
   attr :required, :boolean, default: false
   attr :class, :string, default: nil

@@ -56,13 +56,32 @@ defmodule ShadcnHtmx.Components.Tree do
   # nil means "end node" (no aria-expanded); true/false means a parent node.
   attr :expanded, :boolean, default: nil
   attr :selected, :boolean, default: false
+  # current: "page" (the canonical current-location value) or true → "page".
+  # Distinct from selected (current = where you ARE) — APG treeview-navigation.
+  attr :current, :any, default: nil
+  # aria-level/-posinset/-setsize. REQUIRED only for lazy-loaded (htmx) trees
+  # whose full node set is not yet in the DOM (APG treeview pattern + MDN
+  # treeitem role); declared in the treeview-1b example.
+  attr :level, :integer, default: nil
+  attr :posinset, :integer, default: nil
+  attr :setsize, :integer, default: nil
   attr :disabled, :boolean, default: false
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block
 
   def tree_item(assigns) do
-    assigns = assign(assigns, :is_parent, assigns.parent || assigns.expanded != nil)
+    assigns =
+      assigns
+      |> assign(:is_parent, assigns.parent || assigns.expanded != nil)
+      |> assign(
+        :aria_current,
+        case assigns.current do
+          true -> "page"
+          false -> nil
+          other -> other
+        end
+      )
 
     ~H"""
     <li
@@ -72,6 +91,10 @@ defmodule ShadcnHtmx.Components.Tree do
       tabindex="-1"
       aria-expanded={@is_parent && (if @expanded, do: "true", else: "false")}
       aria-selected={if @selected, do: "true", else: "false"}
+      aria-current={@aria_current}
+      aria-level={@level}
+      aria-posinset={@posinset}
+      aria-setsize={@setsize}
       aria-disabled={@disabled && "true"}
       class={@class}
       {@rest}

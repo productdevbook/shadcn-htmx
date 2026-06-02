@@ -57,6 +57,10 @@ type SwitchProps = {
   readonly?: boolean
   size?: SwitchSize
   form?: string
+  // Focus this switch on initial page load (one per document). Global
+  // attribute valid on <input type="checkbox">.
+  // repos/mdn/files/en-us/web/html/reference/elements/input/index.md:410-423
+  autofocus?: boolean
   class?: ClassValue
   ariaLabel?: string
   ariaLabelledby?: string

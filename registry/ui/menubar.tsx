@@ -42,15 +42,20 @@ const menubarBase =
 export function Menubar(
   props: PropsWithChildren<{
     ariaLabel?: string
+    // Id of a visible element (e.g. a heading) that names the menubar.
+    // APG prefers aria-labelledby over aria-label when a visible label
+    // exists (menu-and-menubar-pattern.html:220-222; MDN menubar_role:32).
+    ariaLabelledby?: string
     class?: ClassValue
   }>,
 ) {
-  const { ariaLabel, class: className, children } = props
+  const { ariaLabel, ariaLabelledby, class: className, children } = props
   return (
     <div
       role="menubar"
       data-slot="menubar"
       aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
       class={cn(menubarBase, className)}
     >
       {children}
@@ -189,5 +194,22 @@ export function MenubarLabel(props: PropsWithChildren<{ class?: ClassValue }>) {
     >
       {props.children}
     </div>
+  )
+}
+
+// MenubarShortcut — presentational accelerator hint (e.g. "⌘S") shown at
+// the trailing edge of a MenubarItem. aria-hidden so AT does not announce
+// the visual glyph; expose the real shortcut to AT via aria-keyshortcuts on
+// the MenubarItem itself (passed through with the rest spread). See
+// repos/mdn/files/en-us/web/accessibility/aria/reference/attributes/aria-keyshortcuts/index.md
+export function MenubarShortcut(props: PropsWithChildren<{ class?: ClassValue }>) {
+  return (
+    <span
+      aria-hidden="true"
+      data-slot="menubar-shortcut"
+      class={cn("ml-auto text-xs tracking-widest text-muted-foreground", props.class)}
+    >
+      {props.children}
+    </span>
   )
 }
