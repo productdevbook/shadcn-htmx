@@ -1,0 +1,76 @@
+<!--
+  shadcn-htmx — raw HTML dialog snippets.
+
+  Uses the native <dialog> element. The wiring (open / close / backdrop click)
+  is JS-driven in shadcn-htmx because <dialog> doesn't have built-in trigger
+  attributes; we lean on a tiny script (see public/site.js) that listens for
+  data-dialog-trigger / data-dialog-close clicks.
+
+  Minimal inline JS to copy alongside this snippet:
+
+    <script>
+      document.addEventListener('click', (e) => {
+        const t = e.target.closest('[data-dialog-trigger]')
+        if (t) document.getElementById(t.dataset.dialogTarget)?.showModal()
+        const c = e.target.closest('[data-dialog-close]')
+        if (c) c.closest('dialog')?.close()
+      })
+      document.querySelectorAll('dialog[data-close-on-backdrop="true"]').forEach((d) => {
+        d.addEventListener('click', (e) => { if (e.target === d) d.close() })
+      })
+    </script>
+-->
+
+<!-- Trigger button -->
+<button type="button"
+        data-dialog-trigger="true"
+        data-dialog-target="confirm-delete"
+        aria-haspopup="dialog"
+        class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+  Delete item
+</button>
+
+<!-- The dialog itself -->
+<dialog id="confirm-delete"
+        data-slot="dialog"
+        data-close-on-backdrop="true"
+        aria-labelledby="confirm-delete-title"
+        aria-describedby="confirm-delete-description"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm">
+
+  <div data-slot="dialog-header" class="flex flex-col gap-1.5 text-left">
+    <h2 id="confirm-delete-title" data-slot="dialog-title"
+        class="text-lg leading-none font-semibold">
+      Delete item?
+    </h2>
+    <p id="confirm-delete-description" data-slot="dialog-description"
+       class="text-sm text-muted-foreground">
+      This action cannot be undone. The item will be permanently removed.
+    </p>
+  </div>
+
+  <div data-slot="dialog-body" class="text-sm text-foreground">
+    You're about to delete <strong>Untitled draft</strong>.
+  </div>
+
+  <div data-slot="dialog-footer"
+       class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+    <button type="button" data-dialog-close="true"
+            class="inline-flex h-9 items-center justify-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+      Cancel
+    </button>
+    <button type="button"
+            hx-post="/items/42" hx-target="closest dialog" hx-swap="none"
+            data-dialog-close="true"
+            class="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-white hover:bg-destructive/90">
+      Delete
+    </button>
+  </div>
+
+  <button type="button" data-dialog-close="true" aria-label="Close"
+          class="absolute top-4 right-4 inline-flex size-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </svg>
+  </button>
+</dialog>

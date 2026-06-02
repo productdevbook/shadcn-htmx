@@ -1,0 +1,38 @@
+{{/*
+  Combobox templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Native <input list> + <datalist>. Browser handles everything; no JS.
+
+      type ComboboxArgs struct {
+          ID, Name, Placeholder, Value, AriaLabel string
+          Options []ComboboxOption
+          Required, Disabled bool
+          // For server-filter: pass HxGet/HxTrigger/HxTarget/HxSwap and
+          // an empty Options slice; the datalist will be populated by
+          // htmx response.
+          HxGet, HxTrigger, HxTarget, HxSwap string
+      }
+      type ComboboxOption struct{ Value, Label string }
+*/}}
+
+{{define "combobox"}}
+<span data-slot="combobox" class="inline-block w-full">
+  <input type="text" id="{{.ID}}" {{if .Name}}name="{{.Name}}"{{end}} list="{{.ID}}-list"
+         {{if .Value}}value="{{.Value}}"{{end}}
+         {{if .Placeholder}}placeholder="{{.Placeholder}}"{{end}}
+         {{if .Required}}required{{end}} {{if .Disabled}}disabled{{end}}
+         {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+         {{if .HxGet}}hx-get="{{.HxGet}}"{{end}}
+         {{if .HxTrigger}}hx-trigger="{{.HxTrigger}}"{{end}}
+         {{if .HxTarget}}hx-target="{{.HxTarget}}"{{end}}
+         {{if .HxSwap}}hx-swap="{{.HxSwap}}"{{end}}
+         autocomplete="off"
+         class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+  <datalist id="{{.ID}}-list" data-slot="combobox-list">
+    {{range .Options}}<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>{{end}}
+  </datalist>
+</span>
+{{end}}
+
+{{define "combobox_option"}}
+<option value="{{.Value}}"{{if .Label}} label="{{.Label}}"{{end}}>
+{{end}}

@@ -1,0 +1,44 @@
+{{/*
+  Select template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/select.tsx. Native <select> + a chevron overlay.
+
+  Usage:
+
+      type SelectArgs struct {
+          ID, Name, Form, Autocomplete string
+          Required, Disabled, Multiple bool
+          Size int
+          AriaLabel, AriaLabelledby, AriaDescribedby string
+          AriaInvalid, AriaRequired string
+          // The <option>s, pre-rendered.
+          Body template.HTML
+          Attrs map[string]string
+      }
+*/}}
+
+{{define "select"}}
+{{- $base := "peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70" -}}
+<span class="relative inline-flex w-full">
+  <select class="{{$base}}"
+          {{- if .ID}} id="{{.ID}}"{{end}}
+          {{- if .Name}} name="{{.Name}}"{{end}}
+          {{- if .Required}} required{{end}}
+          {{- if .Disabled}} disabled{{end}}
+          {{- if .Multiple}} multiple{{end}}
+          {{- if .Size}} size="{{.Size}}"{{end}}
+          {{- if .Form}} form="{{.Form}}"{{end}}
+          {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+          {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+          {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+          {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+          {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+          {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+          data-slot="select"
+          {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >{{.Body}}</select>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground peer-disabled:opacity-50" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</span>
+{{end}}

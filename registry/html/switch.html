@@ -1,0 +1,61 @@
+<!--
+  shadcn-htmx — raw HTML switch snippets.
+
+  Mirrors registry/ui/switch.tsx. Native <input type="checkbox" role="switch">
+  + a thumb span on top, all styled with Tailwind utilities. No JS required.
+
+  TRACK base:  relative inline-flex shrink-0 items-center rounded-full border
+               border-transparent shadow-xs transition-all align-middle
+  INPUT base:  peer absolute inset-0 size-full cursor-pointer appearance-none
+               rounded-full outline-none transition-colors
+               focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+               disabled:cursor-not-allowed disabled:opacity-50
+               bg-input dark:bg-input/80 checked:bg-primary
+  THUMB base:  pointer-events-none absolute top-1/2 left-px -translate-y-1/2
+               rounded-full bg-background transition-transform
+               peer-checked:translate-x-[calc(100%-2px)]
+               dark:peer-checked:bg-primary-foreground dark:bg-foreground
+-->
+
+<!-- Basic with label -->
+<label for="notifications" class="flex items-center gap-2 text-sm font-medium">
+  <span data-slot="switch" data-size="default"
+        class="relative inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all align-middle h-[1.15rem] w-8">
+    <input id="notifications" name="notifications" type="checkbox" role="switch" checked
+           class="peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 bg-input dark:bg-input/80 checked:bg-primary">
+    <span class="pointer-events-none absolute top-1/2 left-px -translate-y-1/2 rounded-full bg-background transition-transform peer-checked:translate-x-[calc(100%-2px)] dark:peer-checked:bg-primary-foreground dark:bg-foreground size-4" data-slot="switch-thumb" aria-hidden="true"></span>
+  </span>
+  Enable notifications
+</label>
+
+<!-- Small variant -->
+<label for="compact" class="flex items-center gap-2 text-sm">
+  <span data-slot="switch" data-size="sm"
+        class="relative inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all align-middle h-3.5 w-6">
+    <input id="compact" name="compact" type="checkbox" role="switch"
+           class="peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 bg-input dark:bg-input/80 checked:bg-primary">
+    <span class="pointer-events-none absolute top-1/2 left-px -translate-y-1/2 rounded-full bg-background transition-transform peer-checked:translate-x-[calc(100%-2px)] dark:peer-checked:bg-primary-foreground dark:bg-foreground size-3" aria-hidden="true"></span>
+  </span>
+  Compact mode
+</label>
+
+<!-- Disabled (off) -->
+<label class="flex items-center gap-2 text-sm peer-disabled:opacity-50">
+  <span class="relative inline-flex shrink-0 items-center rounded-full border border-transparent h-[1.15rem] w-8">
+    <input type="checkbox" role="switch" disabled
+           class="peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full bg-input disabled:cursor-not-allowed disabled:opacity-50">
+    <span class="pointer-events-none absolute top-1/2 left-px -translate-y-1/2 size-4 rounded-full bg-background" aria-hidden="true"></span>
+  </span>
+  Disabled
+</label>
+
+<!-- htmx — save on toggle -->
+<label class="flex items-center gap-2 text-sm">
+  <span class="relative inline-flex shrink-0 items-center rounded-full border border-transparent h-[1.15rem] w-8">
+    <input type="checkbox" role="switch" name="favorite"
+           hx-post="/items/42/favorite" hx-trigger="change" hx-swap="none"
+           class="peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 bg-input checked:bg-primary">
+    <span class="pointer-events-none absolute top-1/2 left-px -translate-y-1/2 size-4 rounded-full bg-background transition-transform peer-checked:translate-x-[calc(100%-2px)]" aria-hidden="true"></span>
+  </span>
+  Favourite (saves on toggle)
+</label>

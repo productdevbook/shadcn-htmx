@@ -1,0 +1,59 @@
+<!--
+  shadcn-htmx — raw HTML accordion snippet.
+
+  Native <details> + <summary>. For exclusive (single-expand) accordions
+  use the new HTML `name` attribute that groups items — browser handles
+  the "close the others" behaviour with zero JS.
+
+  For arrow-key navigation between summaries and Home/End shortcuts copy
+  the inline JS at the bottom.
+-->
+
+<!-- Single-expand: items share data-group-name=name attribute -->
+<div id="faq" data-slot="accordion" data-accordion data-type="single" data-group-name="faq" class="w-full">
+
+  <details name="faq" data-slot="accordion-item" data-value="q1" open class="border-b last:border-b-0">
+    <summary data-slot="accordion-trigger"
+      class="flex cursor-pointer items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none select-none marker:hidden hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 list-none [&::-webkit-details-marker]:hidden [details[open]>&_[data-slot=accordion-chevron]]:rotate-180">
+      What's htmx?
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+           data-slot="accordion-chevron" class="pointer-events-none size-4 shrink-0 translate-y-0.5 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </summary>
+    <div data-slot="accordion-content" class="overflow-hidden pt-0 pb-4 text-sm">
+      Hypermedia-driven HTML extensions. AJAX, WebSockets, server-sent events with attributes.
+    </div>
+  </details>
+
+  <details name="faq" data-slot="accordion-item" data-value="q2" class="border-b last:border-b-0">
+    <summary data-slot="accordion-trigger" class="flex cursor-pointer items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none select-none marker:hidden hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 list-none [&::-webkit-details-marker]:hidden [details[open]>&_[data-slot=accordion-chevron]]:rotate-180">
+      Why pair it with Tailwind v4?
+      <svg data-slot="accordion-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none size-4 shrink-0 translate-y-0.5 text-muted-foreground transition-transform duration-200" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </summary>
+    <div data-slot="accordion-content" class="overflow-hidden pt-0 pb-4 text-sm">
+      Utility-first CSS keeps the markup self-explanatory and the bundle small.
+    </div>
+  </details>
+</div>
+
+<!-- Arrow-key navigation across summaries -->
+<script>
+  document.addEventListener('keydown', function (e) {
+    var t = e.target.closest && e.target.closest('[data-slot="accordion-trigger"]')
+    if (!t) return
+    var group = t.closest('[data-accordion]'); if (!group) return
+    var keys = { ArrowDown: 1, ArrowUp: -1, Home: 'h', End: 'e' }
+    if (!(e.key in keys)) return
+    e.preventDefault()
+    var list = [].slice.call(group.querySelectorAll('details:not([data-disabled="true"]) > [data-slot="accordion-trigger"]'))
+    var i = list.indexOf(t), d = keys[e.key], to
+    if (d === 1)  to = list[(i + 1) % list.length]
+    if (d === -1) to = list[(i - 1 + list.length) % list.length]
+    if (d === 'h') to = list[0]
+    if (d === 'e') to = list[list.length - 1]
+    if (to) to.focus()
+  })
+</script>

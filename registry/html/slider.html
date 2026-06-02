@@ -1,0 +1,19 @@
+<!--
+  shadcn-htmx — raw HTML slider snippet.
+
+  Native <input type="range"> with Tailwind utilities to style the
+  track + thumb cross-browser. ARIA + keyboard are handled by the
+  platform — no JS required.
+-->
+
+<span data-slot="slider" class="relative flex w-full touch-none items-center select-none">
+  <input type="range" name="volume" min="0" max="100" value="50"
+         aria-label="Volume"
+         class="h-2 w-full cursor-pointer appearance-none bg-transparent outline-none
+                [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-muted
+                [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-muted
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm
+                [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm
+                focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50
+                disabled:cursor-not-allowed">
+</span>

@@ -1,0 +1,28 @@
+{{/* Pagination templates — shadcn-htmx, htmx v4 + Tailwind v4. */}}
+
+{{define "pagination"}}
+<nav data-slot="pagination" aria-label="{{or .AriaLabel "Pagination"}}"
+     class="mx-auto flex w-full justify-center">
+  <ul class="flex flex-row items-center gap-1">{{.Body}}</ul>
+</nav>
+{{end}}
+
+{{define "pagination_page"}}
+{{- $base := "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" -}}
+{{- $on := "" -}}{{- if .Active -}}{{- $on = "bg-primary text-primary-foreground hover:bg-primary/90" -}}{{- end -}}
+<li><a href="{{.Href}}" data-slot="pagination-link" {{if .Active}}aria-current="page"{{end}} class="{{$base}} {{$on}}">{{.N}}</a></li>
+{{end}}
+
+{{define "pagination_prev"}}
+{{- $base := "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" -}}
+<li><a href="{{.Href}}" data-slot="pagination-prev" aria-label="Previous page" {{if .Disabled}}aria-disabled="true" {{end}}class="{{$base}} gap-1 pl-2.5 {{if .Disabled}}pointer-events-none opacity-50{{end}}">‹ Previous</a></li>
+{{end}}
+
+{{define "pagination_next"}}
+{{- $base := "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none" -}}
+<li><a href="{{.Href}}" data-slot="pagination-next" aria-label="Next page" {{if .Disabled}}aria-disabled="true" {{end}}class="{{$base}} gap-1 pr-2.5 {{if .Disabled}}pointer-events-none opacity-50{{end}}">Next ›</a></li>
+{{end}}
+
+{{define "pagination_ellipsis"}}
+<li><span data-slot="pagination-ellipsis" aria-hidden="true" class="flex h-9 w-9 items-center justify-center text-muted-foreground">…</span></li>
+{{end}}

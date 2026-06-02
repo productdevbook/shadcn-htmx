@@ -1,0 +1,21 @@
+{{/*
+  Separator template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/separator.tsx.
+
+      type SeparatorArgs struct {
+          Orientation string // "horizontal" (default) | "vertical"
+          Decorative  *bool  // nil/true = visual only; false = semantic <hr> / role=separator
+          ID          string
+      }
+*/}}
+
+{{define "separator"}}
+{{- $orientation := or .Orientation "horizontal" -}}
+{{- $decorative := true -}}{{- if .Decorative}}{{- $decorative = deref .Decorative}}{{end -}}
+{{- $base := "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px" -}}
+{{- if and (not $decorative) (eq $orientation "horizontal") -}}
+<hr {{if .ID}}id="{{.ID}}" {{end}}data-slot="separator" data-orientation="horizontal" aria-orientation="horizontal" class="{{$base}} border-0">
+{{- else -}}
+<div {{if .ID}}id="{{.ID}}" {{end}}data-slot="separator" data-orientation="{{$orientation}}"{{if not $decorative}} role="separator" aria-orientation="{{$orientation}}"{{end}} class="{{$base}}"></div>
+{{- end -}}
+{{end}}

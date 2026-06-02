@@ -1,0 +1,45 @@
+<!--
+  shadcn-htmx — raw HTML label snippets.
+
+  Drop these onto any page with Tailwind v4 + the shadcn theme variables.
+
+  BASE (shared by every label):
+    flex items-center gap-2 text-sm leading-none font-medium select-none
+    group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50
+    peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+-->
+
+<!-- Explicit (preferred) — for points at the input id -->
+<label for="email" data-slot="label"
+  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+  Email
+</label>
+<input id="email" name="email" type="email"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs">
+
+<!-- Implicit — label wraps the input; click anywhere on the label focuses it -->
+<label data-slot="label"
+  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+  Email
+  <input name="email" type="email"
+    class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs">
+</label>
+
+<!-- Required indicator — visual + an aria-hidden asterisk inside the label -->
+<label for="password" data-slot="label"
+  class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+  Password <span class="text-destructive" aria-hidden="true">*</span>
+</label>
+<input id="password" name="password" type="password" required aria-required="true"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs">
+
+<!-- Peer-disabled — wrap label+input in a group and add `peer` to the input;
+     the label dims itself when the input is disabled -->
+<div class="flex flex-col gap-2">
+  <input id="locked" name="locked" type="text" disabled value="locked"
+         class="peer flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs disabled:opacity-50">
+  <label for="locked" data-slot="label"
+    class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50">
+    Locked field (auto-dims when input is disabled)
+  </label>
+</div>

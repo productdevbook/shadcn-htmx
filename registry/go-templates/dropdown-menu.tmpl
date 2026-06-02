@@ -1,0 +1,44 @@
+{{/* DropdownMenu templates — shadcn-htmx, htmx v4 + Tailwind v4.
+     Native [popover] + APG menu keyboard contract via public/site.js. */}}
+
+{{define "dropdown_trigger"}}
+<button {{if .ID}}id="{{.ID}}"{{end}} type="button"
+        popovertarget="{{.MenuFor}}" popovertargetaction="toggle"
+        data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        class="{{.Class}}">{{.Label}}</button>
+{{end}}
+
+{{define "dropdown_menu"}}
+<div id="{{.ID}}" popover="auto" role="menu" data-slot="dropdown-menu"
+     class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
+  {{.Body}}
+</div>
+{{end}}
+
+{{define "dropdown_item"}}
+{{- $variant := or .Variant "default" -}}
+{{- $base := "relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0" -}}
+{{- $destr := "" -}}{{- if eq $variant "destructive" -}}{{- $destr = "text-destructive focus:bg-destructive/10 focus:text-destructive" -}}{{- end -}}
+{{if .Href}}
+<a role="menuitem" tabindex="-1" href="{{.Href}}" data-slot="dropdown-menu-item"
+   {{if .Disabled}}data-disabled="true"{{end}}
+   class="{{$base}} {{$destr}}"
+   {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Label}}</a>
+{{else}}
+<button type="button" role="menuitem" tabindex="-1" data-slot="dropdown-menu-item"
+        {{if .Disabled}}data-disabled="true"{{end}}
+        {{- if .Onclick}} onclick="{{.Onclick}}"{{end}}
+        class="{{$base}} {{$destr}}"
+        {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Label}}</button>
+{{end}}
+{{end}}
+
+{{define "dropdown_separator"}}
+<div role="separator" data-slot="dropdown-menu-separator" class="-mx-1 my-1 h-px bg-border"></div>
+{{end}}
+
+{{define "dropdown_label"}}
+<div data-slot="dropdown-menu-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{.Text}}</div>
+{{end}}

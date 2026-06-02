@@ -1,0 +1,59 @@
+{{/*
+  Toast templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/toast.tsx.
+
+  Render {{template "toast_viewport"}} once in your layout. Endpoints that
+  flash a notification return a {{template "toast" ...}} fragment and target
+  the viewport with hx-target="#toast-viewport" hx-swap="beforeend".
+
+      type ToastArgs struct {
+          Title, Description, Variant, Live string
+          Duration                          int
+          ShowClose                         bool
+          ID                                string
+      }
+*/}}
+
+{{define "toast_viewport"}}
+{{- $id := or .ID "toast-viewport" -}}
+{{- $position := or .Position "bottom-right" -}}
+{{- $positions := dict
+    "top-right"     "top-4 right-4 flex-col items-end"
+    "top-left"      "top-4 left-4 flex-col items-start"
+    "top-center"    "top-4 left-1/2 -translate-x-1/2 flex-col items-center"
+    "bottom-right"  "bottom-4 right-4 flex-col-reverse items-end"
+    "bottom-left"   "bottom-4 left-4 flex-col-reverse items-start"
+    "bottom-center" "bottom-4 left-1/2 -translate-x-1/2 flex-col-reverse items-center" -}}
+<ol id="{{$id}}" role="region" aria-label="{{or .AriaLabel "Notifications"}}"
+    data-slot="toast-viewport" data-position="{{$position}}"
+    class="pointer-events-none fixed z-50 flex w-full max-w-[420px] gap-2 p-2 {{index $positions $position}}"></ol>
+{{end}}
+
+{{define "toast"}}
+{{- $variant := or .Variant "default" -}}
+{{- $live := or .Live "polite" -}}
+{{- $duration := or .Duration 5000 -}}
+{{- $base := "pointer-events-auto relative grid w-full grid-cols-[0_1fr_auto] items-start gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground shadow-lg has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current animate-[scn-toast-in_180ms_ease-out] data-[state=closed]:animate-[scn-toast-out_140ms_ease-in]" -}}
+{{- $variants := dict
+    "default" ""
+    "destructive" "border-destructive/30 bg-destructive/5 text-destructive *:data-[slot=toast-description]:text-destructive/90"
+    "success" "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 *:data-[slot=toast-description]:text-emerald-700/90 dark:*:data-[slot=toast-description]:text-emerald-300/90"
+    "warning" "border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200 *:data-[slot=toast-description]:text-amber-800/90 dark:*:data-[slot=toast-description]:text-amber-200/90"
+    "info" "border-sky-500/30 bg-sky-500/5 text-sky-800 dark:text-sky-200 *:data-[slot=toast-description]:text-sky-800/90 dark:*:data-[slot=toast-description]:text-sky-200/90" -}}
+{{- $role := "status" -}}{{- if eq $live "assertive" -}}{{- $role = "alert" -}}{{- end -}}
+<li {{if .ID}}id="{{.ID}}"{{end}}
+    data-slot="toast" data-variant="{{$variant}}" data-state="open" data-duration="{{$duration}}"
+    role="{{$role}}" aria-live="{{$live}}" aria-atomic="true"
+    class="{{$base}} {{index $variants $variant}}">
+  <div data-slot="toast-title" class="col-start-2 line-clamp-1 font-medium tracking-tight">{{.Title}}</div>
+  {{if .Description}}<div data-slot="toast-description" class="col-start-2 text-sm text-muted-foreground">{{.Description}}</div>{{end}}
+  {{if .ShowClose}}
+  <button type="button" data-toast-close="true" aria-label="Dismiss notification"
+    class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md text-current opacity-60 transition-opacity hover:bg-current/10 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </svg>
+  </button>
+  {{end}}
+</li>
+{{end}}

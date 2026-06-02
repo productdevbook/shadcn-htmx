@@ -1,0 +1,61 @@
+<!--
+  shadcn-htmx — raw HTML card snippet.
+
+  Mirrors registry/ui/card.tsx. Just divs with the right Tailwind classes —
+  no JS, no special CSS.
+
+  CARD:             flex flex-col gap-6 rounded-xl border bg-card py-6
+                    text-card-foreground shadow-sm
+  CARD HEADER:      @container/card-header grid auto-rows-min
+                    grid-rows-[auto_auto] items-start gap-2 px-6
+                    has-data-[slot=card-action]:grid-cols-[1fr_auto]
+                    [.border-b]:pb-6
+  CARD TITLE:       leading-none font-semibold
+  CARD DESCRIPTION: text-sm text-muted-foreground
+  CARD ACTION:      col-start-2 row-span-2 row-start-1 self-start
+                    justify-self-end
+  CARD CONTENT:     px-6
+  CARD FOOTER:      flex items-center px-6 [.border-t]:pt-6
+-->
+
+<!-- Basic -->
+<div data-slot="card"
+  class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm">
+  <div data-slot="card-header"
+    class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
+    <div data-slot="card-title" class="leading-none font-semibold">Account</div>
+    <div data-slot="card-description" class="text-sm text-muted-foreground">
+      Update your account preferences and notification settings.
+    </div>
+  </div>
+  <div data-slot="card-content" class="px-6">
+    <p class="text-sm">Body content goes here.</p>
+  </div>
+  <div data-slot="card-footer" class="flex items-center px-6 [.border-t]:pt-6">
+    <button class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+      Save
+    </button>
+  </div>
+</div>
+
+<!-- With CardAction (top-right header slot) -->
+<div data-slot="card"
+  class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm">
+  <div data-slot="card-header"
+    class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
+    <div data-slot="card-title" class="leading-none font-semibold">Untitled draft</div>
+    <div data-slot="card-description" class="text-sm text-muted-foreground">
+      Last edited 12 minutes ago.
+    </div>
+    <div data-slot="card-action" class="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
+      <button class="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="More">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+          <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div data-slot="card-content" class="px-6">
+    <p class="text-sm text-muted-foreground">3 unread comments.</p>
+  </div>
+</div>

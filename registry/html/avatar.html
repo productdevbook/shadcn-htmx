@@ -1,0 +1,34 @@
+<!--
+  shadcn-htmx — raw HTML avatar snippet.
+
+  Mirrors registry/ui/avatar.tsx. Fallback layer + <img> on top; onerror
+  hides a broken image so the fallback shows through.
+-->
+
+<!-- With image -->
+<span data-slot="avatar" data-size="default"
+  class="group/avatar relative inline-flex shrink-0 overflow-hidden rounded-full select-none size-8">
+  <span data-slot="avatar-fallback"
+    class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">MK</span>
+  <img src="/users/mk.jpg" alt="Mehmet K" data-slot="avatar-image"
+       onerror="this.style.display='none'"
+       class="absolute inset-0 aspect-square size-full object-cover">
+</span>
+
+<!-- Fallback-only (no src) -->
+<span data-slot="avatar" data-size="default" role="img" aria-label="Mehmet K"
+  class="group/avatar relative inline-flex shrink-0 overflow-hidden rounded-full select-none size-8">
+  <span data-slot="avatar-fallback"
+    class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">MK</span>
+</span>
+
+<!-- Group (overlapping stack) -->
+<div data-slot="avatar-group" class="group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background">
+  <span data-slot="avatar" data-size="default" role="img" aria-label="A. B" class="group/avatar relative inline-flex size-8 shrink-0 overflow-hidden rounded-full select-none">
+    <span data-slot="avatar-fallback" class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">AB</span>
+  </span>
+  <span data-slot="avatar" data-size="default" role="img" aria-label="C. D" class="group/avatar relative inline-flex size-8 shrink-0 overflow-hidden rounded-full select-none">
+    <span data-slot="avatar-fallback" class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">CD</span>
+  </span>
+  <div data-slot="avatar-group-count" class="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background">+3</div>
+</div>

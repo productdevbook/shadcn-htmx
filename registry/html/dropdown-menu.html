@@ -1,0 +1,49 @@
+<!--
+  shadcn-htmx — raw HTML dropdown menu snippet.
+
+  Native [popover] for open/close + APG menu keyboard nav via the inline JS.
+-->
+
+<button type="button" popovertarget="user-menu" popovertargetaction="toggle"
+        data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        class="inline-flex h-9 items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+  Account
+</button>
+
+<div id="user-menu" popover="auto" role="menu" data-slot="dropdown-menu"
+     class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
+  <div data-slot="dropdown-menu-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">My account</div>
+  <button type="button" role="menuitem" tabindex="-1" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Profile</button>
+  <button type="button" role="menuitem" tabindex="-1" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0">Settings</button>
+  <div role="separator" class="-mx-1 my-1 h-px bg-border"></div>
+  <button type="button" role="menuitem" tabindex="-1" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 text-destructive focus:bg-destructive/10 focus:text-destructive">Log out</button>
+</div>
+
+<!-- Keyboard contract — copy once per page -->
+<script>
+  document.querySelectorAll('[data-slot="dropdown-menu"]').forEach(function (menu) {
+    menu.addEventListener('toggle', function (e) {
+      if (e.newState === 'open') {
+        var first = menu.querySelector('[role="menuitem"]:not([data-disabled="true"])')
+        if (first) setTimeout(function () { first.focus() }, 0)
+      }
+    })
+  })
+  document.addEventListener('keydown', function (e) {
+    var item = e.target.closest && e.target.closest('[role="menuitem"]'); if (!item) return
+    var menu = item.closest('[data-slot="dropdown-menu"]'); if (!menu) return
+    var items = [].slice.call(menu.querySelectorAll('[role="menuitem"]:not([data-disabled="true"])'))
+    var i = items.indexOf(item)
+    if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus() }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus() }
+    else if (e.key === 'Home') { e.preventDefault(); items[0].focus() }
+    else if (e.key === 'End') { e.preventDefault(); items[items.length - 1].focus() }
+    else if (e.key.length === 1 && /\S/.test(e.key)) {
+      var ch = e.key.toLowerCase()
+      for (var k = 1; k <= items.length; k++) {
+        var c = items[(i + k) % items.length]
+        if ((c.textContent || '').trim().toLowerCase().startsWith(ch)) { c.focus(); break }
+      }
+    }
+  })
+</script>

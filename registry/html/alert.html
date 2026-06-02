@@ -1,0 +1,45 @@
+<!--
+  shadcn-htmx — raw HTML alert snippets.
+
+  Spec note (important): shadcn upstream hardcodes role="alert" (assertive,
+  interrupts screen reader). APG prefers role="status" (polite) for most
+  informational messages, and no role at all for static content. Pick:
+
+    - role="status"  + aria-live="polite"     — "Saved", "Filter applied"
+    - role="alert"   + aria-live="assertive"  — "Connection lost", critical errors
+    - (no role)                               — static page-load content
+
+  BASE:
+    relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5
+    rounded-lg border px-4 py-3 text-sm
+    has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3
+    [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current
+-->
+
+<!-- Default (polite) -->
+<div data-slot="alert" data-variant="default" role="status" aria-live="polite" aria-atomic="true"
+  class="relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border bg-card px-4 py-3 text-sm text-card-foreground has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+  <div data-slot="alert-title" class="col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight">Heads up</div>
+  <div data-slot="alert-description" class="col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed">
+    You can add components to your app using the CLI.
+  </div>
+</div>
+
+<!-- Destructive (assertive — critical error) -->
+<div data-slot="alert" data-variant="destructive" role="alert" aria-live="assertive" aria-atomic="true"
+  class="relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="15" y1="9" x2="9" y2="15" />
+    <line x1="9" y1="9" x2="15" y2="15" />
+  </svg>
+  <div data-slot="alert-title" class="col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight">Connection lost</div>
+  <div data-slot="alert-description" class="col-start-2 grid justify-items-start gap-1 text-sm text-destructive/90">
+    Trying to reconnect…
+  </div>
+</div>

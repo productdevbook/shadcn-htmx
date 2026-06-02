@@ -1,0 +1,43 @@
+{# Badge macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/badge.tsx. Renders <span> by default; pass tag="a"
+   + href for a link badge, tag="button" for an interactive one.
+
+   Usage:
+     {% from "components/badge.html" import badge %}
+     {{ badge("New", variant="default") }}
+     {{ badge("Unstable", variant="destructive") }}
+     {{ badge("Docs", tag="a", href="/docs") }} #}
+
+{% macro badge(
+    text,
+    variant="default",
+    tag="span",
+    href=none,
+    id=none,
+    aria_label=none,
+    aria_labelledby=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3
+{%- endset -%}
+{%- set variants = {
+    "default": "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+    "secondary": "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+    "destructive": "bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
+    "outline": "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+    "ghost": "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+    "link": "text-primary underline-offset-4 [a&]:hover:underline"
+} -%}
+<{{ tag }}
+  {%- if id %} id="{{ id }}"{% endif %}
+  {%- if href and tag == "a" %} href="{{ href }}"{% endif %}
+  {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+  {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+  data-slot="badge"
+  data-variant="{{ variant }}"
+  class="{{ base }} {{ variants[variant] }} {{ extra_class }}"
+  {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ text }}</{{ tag }}>
+{% endmacro %}

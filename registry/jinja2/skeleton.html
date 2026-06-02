@@ -1,0 +1,10 @@
+{# Skeleton macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/skeleton.tsx. #}
+
+{% macro skeleton(aria_label="Loading", id=none, extra_class="") %}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  role="status" aria-busy="true" aria-label="{{ aria_label }}"
+  data-slot="skeleton"
+  class="animate-pulse rounded-md bg-muted {{ extra_class }}"></div>
+{% endmacro %}

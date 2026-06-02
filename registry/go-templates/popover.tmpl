@@ -1,0 +1,30 @@
+{{/*
+  Popover templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Native HTML Popover API.
+
+      type PopoverArgs struct {
+          ID, Mode, Side string
+          Body           template.HTML
+      }
+      type PopoverTriggerArgs struct {
+          Label, PopoverTarget, Action, Class, ID string
+      }
+*/}}
+
+{{define "popover"}}
+{{- $mode := or .Mode "auto" -}}
+{{- $side := or .Side "bottom" -}}
+{{- $sides := dict "top" "anchor-popover-top" "bottom" "anchor-popover-bottom" "left" "anchor-popover-left" "right" "anchor-popover-right" -}}
+<div id="{{.ID}}" popover="{{$mode}}" data-slot="popover" data-side="{{$side}}"
+     class="z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{index $sides $side}}">
+  {{.Body}}
+</div>
+{{end}}
+
+{{define "popover_trigger"}}
+<button {{if .ID}}id="{{.ID}}"{{end}} type="button"
+        popovertarget="{{.PopoverTarget}}"
+        popovertargetaction="{{or .Action "toggle"}}"
+        data-slot="popover-trigger"
+        class="{{.Class}}">{{.Label}}</button>
+{{end}}

@@ -1,0 +1,27 @@
+{{/*
+  Tooltip template — shadcn-htmx, htmx v4 + Tailwind v4.
+
+      type TooltipArgs struct {
+          ID, Content, Side string
+          Body              template.HTML  // the trigger element
+          Class             string         // optional: appended to the wrapper span
+          ContentClass      string         // optional: appended to the content span
+      }
+*/}}
+
+{{define "tooltip"}}
+{{- $side := or .Side "top" -}}
+{{- $wrapper := "relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 [&:focus-within>[data-slot=tooltip-content]]:opacity-100 [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!" -}}
+{{- $contentBase := "pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md opacity-0 transition-opacity duration-150 dark:bg-foreground dark:text-background" -}}
+{{- $sides := dict
+    "top"    "left-1/2 -translate-x-1/2 bottom-[calc(100%+0.5rem)]"
+    "bottom" "left-1/2 -translate-x-1/2 top-[calc(100%+0.5rem)]"
+    "left"   "top-1/2 -translate-y-1/2 right-[calc(100%+0.5rem)]"
+    "right"  "top-1/2 -translate-y-1/2 left-[calc(100%+0.5rem)]" -}}
+<span data-slot="tooltip" data-side="{{$side}}" data-tooltip-trigger
+      class="{{$wrapper}} {{.Class}}" aria-describedby="{{.ID}}">
+  {{.Body}}
+  <span id="{{.ID}}" role="tooltip" data-slot="tooltip-content" data-side="{{$side}}"
+        class="{{$contentBase}} {{index $sides $side}} {{.ContentClass}}">{{.Content}}</span>
+</span>
+{{end}}

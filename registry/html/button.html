@@ -1,0 +1,182 @@
+<!--
+  shadcn-htmx — raw HTML button snippets.
+
+  No template engine, no JavaScript framework. Just the class strings you need
+  on a real <button> element, ready to drop into any HTML file that loads
+  Tailwind CSS v4 and (optionally) htmx v4.
+
+  Requirements:
+    1. Tailwind CSS v4 set up in your project, OR include the Play CDN for
+       quick experiments:
+         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    2. htmx v4 if you want the hx-* attributes to do anything:
+         <script src="https://unpkg.com/htmx.org@4.0.0/dist/htmx.min.js" defer></script>
+    3. The CSS variables shadcn relies on (--background, --foreground, --primary,
+       --primary-foreground, --border, --ring, --destructive, etc.). Copy the
+       :root and .dark blocks from app/styles/input.css into your stylesheet —
+       these are framework-agnostic.
+
+  The base class string is the same for every snippet — only the variant-
+  specific colour utilities and the size-specific dimensions change. We keep
+  the full string in each snippet so you can copy a single block and paste it
+  into a working button immediately.
+
+  BASE (shared by every variant):
+    inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm
+    font-medium whitespace-nowrap transition-all outline-none
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    disabled:pointer-events-none disabled:opacity-50
+    aria-disabled:pointer-events-none aria-disabled:opacity-50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    [&_svg]:pointer-events-none [&_svg]:shrink-0
+    [&_svg:not([class*='size-'])]:size-4
+    [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70
+-->
+
+<!-- ─── Variants ────────────────────────────────────────────────────── -->
+
+<!-- Default -->
+<button type="button" data-slot="button" data-variant="default" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+  Save
+</button>
+
+<!-- Secondary -->
+<button type="button" data-slot="button" data-variant="secondary" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-4 py-2">
+  Cancel
+</button>
+
+<!-- Destructive -->
+<button type="button" data-slot="button" data-variant="destructive" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 h-9 px-4 py-2">
+  Delete
+</button>
+
+<!-- Outline -->
+<button type="button" data-slot="button" data-variant="outline" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-9 px-4 py-2">
+  Outline
+</button>
+
+<!-- Ghost -->
+<button type="button" data-slot="button" data-variant="ghost" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2">
+  Ghost
+</button>
+
+<!-- Link -->
+<button type="button" data-slot="button" data-variant="link" data-size="default"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-9 px-4 py-2">
+  Learn more
+</button>
+
+<!-- ─── Sizes (with the default variant) ────────────────────────────── -->
+
+<!-- xs — 24px tall, dense rows -->
+<button type="button" data-slot="button" data-size="xs"
+  class="inline-flex shrink-0 items-center justify-center gap-1 rounded-md font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-6 px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3">
+  Tiny
+</button>
+
+<!-- Small -->
+<button type="button" data-slot="button" data-size="sm"
+  class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 has-[>svg]:px-2.5">
+  Small
+</button>
+
+<!-- Large -->
+<button type="button" data-slot="button" data-size="lg"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 has-[>svg]:px-4">
+  Large
+</button>
+
+<!-- ─── Icon-only sizes (always pair with aria-label) ───────────────── -->
+
+<!-- icon-xs — 24×24 -->
+<button type="button" data-slot="button" data-size="icon-xs" aria-label="Add"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3 bg-primary text-primary-foreground hover:bg-primary/90 size-6 rounded-md">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14" /><path d="M12 5v14" />
+  </svg>
+</button>
+
+<!-- icon-sm — 32×32 -->
+<button type="button" data-slot="button" data-size="icon-sm" aria-label="Add"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/90 size-8">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14" /><path d="M12 5v14" />
+  </svg>
+</button>
+
+<!-- icon — 36×36 -->
+<button type="button" data-slot="button" data-size="icon" aria-label="Add"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/90 size-9">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14" /><path d="M12 5v14" />
+  </svg>
+</button>
+
+<!-- icon-lg — 40×40 -->
+<button type="button" data-slot="button" data-size="icon-lg" aria-label="Add"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/90 size-10">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14" /><path d="M12 5v14" />
+  </svg>
+</button>
+
+<!-- ─── States ──────────────────────────────────────────────────────── -->
+
+<!-- Disabled (native attribute — also removes from tab order) -->
+<button type="button" disabled
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground h-9 px-4 py-2">
+  Disabled
+</button>
+
+<!-- Aria-disabled (looks disabled but remains focusable; pair with click handler that no-ops) -->
+<button type="button" aria-disabled="true"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-disabled:pointer-events-none aria-disabled:opacity-50 bg-primary text-primary-foreground h-9 px-4 py-2">
+  Aria-disabled
+</button>
+
+<!-- Toggle (aria-pressed) — keep the label constant across states -->
+<button type="button" aria-pressed="false" aria-label="Mute"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+  Mute
+</button>
+
+<!-- Aria-invalid (pairs the button to a failing form field via aria-describedby) -->
+<button type="submit" aria-invalid="true" aria-describedby="email-error"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+  Save
+</button>
+
+<!-- ─── Multi-submit form (per-button formaction/formmethod) ────────── -->
+<form action="/orders" method="post">
+  <!-- normal submit goes to /orders POST -->
+  <button type="submit"
+    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+    Save
+  </button>
+
+  <!-- this submit overrides the form's action + method -->
+  <button type="submit" name="action" value="continue"
+          formaction="/orders/save" formmethod="post"
+    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+    Save and continue
+  </button>
+</form>
+
+<!-- ─── htmx — fragment swap ────────────────────────────────────────── -->
+<!--
+  htmx adds .htmx-request to this button while the request is in flight.
+  The matching utility (.[&.htmx-request]:opacity-70) provides the visual cue.
+  hx-disable="this" (v4; was hx-disabled-elt in v3) blocks repeat submits.
+-->
+<button type="button"
+  hx-post="/save" hx-target="#result" hx-swap="innerHTML" hx-disable="this"
+  class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&.htmx-request]:pointer-events-none [&.htmx-request]:opacity-70 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+  Save
+</button>
+<span id="result" aria-live="polite"></span>

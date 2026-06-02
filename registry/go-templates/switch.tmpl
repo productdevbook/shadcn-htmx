@@ -1,0 +1,39 @@
+{{/*
+  Switch template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/switch.tsx.
+
+  Usage:
+
+      type SwitchArgs struct {
+          ID, Name, Value, Size string  // "default" | "sm"
+          Checked, Required, Disabled, Readonly bool
+          Form, AriaLabel, AriaLabelledby, AriaDescribedby string
+          Attrs map[string]string
+      }
+*/}}
+
+{{define "switch"}}
+{{- $size := or .Size "default" -}}
+{{- $trackBase := "relative inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all align-middle" -}}
+{{- $trackSize := index (dict "default" "h-[1.15rem] w-8" "sm" "h-3.5 w-6") $size -}}
+{{- $thumbSize := index (dict "default" "size-4" "sm" "size-3") $size -}}
+{{- $inputBase := "peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 bg-input dark:bg-input/80 checked:bg-primary" -}}
+{{- $thumbBase := "pointer-events-none absolute top-1/2 left-px -translate-y-1/2 rounded-full bg-background transition-transform peer-checked:translate-x-[calc(100%-2px)] dark:peer-checked:bg-primary-foreground dark:bg-foreground" -}}
+<span data-slot="switch" data-size="{{$size}}" class="{{$trackBase}} {{$trackSize}}">
+  <input type="checkbox" role="switch" class="{{$inputBase}}"
+         {{- if .ID}} id="{{.ID}}"{{end}}
+         {{- if .Name}} name="{{.Name}}"{{end}}
+         {{- if .Value}} value="{{.Value}}"{{end}}
+         {{- if .Checked}} checked{{end}}
+         {{- if .Required}} required{{end}}
+         {{- if .Disabled}} disabled{{end}}
+         {{- if .Readonly}} readonly{{end}}
+         {{- if .Form}} form="{{.Form}}"{{end}}
+         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+         {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+         {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >
+  <span class="{{$thumbBase}} {{$thumbSize}}" data-slot="switch-thumb" aria-hidden="true"></span>
+</span>
+{{end}}

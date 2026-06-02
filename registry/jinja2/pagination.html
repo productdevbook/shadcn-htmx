@@ -1,0 +1,70 @@
+{# Pagination macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/pagination.tsx.
+
+   Usage:
+     {% from "components/pagination.html" import pagination_open, pagination_close,
+        pagination_prev, pagination_next, pagination_page, pagination_ellipsis %}
+
+     {{ pagination_open(aria_label="Articles") }}
+       {{ pagination_prev(href="/articles?page=1") }}
+       {{ pagination_page(1, href="/articles?page=1") }}
+       {{ pagination_page(2, active=true) }}
+       {{ pagination_page(3, href="/articles?page=3") }}
+       {{ pagination_ellipsis() }}
+       {{ pagination_next(href="/articles?page=3") }}
+     {{ pagination_close() }} #}
+
+{% macro pagination_open(aria_label="Pagination", extra_class="") %}
+<nav data-slot="pagination" aria-label="{{ aria_label }}"
+     class="mx-auto flex w-full justify-center {{ extra_class }}">
+  <ul class="flex flex-row items-center gap-1">
+{% endmacro %}
+
+{% macro pagination_close() %}
+  </ul>
+</nav>
+{% endmacro %}
+
+{% macro _link(label, href=none, active=false, class_="", aria_label=none, aria_disabled=false, slot="pagination-link", **attrs) %}
+{%- set base -%}
+inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none
+{%- endset -%}
+{%- set on -%}{% if active %}bg-primary text-primary-foreground hover:bg-primary/90{% endif %}{%- endset -%}
+{% if href %}
+<a href="{{ href }}" data-slot="{{ slot }}" {% if active %}aria-current="page"{% endif %}
+   {% if aria_label %}aria-label="{{ aria_label }}"{% endif %}
+   {% if aria_disabled %}aria-disabled="true"{% endif %}
+   class="{{ base }} {{ on }} {{ class_ }}"
+   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label|safe }}</a>
+{% else %}
+<button type="button" data-slot="{{ slot }}" {% if active %}aria-current="page"{% endif %}
+   {% if aria_label %}aria-label="{{ aria_label }}"{% endif %}
+   {% if aria_disabled %}aria-disabled="true"{% endif %}
+   class="{{ base }} {{ on }} {{ class_ }}"
+   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label|safe }}</button>
+{% endif %}
+{% endmacro %}
+
+{% macro pagination_page(n, href=none, active=false, **attrs) %}
+<li>{{ _link(n|string, href=href, active=active, **attrs) }}</li>
+{% endmacro %}
+
+{% macro pagination_prev(href=none, disabled=false, **attrs) %}
+<li>{{ _link('<span aria-hidden="true">‹</span> Previous',
+              href=none if disabled else href,
+              class_="gap-1 pl-2.5" + (" pointer-events-none opacity-50" if disabled else ""),
+              aria_label="Previous page", aria_disabled=disabled, slot="pagination-prev", **attrs) }}</li>
+{% endmacro %}
+
+{% macro pagination_next(href=none, disabled=false, **attrs) %}
+<li>{{ _link('Next <span aria-hidden="true">›</span>',
+              href=none if disabled else href,
+              class_="gap-1 pr-2.5" + (" pointer-events-none opacity-50" if disabled else ""),
+              aria_label="Next page", aria_disabled=disabled, slot="pagination-next", **attrs) }}</li>
+{% endmacro %}
+
+{% macro pagination_ellipsis() %}
+<li><span data-slot="pagination-ellipsis" aria-hidden="true" class="flex h-9 w-9 items-center justify-center text-muted-foreground">…</span></li>
+{% endmacro %}

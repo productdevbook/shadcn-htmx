@@ -1,0 +1,106 @@
+{{/*
+  Input template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/input.tsx for Go projects using html/template.
+
+  Usage in your code:
+
+      type InputArgs struct {
+          Type        string // text | password | email | number | search | tel | url | date | …
+          ID          string
+          Name        string
+          Value       string
+          Placeholder string
+          Required    bool
+          Disabled    bool
+          Readonly    bool
+
+          // Validation
+          MinLength int
+          MaxLength int
+          Min       string
+          Max       string
+          Step      string
+          Pattern   string
+
+          // Mobile UX
+          InputMode      string // none | text | decimal | numeric | tel | search | email | url
+          EnterKeyHint   string // enter | done | go | next | previous | search | send
+          Autocapitalize string // off | none | on | sentences | words | characters
+
+          // Autofill / completion
+          Autocomplete string
+          Autofocus    bool
+          List         string // datalist id
+
+          // type="file"
+          Accept   string
+          Multiple bool
+          Capture  string // "" | "user" | "environment" | "true"
+
+          // Display / form behaviour
+          Size    string // visible width in characters
+          Dirname string // submits text directionality as a separate field
+
+          // Form metadata
+          Form string
+
+          // ARIA
+          AriaLabel       string
+          AriaLabelledby  string
+          AriaDescribedby string
+          AriaInvalid     string // "true" | "false" | "grammar" | "spelling"
+          AriaRequired    string // "true" | "false"
+
+          // Everything else (hx-get, hx-target, hx-trigger, …)
+          Attrs map[string]string
+      }
+
+      tpl.ExecuteTemplate(w, "input", InputArgs{
+          Type: "email", Name: "email",
+          Placeholder: "you@example.com",
+          Required: true,
+      })
+
+  See repos/mdn/files/en-us/web/html/reference/elements/input/ for native
+  attribute semantics.
+*/}}
+
+{{define "input"}}
+{{- $type := or .Type "text" -}}
+{{- $base := "flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70" -}}
+<input type="{{$type}}"
+       class="{{$base}}"
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       {{- if .Name}} name="{{.Name}}"{{end}}
+       {{- if .Value}} value="{{.Value}}"{{end}}
+       {{- if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
+       {{- if .Required}} required{{end}}
+       {{- if .Disabled}} disabled{{end}}
+       {{- if .Readonly}} readonly{{end}}
+       {{- if .MinLength}} minlength="{{.MinLength}}"{{end}}
+       {{- if .MaxLength}} maxlength="{{.MaxLength}}"{{end}}
+       {{- if .Min}} min="{{.Min}}"{{end}}
+       {{- if .Max}} max="{{.Max}}"{{end}}
+       {{- if .Step}} step="{{.Step}}"{{end}}
+       {{- if .Pattern}} pattern="{{.Pattern}}"{{end}}
+       {{- if .InputMode}} inputmode="{{.InputMode}}"{{end}}
+       {{- if .EnterKeyHint}} enterkeyhint="{{.EnterKeyHint}}"{{end}}
+       {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+       {{- if .Autocapitalize}} autocapitalize="{{.Autocapitalize}}"{{end}}
+       {{- if .Autofocus}} autofocus{{end}}
+       {{- if .List}} list="{{.List}}"{{end}}
+       {{- if .Accept}} accept="{{.Accept}}"{{end}}
+       {{- if .Capture}} capture{{if ne .Capture "true"}}="{{.Capture}}"{{end}}{{end}}
+       {{- if .Multiple}} multiple{{end}}
+       {{- if .Size}} size="{{.Size}}"{{end}}
+       {{- if .Dirname}} dirname="{{.Dirname}}"{{end}}
+       {{- if .Form}} form="{{.Form}}"{{end}}
+       {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+       {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+       {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+       {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+       {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+       data-slot="input"
+       {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>
+{{end}}

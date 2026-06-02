@@ -1,0 +1,35 @@
+<!--
+  shadcn-htmx — raw HTML table snippet.
+  Semantic <table> with <thead>/<tbody>; sortable column has aria-sort
+  and a clickable button inside the <th>.
+-->
+
+<div class="relative w-full overflow-auto">
+  <table data-slot="table" class="w-full caption-bottom text-sm">
+    <thead data-slot="table-header" class="[&_tr]:border-b">
+      <tr data-slot="table-row" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        <th scope="col" data-slot="table-head" data-sortable="true" aria-sort="ascending"
+            class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">
+          <button type="button" class="inline-flex h-7 items-center gap-1.5 rounded-md px-2 -ml-2 hover:bg-muted hover:text-foreground"
+                  hx-get="/articles?sort=name&dir=desc" hx-target="closest table" hx-swap="outerHTML">
+            Name
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-3.5" aria-hidden="true">
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+          </button>
+        </th>
+        <th scope="col" data-slot="table-head" class="h-10 px-2 text-left align-middle font-medium text-muted-foreground">Role</th>
+      </tr>
+    </thead>
+    <tbody data-slot="table-body" class="[&_tr:last-child]:border-0">
+      <tr data-slot="table-row" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        <td data-slot="table-cell" class="p-2 align-middle">Ada Lovelace</td>
+        <td data-slot="table-cell" class="p-2 align-middle">Owner</td>
+      </tr>
+      <tr data-slot="table-row" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        <td data-slot="table-cell" class="p-2 align-middle">Grace Hopper</td>
+        <td data-slot="table-cell" class="p-2 align-middle">Admin</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,25 @@
+{{/*
+  Avatar template — shadcn-htmx, htmx v4 + Tailwind v4.
+
+      type AvatarArgs struct {
+          Src, Alt, Fallback, Size, AriaLabel string
+      }
+*/}}
+
+{{define "avatar"}}
+{{- $size := or .Size "default" -}}
+{{- $sizes := dict
+    "sm" "size-6 [&_[data-slot=avatar-fallback]]:text-xs"
+    "default" "size-8"
+    "lg" "size-10" -}}
+<span data-slot="avatar" data-size="{{$size}}"
+      {{if and (not .Src) (or .Fallback .AriaLabel)}}role="img" aria-label="{{or .AriaLabel .Fallback}}"{{end}}
+      class="group/avatar relative inline-flex shrink-0 overflow-hidden rounded-full select-none {{index $sizes $size}}">
+  <span data-slot="avatar-fallback" class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">{{.Fallback}}</span>
+  {{if .Src}}
+  <img src="{{.Src}}" alt="{{.Alt}}" data-slot="avatar-image"
+       onerror="this.style.display='none'"
+       class="absolute inset-0 aspect-square size-full object-cover">
+  {{end}}
+</span>
+{{end}}

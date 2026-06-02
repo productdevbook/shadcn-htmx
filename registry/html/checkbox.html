@@ -1,0 +1,84 @@
+<!--
+  shadcn-htmx — raw HTML checkbox snippets.
+
+  Mirrors registry/ui/checkbox.tsx. The visual checkmark and dash are SVGs
+  layered on top of a real <input type="checkbox">. Tailwind's peer-checked
+  and peer-indeterminate variants show the right icon for the right state.
+
+  Indeterminate state cannot be set from HTML alone — set
+  `checkboxEl.indeterminate = true` from JavaScript. The styles below assume
+  the browser's :indeterminate pseudo is active.
+
+  BASE (shared by every input):
+    peer size-4 shrink-0 appearance-none rounded-[4px] border border-input
+    bg-background shadow-xs transition-shadow outline-none
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    disabled:cursor-not-allowed disabled:opacity-50
+    checked:border-primary checked:bg-primary
+    indeterminate:border-primary indeterminate:bg-primary
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40 dark:bg-input/30
+-->
+
+<!-- Basic (with explicit Label pairing) -->
+<label for="terms" class="flex items-center gap-2 text-sm font-medium leading-none select-none">
+  <span class="relative inline-flex size-4 shrink-0 align-middle">
+    <input id="terms" name="terms" type="checkbox" required data-slot="checkbox"
+      class="peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30">
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  </span>
+  I agree to the terms.
+</label>
+
+<!-- Checked by default -->
+<label class="flex items-center gap-2 text-sm font-medium">
+  <span class="relative inline-flex size-4">
+    <input type="checkbox" name="newsletter" checked data-slot="checkbox"
+      class="peer size-4 appearance-none rounded-[4px] border border-input bg-background shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 checked:border-primary checked:bg-primary dark:bg-input/30">
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  </span>
+  Subscribe to the newsletter
+</label>
+
+<!-- Disabled -->
+<label class="flex items-center gap-2 text-sm font-medium leading-none select-none peer-disabled:opacity-50">
+  <span class="relative inline-flex size-4">
+    <input type="checkbox" disabled data-slot="checkbox"
+      class="peer size-4 appearance-none rounded-[4px] border border-input bg-background shadow-xs disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary dark:bg-input/30">
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  </span>
+  Disabled option
+</label>
+
+<!-- Indeterminate (set via JS once mounted) -->
+<script>
+  document.getElementById('select-all')?.addEventListener('change', () => { /* … */ })
+  document.getElementById('select-all').indeterminate = true
+</script>
+
+<!-- htmx — save on toggle -->
+<label class="flex items-center gap-2 text-sm font-medium">
+  <span class="relative inline-flex size-4">
+    <input type="checkbox" name="favorite" data-slot="checkbox"
+           hx-post="/items/42/favorite" hx-trigger="change" hx-swap="none"
+      class="peer size-4 appearance-none rounded-[4px] border border-input bg-background shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 checked:border-primary checked:bg-primary dark:bg-input/30">
+    <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  </span>
+  Favourite
+</label>

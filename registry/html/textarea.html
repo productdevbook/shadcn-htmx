@@ -1,0 +1,38 @@
+<!--
+  shadcn-htmx — raw HTML textarea snippets.
+
+  Mirrors registry/ui/textarea.tsx. The `field-sizing: content` rule makes
+  the element grow with its value — no JS hook required.
+
+  BASE:
+    flex field-sizing-content min-h-16 w-full rounded-md border border-input
+    bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow]
+    outline-none placeholder:text-muted-foreground
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    disabled:cursor-not-allowed disabled:opacity-50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    md:text-sm dark:bg-input/30
+    [&.htmx-request]:opacity-70
+-->
+
+<!-- Basic -->
+<textarea name="bio" placeholder="Tell us about yourself…" rows="4" data-slot="textarea"
+  class="flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"></textarea>
+
+<!-- Disabled -->
+<textarea disabled value="Locked content." data-slot="textarea"
+  class="flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30">Locked content.</textarea>
+
+<!-- Invalid + describedby -->
+<div>
+  <textarea name="comment" aria-invalid="true" aria-describedby="comment-error"
+            placeholder="Comment…" data-slot="textarea"
+    class="flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30"></textarea>
+  <p id="comment-error" class="mt-1 text-sm text-destructive">Comment can't be empty.</p>
+</div>
+
+<!-- htmx — autosave draft on input pause -->
+<textarea name="draft" placeholder="Start writing… we'll save as you type" data-slot="textarea"
+          hx-post="/drafts/123" hx-trigger="input changed delay:600ms" hx-swap="none"
+  class="flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70"></textarea>

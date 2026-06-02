@@ -1,0 +1,53 @@
+{{/*
+  Textarea template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/textarea.tsx.
+
+  Usage:
+
+      type TextareaArgs struct {
+          ID, Name, Value, Placeholder string
+          Required, Disabled, Readonly, Autofocus bool
+          Rows, Cols int
+          MinLength, MaxLength int
+          Autocomplete, Wrap string
+          Spellcheck *bool   // tri-state
+          Form, AriaLabel, AriaLabelledby, AriaDescribedby string
+          AriaInvalid, AriaRequired string
+          Attrs map[string]string
+      }
+
+      tpl.ExecuteTemplate(w, "textarea", TextareaArgs{
+          Name: "bio", Placeholder: "Tell us about yourself…", Rows: 4,
+      })
+*/}}
+
+{{define "textarea"}}
+{{- $base := "flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 md:text-sm dark:bg-input/30 [&.htmx-request]:opacity-70" -}}
+<textarea class="{{$base}}"
+          {{- if .ID}} id="{{.ID}}"{{end}}
+          {{- if .Name}} name="{{.Name}}"{{end}}
+          {{- if .Placeholder}} placeholder="{{.Placeholder}}"{{end}}
+          {{- if .Required}} required{{end}}
+          {{- if .Disabled}} disabled{{end}}
+          {{- if .Readonly}} readonly{{end}}
+          {{- if .Rows}} rows="{{.Rows}}"{{end}}
+          {{- if .Cols}} cols="{{.Cols}}"{{end}}
+          {{- if .MinLength}} minlength="{{.MinLength}}"{{end}}
+          {{- if .MaxLength}} maxlength="{{.MaxLength}}"{{end}}
+          {{- if .Autocomplete}} autocomplete="{{.Autocomplete}}"{{end}}
+          {{- if .Autocapitalize}} autocapitalize="{{.Autocapitalize}}"{{end}}
+          {{- if .Autocorrect}} autocorrect="{{.Autocorrect}}"{{end}}
+          {{- if .Autofocus}} autofocus{{end}}
+          {{- if .Spellcheck}} spellcheck="{{if deref .Spellcheck}}true{{else}}false{{end}}"{{end}}
+          {{- if .Dirname}} dirname="{{.Dirname}}"{{end}}
+          {{- if .Wrap}} wrap="{{.Wrap}}"{{end}}
+          {{- if .Form}} form="{{.Form}}"{{end}}
+          {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+          {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+          {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+          {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+          {{- if .AriaRequired}} aria-required="{{.AriaRequired}}"{{end}}
+          data-slot="textarea"
+          {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Value}}</textarea>
+{{end}}

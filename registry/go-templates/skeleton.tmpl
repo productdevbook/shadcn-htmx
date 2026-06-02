@@ -1,0 +1,8 @@
+{{/* Skeleton template — shadcn-htmx, htmx v4 + Tailwind v4. */}}
+
+{{define "skeleton"}}
+<div {{if .ID}}id="{{.ID}}"{{end}}
+     role="status" aria-busy="true" aria-label="{{or .AriaLabel "Loading"}}"
+     data-slot="skeleton"
+     class="animate-pulse rounded-md bg-muted {{.Class}}"></div>
+{{end}}

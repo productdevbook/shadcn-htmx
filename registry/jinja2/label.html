@@ -1,0 +1,45 @@
+{# Label macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/label.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   Usage (explicit, preferred):
+       {% from "components/label.html" import label %}
+       {{ label("Email", for_="email") }}
+       {{ input(id="email", name="email", type="email") }}
+
+   Implicit wrapping also works — pass the inner HTML via the caller block:
+       {% call label_block() %}Email {{ input(...) }}{% endcall %}
+   See repos/mdn/files/en-us/web/html/reference/elements/label/. #}
+
+{% macro label(
+    text,
+    for_=none,
+    id=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+{%- endset -%}
+<label class="{{ base }} {{ extra_class }}"
+       {%- if for_ %} for="{{ for_ }}"{% endif %}
+       {%- if id %} id="{{ id }}"{% endif %}
+       data-slot="label"
+       {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ text }}</label>
+{% endmacro %}
+
+{# Block form — accepts arbitrary inner HTML (e.g. wrapping an input):
+
+   {% call label_block(for_="email") %}
+       Email {{ input(id="email", name="email", type="email") }}
+   {% endcall %}                                                       #}
+{% macro label_block(for_=none, id=none, extra_class="") %}
+{%- set base -%}
+flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50
+{%- endset -%}
+<label class="{{ base }} {{ extra_class }}"
+       {%- if for_ %} for="{{ for_ }}"{% endif %}
+       {%- if id %} id="{{ id }}"{% endif %}
+       data-slot="label"
+>{{ caller() }}</label>
+{% endmacro %}

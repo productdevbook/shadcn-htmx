@@ -1,0 +1,39 @@
+<!--
+  shadcn-htmx — raw HTML pagination snippet.
+  <nav> landmark with aria-label, aria-current="page" on the active link,
+  built-in aria-labels for previous / next.
+-->
+
+<nav data-slot="pagination" aria-label="Articles"
+     class="mx-auto flex w-full justify-center">
+  <ul class="flex flex-row items-center gap-1">
+    <li>
+      <a href="/articles?page=1" data-slot="pagination-prev" aria-label="Previous page"
+         class="inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-md px-3 pl-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+        ‹ Previous
+      </a>
+    </li>
+    <li>
+      <a href="/articles?page=1" data-slot="pagination-link"
+         class="inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">1</a>
+    </li>
+    <li>
+      <a href="/articles?page=2" data-slot="pagination-link" aria-current="page"
+         class="inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none bg-primary text-primary-foreground hover:bg-primary/90">2</a>
+    </li>
+    <li>
+      <a href="/articles?page=3" data-slot="pagination-link"
+         class="inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">3</a>
+    </li>
+    <li>
+      <span data-slot="pagination-ellipsis" aria-hidden="true"
+            class="flex h-9 w-9 items-center justify-center text-muted-foreground">…</span>
+    </li>
+    <li>
+      <a href="/articles?page=3" data-slot="pagination-next" aria-label="Next page"
+         class="inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-md px-3 pr-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+        Next ›
+      </a>
+    </li>
+  </ul>
+</nav>

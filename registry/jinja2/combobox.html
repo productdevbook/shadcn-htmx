@@ -1,0 +1,56 @@
+{# Combobox macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Native <input list> + <datalist>. Browser handles dropdown UI, filter,
+   click + keyboard selection, focus management. No custom JS required.
+
+   Usage (static options):
+     {% from "components/combobox.html" import combobox %}
+     {{ combobox(id="lang", name="lang",
+                 options=[{"value": "JavaScript"}, {"value": "Python"}]) }}
+
+   Usage (htmx-driven server-filter): target the <datalist> by id and
+   return <option> tags from the server.
+     <input list="user-list" hx-get="/api/search"
+            hx-trigger="input changed delay:200ms"
+            hx-target="#user-list" hx-swap="innerHTML">
+     <datalist id="user-list"></datalist>
+#}
+
+{% macro combobox(
+    id,
+    name=none,
+    options=[],
+    placeholder=none,
+    value=none,
+    required=false,
+    disabled=false,
+    aria_label=none,
+    aria_labelledby=none,
+    extra_class="",
+    **attrs
+) %}
+<span data-slot="combobox" class="inline-block w-full {{ extra_class }}">
+  <input
+    type="text"
+    id="{{ id }}"
+    {%- if name %} name="{{ name }}"{% endif %}
+    list="{{ id }}-list"
+    {%- if value is not none %} value="{{ value }}"{% endif %}
+    {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
+    {%- if required %} required{% endif %}
+    {%- if disabled %} disabled{% endif %}
+    {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+    {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+    autocomplete="off"
+    class="flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >
+  <datalist id="{{ id }}-list" data-slot="combobox-list">
+    {% for opt in options %}<option value="{{ opt.value }}"{% if opt.label %} label="{{ opt.label }}"{% endif %}>{% endfor %}
+  </datalist>
+</span>
+{% endmacro %}
+
+{# A single <option> — useful when an htmx endpoint returns one. #}
+{% macro combobox_option(value, label=none) -%}
+<option value="{{ value }}"{% if label %} label="{{ label }}"{% endif %}>
+{%- endmacro %}

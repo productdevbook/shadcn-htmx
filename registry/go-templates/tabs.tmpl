@@ -1,0 +1,69 @@
+{{/*
+  Tabs template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/tabs.tsx. Provides three named templates:
+    - "tabs"          — the wrapper + boot script
+    - "tabs_list"     — opens / closes the role="tablist" container
+    - "tabs_trigger"  — one tab button
+    - "tabs_content"  — one panel
+
+  Usage (compose your own block of HTML inside):
+
+      type TabsArgs struct {
+          ID, Active, Orientation string
+          Body                    template.HTML
+      }
+
+  Hand-compose the inner HTML so you can build the trigger list + panels.
+*/}}
+
+{{define "tabs"}}
+{{- $orientation := or .Orientation "horizontal" -}}
+{{- $activation := or .Activation "automatic" -}}
+<div id="{{.ID}}"
+     data-slot="tabs"
+     data-tabs
+     data-orientation="{{$orientation}}"
+     data-activation="{{$activation}}"
+     data-active-tab="{{.Active}}"
+     class="group/tabs flex gap-2 data-[orientation=horizontal]:flex-col">
+  {{.Body}}
+</div>
+<script>(function(el){
+  var active = el.getAttribute('data-active-tab');
+  el.querySelectorAll('[data-tab-panel]').forEach(function(p){
+    p.id = el.id + '-panel-' + p.getAttribute('data-tab-panel');
+  });
+  el.querySelectorAll('[data-tab-trigger]').forEach(function(t){
+    var value = t.getAttribute('data-tab-trigger');
+    var on = value === active;
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+    t.setAttribute('tabindex', on ? '0' : '-1');
+    t.setAttribute('aria-controls', el.id + '-panel-' + value);
+    t.id = el.id + '-trigger-' + value;
+  });
+  el.querySelectorAll('[data-tab-panel]').forEach(function(p){
+    var value = p.getAttribute('data-tab-panel');
+    var on = value === active;
+    if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+    p.setAttribute('aria-labelledby', el.id + '-trigger-' + value);
+  });
+  el.setAttribute('data-tabs-ready','true');
+})(document.currentScript.previousElementSibling);</script>
+{{end}}
+
+{{define "tabs_trigger"}}
+<button type="button"
+        role="tab"
+        data-slot="tabs-trigger"
+        data-tab-trigger="{{.Value}}"
+        {{- if .Disabled}} disabled{{end}}
+        class="relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm dark:aria-selected:border-input dark:aria-selected:bg-input/30 dark:aria-selected:text-foreground group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">{{.Label}}</button>
+{{end}}
+
+{{define "tabs_content"}}
+<div role="tabpanel"
+     data-slot="tabs-content"
+     data-tab-panel="{{.Value}}"
+     tabindex="0"
+     class="flex-1 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">{{.Body}}</div>
+{{end}}

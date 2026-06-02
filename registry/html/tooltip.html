@@ -1,0 +1,51 @@
+<!--
+  shadcn-htmx — raw HTML tooltip snippet.
+
+  Pure CSS show on :hover + :focus-within. ESC dismissal via a tiny global
+  keydown handler (copy at the bottom).
+
+  WRAPPER (note: inline-block, NOT inline-flex — flex sizing was including
+  the absolute tooltip width, which broke the left-1/2 horizontal centring):
+    relative inline-block group/tooltip align-middle
+    [&:hover>[data-slot=tooltip-content]]:opacity-100
+    [&:focus-within>[data-slot=tooltip-content]]:opacity-100
+    [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!
+  CONTENT:
+    pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-foreground
+    px-2 py-1 text-xs font-medium text-background shadow-md opacity-0
+    transition-opacity duration-150
+-->
+
+<span data-slot="tooltip" data-side="top" data-tooltip-trigger
+      class="relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 [&:focus-within>[data-slot=tooltip-content]]:opacity-100 [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!"
+      aria-describedby="save-tt">
+  <button class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+    Save
+  </button>
+  <span id="save-tt" role="tooltip" data-slot="tooltip-content" data-side="top"
+        class="pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md opacity-0 transition-opacity duration-150 left-1/2 -translate-x-1/2 bottom-[calc(100%+0.5rem)]">
+    Saves your draft to the server (⌘ + S)
+  </span>
+</span>
+
+<!-- ESC dismissal — copy once per page -->
+<script>
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return
+    var active = document.activeElement
+    if (!active || !active.closest) return
+    var trigger = active.closest('[data-tooltip-trigger]')
+    if (!trigger) return
+    trigger.setAttribute('data-suppress', 'true')
+    active.blur()
+  })
+  document.addEventListener('mouseleave', function (e) {
+    if (e.target && e.target.removeAttribute) e.target.removeAttribute('data-suppress')
+  }, true)
+  // Clear suppress when focus leaves the trigger too — keyboard users
+  // who Tab away and Tab back should see the tooltip again.
+  document.addEventListener('focusout', function (e) {
+    var t = e.target && e.target.closest && e.target.closest('[data-tooltip-trigger]')
+    if (t) t.removeAttribute('data-suppress')
+  }, true)
+</script>

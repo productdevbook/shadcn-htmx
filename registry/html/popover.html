@@ -1,0 +1,20 @@
+<!--
+  shadcn-htmx — raw HTML popover snippet.
+
+  Uses the native HTML Popover API — no JS required. The platform handles
+  light dismiss (click outside), ESC close, top-layer rendering, and
+  focus restoration when closed.
+-->
+
+<button type="button" popovertarget="my-popover" popovertargetaction="toggle"
+  class="inline-flex h-9 items-center rounded-md border bg-background px-4 text-sm font-medium shadow-xs hover:bg-accent">
+  Open popover
+</button>
+
+<div id="my-popover" popover data-slot="popover" data-side="bottom"
+  class="z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] anchor-popover-bottom">
+  <h4 class="text-sm font-semibold">Popover content</h4>
+  <p class="mt-1 text-sm text-muted-foreground">
+    Click outside or press ESC to close. The browser handles it all.
+  </p>
+</div>

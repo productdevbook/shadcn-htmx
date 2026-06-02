@@ -1,0 +1,36 @@
+{# Popover macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Native HTML Popover API (popover + popovertarget). Browser provides
+   light dismiss, ESC close, top-layer rendering, focus restoration.
+
+   Usage:
+     {% from "components/popover.html" import popover_trigger, popover_open, popover_close %}
+
+     {{ popover_trigger("Open", popover_target="my-popover", class_="…btn…") }}
+
+     {% call popover_open(id="my-popover") %}
+       <p>Popover body — anything not interactive, like a form, can live here.</p>
+     {% endcall %} #}
+
+{% macro popover_trigger(label, popover_target, action="toggle", class_="", id=none) %}
+<button {% if id %}id="{{ id }}"{% endif %}
+        type="button"
+        popovertarget="{{ popover_target }}"
+        popovertargetaction="{{ action }}"
+        data-slot="popover-trigger"
+        class="{{ class_ }}">{{ label }}</button>
+{% endmacro %}
+
+{% macro popover_open(id, mode="auto", side="bottom", extra_class="") %}
+{%- set sides = {
+    "top":    "anchor-popover-top",
+    "bottom": "anchor-popover-bottom",
+    "left":   "anchor-popover-left",
+    "right":  "anchor-popover-right"
+} -%}
+<div id="{{ id }}"
+     popover="{{ 'manual' if mode == 'manual' else 'auto' }}"
+     data-slot="popover" data-side="{{ side }}"
+     class="z-50 m-0 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{ sides[side] }} {{ extra_class }}">
+{% endmacro %}
+
+{% macro popover_close() %}</div>{% endmacro %}

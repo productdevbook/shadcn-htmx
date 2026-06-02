@@ -1,0 +1,71 @@
+{# Dialog macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/dialog.tsx. Uses the native <dialog> element + the
+   wiring in public/site.js (data-dialog-trigger / data-dialog-close).
+
+   Usage:
+     {% from "components/dialog.html" import dialog, dialog_trigger %}
+
+     {{ dialog_trigger("Open", dialog_for="my-dialog", class_="…btn classes") }}
+
+     {% call dialog(id="my-dialog", title="Are you sure?",
+                    description="This action cannot be undone.") %}
+       <!-- body content -->
+       <p>The item will be permanently deleted from your library.</p>
+
+       <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+         <button type="button" data-dialog-close="true"
+                 class="… button outline classes …">Cancel</button>
+         <button type="button" class="… button default classes …"
+                 hx-post="/items/42/delete">Delete</button>
+       </div>
+     {% endcall %} #}
+
+{% macro dialog(
+    id,
+    title=none,
+    description=none,
+    close_on_backdrop=true,
+    show_close_button=true,
+    open=false,
+    closedby=none,
+    role="dialog",
+    extra_class=""
+) %}
+{%- set base -%}
+fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm
+{%- endset -%}
+<dialog id="{{ id }}"
+        {%- if open %} open{% endif %}
+        {%- if closedby %} closedby="{{ closedby }}"{% endif %}
+        role="{{ role }}"
+        class="{{ base }} {{ extra_class }}"
+        data-slot="dialog"
+        {%- if close_on_backdrop %} data-close-on-backdrop="true"{% endif %}
+        aria-labelledby="{{ id }}-title"
+        aria-describedby="{{ id }}-description">
+  {%- if title or description %}
+  <div data-slot="dialog-header" class="flex flex-col gap-1.5 text-left">
+    {% if title %}<h2 id="{{ id }}-title" data-slot="dialog-title" class="text-lg leading-none font-semibold">{{ title }}</h2>{% endif %}
+    {% if description %}<p id="{{ id }}-description" data-slot="dialog-description" class="text-sm text-muted-foreground">{{ description }}</p>{% endif %}
+  </div>
+  {%- endif %}
+  {{ caller() }}
+  {%- if show_close_button %}
+  <button type="button" data-dialog-close="true" aria-label="Close"
+          class="absolute top-4 right-4 inline-flex size-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </svg>
+  </button>
+  {%- endif %}
+</dialog>
+{% endmacro %}
+
+{% macro dialog_trigger(label, dialog_for, type="button", id=none, class_="") %}
+<button {% if id %} id="{{ id }}"{% endif %}
+        type="{{ type }}"
+        class="{{ class_ }}"
+        data-dialog-trigger="true"
+        data-dialog-target="{{ dialog_for }}"
+        aria-haspopup="dialog">{{ label }}</button>
+{% endmacro %}

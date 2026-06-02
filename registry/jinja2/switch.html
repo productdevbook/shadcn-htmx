@@ -1,0 +1,64 @@
+{# Switch macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/switch.tsx. Native <input type="checkbox" role="switch">
+   for form submission + platform keyboard contract.
+
+   Usage:
+     {% from "components/switch.html" import switch %}
+     <label class="flex items-center gap-2">
+       {{ switch(id="notifications", name="notifications", checked=true) }}
+       Enable notifications
+     </label> #}
+
+{% macro switch(
+    id=none,
+    name=none,
+    value=none,
+    checked=false,
+    required=false,
+    disabled=false,
+    readonly=false,
+    size="default",
+    form=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set track_base -%}
+relative inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all align-middle
+{%- endset -%}
+{%- set track_sizes = {
+    "default": "h-[1.15rem] w-8",
+    "sm": "h-3.5 w-6"
+} -%}
+{%- set thumb_sizes = {
+    "default": "size-4",
+    "sm": "size-3"
+} -%}
+{%- set input_base -%}
+peer absolute inset-0 size-full cursor-pointer appearance-none rounded-full outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 bg-input dark:bg-input/80 checked:bg-primary
+{%- endset -%}
+{%- set thumb_base -%}
+pointer-events-none absolute top-1/2 left-px -translate-y-1/2 rounded-full bg-background transition-transform peer-checked:translate-x-[calc(100%-2px)] dark:peer-checked:bg-primary-foreground dark:bg-foreground
+{%- endset -%}
+<span data-slot="switch" data-size="{{ size }}"
+      class="{{ track_base }} {{ track_sizes[size] }} {{ extra_class }}">
+  <input type="checkbox" role="switch"
+         class="{{ input_base }}"
+         {%- if id %} id="{{ id }}"{% endif %}
+         {%- if name %} name="{{ name }}"{% endif %}
+         {%- if value is not none %} value="{{ value }}"{% endif %}
+         {%- if checked %} checked{% endif %}
+         {%- if required %} required{% endif %}
+         {%- if disabled %} disabled{% endif %}
+         {%- if readonly %} readonly{% endif %}
+         {%- if form %} form="{{ form }}"{% endif %}
+         {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+         {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+         {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+         {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >
+  <span class="{{ thumb_base }} {{ thumb_sizes[size] }}" data-slot="switch-thumb" aria-hidden="true"></span>
+</span>
+{% endmacro %}

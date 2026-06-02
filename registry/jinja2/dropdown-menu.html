@@ -1,0 +1,56 @@
+{# DropdownMenu macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Native [popover] + APG menu keyboard contract via public/site.js. #}
+
+{% macro dropdown_trigger(label, menu_for, class_="", id=none) %}
+<button {% if id %}id="{{ id }}"{% endif %} type="button"
+        popovertarget="{{ menu_for }}" popovertargetaction="toggle"
+        data-slot="dropdown-menu-trigger" aria-haspopup="menu"
+        class="{{ class_ }}">{{ label }}</button>
+{% endmacro %}
+
+{% macro dropdown_open(id, side="bottom", extra_class="") %}
+{%- set sides = {
+    "top":    "anchor-popover-top",
+    "bottom": "anchor-popover-bottom",
+    "left":   "anchor-popover-left",
+    "right":  "anchor-popover-right"
+} -%}
+<div id="{{ id }}" popover="auto" role="menu"
+     data-slot="dropdown-menu" data-side="{{ side }}"
+     class="z-50 m-0 min-w-[12rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none [&:not(:popover-open)]:hidden [&:popover-open]:animate-[scn-popover-in_120ms_ease-out] {{ sides[side] }} {{ extra_class }}">
+{% endmacro %}
+
+{% macro dropdown_close() %}</div>{% endmacro %}
+
+{% macro dropdown_item(label, href=none, onclick=none, disabled=false, variant="default", extra_class="", **attrs) %}
+{%- set base -%}
+relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0
+{%- endset -%}
+{%- set destructive -%}
+{% if variant == "destructive" %}text-destructive focus:bg-destructive/10 focus:text-destructive{% endif %}
+{%- endset -%}
+{% if href %}
+<a role="menuitem" tabindex="-1" href="{{ href }}"
+   data-slot="dropdown-menu-item"
+   {%- if disabled %} data-disabled="true"{% endif %}
+   class="{{ base }} {{ destructive }} {{ extra_class }}"
+   {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label }}</a>
+{% else %}
+<button type="button" role="menuitem" tabindex="-1"
+        {% if onclick %}onclick="{{ onclick }}"{% endif %}
+        data-slot="dropdown-menu-item"
+        {%- if disabled %} data-disabled="true"{% endif %}
+        class="{{ base }} {{ destructive }} {{ extra_class }}"
+        {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>{{ label }}</button>
+{% endif %}
+{% endmacro %}
+
+{% macro dropdown_separator() %}
+<div role="separator" data-slot="dropdown-menu-separator" class="-mx-1 my-1 h-px bg-border"></div>
+{% endmacro %}
+
+{% macro dropdown_label(text) %}
+<div data-slot="dropdown-menu-label" class="px-2 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{{ text }}</div>
+{% endmacro %}

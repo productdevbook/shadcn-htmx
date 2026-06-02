@@ -1,0 +1,35 @@
+{# Table macros — shadcn-htmx, htmx v4 + Tailwind v4.
+   Semantic <table> with sortable column buttons. #}
+
+{% macro table_open(extra_class="") %}
+<div class="relative w-full overflow-auto">
+  <table data-slot="table" class="w-full caption-bottom text-sm {{ extra_class }}">
+{% endmacro %}
+
+{% macro table_close() %}</table></div>{% endmacro %}
+
+{% macro thead_open() %}<thead data-slot="table-header" class="[&_tr]:border-b">{% endmacro %}
+{% macro thead_close() %}</thead>{% endmacro %}
+
+{% macro tbody_open() %}<tbody data-slot="table-body" class="[&_tr:last-child]:border-0">{% endmacro %}
+{% macro tbody_close() %}</tbody>{% endmacro %}
+
+{% macro tr_open(extra_class="") %}<tr data-slot="table-row" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted {{ extra_class }}">{% endmacro %}
+{% macro tr_close() %}</tr>{% endmacro %}
+
+{% macro th(label, scope="col", sort=none, extra_class="", **attrs) %}
+{%- set base = "h-10 px-2 text-left align-middle font-medium text-muted-foreground" -%}
+{% if sort is none %}
+<th scope="{{ scope }}" data-slot="table-head" class="{{ base }} {{ extra_class }}">{{ label|safe }}</th>
+{% else %}
+<th scope="{{ scope }}" data-slot="table-head" data-sortable="true" aria-sort="{{ sort }}" class="{{ base }} {{ extra_class }}">
+  <button type="button" class="inline-flex h-7 items-center gap-1.5 rounded-md px-2 -ml-2 hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+    {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+  >{{ label|safe }}{% if sort == "ascending" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="18 15 12 9 6 15" /></svg>{% elif sort == "descending" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>{% elif sort == "none" %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 opacity-30" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>{% endif %}</button>
+</th>
+{% endif %}
+{% endmacro %}
+
+{% macro td(content, colspan=none, extra_class="") %}
+<td {% if colspan %}colspan="{{ colspan }}"{% endif %} data-slot="table-cell" class="p-2 align-middle {{ extra_class }}">{{ content|safe }}</td>
+{% endmacro %}

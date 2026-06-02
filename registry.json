@@ -42,7 +42,537 @@
           "path": "registry/phoenix/button.ex",
           "type": "registry:file",
           "target": "lib/my_app_web/components/button.ex"
+        },
+        {
+          "path": "registry/html/button.html",
+          "type": "registry:file",
+          "target": "snippets/button.html"
         }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in five flavours.",
+      "files": [
+        {
+          "path": "registry/ui/input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input.tsx"
+        },
+        {
+          "path": "registry/jinja2/input.html",
+          "type": "registry:file",
+          "target": "templates/components/input.html"
+        },
+        {
+          "path": "registry/go-templates/input.tmpl",
+          "type": "registry:file",
+          "target": "components/input.tmpl"
+        },
+        {
+          "path": "registry/phoenix/input.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/input.ex"
+        },
+        {
+          "path": "registry/html/input.html",
+          "type": "registry:file",
+          "target": "snippets/input.html"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "Native <label> with shadcn polish — peer-disabled-aware, click-to-focus from the platform.",
+      "files": [
+        {
+          "path": "registry/ui/label.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "registry/jinja2/label.html",
+          "type": "registry:file",
+          "target": "templates/components/label.html"
+        },
+        {
+          "path": "registry/go-templates/label.tmpl",
+          "type": "registry:file",
+          "target": "components/label.tmpl"
+        },
+        {
+          "path": "registry/phoenix/label.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/label.ex"
+        },
+        {
+          "path": "registry/html/label.html",
+          "type": "registry:file",
+          "target": "snippets/label.html"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Native <input type=\"checkbox\"> with shadcn polish — peer-checked SVG indicator, indeterminate support, htmx-ready.",
+      "files": [
+        {
+          "path": "registry/ui/checkbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/checkbox.tsx"
+        },
+        {
+          "path": "registry/jinja2/checkbox.html",
+          "type": "registry:file",
+          "target": "templates/components/checkbox.html"
+        },
+        {
+          "path": "registry/go-templates/checkbox.tmpl",
+          "type": "registry:file",
+          "target": "components/checkbox.tmpl"
+        },
+        {
+          "path": "registry/phoenix/checkbox.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/checkbox.ex"
+        },
+        {
+          "path": "registry/html/checkbox.html",
+          "type": "registry:file",
+          "target": "snippets/checkbox.html"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Native <dialog> + 30-line script. Focus trap, ESC, accessible modal — all from the platform. Backdrop click to close, X button, htmx-rendered variants.",
+      "files": [
+        {
+          "path": "registry/ui/dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dialog.tsx"
+        },
+        {
+          "path": "registry/jinja2/dialog.html",
+          "type": "registry:file",
+          "target": "templates/components/dialog.html"
+        },
+        {
+          "path": "registry/go-templates/dialog.tmpl",
+          "type": "registry:file",
+          "target": "components/dialog.tmpl"
+        },
+        {
+          "path": "registry/phoenix/dialog.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/dialog.ex"
+        },
+        {
+          "path": "registry/html/dialog.html",
+          "type": "registry:file",
+          "target": "snippets/dialog.html"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "WAI-ARIA tabs over real <button role=\"tab\">. Inline boot script eliminates first-paint flicker; keyboard contract (arrows/Home/End) lives in site.js.",
+      "files": [
+        {
+          "path": "registry/ui/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs.tsx"
+        },
+        {
+          "path": "registry/jinja2/tabs.html",
+          "type": "registry:file",
+          "target": "templates/components/tabs.html"
+        },
+        {
+          "path": "registry/go-templates/tabs.tmpl",
+          "type": "registry:file",
+          "target": "components/tabs.tmpl"
+        },
+        {
+          "path": "registry/phoenix/tabs.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/tabs.ex"
+        },
+        {
+          "path": "registry/html/tabs.html",
+          "type": "registry:file",
+          "target": "snippets/tabs.html"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Native <textarea> with shadcn polish + CSS field-sizing: content auto-resize. htmx autosave demo.",
+      "files": [
+        {
+          "path": "registry/ui/textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/textarea.tsx"
+        },
+        {
+          "path": "registry/jinja2/textarea.html",
+          "type": "registry:file",
+          "target": "templates/components/textarea.html"
+        },
+        {
+          "path": "registry/go-templates/textarea.tmpl",
+          "type": "registry:file",
+          "target": "components/textarea.tmpl"
+        },
+        {
+          "path": "registry/phoenix/textarea.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/textarea.ex"
+        },
+        {
+          "path": "registry/html/textarea.html",
+          "type": "registry:file",
+          "target": "snippets/textarea.html"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Native input role=\"switch\" styled as a sliding pill. Two sizes; htmx save-on-toggle pattern.",
+      "files": [
+        {
+          "path": "registry/ui/switch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/switch.tsx"
+        },
+        {
+          "path": "registry/jinja2/switch.html",
+          "type": "registry:file",
+          "target": "templates/components/switch.html"
+        },
+        {
+          "path": "registry/go-templates/switch.tmpl",
+          "type": "registry:file",
+          "target": "components/switch.tmpl"
+        },
+        {
+          "path": "registry/phoenix/switch.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/switch.ex"
+        },
+        {
+          "path": "registry/html/switch.html",
+          "type": "registry:file",
+          "target": "snippets/switch.html"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Native <input type=\"radio\"> grouped by name; arrow-key cycle from the platform, custom dot indicator on top.",
+      "files": [
+        {
+          "path": "registry/ui/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radio-group.tsx"
+        },
+        {
+          "path": "registry/jinja2/radio-group.html",
+          "type": "registry:file",
+          "target": "templates/components/radio-group.html"
+        },
+        {
+          "path": "registry/go-templates/radio-group.tmpl",
+          "type": "registry:file",
+          "target": "components/radio-group.tmpl"
+        },
+        {
+          "path": "registry/phoenix/radio-group.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/radio_group.ex"
+        },
+        {
+          "path": "registry/html/radio-group.html",
+          "type": "registry:file",
+          "target": "snippets/radio-group.html"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Native <select> + chevron icon overlay. Browser-driven dropdown, type-to-search, mobile-native picker. htmx cascading select demo.",
+      "files": [
+        {
+          "path": "registry/ui/select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "registry/jinja2/select.html",
+          "type": "registry:file",
+          "target": "templates/components/select.html"
+        },
+        {
+          "path": "registry/go-templates/select.tmpl",
+          "type": "registry:file",
+          "target": "components/select.tmpl"
+        },
+        {
+          "path": "registry/phoenix/select.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/select.ex"
+        },
+        {
+          "path": "registry/html/select.html",
+          "type": "registry:file",
+          "target": "snippets/select.html"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Structural container — Header / Title / Description / Action / Content / Footer slots. Pure layout primitive; pair with htmx for content swaps.",
+      "files": [
+        {
+          "path": "registry/ui/card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/card.tsx"
+        },
+        {
+          "path": "registry/jinja2/card.html",
+          "type": "registry:file",
+          "target": "templates/components/card.html"
+        },
+        {
+          "path": "registry/go-templates/card.tmpl",
+          "type": "registry:file",
+          "target": "components/card.tmpl"
+        },
+        {
+          "path": "registry/phoenix/card.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/card.ex"
+        },
+        {
+          "path": "registry/html/card.html",
+          "type": "registry:file",
+          "target": "snippets/card.html"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Small visual marker — status pill / counter / label. Six variants; renders as span (default) or anchor (with href).",
+      "files": [
+        { "path": "registry/ui/badge.tsx",            "type": "registry:ui",   "target": "components/ui/badge.tsx" },
+        { "path": "registry/jinja2/badge.html",       "type": "registry:file", "target": "templates/components/badge.html" },
+        { "path": "registry/go-templates/badge.tmpl", "type": "registry:file", "target": "components/badge.tmpl" },
+        { "path": "registry/phoenix/badge.ex",        "type": "registry:file", "target": "lib/my_app_web/components/badge.ex" },
+        { "path": "registry/html/badge.html",         "type": "registry:file", "target": "snippets/badge.html" }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "Horizontal or vertical divider. Decorative (visual only) or semantic (renders <hr> or role=\"separator\").",
+      "files": [
+        { "path": "registry/ui/separator.tsx",            "type": "registry:ui",   "target": "components/ui/separator.tsx" },
+        { "path": "registry/jinja2/separator.html",       "type": "registry:file", "target": "templates/components/separator.html" },
+        { "path": "registry/go-templates/separator.tmpl", "type": "registry:file", "target": "components/separator.tmpl" },
+        { "path": "registry/phoenix/separator.ex",        "type": "registry:file", "target": "lib/my_app_web/components/separator.ex" },
+        { "path": "registry/html/separator.html",         "type": "registry:file", "target": "snippets/separator.html" }
+      ]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Boxed informational / success / warning / error message. Five variants + live-region politeness (off / polite / assertive).",
+      "files": [
+        { "path": "registry/ui/alert.tsx",            "type": "registry:ui",   "target": "components/ui/alert.tsx" },
+        { "path": "registry/jinja2/alert.html",       "type": "registry:file", "target": "templates/components/alert.html" },
+        { "path": "registry/go-templates/alert.tmpl", "type": "registry:file", "target": "components/alert.tmpl" },
+        { "path": "registry/phoenix/alert.ex",        "type": "registry:file", "target": "lib/my_app_web/components/alert.ex" },
+        { "path": "registry/html/alert.html",         "type": "registry:file", "target": "snippets/alert.html" }
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Transient notifications. Fixed-position viewport + per-toast item with live-region politeness. Server-driven via htmx beforeend swap.",
+      "files": [
+        { "path": "registry/ui/toast.tsx",            "type": "registry:ui",   "target": "components/ui/toast.tsx" },
+        { "path": "registry/jinja2/toast.html",       "type": "registry:file", "target": "templates/components/toast.html" },
+        { "path": "registry/go-templates/toast.tmpl", "type": "registry:file", "target": "components/toast.tmpl" },
+        { "path": "registry/phoenix/toast.ex",        "type": "registry:file", "target": "lib/my_app_web/components/toast.ex" },
+        { "path": "registry/html/toast.html",         "type": "registry:file", "target": "snippets/toast.html" }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Short label on a control. CSS-only show on hover + focus; ESC to dismiss. APG-compliant tooltip pattern.",
+      "files": [
+        { "path": "registry/ui/tooltip.tsx",            "type": "registry:ui",   "target": "components/ui/tooltip.tsx" },
+        { "path": "registry/jinja2/tooltip.html",       "type": "registry:file", "target": "templates/components/tooltip.html" },
+        { "path": "registry/go-templates/tooltip.tmpl", "type": "registry:file", "target": "components/tooltip.tmpl" },
+        { "path": "registry/phoenix/tooltip.ex",        "type": "registry:file", "target": "lib/my_app_web/components/tooltip.ex" },
+        { "path": "registry/html/tooltip.html",         "type": "registry:file", "target": "snippets/tooltip.html" }
+      ]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Collapsible stacked sections. Native <details>/<summary> + new HTML name attribute for zero-JS exclusive accordion. APG keyboard nav in site.js.",
+      "files": [
+        { "path": "registry/ui/accordion.tsx",            "type": "registry:ui",   "target": "components/ui/accordion.tsx" },
+        { "path": "registry/jinja2/accordion.html",       "type": "registry:file", "target": "templates/components/accordion.html" },
+        { "path": "registry/go-templates/accordion.tmpl", "type": "registry:file", "target": "components/accordion.tmpl" },
+        { "path": "registry/phoenix/accordion.ex",        "type": "registry:file", "target": "lib/my_app_web/components/accordion.ex" },
+        { "path": "registry/html/accordion.html",         "type": "registry:file", "target": "snippets/accordion.html" }
+      ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Round image with text/icon fallback. Native <img> + inline onerror handler reveals fallback on 404. Group + count subcomponents.",
+      "files": [
+        { "path": "registry/ui/avatar.tsx",            "type": "registry:ui",   "target": "components/ui/avatar.tsx" },
+        { "path": "registry/jinja2/avatar.html",       "type": "registry:file", "target": "templates/components/avatar.html" },
+        { "path": "registry/go-templates/avatar.tmpl", "type": "registry:file", "target": "components/avatar.tmpl" },
+        { "path": "registry/phoenix/avatar.ex",        "type": "registry:file", "target": "lib/my_app_web/components/avatar.ex" },
+        { "path": "registry/html/avatar.html",         "type": "registry:file", "target": "snippets/avatar.html" }
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Native HTML Popover API. Light dismiss + ESC + top-layer + focus restoration handled by the browser.",
+      "files": [
+        { "path": "registry/ui/popover.tsx",            "type": "registry:ui",   "target": "components/ui/popover.tsx" },
+        { "path": "registry/jinja2/popover.html",       "type": "registry:file", "target": "templates/components/popover.html" },
+        { "path": "registry/go-templates/popover.tmpl", "type": "registry:file", "target": "components/popover.tmpl" },
+        { "path": "registry/phoenix/popover.ex",        "type": "registry:file", "target": "lib/my_app_web/components/popover.ex" },
+        { "path": "registry/html/popover.html",         "type": "registry:file", "target": "snippets/popover.html" }
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Menu of actions from a button. Native Popover API + APG menu keyboard contract (arrows, Home/End, type-to-find).",
+      "files": [
+        { "path": "registry/ui/dropdown-menu.tsx",            "type": "registry:ui",   "target": "components/ui/dropdown-menu.tsx" },
+        { "path": "registry/jinja2/dropdown-menu.html",       "type": "registry:file", "target": "templates/components/dropdown-menu.html" },
+        { "path": "registry/go-templates/dropdown-menu.tmpl", "type": "registry:file", "target": "components/dropdown-menu.tmpl" },
+        { "path": "registry/phoenix/dropdown_menu.ex",        "type": "registry:file", "target": "lib/my_app_web/components/dropdown_menu.ex" },
+        { "path": "registry/html/dropdown-menu.html",         "type": "registry:file", "target": "snippets/dropdown-menu.html" }
+      ]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "ARIA role=\"progressbar\" with valuemin/max/now. Omit value for indeterminate (animated stripe). htmx polling demo for live updates.",
+      "files": [
+        { "path": "registry/ui/progress.tsx",            "type": "registry:ui",   "target": "components/ui/progress.tsx" },
+        { "path": "registry/jinja2/progress.html",       "type": "registry:file", "target": "templates/components/progress.html" },
+        { "path": "registry/go-templates/progress.tmpl", "type": "registry:file", "target": "components/progress.tmpl" },
+        { "path": "registry/phoenix/progress.ex",        "type": "registry:file", "target": "lib/my_app_web/components/progress.ex" },
+        { "path": "registry/html/progress.html",         "type": "registry:file", "target": "snippets/progress.html" }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Pulsing placeholder for content that hasn't loaded yet. role=\"status\" + aria-busy; pairs with htmx outerHTML swap.",
+      "files": [
+        { "path": "registry/ui/skeleton.tsx",            "type": "registry:ui",   "target": "components/ui/skeleton.tsx" },
+        { "path": "registry/jinja2/skeleton.html",       "type": "registry:file", "target": "templates/components/skeleton.html" },
+        { "path": "registry/go-templates/skeleton.tmpl", "type": "registry:file", "target": "components/skeleton.tmpl" },
+        { "path": "registry/phoenix/skeleton.ex",        "type": "registry:file", "target": "lib/my_app_web/components/skeleton.ex" },
+        { "path": "registry/html/skeleton.html",         "type": "registry:file", "target": "snippets/skeleton.html" }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Native <input type=\"range\"> styled cross-browser. role=slider + ARIA value attrs + arrow/Home/End/PageUp-Down keyboard contract come from the platform.",
+      "files": [
+        { "path": "registry/ui/slider.tsx",            "type": "registry:ui",   "target": "components/ui/slider.tsx" },
+        { "path": "registry/jinja2/slider.html",       "type": "registry:file", "target": "templates/components/slider.html" },
+        { "path": "registry/go-templates/slider.tmpl", "type": "registry:file", "target": "components/slider.tmpl" },
+        { "path": "registry/phoenix/slider.ex",        "type": "registry:file", "target": "lib/my_app_web/components/slider.ex" },
+        { "path": "registry/html/slider.html",         "type": "registry:file", "target": "snippets/slider.html" }
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Page navigation strip. <nav> landmark + aria-label + aria-current=\"page\" on the active link. Previous/Next have built-in aria-labels.",
+      "files": [
+        { "path": "registry/ui/pagination.tsx",            "type": "registry:ui",   "target": "components/ui/pagination.tsx" },
+        { "path": "registry/jinja2/pagination.html",       "type": "registry:file", "target": "templates/components/pagination.html" },
+        { "path": "registry/go-templates/pagination.tmpl", "type": "registry:file", "target": "components/pagination.tmpl" },
+        { "path": "registry/phoenix/pagination.ex",        "type": "registry:file", "target": "lib/my_app_web/components/pagination.ex" },
+        { "path": "registry/html/pagination.html",         "type": "registry:file", "target": "snippets/pagination.html" }
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Semantic <table>/<thead>/<tbody>; sortable columns via aria-sort + clickable button inside <th>. Sort actions route through htmx.",
+      "files": [
+        { "path": "registry/ui/table.tsx",            "type": "registry:ui",   "target": "components/ui/table.tsx" },
+        { "path": "registry/jinja2/table.html",       "type": "registry:file", "target": "templates/components/table.html" },
+        { "path": "registry/go-templates/table.tmpl", "type": "registry:file", "target": "components/table.tmpl" },
+        { "path": "registry/phoenix/table.ex",        "type": "registry:file", "target": "lib/my_app_web/components/table.ex" },
+        { "path": "registry/html/table.html",         "type": "registry:file", "target": "snippets/table.html" }
+      ]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "Autocomplete text input. Native <datalist> variant (zero JS) + APG role=combobox + htmx-filtered listbox variant.",
+      "files": [
+        { "path": "registry/ui/combobox.tsx",            "type": "registry:ui",   "target": "components/ui/combobox.tsx" },
+        { "path": "registry/jinja2/combobox.html",       "type": "registry:file", "target": "templates/components/combobox.html" },
+        { "path": "registry/go-templates/combobox.tmpl", "type": "registry:file", "target": "components/combobox.tmpl" },
+        { "path": "registry/phoenix/combobox.ex",        "type": "registry:file", "target": "lib/my_app_web/components/combobox.ex" },
+        { "path": "registry/html/combobox.html",         "type": "registry:file", "target": "snippets/combobox.html" }
       ]
     }
   ]

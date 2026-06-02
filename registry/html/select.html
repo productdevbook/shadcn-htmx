@@ -1,0 +1,66 @@
+<!--
+  shadcn-htmx — raw HTML select snippets.
+
+  Mirrors registry/ui/select.tsx. Native <select> styled with appearance-none
+  + a chevron icon positioned absolutely on top. The browser still renders
+  its native dropdown menu (no JS popover).
+
+  BASE (on the <select>):
+    peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center
+    rounded-md border border-input bg-background px-3 pr-8 py-1 text-base
+    shadow-xs transition-[color,box-shadow] outline-none
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    disabled:cursor-not-allowed disabled:opacity-50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    md:text-sm dark:bg-input/30
+    [&.htmx-request]:opacity-70
+-->
+
+<!-- Basic -->
+<span class="relative inline-flex w-full">
+  <select id="role" name="role" data-slot="select"
+    class="peer flex h-9 w-full min-w-0 cursor-pointer appearance-none items-center rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30">
+    <option value="admin"  selected>Administrator</option>
+    <option value="editor">Editor</option>
+    <option value="viewer">Viewer</option>
+  </select>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</span>
+
+<!-- With groups + disabled item -->
+<span class="relative inline-flex w-full">
+  <select name="timezone"
+    class="peer flex h-9 w-full appearance-none rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs md:text-sm dark:bg-input/30">
+    <optgroup label="Europe">
+      <option value="Europe/Istanbul">Istanbul</option>
+      <option value="Europe/Berlin">Berlin</option>
+      <option value="Europe/London">London</option>
+    </optgroup>
+    <optgroup label="Americas">
+      <option value="America/New_York">New York</option>
+      <option value="America/Sao_Paulo" disabled>São Paulo (coming soon)</option>
+    </optgroup>
+  </select>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+       class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</span>
+
+<!-- htmx — load dependent options on change -->
+<span class="relative inline-flex w-full">
+  <select name="country"
+          hx-get="/cities" hx-target="#cities" hx-trigger="change"
+    class="peer flex h-9 w-full appearance-none rounded-md border border-input bg-background px-3 pr-8 py-1 text-base shadow-xs md:text-sm [&.htmx-request]:opacity-70">
+    <option value="">Pick a country…</option>
+    <option value="tr">Türkiye</option>
+    <option value="de">Deutschland</option>
+  </select>
+  <svg class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+</span>

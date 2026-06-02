@@ -1,0 +1,76 @@
+{{/*
+  Dialog template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/dialog.tsx.
+
+  This template renders a complete <dialog> element. For body/footer content
+  you compose your own HTML and place it in .Body (rendered via "safe" raw
+  HTML — make sure it's trusted!) or call the template with an embedded
+  Define block.
+
+  Usage:
+
+      type DialogArgs struct {
+          ID, Title, Description string
+          Body                   template.HTML // already-rendered HTML
+          CloseOnBackdrop        bool          // default true
+          ShowCloseButton        bool          // default true
+          Open                   bool
+      }
+
+      tpl.ExecuteTemplate(w, "dialog", DialogArgs{
+          ID: "confirm-delete", Title: "Delete item?",
+          Description: "This cannot be undone.",
+          Body: template.HTML(`
+              <div class="flex justify-end gap-2">
+                <button type="button" data-dialog-close="true">Cancel</button>
+                <button type="button" hx-post="/items/42/delete">Delete</button>
+              </div>`),
+      })
+
+  Companion: "dialog_trigger" template (below) renders the open button.
+*/}}
+
+{{define "dialog"}}
+{{- $base := "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-lg grid gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg outline-none hidden open:grid backdrop:bg-black/60 backdrop:backdrop-blur-sm" -}}
+{{- $closeOnBackdrop := true -}}{{- if .CloseOnBackdropSet}}{{$closeOnBackdrop = .CloseOnBackdrop}}{{end -}}
+{{- $showCloseButton := true -}}{{- if .ShowCloseButtonSet}}{{$showCloseButton = .ShowCloseButton}}{{end -}}
+{{- $role := or .Role "dialog" -}}
+<dialog id="{{.ID}}"
+        {{- if .Open}} open{{end}}
+        {{- if .ClosedBy}} closedby="{{.ClosedBy}}"{{end}}
+        role="{{$role}}"
+        class="{{$base}}"
+        data-slot="dialog"
+        {{- if $closeOnBackdrop}} data-close-on-backdrop="true"{{end}}
+        aria-labelledby="{{.ID}}-title"
+        aria-describedby="{{.ID}}-description">
+  {{- if or .Title .Description}}
+  <div data-slot="dialog-header" class="flex flex-col gap-1.5 text-left">
+    {{- if .Title}}
+    <h2 id="{{.ID}}-title" data-slot="dialog-title" class="text-lg leading-none font-semibold">{{.Title}}</h2>
+    {{- end}}
+    {{- if .Description}}
+    <p id="{{.ID}}-description" data-slot="dialog-description" class="text-sm text-muted-foreground">{{.Description}}</p>
+    {{- end}}
+  </div>
+  {{- end}}
+  {{.Body}}
+  {{- if $showCloseButton}}
+  <button type="button" data-dialog-close="true" aria-label="Close"
+          class="absolute top-4 right-4 inline-flex size-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-70 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </svg>
+  </button>
+  {{- end}}
+</dialog>
+{{end}}
+
+{{define "dialog_trigger"}}
+<button {{if .ID}}id="{{.ID}}"{{end}}
+        type="{{or .Type "button"}}"
+        class="{{.Class}}"
+        data-dialog-trigger="true"
+        data-dialog-target="{{.DialogFor}}"
+        aria-haspopup="dialog">{{.Label}}</button>
+{{end}}

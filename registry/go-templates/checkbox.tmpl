@@ -1,0 +1,48 @@
+{{/*
+  Checkbox template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/checkbox.tsx.
+
+  Usage:
+
+      type CheckboxArgs struct {
+          ID, Name, Value string
+          Checked, Required, Disabled, Readonly bool
+          Form, AriaLabel, AriaLabelledby, AriaDescribedby string
+          AriaInvalid string // "true" | "false"
+          Attrs map[string]string
+      }
+
+      tpl.ExecuteTemplate(w, "checkbox", CheckboxArgs{
+          ID: "terms", Name: "terms", Required: true,
+      })
+*/}}
+
+{{define "checkbox"}}
+{{- $base := "peer size-4 shrink-0 appearance-none rounded-[4px] border border-input bg-background shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary checked:bg-primary indeterminate:border-primary indeterminate:bg-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30" -}}
+<span class="relative inline-flex size-4 shrink-0 align-middle">
+  <input type="checkbox" class="{{$base}}"
+         {{- if .ID}} id="{{.ID}}"{{end}}
+         {{- if .Name}} name="{{.Name}}"{{end}}
+         {{- if .Value}} value="{{.Value}}"{{end}}
+         {{- if .Checked}} checked{{end}}
+         {{- if .Required}} required{{end}}
+         {{- if .Disabled}} disabled{{end}}
+         {{- if .Readonly}} readonly{{end}}
+         {{- if .Form}} form="{{.Form}}"{{end}}
+         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+         {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+         {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+         data-slot="checkbox"
+         {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-checked:block"
+       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  <svg class="pointer-events-none absolute inset-0 m-auto hidden size-3 text-primary-foreground peer-indeterminate:block"
+       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+</span>
+{{end}}

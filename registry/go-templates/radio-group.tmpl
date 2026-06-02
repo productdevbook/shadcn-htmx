@@ -1,0 +1,43 @@
+{{/*
+  RadioGroup templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/radio-group.tsx.
+
+  Three templates:
+    - "radio_group"      — opens / closes the role="radiogroup" wrapper (use
+                            with a Body field containing the items).
+    - "radio_group_item" — one radio input + indicator.
+*/}}
+
+{{define "radio_group"}}
+<div role="radiogroup"
+     {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+     {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+     {{- if .Orientation}} aria-orientation="{{.Orientation}}" data-orientation="{{.Orientation}}"{{end}}
+     {{- if .Required}} aria-required="true"{{end}}
+     {{- if .Disabled}} aria-disabled="true"{{end}}
+     data-slot="radio-group"
+     class="grid gap-3 data-[orientation=horizontal]:grid-flow-col data-[orientation=horizontal]:auto-cols-max">
+  {{.Body}}
+</div>
+{{end}}
+
+{{define "radio_group_item"}}
+{{- $base := "peer aspect-square size-4 shrink-0 cursor-pointer appearance-none rounded-full border border-input bg-background shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 checked:border-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30" -}}
+<span class="relative inline-flex size-4 shrink-0 align-middle">
+  <input type="radio" class="{{$base}}"
+         value="{{.Value}}" name="{{.Name}}"
+         {{- if .ID}} id="{{.ID}}"{{end}}
+         {{- if .Checked}} checked{{end}}
+         {{- if .Disabled}} disabled{{end}}
+         {{- if .Required}} required{{end}}
+         {{- if .AriaLabel}} aria-label="{{.AriaLabel}}"{{end}}
+         {{- if .AriaLabelledby}} aria-labelledby="{{.AriaLabelledby}}"{{end}}
+         {{- if .AriaDescribedby}} aria-describedby="{{.AriaDescribedby}}"{{end}}
+         {{- if .AriaInvalid}} aria-invalid="{{.AriaInvalid}}"{{end}}
+         data-slot="radio-group-item"
+         {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+  >
+  <span class="pointer-events-none absolute inset-0 m-auto size-2 hidden rounded-full bg-primary peer-checked:block"
+        data-slot="radio-group-indicator" aria-hidden="true"></span>
+</span>
+{{end}}

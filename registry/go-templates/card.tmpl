@@ -1,0 +1,40 @@
+{{/*
+  Card templates — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/card.tsx.
+
+  Each named template wraps an HTML chunk. To compose, hand-assemble the
+  HTML in your handler (Go html/template has no caller block syntax):
+
+      type CardArgs struct {
+          Title       string
+          Description string
+          Content     template.HTML
+          Footer      template.HTML
+          Action      template.HTML // optional, sits in the top-right
+      }
+
+      tpl.ExecuteTemplate(w, "card", CardArgs{
+          Title:       "Account",
+          Description: "Update your settings here.",
+          Content:     template.HTML(`<p>Body content…</p>`),
+          Footer:      template.HTML(`<button>Save</button>`),
+      })
+*/}}
+
+{{define "card"}}
+<div data-slot="card" class="flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm">
+  {{- if or .Title .Description .Action}}
+  <div data-slot="card-header" class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6">
+    {{- if .Title}}<div data-slot="card-title" class="leading-none font-semibold">{{.Title}}</div>{{end}}
+    {{- if .Description}}<div data-slot="card-description" class="text-sm text-muted-foreground">{{.Description}}</div>{{end}}
+    {{- if .Action}}<div data-slot="card-action" class="col-start-2 row-span-2 row-start-1 self-start justify-self-end">{{.Action}}</div>{{end}}
+  </div>
+  {{- end}}
+  {{- if .Content}}
+  <div data-slot="card-content" class="px-6">{{.Content}}</div>
+  {{- end}}
+  {{- if .Footer}}
+  <div data-slot="card-footer" class="flex items-center px-6 [.border-t]:pt-6">{{.Footer}}</div>
+  {{- end}}
+</div>
+{{end}}

@@ -1,0 +1,28 @@
+{{/*
+  Label template — shadcn-htmx, htmx v4 + Tailwind v4.
+  Mirrors registry/ui/label.tsx for Go projects using html/template.
+
+  Usage:
+
+      type LabelArgs struct {
+          Text  string
+          For   string // the input id this label points at
+          ID    string
+          Attrs map[string]string
+      }
+
+      tpl.ExecuteTemplate(w, "label", LabelArgs{Text: "Email", For: "email"})
+
+  For implicit wrapping (label contains the input), use the "label_block"
+  variant and provide an `Inner` field of pre-rendered HTML.
+*/}}
+
+{{define "label"}}
+{{- $base := "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50" -}}
+<label class="{{$base}}"
+       {{- if .For}} for="{{.For}}"{{end}}
+       {{- if .ID}} id="{{.ID}}"{{end}}
+       data-slot="label"
+       {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}
+>{{.Text}}</label>
+{{end}}

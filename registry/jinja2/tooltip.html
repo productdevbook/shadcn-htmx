@@ -1,0 +1,31 @@
+{# Tooltip macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/tooltip.tsx. Pure CSS hover + focus-within; ESC
+   dismissal lives in public/site.js.
+
+   Usage:
+     {% from "components/tooltip.html" import tooltip_open, tooltip_close %}
+
+     {% call tooltip_open(id="save-tt", content="Saves your draft", side="top") %}
+       <button class="…">Save</button>
+     {% endcall %} #}
+
+{% macro tooltip_open(id, content, side="top", extra_class="", content_class="") %}
+{%- set wrapper -%}
+relative inline-block w-fit group/tooltip align-middle [&:hover>[data-slot=tooltip-content]]:opacity-100 [&:focus-within>[data-slot=tooltip-content]]:opacity-100 [&[data-suppress=true]>[data-slot=tooltip-content]]:opacity-0!
+{%- endset -%}
+{%- set content_base -%}
+pointer-events-none absolute z-50 w-max max-w-xs rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md opacity-0 transition-opacity duration-150 dark:bg-foreground dark:text-background
+{%- endset -%}
+{%- set sides = {
+    "top":    "left-1/2 -translate-x-1/2 bottom-[calc(100%+0.5rem)]",
+    "bottom": "left-1/2 -translate-x-1/2 top-[calc(100%+0.5rem)]",
+    "left":   "top-1/2 -translate-y-1/2 right-[calc(100%+0.5rem)]",
+    "right":  "top-1/2 -translate-y-1/2 left-[calc(100%+0.5rem)]"
+} -%}
+<span data-slot="tooltip" data-side="{{ side }}" data-tooltip-trigger
+      class="{{ wrapper }} {{ extra_class }}" aria-describedby="{{ id }}">
+  {{ caller() }}
+  <span id="{{ id }}" role="tooltip" data-slot="tooltip-content" data-side="{{ side }}"
+        class="{{ content_base }} {{ sides[side] }} {{ content_class }}">{{ content }}</span>
+</span>
+{% endmacro %}

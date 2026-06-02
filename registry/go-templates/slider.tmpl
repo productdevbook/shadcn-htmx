@@ -1,0 +1,32 @@
+{{/*
+  Slider template — shadcn-htmx, htmx v4 + Tailwind v4.
+
+      type SliderArgs struct {
+          ID, Name, AriaLabel string
+          AriaLabelledby, AriaDescribedby, AriaValuetext string
+          Form, List string
+          Value, Min, Max, Step *int
+          Disabled, Required bool
+          // Everything else (hx-get, hx-target, data-*, …) goes here.
+          Attrs map[string]string
+      }
+*/}}
+{{define "slider"}}
+{{- $min := or .Min 0 -}}{{- $max := or .Max 100 -}}
+<span data-slot="slider" {{if .Disabled}}data-disabled="true"{{end}}
+      class="relative flex w-full touch-none items-center select-none {{if .Disabled}}opacity-50{{end}}">
+  <input type="range"
+    {{if .ID}}id="{{.ID}}"{{end}} {{if .Name}}name="{{.Name}}"{{end}}
+    {{if .Value}}value="{{deref .Value}}"{{end}}
+    min="{{$min}}" max="{{$max}}"
+    {{if .Step}}step="{{deref .Step}}"{{end}}
+    {{if .Disabled}}disabled{{end}} {{if .Required}}required{{end}}
+    {{if .Form}}form="{{.Form}}"{{end}} {{if .List}}list="{{.List}}"{{end}}
+    {{if .AriaLabel}}aria-label="{{.AriaLabel}}"{{end}}
+    {{if .AriaLabelledby}}aria-labelledby="{{.AriaLabelledby}}"{{end}}
+    {{if .AriaDescribedby}}aria-describedby="{{.AriaDescribedby}}"{{end}}
+    {{if .AriaValuetext}}aria-valuetext="{{.AriaValuetext}}"{{end}}
+    class="h-2 w-full cursor-pointer appearance-none bg-transparent outline-none [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-muted [&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-muted [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:-mt-1 [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:shadow-sm focus-visible:[&::-webkit-slider-thumb]:ring-[3px] focus-visible:[&::-webkit-slider-thumb]:ring-ring/50 disabled:cursor-not-allowed"
+    {{- range $k, $v := .Attrs}} {{$k}}="{{$v}}"{{end -}}>
+</span>
+{{end}}

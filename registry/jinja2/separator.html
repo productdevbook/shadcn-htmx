@@ -1,0 +1,34 @@
+{# Separator macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/separator.tsx.
+
+   Usage:
+     {% from "components/separator.html" import separator %}
+     {{ separator() }}                          {# decorative horizontal #}
+     {{ separator(orientation="vertical") }}    {# decorative vertical #}
+     {{ separator(decorative=false) }}          {# semantic <hr> #} #}
+
+{% macro separator(
+    orientation="horizontal",
+    decorative=true,
+    id=none,
+    extra_class=""
+) %}
+{%- set base -%}
+shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px
+{%- endset -%}
+{%- if not decorative and orientation == "horizontal" -%}
+<hr
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="separator"
+  data-orientation="horizontal"
+  aria-orientation="horizontal"
+  class="{{ base }} border-0 {{ extra_class }}">
+{%- else -%}
+<div
+  {%- if id %} id="{{ id }}"{% endif %}
+  data-slot="separator"
+  data-orientation="{{ orientation }}"
+  {%- if not decorative %} role="separator" aria-orientation="{{ orientation }}"{% endif %}
+  class="{{ base }} {{ extra_class }}"></div>
+{%- endif -%}
+{% endmacro %}

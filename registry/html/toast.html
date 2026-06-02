@@ -1,0 +1,78 @@
+<!--
+  shadcn-htmx — raw HTML toast snippets.
+
+  Pattern:
+    1. Render the viewport once in your layout. It's a role="region" so
+       AT users can locate "Notifications" in their landmark list.
+    2. Endpoints that flash messages return a single <li data-slot="toast">
+       fragment with hx-target="#toast-viewport" hx-swap="beforeend".
+    3. Include the JS at the bottom of this file to auto-dismiss after
+       data-duration ms and wire up the close button.
+
+  VIEWPORT (render once):
+-->
+<ol id="toast-viewport"
+    role="region" aria-label="Notifications"
+    data-slot="toast-viewport" data-position="bottom-right"
+    class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-[420px] flex-col-reverse items-end gap-2 p-2">
+</ol>
+
+<!-- TOAST (server-returned fragment) — polite success -->
+<li data-slot="toast" data-variant="success" data-state="open" data-duration="5000"
+    role="status" aria-live="polite" aria-atomic="true"
+    class="pointer-events-auto relative grid w-full grid-cols-[0_1fr_auto] items-start gap-y-0.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 shadow-lg dark:text-emerald-300 has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current animate-[scn-toast-in_180ms_ease-out] data-[state=closed]:animate-[scn-toast-out_140ms_ease-in]">
+  <div data-slot="toast-title" class="col-start-2 line-clamp-1 font-medium tracking-tight">Saved</div>
+  <div data-slot="toast-description" class="col-start-2 text-sm text-emerald-700/90 dark:text-emerald-300/90">
+    Your changes have been recorded.
+  </div>
+  <button type="button" data-toast-close="true" aria-label="Dismiss notification"
+    class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md opacity-60 hover:bg-current/10 hover:opacity-100">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </svg>
+  </button>
+</li>
+
+<!-- TOAST — assertive destructive -->
+<li data-slot="toast" data-variant="destructive" data-state="open" data-duration="0"
+    role="alert" aria-live="assertive" aria-atomic="true"
+    class="pointer-events-auto relative grid w-full grid-cols-[0_1fr_auto] items-start gap-y-0.5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive shadow-lg has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current animate-[scn-toast-in_180ms_ease-out] data-[state=closed]:animate-[scn-toast-out_140ms_ease-in]">
+  <div data-slot="toast-title" class="col-start-2 line-clamp-1 font-medium tracking-tight">Save failed</div>
+  <div data-slot="toast-description" class="col-start-2 text-sm text-destructive/90">
+    Couldn't reach the server. Try again in a moment.
+  </div>
+  <button type="button" data-toast-close="true" aria-label="Dismiss notification"
+    class="col-start-3 row-span-2 row-start-1 inline-flex size-6 -translate-y-0.5 items-center justify-center self-start rounded-md opacity-60 hover:bg-current/10 hover:opacity-100">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </svg>
+  </button>
+</li>
+
+<!-- KEYFRAMES + JS — copy once at page bottom -->
+<style>
+  @keyframes scn-toast-in  { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes scn-toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(24px); } }
+</style>
+<script>
+  (function () {
+    var arm = function (toast) {
+      if (toast._scnArmed) return; toast._scnArmed = true
+      var d = Number(toast.getAttribute('data-duration') || 0)
+      var dismiss = function () {
+        if (toast.getAttribute('data-state') === 'closed') return
+        toast.setAttribute('data-state', 'closed')
+        setTimeout(function () { toast.remove() }, 160)
+      }
+      var c = toast.querySelector('[data-toast-close]'); if (c) c.addEventListener('click', dismiss)
+      if (d > 0) setTimeout(dismiss, d)
+    }
+    document.querySelectorAll('[data-slot="toast"]').forEach(arm)
+    document.querySelectorAll('[data-slot="toast-viewport"]').forEach(function (vp) {
+      new MutationObserver(function (rs) { rs.forEach(function (r) { r.addedNodes.forEach(function (n) {
+        if (n.matches && n.matches('[data-slot="toast"]')) arm(n)
+        if (n.querySelectorAll) n.querySelectorAll('[data-slot="toast"]').forEach(arm)
+      }) }) }).observe(vp, { childList: true })
+    })
+  })()
+</script>

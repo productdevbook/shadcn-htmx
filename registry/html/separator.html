@@ -1,0 +1,31 @@
+<!--
+  shadcn-htmx — raw HTML separator snippets.
+
+  Two semantic modes:
+    1. Decorative (default) — purely visual line. Use <div> with no role
+       so assistive tech skips it.
+    2. Semantic — marks a thematic break. <hr> for horizontal, role-only
+       div for vertical.
+
+  BASE:
+    shrink-0 bg-border
+    data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full
+    data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px
+-->
+
+<!-- Decorative horizontal -->
+<div data-slot="separator" data-orientation="horizontal"
+  class="shrink-0 bg-border h-px w-full"></div>
+
+<!-- Decorative vertical (works inside a flex/grid container with height) -->
+<div data-slot="separator" data-orientation="vertical"
+  class="shrink-0 bg-border h-full w-px"></div>
+
+<!-- Semantic horizontal — <hr> has implicit role="separator" -->
+<hr data-slot="separator" data-orientation="horizontal" aria-orientation="horizontal"
+  class="shrink-0 border-0 bg-border h-px w-full">
+
+<!-- Semantic vertical — no native vertical hr; explicit role + orientation -->
+<div data-slot="separator" data-orientation="vertical"
+     role="separator" aria-orientation="vertical"
+  class="shrink-0 bg-border h-full w-px"></div>

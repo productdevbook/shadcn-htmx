@@ -1,0 +1,26 @@
+{# Avatar macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/avatar.tsx. Native <img> + fallback layer.
+
+   Usage:
+     {% from "components/avatar.html" import avatar %}
+     {{ avatar(src="/users/mk.jpg", alt="Mehmet K", fallback="MK") }}
+     {{ avatar(fallback="MK", aria_label="Mehmet K") }}              {# no image #} #}
+
+{% macro avatar(src=none, alt=none, fallback=none, size="default", aria_label=none, extra_class="") %}
+{%- set sizes = {
+    "sm": "size-6 [&_[data-slot=avatar-fallback]]:text-xs",
+    "default": "size-8",
+    "lg": "size-10"
+} -%}
+<span data-slot="avatar" data-size="{{ size }}"
+      {%- if not src and (fallback or aria_label) %} role="img" aria-label="{{ aria_label or fallback }}"{% endif %}
+      class="group/avatar relative inline-flex shrink-0 overflow-hidden rounded-full select-none {{ sizes[size] }} {{ extra_class }}">
+  <span data-slot="avatar-fallback"
+    class="flex size-full items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">{{ fallback or "" }}</span>
+  {% if src %}
+  <img src="{{ src }}" alt="{{ alt or '' }}" data-slot="avatar-image"
+       onerror="this.style.display='none'"
+       class="absolute inset-0 aspect-square size-full object-cover">
+  {% endif %}
+</span>
+{% endmacro %}

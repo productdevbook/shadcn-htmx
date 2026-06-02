@@ -1,0 +1,62 @@
+<!--
+  shadcn-htmx — raw HTML input snippets.
+
+  Mirrors registry/ui/input.tsx. Drop these onto any page that loads Tailwind
+  CSS v4 and the shadcn theme variables (background, foreground, input, ring,
+  destructive, primary). See app/styles/input.css for the variable defaults.
+
+  BASE (shared by every input):
+    flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent
+    px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none
+    selection:bg-primary selection:text-primary-foreground
+    file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm
+    file:font-medium file:text-foreground
+    placeholder:text-muted-foreground
+    disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50
+    md:text-sm dark:bg-input/30
+    focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
+    aria-invalid:border-destructive aria-invalid:ring-destructive/20
+    dark:aria-invalid:ring-destructive/40
+    [&.htmx-request]:opacity-70
+-->
+
+<!-- ─── Common types ────────────────────────────────────────────────── -->
+
+<!-- Email — browser validates locally; required signals the constraint -->
+<input type="email" name="email" placeholder="you@example.com" required autocomplete="email" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40">
+
+<!-- Password — autocomplete="current-password" / "new-password" -->
+<input type="password" name="password" autocomplete="current-password" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+
+<!-- Number — inputmode="decimal" hints the OS keyboard -->
+<input type="number" name="amount" min="0" step="0.01" inputmode="decimal" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+
+<!-- Search — pair with hx-get for live-search -->
+<input type="search" name="q" placeholder="Search…" autocomplete="off" data-slot="input"
+  hx-get="/search" hx-target="#results" hx-trigger="input changed delay:300ms"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&.htmx-request]:opacity-70">
+
+<!-- ─── States ──────────────────────────────────────────────────────── -->
+
+<!-- Invalid — pair with an error message via aria-describedby -->
+<div>
+  <input type="email" name="email" aria-invalid="true" aria-describedby="email-error"
+         placeholder="you@example.com" data-slot="input"
+    class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40">
+  <p id="email-error" class="mt-1 text-sm text-destructive">Enter a valid email address.</p>
+</div>
+
+<!-- Disabled — also removes from tab order -->
+<input type="text" disabled value="Read-only after save" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30">
+
+<!-- Readonly — value is selectable + focusable, but not editable -->
+<input type="text" readonly value="https://example.com/abc-123" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
+
+<!-- ─── File ────────────────────────────────────────────────────────── -->
+<input type="file" name="avatar" accept="image/*" data-slot="input"
+  class="flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">

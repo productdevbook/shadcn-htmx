@@ -1,0 +1,88 @@
+{# Input macro — shadcn-htmx, htmx v4 + Tailwind v4.
+   Mirrors registry/ui/input.tsx for Python/Flask/FastAPI/Django/Jinja2.
+
+   Usage:
+       {% from "components/input.html" import input %}
+       {{ input(name="email", type="email", placeholder="you@example.com") }}
+       {{ input(name="q", type="search",
+                hx_get="/search", hx_target="#results",
+                hx_trigger="input changed delay:300ms") }}
+
+   All hx-* attributes are passed through via **attrs (underscores become
+   dashes, so `hx_get="/search"` emits `hx-get="/search"`).
+   See repos/htmx/www/src/content/reference/01-attributes/. #}
+
+{% macro input(
+    type="text",
+    id=none,
+    name=none,
+    value=none,
+    placeholder=none,
+    required=false,
+    disabled=false,
+    readonly=false,
+    minlength=none,
+    maxlength=none,
+    min=none,
+    max=none,
+    step=none,
+    pattern=none,
+    inputmode=none,
+    enterkeyhint=none,
+    autocomplete=none,
+    autocapitalize=none,
+    autofocus=false,
+    list=none,
+    accept=none,
+    capture=none,
+    multiple=false,
+    size=none,
+    dirname=none,
+    form=none,
+    aria_label=none,
+    aria_labelledby=none,
+    aria_describedby=none,
+    aria_invalid=none,
+    aria_required=none,
+    extra_class="",
+    **attrs
+) %}
+{%- set base -%}
+flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&.htmx-request]:opacity-70
+{%- endset -%}
+<input type="{{ type }}"
+       class="{{ base }} {{ extra_class }}"
+       {%- if id %} id="{{ id }}"{% endif %}
+       {%- if name %} name="{{ name }}"{% endif %}
+       {%- if value is not none %} value="{{ value }}"{% endif %}
+       {%- if placeholder %} placeholder="{{ placeholder }}"{% endif %}
+       {%- if required %} required{% endif %}
+       {%- if disabled %} disabled{% endif %}
+       {%- if readonly %} readonly{% endif %}
+       {%- if minlength is not none %} minlength="{{ minlength }}"{% endif %}
+       {%- if maxlength is not none %} maxlength="{{ maxlength }}"{% endif %}
+       {%- if min is not none %} min="{{ min }}"{% endif %}
+       {%- if max is not none %} max="{{ max }}"{% endif %}
+       {%- if step is not none %} step="{{ step }}"{% endif %}
+       {%- if pattern %} pattern="{{ pattern }}"{% endif %}
+       {%- if inputmode %} inputmode="{{ inputmode }}"{% endif %}
+       {%- if enterkeyhint %} enterkeyhint="{{ enterkeyhint }}"{% endif %}
+       {%- if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}
+       {%- if autocapitalize %} autocapitalize="{{ autocapitalize }}"{% endif %}
+       {%- if autofocus %} autofocus{% endif %}
+       {%- if list %} list="{{ list }}"{% endif %}
+       {%- if accept %} accept="{{ accept }}"{% endif %}
+       {%- if capture is not none %} capture{% if capture is string %}="{{ capture }}"{% endif %}{% endif %}
+       {%- if multiple %} multiple{% endif %}
+       {%- if size is not none %} size="{{ size }}"{% endif %}
+       {%- if dirname %} dirname="{{ dirname }}"{% endif %}
+       {%- if form %} form="{{ form }}"{% endif %}
+       {%- if aria_label %} aria-label="{{ aria_label }}"{% endif %}
+       {%- if aria_labelledby %} aria-labelledby="{{ aria_labelledby }}"{% endif %}
+       {%- if aria_describedby %} aria-describedby="{{ aria_describedby }}"{% endif %}
+       {%- if aria_invalid is not none %} aria-invalid="{{ aria_invalid|string|lower }}"{% endif %}
+       {%- if aria_required is not none %} aria-required="{{ aria_required|string|lower }}"{% endif %}
+       data-slot="input"
+       {%- for k, v in attrs.items() %} {{ k|replace('_', '-') }}="{{ v }}"{% endfor -%}
+>
+{% endmacro %}
