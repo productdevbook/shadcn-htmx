@@ -11,8 +11,8 @@ const sections: Section[] = [
   {
     title: "Getting Started",
     items: [
-      { label: "Introduction", href: "/" },
-      { label: "Why htmx + Tailwind", href: "/#features" },
+      { label: "Introduction", href: "/docs/introduction" },
+      { label: "Why htmx + Tailwind", href: "/docs/why-htmx-tailwind" },
       { label: "CLI", href: "/docs/cli" },
     ],
   },

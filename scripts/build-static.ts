@@ -25,7 +25,7 @@ const fetcher = server.fetch as (req: Request) => Response | Promise<Response>
 // Routes to pre-render: home + every component docs page + the CLI page.
 const index = JSON.parse(await readFile(join(ROOT, "public", "r", "index.json"), "utf8"))
 const slugs: string[] = index.items.filter((i: any) => i.name !== "utils").map((i: any) => i.name)
-const routes = ["/", ...slugs.map((s) => `/docs/${s}`), "/docs/cli"]
+const routes = ["/", ...slugs.map((s) => `/docs/${s}`), "/docs/introduction", "/docs/why-htmx-tailwind", "/docs/cli"]
 
 await rm(DIST, { recursive: true, force: true })
 await mkdir(DIST, { recursive: true })

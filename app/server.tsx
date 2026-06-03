@@ -49,6 +49,8 @@ import { treegridRoutes } from "@/app/routes/treegrid"
 import { splitterRoutes } from "@/app/routes/splitter"
 import { landmarksRoutes } from "@/app/routes/landmarks"
 import { cliRoutes } from "@/app/routes/cli"
+import { introductionRoutes } from "@/app/routes/introduction"
+import { whyHtmxTailwindRoutes } from "@/app/routes/why-htmx-tailwind"
 
 import { formFieldRoutes } from "@/app/routes/form-field"
 import { fileUploadRoutes } from "@/app/routes/file-upload"
@@ -148,6 +150,8 @@ app.route("/docs/treegrid", treegridRoutes)
 app.route("/docs/splitter", splitterRoutes)
 app.route("/docs/landmarks", landmarksRoutes)
 app.route("/docs/cli", cliRoutes)
+app.route("/docs/introduction", introductionRoutes)
+app.route("/docs/why-htmx-tailwind", whyHtmxTailwindRoutes)
 app.route("/docs/form-field", formFieldRoutes)
 app.route("/docs/file-upload", fileUploadRoutes)
 app.route("/docs/copy-button", copyButtonRoutes)
