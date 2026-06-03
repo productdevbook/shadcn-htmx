@@ -2,7 +2,7 @@
 // Exercises the flavour-aware installer against the local built registry
 // (public/r), asserting it copies ONLY the chosen flavour's file(s).
 import { test, expect, beforeAll } from "bun:test"
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs"
+import { existsSync, mkdtempSync, openSync, closeSync, readFileSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { spawnSync } from "node:child_process"
@@ -19,13 +19,30 @@ beforeAll(() => {
 })
 
 function run(args: string[], out: string) {
-  // Use node:child_process (reliable stdout/stderr capture across Bun builds —
-  // Bun.spawnSync's capture behaved inconsistently on some versions).
-  const r = spawnSync("node", [CLI, ...args, "-r", REG, "-o", out], {
-    cwd: ROOT,
-    encoding: "utf8",
-  })
-  return { code: r.status ?? 1, stdout: r.stdout ?? "", stderr: r.stderr ?? "" }
+  // Capture the child's output via real files instead of spawnSync's in-memory
+  // pipe capture, which returns "" on some Bun builds even when the child printed
+  // (the .status exit code is fine — only piped stdout/stderr is dropped). The OS
+  // writes the redirected fds directly, so this is deterministic on every Node and
+  // Bun version.
+  const outLog = join(out, ".cli-stdout.log")
+  const errLog = join(out, ".cli-stderr.log")
+  const ofd = openSync(outLog, "w")
+  const efd = openSync(errLog, "w")
+  let r
+  try {
+    r = spawnSync("node", [CLI, ...args, "-r", REG, "-o", out], {
+      cwd: ROOT,
+      stdio: ["ignore", ofd, efd],
+    })
+  } finally {
+    closeSync(ofd)
+    closeSync(efd)
+  }
+  return {
+    code: r.status ?? 1,
+    stdout: readFileSync(outLog, "utf8"),
+    stderr: readFileSync(errLog, "utf8"),
+  }
 }
 function tmp() {
   const d = mkdtempSync(join(tmpdir(), "shadcn-htmx-cli-"))
