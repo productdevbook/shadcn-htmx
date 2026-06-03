@@ -554,56 +554,6 @@ app.get("/", (c) =>
           </div>
         </section>
 
-        {/* Components index */}
-        <section id="components" class="border-b">
-          <div class="mx-auto max-w-5xl px-6 py-20">
-            <div class="mb-10 max-w-2xl space-y-2">
-              <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                Components
-              </p>
-              <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
-                Eighty-two components. Every one, every flavour.
-              </h2>
-              <p class="text-sm text-muted-foreground">
-                Each ships with the same install, live examples, and source view
-                across all five frameworks — Hono JSX, Jinja2, Go templates,
-                Phoenix, and raw HTML.
-              </p>
-            </div>
-            <div class="space-y-12">
-              {COMPONENT_GROUPS.map((group) => (
-                <div>
-                  <h3 class="mb-4 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    {group.title}
-                  </h3>
-                  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {group.items.map((item) => (
-                      <a
-                        href={item.href}
-                        class="group flex flex-col overflow-hidden rounded-xl border bg-card transition-colors hover:bg-accent/40"
-                      >
-                        <div class="flex h-24 items-center justify-center overflow-hidden border-b bg-muted/30 text-muted-foreground/70 transition-colors group-hover:text-muted-foreground">
-                          {raw(COMPONENT_PREVIEWS[item.href.replace("/docs/", "")] ?? "")}
-                        </div>
-                        <div class="flex flex-1 items-start justify-between gap-3 p-5">
-                          <div>
-                            <h4 class="font-semibold">{item.label}</h4>
-                            <p class="mt-1 text-sm text-muted-foreground">{item.blurb}</p>
-                          </div>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true">
-                            <path d="M5 12h14" />
-                            <path d="m12 5 7 7-7 7" />
-                          </svg>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Sponsors */}
         <section class="border-b">
           <div class="mx-auto max-w-5xl px-6 py-20">
@@ -657,6 +607,56 @@ app.get("/", (c) =>
               >
                 github.com/sponsors/productdevbook →
               </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Components index */}
+        <section id="components" class="border-b">
+          <div class="mx-auto max-w-5xl px-6 py-20">
+            <div class="mb-10 max-w-2xl space-y-2">
+              <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                Components
+              </p>
+              <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
+                Eighty-two components. Every one, every flavour.
+              </h2>
+              <p class="text-sm text-muted-foreground">
+                Each ships with the same install, live examples, and source view
+                across all five frameworks — Hono JSX, Jinja2, Go templates,
+                Phoenix, and raw HTML.
+              </p>
+            </div>
+            <div class="space-y-12">
+              {COMPONENT_GROUPS.map((group) => (
+                <div>
+                  <h3 class="mb-4 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                    {group.title}
+                  </h3>
+                  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {group.items.map((item) => (
+                      <a
+                        href={item.href}
+                        class="group flex flex-col overflow-hidden rounded-xl border bg-card transition-colors hover:bg-accent/40"
+                      >
+                        <div class="flex h-24 items-center justify-center overflow-hidden border-b bg-muted/30 text-muted-foreground/70 transition-colors group-hover:text-muted-foreground">
+                          {raw(COMPONENT_PREVIEWS[item.href.replace("/docs/", "")] ?? "")}
+                        </div>
+                        <div class="flex flex-1 items-start justify-between gap-3 p-5">
+                          <div>
+                            <h4 class="font-semibold">{item.label}</h4>
+                            <p class="mt-1 text-sm text-muted-foreground">{item.blurb}</p>
+                          </div>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+                            <path d="M5 12h14" />
+                            <path d="m12 5 7 7-7 7" />
+                          </svg>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
