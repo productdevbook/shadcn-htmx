@@ -18,8 +18,18 @@ beforeAll(() => {
 })
 
 function run(args: string[], out: string) {
-  const p = Bun.spawnSync(["node", CLI, ...args, "-r", REG, "-o", out], { cwd: ROOT })
-  return { code: p.exitCode, stdout: p.stdout.toString(), stderr: p.stderr.toString() }
+  // Explicitly pipe — Bun.spawnSync's stdout/stderr default isn't "pipe" on all
+  // versions, so without this the captured output can come back empty.
+  const p = Bun.spawnSync(["node", CLI, ...args, "-r", REG, "-o", out], {
+    cwd: ROOT,
+    stdout: "pipe",
+    stderr: "pipe",
+  })
+  return {
+    code: p.exitCode,
+    stdout: p.stdout ? p.stdout.toString() : "",
+    stderr: p.stderr ? p.stderr.toString() : "",
+  }
 }
 function tmp() {
   const d = mkdtempSync(join(tmpdir(), "shadcn-htmx-cli-"))
