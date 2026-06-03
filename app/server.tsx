@@ -4,6 +4,7 @@ import { serveStatic } from "hono/bun"
 import { raw } from "hono/html"
 import { Layout, page } from "@/app/layout"
 import { COMPONENT_PREVIEWS } from "@/app/data/previews"
+import { Sponsors } from "@/app/components/sponsors"
 import { buttonRoutes } from "@/app/routes/button"
 import { inputRoutes } from "@/app/routes/input"
 import { labelRoutes } from "@/app/routes/label"
@@ -275,8 +276,6 @@ app.route("/snap-list", snapListRoutes)
 app.route("/container-card", containerCardRoutes)
 app.route("/sticky-header", stickyHeaderRoutes)
 app.route("/scroll-progress", scrollProgressRoutes)
-
-const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 
 // Homepage component index. Mirrors the categories in app/components/docs-sidebar.tsx —
 // keep the two in sync when a component is added or recategorized.
@@ -554,62 +553,8 @@ app.get("/", (c) =>
           </div>
         </section>
 
-        {/* Sponsors */}
-        <section class="border-b">
-          <div class="mx-auto max-w-5xl px-6 py-20">
-            <div class="mb-10 max-w-2xl space-y-2">
-              <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                Sponsors
-              </p>
-              <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
-                Backed by people who build with this.
-              </h2>
-              <p class="text-sm text-muted-foreground">
-                shadcn-htmx is open source and free to use. Sponsorship pays for
-                maintenance time, new components, and keeping the docs current
-                with htmx and Tailwind upstream releases.
-              </p>
-            </div>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-                <a
-                  href={SPONSORS_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  class="flex aspect-square items-center justify-center rounded-xl border border-dashed bg-muted/10 p-4 text-center text-xs text-muted-foreground transition-colors hover:border-foreground/40 hover:bg-muted/30 hover:text-foreground"
-                  aria-label={`Sponsor slot ${i + 1} — open sponsor page`}
-                >
-                  Your logo here
-                </a>
-              ))}
-              <a
-                href={SPONSORS_URL}
-                target="_blank"
-                rel="noreferrer"
-                class="flex aspect-square flex-col items-center justify-center rounded-xl bg-foreground p-4 text-center text-xs font-semibold text-background transition-opacity hover:opacity-90"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mb-1.5 size-5" aria-hidden="true">
-                  <path d="M12 21.35 10.55 20a132 132 0 0 1-4.95-4.6C2.8 13 1 10.7 1 8.05 1 5.42 3.03 3.4 5.66 3.4c1.49 0 2.91.69 3.84 1.79l.5.59.5-.59A5.04 5.04 0 0 1 14.34 3.4C16.97 3.4 19 5.42 19 8.05c0 2.66-1.8 4.95-4.6 7.35a132 132 0 0 1-4.95 4.6L12 21.35Z" />
-                </svg>
-                Become a sponsor
-              </a>
-            </div>
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-              <p>
-                Already sponsoring? Tag your logo in a PR and we'll ship it on
-                the next docs build.
-              </p>
-              <a
-                href={SPONSORS_URL}
-                target="_blank"
-                rel="noreferrer"
-                class="font-medium text-foreground underline underline-offset-4 hover:no-underline"
-              >
-                github.com/sponsors/productdevbook →
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* Sponsors — fetched from GitHub Sponsors (scripts/fetch-sponsors.ts) */}
+        <Sponsors />
 
         {/* Components index */}
         <section id="components" class="border-b">
