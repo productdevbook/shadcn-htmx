@@ -1,6 +1,6 @@
 {
   "name": "shadcn-htmx",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "shadcn-style UI components for htmx v4 + Tailwind v4 — 82 web-standards components in five flavours, with a flavour-aware CLI.",
   "license": "MIT",
   "author": "productdevbook",
