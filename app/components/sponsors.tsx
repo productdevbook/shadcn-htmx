@@ -6,6 +6,9 @@ const SPONSORS_URL = "https://github.com/sponsors/productdevbook"
 // Tile size scales with the monthly tier amount. Bigger spenders get a bigger
 // square (and a visible name); entry tiers stay compact. Buckets are matched
 // top-down, so order matters — keep `min` descending.
+//
+// Thresholds map onto the sponsorship packages ($5/$15/$25/$50/$250/$500/$1000):
+//   platinum $1000  ·  gold $250–$500  ·  silver $50  ·  bronze $5–$25
 type Tier = {
   name: string
   min: number // inclusive monthly-dollars threshold
@@ -14,10 +17,10 @@ type Tier = {
   showName: boolean
 }
 const TIERS: Tier[] = [
-  { name: "platinum", min: 50, cell: "col-span-2 row-span-2", avatar: "size-20 sm:size-24", showName: true },
-  { name: "gold", min: 20, cell: "col-span-2 aspect-[2/1]", avatar: "size-14 sm:size-16", showName: true },
-  { name: "silver", min: 10, cell: "aspect-square", avatar: "size-12", showName: false },
-  { name: "bronze", min: 0, cell: "aspect-square", avatar: "size-10", showName: false },
+  { name: "platinum", min: 1000, cell: "col-span-2 row-span-2", avatar: "size-24 sm:size-28", showName: true },
+  { name: "gold", min: 250, cell: "col-span-2 aspect-[2/1]", avatar: "size-20 sm:size-24", showName: true },
+  { name: "silver", min: 50, cell: "aspect-square", avatar: "size-16", showName: false },
+  { name: "bronze", min: 0, cell: "aspect-square", avatar: "size-14", showName: false },
 ]
 const tierFor = (monthly: number): Tier => TIERS.find((t) => monthly >= t.min) ?? TIERS[TIERS.length - 1]!
 
