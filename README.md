@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./cover.png" alt="shadcn-htmx — shadcn-style components for htmx v4 + Tailwind v4" width="100%">
+
 # shadcn-htmx
 
 **shadcn-style UI components for [htmx v4](https://htmx.org) + [Tailwind CSS v4](https://tailwindcss.com) — built on web standards, not hacks.**
