@@ -1,0 +1,64 @@
+name: Release
+
+# Triggered by the tags `bun run release` (bumpp) pushes. Publishes the CLI to
+# npm with provenance and creates the GitHub Release from the changelog.
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 📦 Install
+        run: bun install --frozen-lockfile
+
+      - name: 🔍 Typecheck
+        run: bun run typecheck
+
+      - name: 🚀 Build
+        run: bun run build
+
+      - name: 🧪 Test CLI
+        run: bun run test:cli
+
+      - name: 📦 Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📝 GitHub release (changelog)
+        run: bunx changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💖 Append sponsor footer to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          current=$(gh release view "$TAG" --json body -q .body)
+          footer=$'\n\n---\n\n### 💖 Support shadcn-htmx\n\nIf shadcn-htmx saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/productdevbook) — it funds new components, the CLI, and keeping the docs current with htmx + Tailwind upstream.'
+          printf '%s%s' "$current" "$footer" | gh release edit "$TAG" --notes-file -
+
+      - name: 📊 Summary
+        run: |
+          echo "## Release ${{ github.ref_name }} 🚀" >> "$GITHUB_STEP_SUMMARY"
+          echo "- npm: https://www.npmjs.com/package/shadcn-htmx" >> "$GITHUB_STEP_SUMMARY"
+          echo "- release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"

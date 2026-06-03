@@ -1,11 +1,48 @@
 {
   "name": "shadcn-htmx",
   "version": "0.0.0",
-  "private": true,
+  "description": "shadcn-style UI components for htmx v4 + Tailwind v4 — 82 web-standards components in five flavours, with a flavour-aware CLI.",
   "license": "MIT",
+  "author": "productdevbook",
   "type": "module",
+  "keywords": [
+    "shadcn",
+    "htmx",
+    "tailwindcss",
+    "components",
+    "ui",
+    "ui-components",
+    "component-library",
+    "accessibility",
+    "wai-aria",
+    "jinja2",
+    "go-templates",
+    "phoenix",
+    "hono",
+    "cli",
+    "registry",
+    "web-standards"
+  ],
+  "homepage": "https://github.com/productdevbook/shadcn-htmx#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/productdevbook/shadcn-htmx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/productdevbook/shadcn-htmx/issues"
+  },
+  "funding": "https://github.com/sponsors/productdevbook",
+  "engines": {
+    "node": ">=18"
+  },
   "bin": {
     "shadcn-htmx": "scripts/cli.mjs"
+  },
+  "files": [
+    "scripts/cli.mjs"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "cli": "node scripts/cli.mjs",
@@ -21,18 +58,18 @@
     "test:e2e:ui": "playwright test --ui",
     "test:a11y": "playwright test tests/a11y.spec.ts",
     "test:geom": "playwright test tests/geometry.spec.ts",
-    "test:kbd": "playwright test tests/keyboard.spec.ts"
-  },
-  "dependencies": {
-    "hono": "^4.12.23",
-    "shiki": "^4.1.0"
+    "test:kbd": "playwright test tests/keyboard.spec.ts",
+    "release": "bun run typecheck && bun run test:cli && bumpp --commit --tag --push"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/cli": "^4.3.0",
     "@types/bun": "latest",
+    "bumpp": "^11.0.0",
     "concurrently": "^10.0.3",
+    "hono": "^4.12.23",
+    "shiki": "^4.1.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
   }
