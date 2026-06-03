@@ -170,7 +170,7 @@ ${c.bold("Options")}
 ${c.bold("Examples")}
   shadcn-htmx init
   shadcn-htmx add button input --flavour jinja
-  shadcn-htmx add dialog -r https://your-host/r -o ./templates
+  shadcn-htmx add dialog -r https://shadcn-htmx.productdevbook.com/r -o ./templates
   shadcn-htmx list -r ./public/r`
 
 async function main() {
@@ -184,7 +184,7 @@ async function main() {
   if (cmd === "init") {
     const flavour = flags.flavour || "jsx"
     if (!FLAVOURS[flavour]) die(`Unknown flavour "${flavour}". One of: ${Object.keys(FLAVOURS).join(", ")}`)
-    const registry = flags.registry || "https://<your-shadcn-htmx-host>/r"
+    const registry = flags.registry || "https://shadcn-htmx.productdevbook.com/r"
     const cfg = { $schema: "https://github.com/productdevbook/shadcn-htmx", flavour, registry }
     const p = join(cwd, CONFIG_FILE)
     if (existsSync(p) && !flags.overwrite) die(`${CONFIG_FILE} already exists (pass --overwrite).`)

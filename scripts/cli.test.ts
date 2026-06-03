@@ -5,6 +5,7 @@ import { test, expect, beforeAll } from "bun:test"
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
+import { spawnSync } from "node:child_process"
 
 const ROOT = join(import.meta.dir, "..")
 const CLI = join(ROOT, "scripts", "cli.mjs")
@@ -13,23 +14,18 @@ const REG = join(ROOT, "public", "r")
 beforeAll(() => {
   if (!existsSync(join(REG, "button.json"))) {
     // Ensure the registry is built before testing.
-    Bun.spawnSync(["bun", "run", "build:registry"], { cwd: ROOT })
+    spawnSync("bun", ["run", "build:registry"], { cwd: ROOT })
   }
 })
 
 function run(args: string[], out: string) {
-  // Explicitly pipe — Bun.spawnSync's stdout/stderr default isn't "pipe" on all
-  // versions, so without this the captured output can come back empty.
-  const p = Bun.spawnSync(["node", CLI, ...args, "-r", REG, "-o", out], {
+  // Use node:child_process (reliable stdout/stderr capture across Bun builds —
+  // Bun.spawnSync's capture behaved inconsistently on some versions).
+  const r = spawnSync("node", [CLI, ...args, "-r", REG, "-o", out], {
     cwd: ROOT,
-    stdout: "pipe",
-    stderr: "pipe",
+    encoding: "utf8",
   })
-  return {
-    code: p.exitCode,
-    stdout: p.stdout ? p.stdout.toString() : "",
-    stderr: p.stderr ? p.stderr.toString() : "",
-  }
+  return { code: r.status ?? 1, stdout: r.stdout ?? "", stderr: r.stderr ?? "" }
 }
 function tmp() {
   const d = mkdtempSync(join(tmpdir(), "shadcn-htmx-cli-"))

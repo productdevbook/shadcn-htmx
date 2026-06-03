@@ -13,6 +13,8 @@
 ![Tailwind CSS v4](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8)
 ![a11y: WAI-ARIA APG](https://img.shields.io/badge/a11y-WAI--ARIA%20APG-22c55e)
 
+### [📖 Documentation & live previews → shadcn-htmx.productdevbook.com](https://shadcn-htmx.productdevbook.com)
+
 One design. **82 components.** Five backends — **Hono JSX, Jinja2, Go templates, Phoenix, and raw HTML** — generated from a single source of truth. Copy what you need, ship it in any stack.
 
 </div>
@@ -55,8 +57,9 @@ npx shadcn-htmx add button dialog combobox  # writes only the Jinja2 files
 npx shadcn-htmx list                         # browse every component
 ```
 
-`init` writes a `shadcn-htmx.json` so later commands need no flags. Point its
-`registry` field (or `--registry`) at your docs host's `/r` endpoint.
+`init` writes a `shadcn-htmx.json` so later commands need no flags — it's
+pre-pointed at the hosted registry (`https://shadcn-htmx.productdevbook.com/r`);
+override it with the `registry` field or `--registry` to self-host.
 
 <details>
 <summary><b>Other ways to install</b></summary>
@@ -66,7 +69,7 @@ stock CLI works too (but it copies *all five* flavours' files; delete the ones y
 don't need):
 
 ```sh
-npx shadcn@latest add https://<your-host>/r/button.json
+npx shadcn@latest add https://shadcn-htmx.productdevbook.com/r/button.json
 ```
 
 **curl** — pull a raw flavour file straight into your project:

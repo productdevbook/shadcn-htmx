@@ -34,7 +34,7 @@ function H2(props: { id: string; children: any }) {
 
 cliRoutes.get("/", async (c) => {
   const initSnippet = `# pick your stack once (jsx | jinja | go | phoenix | html)
-npx shadcn-htmx init --flavour jinja --registry https://<your-host>/r`
+npx shadcn-htmx init --flavour jinja --registry https://shadcn-htmx.productdevbook.com/r`
   const addSnippet = `# add one or many — only the Jinja2 files land in your project
 npx shadcn-htmx add button input dialog
 
@@ -51,7 +51,7 @@ npx shadcn-htmx add accordion --dry`
   const configSnippet = `{
   "$schema": "https://github.com/productdevbook/shadcn-htmx",
   "flavour": "jinja",
-  "registry": "https://<your-host>/r",
+  "registry": "https://shadcn-htmx.productdevbook.com/r",
   "out": "."
 }`
   const initBlock = await CodeBlock({ code: initSnippet, lang: "bash" })
@@ -174,7 +174,7 @@ npx shadcn-htmx add accordion --dry`
             <p class="text-sm leading-relaxed text-muted-foreground">
               The registry items follow the shadcn{" "}
               <code class="rounded bg-muted px-1 py-0.5 text-xs">registry-item</code> schema,
-              so <code class="rounded bg-muted px-1 py-0.5 text-xs">npx shadcn@latest add &lt;host&gt;/r/button.json</code>{" "}
+              so <code class="rounded bg-muted px-1 py-0.5 text-xs">npx shadcn@latest add https://shadcn-htmx.productdevbook.com/r/button.json</code>{" "}
               works too — but it copies <em>all five</em> flavours' files into your
               project, leaving you to delete the four you don't use. The{" "}
               <code class="rounded bg-muted px-1 py-0.5 text-xs">shadcn-htmx</code> CLI is
