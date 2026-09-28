@@ -9,6 +9,7 @@ export const cliRoutes = new Hono()
 
 const FLAVOURS: { flavour: string; label: string; file: string; target: string }[] = [
   { flavour: "jsx", label: "Hono JSX", file: "registry/ui/<name>.tsx", target: "components/ui/<name>.tsx" },
+  { flavour: "elysiax", label: "Elysia + @kitajs/html", file: "registry/elysiax/<name>.tsx", target: "components/ui/<name>.tsx" },
   { flavour: "jinja", label: "Jinja2", file: "registry/jinja2/<name>.html", target: "templates/components/<name>.html" },
   { flavour: "go", label: "Go template", file: "registry/go-templates/<name>.tmpl", target: "components/<name>.tmpl" },
   { flavour: "phoenix", label: "Phoenix", file: "registry/phoenix/<name>.ex", target: "lib/my_app_web/components/<name>.ex" },
@@ -105,7 +106,7 @@ npx shadcn-htmx add accordion --dry`
             <H2 id="add">Add components</H2>
             <p class="text-sm text-muted-foreground">
               Each name resolves to one file for your flavour, written to its
-              conventional target. For the JSX flavour, registry dependencies
+              conventional target. For the TypeScript flavours (jsx, elysiax), registry dependencies
               (the <code class="rounded bg-muted px-1 py-0.5 text-xs">cn()</code> util)
               are pulled in automatically; the template flavours pull just their
               one file. Existing files are skipped unless you pass{" "}
@@ -175,7 +176,7 @@ npx shadcn-htmx add accordion --dry`
               The registry items follow the shadcn{" "}
               <code class="rounded bg-muted px-1 py-0.5 text-xs">registry-item</code> schema,
               so <code class="rounded bg-muted px-1 py-0.5 text-xs">npx shadcn@latest add https://shadcn-htmx.productdevbook.com/r/button.json</code>{" "}
-              works too — but it copies <em>all five</em> flavours' files into your
+              works too — but it copies <em>all six</em> flavours' files into your
               project, leaving you to delete the four you don't use. The{" "}
               <code class="rounded bg-muted px-1 py-0.5 text-xs">shadcn-htmx</code> CLI is
               flavour-aware: it copies exactly one. Use whichever you prefer; both

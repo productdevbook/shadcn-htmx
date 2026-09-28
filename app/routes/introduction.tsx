@@ -58,7 +58,7 @@ npx shadcn-htmx list`
             <h1 class="text-3xl font-bold tracking-tight">Introduction</h1>
             <p class="text-muted-foreground">
               shadcn-htmx is a library of shadcn-style UI components for teams that render HTML on the
-              server. One design, 82 components, five flavours — Hono JSX, Jinja2, Go templates,
+              server. One design, 82 components, six flavours — Hono JSX, Elysia + @kitajs/html, Jinja2, Go templates,
               Phoenix, and raw HTML — all built on web standards and wired for{" "}
               <a class="underline underline-offset-4" href="https://htmx.org" target="_blank" rel="noreferrer">htmx v4</a>.
             </p>
@@ -110,7 +110,7 @@ npx shadcn-htmx list`
           <section class="space-y-4">
             <H2 id="flavours">Five flavours</H2>
             <p class="text-sm leading-relaxed text-muted-foreground">
-              The Hono JSX file is the canonical source; the other four mirror its semantics exactly — same
+              The Hono JSX file is the canonical source; the other five mirror its semantics exactly — same
               elements, roles, ARIA, and Tailwind classes. Only the templating syntax differs.
             </p>
             <div class="relative w-full overflow-auto rounded-lg border">

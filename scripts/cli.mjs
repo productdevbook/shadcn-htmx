@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // shadcn-htmx — flavour-aware component installer.
 //
-// Unlike `npx shadcn add`, which copies EVERY file in a registry item (all five
+// Unlike `npx shadcn add`, which copies EVERY file in a registry item (all six
 // flavours), this CLI copies only the file(s) for YOUR chosen framework, to the
 // path the registry item declares for that flavour.
 //
@@ -15,7 +15,7 @@
 //   shadcn-htmx list                       # list available components
 //
 // Flags:
-//   -f, --flavour  jsx | jinja | go | phoenix | html
+//   -f, --flavour  jsx | elysiax | jinja | go | phoenix | html
 //   -r, --registry <url-or-dir>            registry base (…/r URL, or a local dir)
 //   -o, --out <dir>                        base directory to write into (default: cwd)
 //       --cwd <dir>                        run as if from this directory
@@ -29,6 +29,7 @@ import { dirname, join, resolve, isAbsolute } from "node:path"
 
 const FLAVOURS = {
   jsx: { label: "Hono JSX (TypeScript)", dir: "registry/ui/" },
+  elysiax: { label: "Elysia + @kitajs/html (TypeScript)", dir: "registry/elysiax/" },
   jinja: { label: "Jinja2", dir: "registry/jinja2/" },
   go: { label: "Go html/template", dir: "registry/go-templates/" },
   phoenix: { label: "Phoenix", dir: "registry/phoenix/" },
@@ -113,7 +114,7 @@ function filesForFlavour(item, flavour) {
   const dir = FLAVOURS[flavour].dir
   return (item.files || []).filter((f) => (f.path || "").startsWith(dir))
 }
-// lib/util files (registry:lib) — only relevant to the jsx flavour.
+// lib/util files (registry:lib) — only relevant to the TypeScript flavours (jsx, elysiax).
 function libFiles(item) {
   return (item.files || []).filter((f) => f.type === "registry:lib")
 }
@@ -134,8 +135,8 @@ async function addComponent(name, ctx, seen) {
   seen.add(name)
   const item = await fetchItem(ctx.registry, name)
   const picked = filesForFlavour(item, ctx.flavour)
-  // jsx pulls its lib registryDependencies (e.g. the cn() util); other flavours don't need them.
-  if (ctx.flavour === "jsx") {
+  // TS flavours pull their lib registryDependencies (e.g. the cn() util); other flavours don't need them.
+  if (ctx.flavour === "jsx" || ctx.flavour === "elysiax") {
     for (const dep of item.registryDependencies || []) await addComponent(dep, ctx, seen)
     for (const f of libFiles(item)) picked.push(f)
   }
@@ -159,7 +160,7 @@ ${c.bold("Usage")}
   shadcn-htmx list
 
 ${c.bold("Options")}
-  -f, --flavour   jsx | jinja | go | phoenix | html
+  -f, --flavour   jsx | elysiax | jinja | go | phoenix | html
   -r, --registry  registry base URL (…/r) or local directory
   -o, --out       base directory to write into (default: current dir)
       --cwd       run as if from this directory

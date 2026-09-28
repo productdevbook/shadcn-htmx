@@ -13,13 +13,13 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
+      "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
     },
     {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in five flavours."
+      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in six flavours."
     },
     {
       "name": "label",
@@ -175,13 +175,13 @@
       "name": "number-input",
       "type": "registry:ui",
       "title": "Number Input",
-      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in five flavours."
+      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in six flavours."
     },
     {
       "name": "breadcrumb",
       "type": "registry:ui",
       "title": "Breadcrumb",
-      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in five flavours and follows the WAI-ARIA APG breadcrumb pattern."
+      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in six flavours and follows the WAI-ARIA APG breadcrumb pattern."
     },
     {
       "name": "link",
@@ -271,25 +271,25 @@
       "name": "form-field",
       "type": "registry:ui",
       "title": "Form Field",
-      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in five flavours; zero JS."
+      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in six flavours; zero JS."
     },
     {
       "name": "file-upload",
       "type": "registry:ui",
       "title": "File Upload",
-      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in five flavours."
+      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in six flavours."
     },
     {
       "name": "copy-button",
       "type": "registry:ui",
       "title": "Copy Button",
-      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
+      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern."
     },
     {
       "name": "date-time-picker",
       "type": "registry:ui",
       "title": "Date Time Picker",
-      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in five flavours."
+      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in six flavours."
     },
     {
       "name": "sheet",
@@ -325,13 +325,13 @@
       "name": "skip-link",
       "type": "registry:ui",
       "title": "Skip Link",
-      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice."
+      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice."
     },
     {
       "name": "theme-toggle",
       "type": "registry:ui",
       "title": "Theme Toggle",
-      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern."
+      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern."
     },
     {
       "name": "output",
@@ -343,7 +343,7 @@
       "name": "segmented-control",
       "type": "registry:ui",
       "title": "Segmented Control",
-      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet."
+      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet."
     },
     {
       "name": "rating",
@@ -385,7 +385,7 @@
       "name": "optimistic-toggle",
       "type": "registry:ui",
       "title": "Optimistic Toggle",
-      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern."
+      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern."
     },
     {
       "name": "status",
@@ -469,7 +469,7 @@
       "name": "exclusive-accordion",
       "type": "registry:ui",
       "title": "Exclusive Accordion",
-      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macros, Go html/template, Phoenix function component, and a raw HTML snippet."
+      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet."
     },
     {
       "name": "scroll-area",

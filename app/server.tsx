@@ -425,7 +425,7 @@ app.get("/", (c) =>
               </h1>
               <p class="mx-auto max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
                 A web-standards component library for htmx v4 + Tailwind v4. One source of
-                truth — five flavours: Hono JSX, Jinja2, Go templates, Phoenix, and raw
+                truth — six flavours: Hono JSX, Elysia + @kitajs/html, Jinja2, Go templates, Phoenix, and raw
                 HTML. Copy what you need, ship in any stack.
               </p>
               <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -572,7 +572,7 @@ app.get("/", (c) =>
               </h2>
               <p class="text-sm text-muted-foreground">
                 Each ships with the same install, live examples, and source view
-                across all five frameworks — Hono JSX, Jinja2, Go templates,
+                across all six frameworks — Hono JSX, Elysia + @kitajs/html, Jinja2, Go templates,
                 Phoenix, and raw HTML.
               </p>
             </div>

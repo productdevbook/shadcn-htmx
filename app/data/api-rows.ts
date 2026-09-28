@@ -189,7 +189,7 @@ export const TEXTAREA_PROPS: ApiRow[] = [
 ]
 
 export const LABEL_PROPS: ApiRow[] = [
-  { prop: "hx-*", type: "any", description: "Any htmx attribute. Forwarded onto the underlying <label> element (already supported via attribute passthrough in all 5 flavours).", source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" } },
+  { prop: "hx-*", type: "any", description: "Any htmx attribute. Forwarded onto the underlying <label> element (already supported via attribute passthrough in all 6 flavours).", source: { badge: "htmx", label: "Attribute reference", href: "https://htmx.org/reference/" } },
 
   { prop: "htmlFor", type: "string", description: "Id of the associated input. Renders as <label for=\"...\"> — clicking the label focuses the input." },
   { prop: "id", type: "string", description: "Set when another control needs aria-labelledby on this." },

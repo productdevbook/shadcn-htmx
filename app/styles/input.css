@@ -295,7 +295,7 @@
    rotation are all driven by CSS attribute selectors scoped to the tree —
    exactly as the APG example "synchronizes" open/closed + selected with a CSS
    attribute selector. This keeps the per-node markup identical and tiny across
-   all five flavours. (repos/aria-practices/content/patterns/treeview/examples/) */
+   all six flavours. (repos/aria-practices/content/patterns/treeview/examples/) */
 @layer utilities {
   /* Collapse a closed parent: hide the child group of an aria-expanded=false node. */
   [data-slot="tree"] [role="treeitem"][aria-expanded="false"] > [role="group"] {
