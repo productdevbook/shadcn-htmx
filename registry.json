@@ -20,11 +20,18 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern.",
-      "registryDependencies": ["utils"],
+      "description": "A native <button> element with shadcn variants, sized for htmx v4. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
         {
           "path": "registry/ui/button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/elysiax/button.tsx",
           "type": "registry:ui",
           "target": "components/ui/button.tsx"
         },
@@ -54,10 +61,15 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in five flavours.",
+      "description": "Native <input> with shadcn styling, sized for htmx live-validation patterns. Ships in six flavours.",
       "files": [
         {
           "path": "registry/ui/input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input.tsx"
+        },
+        {
+          "path": "registry/elysiax/input.tsx",
           "type": "registry:ui",
           "target": "components/ui/input.tsx"
         },
@@ -95,6 +107,11 @@
           "target": "components/ui/label.tsx"
         },
         {
+          "path": "registry/elysiax/label.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/label.tsx"
+        },
+        {
           "path": "registry/jinja2/label.html",
           "type": "registry:file",
           "target": "templates/components/label.html"
@@ -124,6 +141,11 @@
       "files": [
         {
           "path": "registry/ui/checkbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/checkbox.tsx"
+        },
+        {
+          "path": "registry/elysiax/checkbox.tsx",
           "type": "registry:ui",
           "target": "components/ui/checkbox.tsx"
         },
@@ -161,6 +183,11 @@
           "target": "components/ui/dialog.tsx"
         },
         {
+          "path": "registry/elysiax/dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dialog.tsx"
+        },
+        {
           "path": "registry/jinja2/dialog.html",
           "type": "registry:file",
           "target": "templates/components/dialog.html"
@@ -190,6 +217,11 @@
       "files": [
         {
           "path": "registry/ui/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs.tsx"
+        },
+        {
+          "path": "registry/elysiax/tabs.tsx",
           "type": "registry:ui",
           "target": "components/ui/tabs.tsx"
         },
@@ -227,6 +259,11 @@
           "target": "components/ui/textarea.tsx"
         },
         {
+          "path": "registry/elysiax/textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/textarea.tsx"
+        },
+        {
           "path": "registry/jinja2/textarea.html",
           "type": "registry:file",
           "target": "templates/components/textarea.html"
@@ -256,6 +293,11 @@
       "files": [
         {
           "path": "registry/ui/switch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/switch.tsx"
+        },
+        {
+          "path": "registry/elysiax/switch.tsx",
           "type": "registry:ui",
           "target": "components/ui/switch.tsx"
         },
@@ -293,6 +335,11 @@
           "target": "components/ui/radio-group.tsx"
         },
         {
+          "path": "registry/elysiax/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radio-group.tsx"
+        },
+        {
           "path": "registry/jinja2/radio-group.html",
           "type": "registry:file",
           "target": "templates/components/radio-group.html"
@@ -322,6 +369,11 @@
       "files": [
         {
           "path": "registry/ui/select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "registry/elysiax/select.tsx",
           "type": "registry:ui",
           "target": "components/ui/select.tsx"
         },
@@ -359,6 +411,11 @@
           "target": "components/ui/card.tsx"
         },
         {
+          "path": "registry/elysiax/card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/card.tsx"
+        },
+        {
           "path": "registry/jinja2/card.html",
           "type": "registry:file",
           "target": "templates/components/card.html"
@@ -386,11 +443,36 @@
       "title": "Badge",
       "description": "Small visual marker — status pill / counter / label. Six variants; renders as span (default) or anchor (with href).",
       "files": [
-        { "path": "registry/ui/badge.tsx",            "type": "registry:ui",   "target": "components/ui/badge.tsx" },
-        { "path": "registry/jinja2/badge.html",       "type": "registry:file", "target": "templates/components/badge.html" },
-        { "path": "registry/go-templates/badge.tmpl", "type": "registry:file", "target": "components/badge.tmpl" },
-        { "path": "registry/phoenix/badge.ex",        "type": "registry:file", "target": "lib/my_app_web/components/badge.ex" },
-        { "path": "registry/html/badge.html",         "type": "registry:file", "target": "snippets/badge.html" }
+        {
+          "path": "registry/ui/badge.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "registry/elysiax/badge.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "registry/jinja2/badge.html",
+          "type": "registry:file",
+          "target": "templates/components/badge.html"
+        },
+        {
+          "path": "registry/go-templates/badge.tmpl",
+          "type": "registry:file",
+          "target": "components/badge.tmpl"
+        },
+        {
+          "path": "registry/phoenix/badge.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/badge.ex"
+        },
+        {
+          "path": "registry/html/badge.html",
+          "type": "registry:file",
+          "target": "snippets/badge.html"
+        }
       ]
     },
     {
@@ -399,11 +481,36 @@
       "title": "Separator",
       "description": "Horizontal or vertical divider. Decorative (visual only) or semantic (renders <hr> or role=\"separator\").",
       "files": [
-        { "path": "registry/ui/separator.tsx",            "type": "registry:ui",   "target": "components/ui/separator.tsx" },
-        { "path": "registry/jinja2/separator.html",       "type": "registry:file", "target": "templates/components/separator.html" },
-        { "path": "registry/go-templates/separator.tmpl", "type": "registry:file", "target": "components/separator.tmpl" },
-        { "path": "registry/phoenix/separator.ex",        "type": "registry:file", "target": "lib/my_app_web/components/separator.ex" },
-        { "path": "registry/html/separator.html",         "type": "registry:file", "target": "snippets/separator.html" }
+        {
+          "path": "registry/ui/separator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/separator.tsx"
+        },
+        {
+          "path": "registry/elysiax/separator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/separator.tsx"
+        },
+        {
+          "path": "registry/jinja2/separator.html",
+          "type": "registry:file",
+          "target": "templates/components/separator.html"
+        },
+        {
+          "path": "registry/go-templates/separator.tmpl",
+          "type": "registry:file",
+          "target": "components/separator.tmpl"
+        },
+        {
+          "path": "registry/phoenix/separator.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/separator.ex"
+        },
+        {
+          "path": "registry/html/separator.html",
+          "type": "registry:file",
+          "target": "snippets/separator.html"
+        }
       ]
     },
     {
@@ -412,11 +519,36 @@
       "title": "Alert",
       "description": "Boxed informational / success / warning / error message. Five variants + live-region politeness (off / polite / assertive).",
       "files": [
-        { "path": "registry/ui/alert.tsx",            "type": "registry:ui",   "target": "components/ui/alert.tsx" },
-        { "path": "registry/jinja2/alert.html",       "type": "registry:file", "target": "templates/components/alert.html" },
-        { "path": "registry/go-templates/alert.tmpl", "type": "registry:file", "target": "components/alert.tmpl" },
-        { "path": "registry/phoenix/alert.ex",        "type": "registry:file", "target": "lib/my_app_web/components/alert.ex" },
-        { "path": "registry/html/alert.html",         "type": "registry:file", "target": "snippets/alert.html" }
+        {
+          "path": "registry/ui/alert.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert.tsx"
+        },
+        {
+          "path": "registry/elysiax/alert.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert.tsx"
+        },
+        {
+          "path": "registry/jinja2/alert.html",
+          "type": "registry:file",
+          "target": "templates/components/alert.html"
+        },
+        {
+          "path": "registry/go-templates/alert.tmpl",
+          "type": "registry:file",
+          "target": "components/alert.tmpl"
+        },
+        {
+          "path": "registry/phoenix/alert.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/alert.ex"
+        },
+        {
+          "path": "registry/html/alert.html",
+          "type": "registry:file",
+          "target": "snippets/alert.html"
+        }
       ]
     },
     {
@@ -425,11 +557,36 @@
       "title": "Toast",
       "description": "Transient notifications. Fixed-position viewport + per-toast item with live-region politeness. Server-driven via htmx beforeend swap.",
       "files": [
-        { "path": "registry/ui/toast.tsx",            "type": "registry:ui",   "target": "components/ui/toast.tsx" },
-        { "path": "registry/jinja2/toast.html",       "type": "registry:file", "target": "templates/components/toast.html" },
-        { "path": "registry/go-templates/toast.tmpl", "type": "registry:file", "target": "components/toast.tmpl" },
-        { "path": "registry/phoenix/toast.ex",        "type": "registry:file", "target": "lib/my_app_web/components/toast.ex" },
-        { "path": "registry/html/toast.html",         "type": "registry:file", "target": "snippets/toast.html" }
+        {
+          "path": "registry/ui/toast.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toast.tsx"
+        },
+        {
+          "path": "registry/elysiax/toast.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toast.tsx"
+        },
+        {
+          "path": "registry/jinja2/toast.html",
+          "type": "registry:file",
+          "target": "templates/components/toast.html"
+        },
+        {
+          "path": "registry/go-templates/toast.tmpl",
+          "type": "registry:file",
+          "target": "components/toast.tmpl"
+        },
+        {
+          "path": "registry/phoenix/toast.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/toast.ex"
+        },
+        {
+          "path": "registry/html/toast.html",
+          "type": "registry:file",
+          "target": "snippets/toast.html"
+        }
       ]
     },
     {
@@ -438,11 +595,36 @@
       "title": "Tooltip",
       "description": "Short label on a control. CSS-only show on hover + focus; ESC to dismiss. APG-compliant tooltip pattern.",
       "files": [
-        { "path": "registry/ui/tooltip.tsx",            "type": "registry:ui",   "target": "components/ui/tooltip.tsx" },
-        { "path": "registry/jinja2/tooltip.html",       "type": "registry:file", "target": "templates/components/tooltip.html" },
-        { "path": "registry/go-templates/tooltip.tmpl", "type": "registry:file", "target": "components/tooltip.tmpl" },
-        { "path": "registry/phoenix/tooltip.ex",        "type": "registry:file", "target": "lib/my_app_web/components/tooltip.ex" },
-        { "path": "registry/html/tooltip.html",         "type": "registry:file", "target": "snippets/tooltip.html" }
+        {
+          "path": "registry/ui/tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tooltip.tsx"
+        },
+        {
+          "path": "registry/elysiax/tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tooltip.tsx"
+        },
+        {
+          "path": "registry/jinja2/tooltip.html",
+          "type": "registry:file",
+          "target": "templates/components/tooltip.html"
+        },
+        {
+          "path": "registry/go-templates/tooltip.tmpl",
+          "type": "registry:file",
+          "target": "components/tooltip.tmpl"
+        },
+        {
+          "path": "registry/phoenix/tooltip.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/tooltip.ex"
+        },
+        {
+          "path": "registry/html/tooltip.html",
+          "type": "registry:file",
+          "target": "snippets/tooltip.html"
+        }
       ]
     },
     {
@@ -451,11 +633,36 @@
       "title": "Accordion",
       "description": "Collapsible stacked sections. Native <details>/<summary> + new HTML name attribute for zero-JS exclusive accordion. APG keyboard nav in site.js.",
       "files": [
-        { "path": "registry/ui/accordion.tsx",            "type": "registry:ui",   "target": "components/ui/accordion.tsx" },
-        { "path": "registry/jinja2/accordion.html",       "type": "registry:file", "target": "templates/components/accordion.html" },
-        { "path": "registry/go-templates/accordion.tmpl", "type": "registry:file", "target": "components/accordion.tmpl" },
-        { "path": "registry/phoenix/accordion.ex",        "type": "registry:file", "target": "lib/my_app_web/components/accordion.ex" },
-        { "path": "registry/html/accordion.html",         "type": "registry:file", "target": "snippets/accordion.html" }
+        {
+          "path": "registry/ui/accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/accordion.tsx"
+        },
+        {
+          "path": "registry/elysiax/accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/accordion.tsx"
+        },
+        {
+          "path": "registry/jinja2/accordion.html",
+          "type": "registry:file",
+          "target": "templates/components/accordion.html"
+        },
+        {
+          "path": "registry/go-templates/accordion.tmpl",
+          "type": "registry:file",
+          "target": "components/accordion.tmpl"
+        },
+        {
+          "path": "registry/phoenix/accordion.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/accordion.ex"
+        },
+        {
+          "path": "registry/html/accordion.html",
+          "type": "registry:file",
+          "target": "snippets/accordion.html"
+        }
       ]
     },
     {
@@ -464,11 +671,36 @@
       "title": "Avatar",
       "description": "Round image with text/icon fallback. Native <img> + inline onerror handler reveals fallback on 404. Group + count subcomponents.",
       "files": [
-        { "path": "registry/ui/avatar.tsx",            "type": "registry:ui",   "target": "components/ui/avatar.tsx" },
-        { "path": "registry/jinja2/avatar.html",       "type": "registry:file", "target": "templates/components/avatar.html" },
-        { "path": "registry/go-templates/avatar.tmpl", "type": "registry:file", "target": "components/avatar.tmpl" },
-        { "path": "registry/phoenix/avatar.ex",        "type": "registry:file", "target": "lib/my_app_web/components/avatar.ex" },
-        { "path": "registry/html/avatar.html",         "type": "registry:file", "target": "snippets/avatar.html" }
+        {
+          "path": "registry/ui/avatar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/avatar.tsx"
+        },
+        {
+          "path": "registry/elysiax/avatar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/avatar.tsx"
+        },
+        {
+          "path": "registry/jinja2/avatar.html",
+          "type": "registry:file",
+          "target": "templates/components/avatar.html"
+        },
+        {
+          "path": "registry/go-templates/avatar.tmpl",
+          "type": "registry:file",
+          "target": "components/avatar.tmpl"
+        },
+        {
+          "path": "registry/phoenix/avatar.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/avatar.ex"
+        },
+        {
+          "path": "registry/html/avatar.html",
+          "type": "registry:file",
+          "target": "snippets/avatar.html"
+        }
       ]
     },
     {
@@ -477,11 +709,36 @@
       "title": "Popover",
       "description": "Native HTML Popover API. Light dismiss + ESC + top-layer + focus restoration handled by the browser.",
       "files": [
-        { "path": "registry/ui/popover.tsx",            "type": "registry:ui",   "target": "components/ui/popover.tsx" },
-        { "path": "registry/jinja2/popover.html",       "type": "registry:file", "target": "templates/components/popover.html" },
-        { "path": "registry/go-templates/popover.tmpl", "type": "registry:file", "target": "components/popover.tmpl" },
-        { "path": "registry/phoenix/popover.ex",        "type": "registry:file", "target": "lib/my_app_web/components/popover.ex" },
-        { "path": "registry/html/popover.html",         "type": "registry:file", "target": "snippets/popover.html" }
+        {
+          "path": "registry/ui/popover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/popover.tsx"
+        },
+        {
+          "path": "registry/elysiax/popover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/popover.tsx"
+        },
+        {
+          "path": "registry/jinja2/popover.html",
+          "type": "registry:file",
+          "target": "templates/components/popover.html"
+        },
+        {
+          "path": "registry/go-templates/popover.tmpl",
+          "type": "registry:file",
+          "target": "components/popover.tmpl"
+        },
+        {
+          "path": "registry/phoenix/popover.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/popover.ex"
+        },
+        {
+          "path": "registry/html/popover.html",
+          "type": "registry:file",
+          "target": "snippets/popover.html"
+        }
       ]
     },
     {
@@ -490,11 +747,36 @@
       "title": "Dropdown Menu",
       "description": "Menu of actions from a button. Native Popover API + APG menu keyboard contract (arrows, Home/End, type-to-find).",
       "files": [
-        { "path": "registry/ui/dropdown-menu.tsx",            "type": "registry:ui",   "target": "components/ui/dropdown-menu.tsx" },
-        { "path": "registry/jinja2/dropdown-menu.html",       "type": "registry:file", "target": "templates/components/dropdown-menu.html" },
-        { "path": "registry/go-templates/dropdown-menu.tmpl", "type": "registry:file", "target": "components/dropdown-menu.tmpl" },
-        { "path": "registry/phoenix/dropdown_menu.ex",        "type": "registry:file", "target": "lib/my_app_web/components/dropdown_menu.ex" },
-        { "path": "registry/html/dropdown-menu.html",         "type": "registry:file", "target": "snippets/dropdown-menu.html" }
+        {
+          "path": "registry/ui/dropdown-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dropdown-menu.tsx"
+        },
+        {
+          "path": "registry/elysiax/dropdown-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dropdown-menu.tsx"
+        },
+        {
+          "path": "registry/jinja2/dropdown-menu.html",
+          "type": "registry:file",
+          "target": "templates/components/dropdown-menu.html"
+        },
+        {
+          "path": "registry/go-templates/dropdown-menu.tmpl",
+          "type": "registry:file",
+          "target": "components/dropdown-menu.tmpl"
+        },
+        {
+          "path": "registry/phoenix/dropdown_menu.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/dropdown_menu.ex"
+        },
+        {
+          "path": "registry/html/dropdown-menu.html",
+          "type": "registry:file",
+          "target": "snippets/dropdown-menu.html"
+        }
       ]
     },
     {
@@ -503,11 +785,36 @@
       "title": "Progress",
       "description": "ARIA role=\"progressbar\" with valuemin/max/now. Omit value for indeterminate (animated stripe). htmx polling demo for live updates.",
       "files": [
-        { "path": "registry/ui/progress.tsx",            "type": "registry:ui",   "target": "components/ui/progress.tsx" },
-        { "path": "registry/jinja2/progress.html",       "type": "registry:file", "target": "templates/components/progress.html" },
-        { "path": "registry/go-templates/progress.tmpl", "type": "registry:file", "target": "components/progress.tmpl" },
-        { "path": "registry/phoenix/progress.ex",        "type": "registry:file", "target": "lib/my_app_web/components/progress.ex" },
-        { "path": "registry/html/progress.html",         "type": "registry:file", "target": "snippets/progress.html" }
+        {
+          "path": "registry/ui/progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/progress.tsx"
+        },
+        {
+          "path": "registry/elysiax/progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/progress.tsx"
+        },
+        {
+          "path": "registry/jinja2/progress.html",
+          "type": "registry:file",
+          "target": "templates/components/progress.html"
+        },
+        {
+          "path": "registry/go-templates/progress.tmpl",
+          "type": "registry:file",
+          "target": "components/progress.tmpl"
+        },
+        {
+          "path": "registry/phoenix/progress.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/progress.ex"
+        },
+        {
+          "path": "registry/html/progress.html",
+          "type": "registry:file",
+          "target": "snippets/progress.html"
+        }
       ]
     },
     {
@@ -516,11 +823,36 @@
       "title": "Skeleton",
       "description": "Pulsing placeholder for content that hasn't loaded yet. role=\"status\" + aria-busy; pairs with htmx outerHTML swap.",
       "files": [
-        { "path": "registry/ui/skeleton.tsx",            "type": "registry:ui",   "target": "components/ui/skeleton.tsx" },
-        { "path": "registry/jinja2/skeleton.html",       "type": "registry:file", "target": "templates/components/skeleton.html" },
-        { "path": "registry/go-templates/skeleton.tmpl", "type": "registry:file", "target": "components/skeleton.tmpl" },
-        { "path": "registry/phoenix/skeleton.ex",        "type": "registry:file", "target": "lib/my_app_web/components/skeleton.ex" },
-        { "path": "registry/html/skeleton.html",         "type": "registry:file", "target": "snippets/skeleton.html" }
+        {
+          "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/skeleton.tsx"
+        },
+        {
+          "path": "registry/elysiax/skeleton.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/skeleton.tsx"
+        },
+        {
+          "path": "registry/jinja2/skeleton.html",
+          "type": "registry:file",
+          "target": "templates/components/skeleton.html"
+        },
+        {
+          "path": "registry/go-templates/skeleton.tmpl",
+          "type": "registry:file",
+          "target": "components/skeleton.tmpl"
+        },
+        {
+          "path": "registry/phoenix/skeleton.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/skeleton.ex"
+        },
+        {
+          "path": "registry/html/skeleton.html",
+          "type": "registry:file",
+          "target": "snippets/skeleton.html"
+        }
       ]
     },
     {
@@ -529,11 +861,36 @@
       "title": "Slider",
       "description": "Native <input type=\"range\"> styled cross-browser. role=slider + ARIA value attrs + arrow/Home/End/PageUp-Down keyboard contract come from the platform.",
       "files": [
-        { "path": "registry/ui/slider.tsx",            "type": "registry:ui",   "target": "components/ui/slider.tsx" },
-        { "path": "registry/jinja2/slider.html",       "type": "registry:file", "target": "templates/components/slider.html" },
-        { "path": "registry/go-templates/slider.tmpl", "type": "registry:file", "target": "components/slider.tmpl" },
-        { "path": "registry/phoenix/slider.ex",        "type": "registry:file", "target": "lib/my_app_web/components/slider.ex" },
-        { "path": "registry/html/slider.html",         "type": "registry:file", "target": "snippets/slider.html" }
+        {
+          "path": "registry/ui/slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/slider.tsx"
+        },
+        {
+          "path": "registry/elysiax/slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/slider.tsx"
+        },
+        {
+          "path": "registry/jinja2/slider.html",
+          "type": "registry:file",
+          "target": "templates/components/slider.html"
+        },
+        {
+          "path": "registry/go-templates/slider.tmpl",
+          "type": "registry:file",
+          "target": "components/slider.tmpl"
+        },
+        {
+          "path": "registry/phoenix/slider.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/slider.ex"
+        },
+        {
+          "path": "registry/html/slider.html",
+          "type": "registry:file",
+          "target": "snippets/slider.html"
+        }
       ]
     },
     {
@@ -542,11 +899,36 @@
       "title": "Pagination",
       "description": "Page navigation strip. <nav> landmark + aria-label + aria-current=\"page\" on the active link. Previous/Next have built-in aria-labels.",
       "files": [
-        { "path": "registry/ui/pagination.tsx",            "type": "registry:ui",   "target": "components/ui/pagination.tsx" },
-        { "path": "registry/jinja2/pagination.html",       "type": "registry:file", "target": "templates/components/pagination.html" },
-        { "path": "registry/go-templates/pagination.tmpl", "type": "registry:file", "target": "components/pagination.tmpl" },
-        { "path": "registry/phoenix/pagination.ex",        "type": "registry:file", "target": "lib/my_app_web/components/pagination.ex" },
-        { "path": "registry/html/pagination.html",         "type": "registry:file", "target": "snippets/pagination.html" }
+        {
+          "path": "registry/ui/pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/pagination.tsx"
+        },
+        {
+          "path": "registry/elysiax/pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/pagination.tsx"
+        },
+        {
+          "path": "registry/jinja2/pagination.html",
+          "type": "registry:file",
+          "target": "templates/components/pagination.html"
+        },
+        {
+          "path": "registry/go-templates/pagination.tmpl",
+          "type": "registry:file",
+          "target": "components/pagination.tmpl"
+        },
+        {
+          "path": "registry/phoenix/pagination.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/pagination.ex"
+        },
+        {
+          "path": "registry/html/pagination.html",
+          "type": "registry:file",
+          "target": "snippets/pagination.html"
+        }
       ]
     },
     {
@@ -555,11 +937,36 @@
       "title": "Table",
       "description": "Semantic <table>/<thead>/<tbody>; sortable columns via aria-sort + clickable button inside <th>. Sort actions route through htmx.",
       "files": [
-        { "path": "registry/ui/table.tsx",            "type": "registry:ui",   "target": "components/ui/table.tsx" },
-        { "path": "registry/jinja2/table.html",       "type": "registry:file", "target": "templates/components/table.html" },
-        { "path": "registry/go-templates/table.tmpl", "type": "registry:file", "target": "components/table.tmpl" },
-        { "path": "registry/phoenix/table.ex",        "type": "registry:file", "target": "lib/my_app_web/components/table.ex" },
-        { "path": "registry/html/table.html",         "type": "registry:file", "target": "snippets/table.html" }
+        {
+          "path": "registry/ui/table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "registry/elysiax/table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "registry/jinja2/table.html",
+          "type": "registry:file",
+          "target": "templates/components/table.html"
+        },
+        {
+          "path": "registry/go-templates/table.tmpl",
+          "type": "registry:file",
+          "target": "components/table.tmpl"
+        },
+        {
+          "path": "registry/phoenix/table.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/table.ex"
+        },
+        {
+          "path": "registry/html/table.html",
+          "type": "registry:file",
+          "target": "snippets/table.html"
+        }
       ]
     },
     {
@@ -568,11 +975,36 @@
       "title": "Combobox",
       "description": "Autocomplete text input. Native <datalist> variant (zero JS) + APG role=combobox + htmx-filtered listbox variant.",
       "files": [
-        { "path": "registry/ui/combobox.tsx",            "type": "registry:ui",   "target": "components/ui/combobox.tsx" },
-        { "path": "registry/jinja2/combobox.html",       "type": "registry:file", "target": "templates/components/combobox.html" },
-        { "path": "registry/go-templates/combobox.tmpl", "type": "registry:file", "target": "components/combobox.tmpl" },
-        { "path": "registry/phoenix/combobox.ex",        "type": "registry:file", "target": "lib/my_app_web/components/combobox.ex" },
-        { "path": "registry/html/combobox.html",         "type": "registry:file", "target": "snippets/combobox.html" }
+        {
+          "path": "registry/ui/combobox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/combobox.tsx"
+        },
+        {
+          "path": "registry/elysiax/combobox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/combobox.tsx"
+        },
+        {
+          "path": "registry/jinja2/combobox.html",
+          "type": "registry:file",
+          "target": "templates/components/combobox.html"
+        },
+        {
+          "path": "registry/go-templates/combobox.tmpl",
+          "type": "registry:file",
+          "target": "components/combobox.tmpl"
+        },
+        {
+          "path": "registry/phoenix/combobox.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/combobox.ex"
+        },
+        {
+          "path": "registry/html/combobox.html",
+          "type": "registry:file",
+          "target": "snippets/combobox.html"
+        }
       ]
     },
     {
@@ -580,41 +1012,122 @@
       "type": "registry:ui",
       "title": "Meter",
       "description": "The native <meter> element (ARIA role=\"meter\") — a gauge of a value within a known range with low/high/optimum zoning. Cross-browser fill colors via the meter pseudo-elements; includes an htmx live-gauge demo.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/meter.tsx", "type": "registry:ui", "target": "components/ui/meter.tsx" },
-        { "path": "registry/jinja2/meter.html", "type": "registry:file", "target": "templates/components/meter.html" },
-        { "path": "registry/go-templates/meter.tmpl", "type": "registry:file", "target": "components/meter.tmpl" },
-        { "path": "registry/phoenix/meter.ex", "type": "registry:file", "target": "lib/my_app_web/components/meter.ex" },
-        { "path": "registry/html/meter.html", "type": "registry:file", "target": "snippets/meter.html" }
+        {
+          "path": "registry/ui/meter.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/meter.tsx"
+        },
+        {
+          "path": "registry/elysiax/meter.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/meter.tsx"
+        },
+        {
+          "path": "registry/jinja2/meter.html",
+          "type": "registry:file",
+          "target": "templates/components/meter.html"
+        },
+        {
+          "path": "registry/go-templates/meter.tmpl",
+          "type": "registry:file",
+          "target": "components/meter.tmpl"
+        },
+        {
+          "path": "registry/phoenix/meter.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/meter.ex"
+        },
+        {
+          "path": "registry/html/meter.html",
+          "type": "registry:file",
+          "target": "snippets/meter.html"
+        }
       ]
     },
     {
       "name": "number-input",
       "type": "registry:ui",
       "title": "Number Input",
-      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in five flavours.",
-      "registryDependencies": ["utils"],
+      "description": "Native <input type=\"number\"> styled like Input, with optional −/+ stepper buttons that call stepUp()/stepDown(). role=spinbutton, aria-valuenow/min/max, arrow-key stepping and value clamping all come from the platform. Ships in six flavours.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/number-input.tsx", "type": "registry:ui", "target": "components/ui/number-input.tsx" },
-        { "path": "registry/jinja2/number-input.html", "type": "registry:file", "target": "templates/components/number-input.html" },
-        { "path": "registry/go-templates/number-input.tmpl", "type": "registry:file", "target": "components/number-input.tmpl" },
-        { "path": "registry/phoenix/number_input.ex", "type": "registry:file", "target": "lib/my_app_web/components/number_input.ex" },
-        { "path": "registry/html/number-input.html", "type": "registry:file", "target": "snippets/number-input.html" }
+        {
+          "path": "registry/ui/number-input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/number-input.tsx"
+        },
+        {
+          "path": "registry/elysiax/number-input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/number-input.tsx"
+        },
+        {
+          "path": "registry/jinja2/number-input.html",
+          "type": "registry:file",
+          "target": "templates/components/number-input.html"
+        },
+        {
+          "path": "registry/go-templates/number-input.tmpl",
+          "type": "registry:file",
+          "target": "components/number-input.tmpl"
+        },
+        {
+          "path": "registry/phoenix/number_input.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/number_input.ex"
+        },
+        {
+          "path": "registry/html/number-input.html",
+          "type": "registry:file",
+          "target": "snippets/number-input.html"
+        }
       ]
     },
     {
       "name": "breadcrumb",
       "type": "registry:ui",
       "title": "Breadcrumb",
-      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in five flavours and follows the WAI-ARIA APG breadcrumb pattern.",
-      "registryDependencies": ["utils"],
+      "description": "A native <nav> landmark wrapping an <ol> of links that shows the path to the current page; the current page is a plain <span aria-current=\"page\">, separators are aria-hidden. Zero JS. Ships in six flavours and follows the WAI-ARIA APG breadcrumb pattern.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/breadcrumb.tsx", "type": "registry:ui", "target": "components/ui/breadcrumb.tsx" },
-        { "path": "registry/jinja2/breadcrumb.html", "type": "registry:file", "target": "templates/components/breadcrumb.html" },
-        { "path": "registry/go-templates/breadcrumb.tmpl", "type": "registry:file", "target": "components/breadcrumb.tmpl" },
-        { "path": "registry/phoenix/breadcrumb.ex", "type": "registry:file", "target": "lib/my_app_web/components/breadcrumb.ex" },
-        { "path": "registry/html/breadcrumb.html", "type": "registry:file", "target": "snippets/breadcrumb.html" }
+        {
+          "path": "registry/ui/breadcrumb.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/breadcrumb.tsx"
+        },
+        {
+          "path": "registry/elysiax/breadcrumb.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/breadcrumb.tsx"
+        },
+        {
+          "path": "registry/jinja2/breadcrumb.html",
+          "type": "registry:file",
+          "target": "templates/components/breadcrumb.html"
+        },
+        {
+          "path": "registry/go-templates/breadcrumb.tmpl",
+          "type": "registry:file",
+          "target": "components/breadcrumb.tmpl"
+        },
+        {
+          "path": "registry/phoenix/breadcrumb.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/breadcrumb.ex"
+        },
+        {
+          "path": "registry/html/breadcrumb.html",
+          "type": "registry:file",
+          "target": "snippets/breadcrumb.html"
+        }
       ]
     },
     {
@@ -622,13 +1135,40 @@
       "type": "registry:ui",
       "title": "Link",
       "description": "A native <a href> with shadcn styling — default (underlined), muted, and hover-underline variants, plus an external treatment that opens a new tab, sets rel=\"noopener noreferrer\", and announces \"(opens in new tab)\".",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/link.tsx", "type": "registry:ui", "target": "components/ui/link.tsx" },
-        { "path": "registry/jinja2/link.html", "type": "registry:file", "target": "templates/components/link.html" },
-        { "path": "registry/go-templates/link.tmpl", "type": "registry:file", "target": "components/link.tmpl" },
-        { "path": "registry/phoenix/link.ex", "type": "registry:file", "target": "lib/my_app_web/components/link.ex" },
-        { "path": "registry/html/link.html", "type": "registry:file", "target": "snippets/link.html" }
+        {
+          "path": "registry/ui/link.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/link.tsx"
+        },
+        {
+          "path": "registry/elysiax/link.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/link.tsx"
+        },
+        {
+          "path": "registry/jinja2/link.html",
+          "type": "registry:file",
+          "target": "templates/components/link.html"
+        },
+        {
+          "path": "registry/go-templates/link.tmpl",
+          "type": "registry:file",
+          "target": "components/link.tmpl"
+        },
+        {
+          "path": "registry/phoenix/link.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/link.ex"
+        },
+        {
+          "path": "registry/html/link.html",
+          "type": "registry:file",
+          "target": "snippets/link.html"
+        }
       ]
     },
     {
@@ -636,13 +1176,40 @@
       "type": "registry:ui",
       "title": "Collapsible",
       "description": "A single show/hide disclosure built on native <details>/<summary> — click, Space, or Enter toggle and the browser mirrors aria-expanded, all with zero JavaScript. A standalone disclosure, distinct from the grouped Accordion.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/collapsible.tsx", "type": "registry:ui", "target": "components/ui/collapsible.tsx" },
-        { "path": "registry/jinja2/collapsible.html", "type": "registry:file", "target": "templates/components/collapsible.html" },
-        { "path": "registry/go-templates/collapsible.tmpl", "type": "registry:file", "target": "components/collapsible.tmpl" },
-        { "path": "registry/phoenix/collapsible.ex", "type": "registry:file", "target": "lib/my_app_web/components/collapsible.ex" },
-        { "path": "registry/html/collapsible.html", "type": "registry:file", "target": "snippets/collapsible.html" }
+        {
+          "path": "registry/ui/collapsible.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/collapsible.tsx"
+        },
+        {
+          "path": "registry/elysiax/collapsible.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/collapsible.tsx"
+        },
+        {
+          "path": "registry/jinja2/collapsible.html",
+          "type": "registry:file",
+          "target": "templates/components/collapsible.html"
+        },
+        {
+          "path": "registry/go-templates/collapsible.tmpl",
+          "type": "registry:file",
+          "target": "components/collapsible.tmpl"
+        },
+        {
+          "path": "registry/phoenix/collapsible.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/collapsible.ex"
+        },
+        {
+          "path": "registry/html/collapsible.html",
+          "type": "registry:file",
+          "target": "snippets/collapsible.html"
+        }
       ]
     },
     {
@@ -650,13 +1217,40 @@
       "type": "registry:ui",
       "title": "Alert Dialog",
       "description": "A modal that interrupts the user to confirm a consequential action. Native HTML <dialog> opened with showModal() and role=\"alertdialog\"; not light-dismissible — the user must choose Cancel or the confirming action.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/alert-dialog.tsx", "type": "registry:ui", "target": "components/ui/alert-dialog.tsx" },
-        { "path": "registry/jinja2/alert-dialog.html", "type": "registry:file", "target": "templates/components/alert-dialog.html" },
-        { "path": "registry/go-templates/alert-dialog.tmpl", "type": "registry:file", "target": "components/alert-dialog.tmpl" },
-        { "path": "registry/phoenix/alert_dialog.ex", "type": "registry:file", "target": "lib/my_app_web/components/alert_dialog.ex" },
-        { "path": "registry/html/alert-dialog.html", "type": "registry:file", "target": "snippets/alert-dialog.html" }
+        {
+          "path": "registry/ui/alert-dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert-dialog.tsx"
+        },
+        {
+          "path": "registry/elysiax/alert-dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert-dialog.tsx"
+        },
+        {
+          "path": "registry/jinja2/alert-dialog.html",
+          "type": "registry:file",
+          "target": "templates/components/alert-dialog.html"
+        },
+        {
+          "path": "registry/go-templates/alert-dialog.tmpl",
+          "type": "registry:file",
+          "target": "components/alert-dialog.tmpl"
+        },
+        {
+          "path": "registry/phoenix/alert_dialog.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/alert_dialog.ex"
+        },
+        {
+          "path": "registry/html/alert-dialog.html",
+          "type": "registry:file",
+          "target": "snippets/alert-dialog.html"
+        }
       ]
     },
     {
@@ -664,13 +1258,40 @@
       "type": "registry:ui",
       "title": "Range Slider",
       "description": "A two-thumb range slider built from two overlaid native <input type=\"range\"> on one track, each form-submittable (name=min/max), with the platform-provided role=slider and arrow/Home/End/PageUp/Down keyboard contract.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/range-slider.tsx", "type": "registry:ui", "target": "components/ui/range-slider.tsx" },
-        { "path": "registry/jinja2/range-slider.html", "type": "registry:file", "target": "templates/components/range-slider.html" },
-        { "path": "registry/go-templates/range-slider.tmpl", "type": "registry:file", "target": "components/range-slider.tmpl" },
-        { "path": "registry/phoenix/range_slider.ex", "type": "registry:file", "target": "lib/my_app_web/components/range_slider.ex" },
-        { "path": "registry/html/range-slider.html", "type": "registry:file", "target": "snippets/range-slider.html" }
+        {
+          "path": "registry/ui/range-slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/range-slider.tsx"
+        },
+        {
+          "path": "registry/elysiax/range-slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/range-slider.tsx"
+        },
+        {
+          "path": "registry/jinja2/range-slider.html",
+          "type": "registry:file",
+          "target": "templates/components/range-slider.html"
+        },
+        {
+          "path": "registry/go-templates/range-slider.tmpl",
+          "type": "registry:file",
+          "target": "components/range-slider.tmpl"
+        },
+        {
+          "path": "registry/phoenix/range_slider.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/range_slider.ex"
+        },
+        {
+          "path": "registry/html/range-slider.html",
+          "type": "registry:file",
+          "target": "snippets/range-slider.html"
+        }
       ]
     },
     {
@@ -678,13 +1299,40 @@
       "type": "registry:ui",
       "title": "Toolbar",
       "description": "A role=\"toolbar\" container that groups related controls (buttons, toggle buttons, separators) into a single tab stop with APG roving-tabindex arrow-key navigation. Ships ToolbarButton, ToolbarToggle, ToolbarSeparator, and ToolbarGroup subcomponents.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/toolbar.tsx", "type": "registry:ui", "target": "components/ui/toolbar.tsx" },
-        { "path": "registry/jinja2/toolbar.html", "type": "registry:file", "target": "templates/components/toolbar.html" },
-        { "path": "registry/go-templates/toolbar.tmpl", "type": "registry:file", "target": "components/toolbar.tmpl" },
-        { "path": "registry/phoenix/toolbar.ex", "type": "registry:file", "target": "lib/my_app_web/components/toolbar.ex" },
-        { "path": "registry/html/toolbar.html", "type": "registry:file", "target": "snippets/toolbar.html" }
+        {
+          "path": "registry/ui/toolbar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toolbar.tsx"
+        },
+        {
+          "path": "registry/elysiax/toolbar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/toolbar.tsx"
+        },
+        {
+          "path": "registry/jinja2/toolbar.html",
+          "type": "registry:file",
+          "target": "templates/components/toolbar.html"
+        },
+        {
+          "path": "registry/go-templates/toolbar.tmpl",
+          "type": "registry:file",
+          "target": "components/toolbar.tmpl"
+        },
+        {
+          "path": "registry/phoenix/toolbar.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/toolbar.ex"
+        },
+        {
+          "path": "registry/html/toolbar.html",
+          "type": "registry:file",
+          "target": "snippets/toolbar.html"
+        }
       ]
     },
     {
@@ -692,13 +1340,40 @@
       "type": "registry:ui",
       "title": "Listbox",
       "description": "A scrollable single- or multi-select list built on role=\"listbox\" with role=\"option\" children, following the WAI-ARIA APG keyboard contract. A hidden input mirrors the selection so it submits like a normal form field.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/listbox.tsx", "type": "registry:ui", "target": "components/ui/listbox.tsx" },
-        { "path": "registry/jinja2/listbox.html", "type": "registry:file", "target": "templates/components/listbox.html" },
-        { "path": "registry/go-templates/listbox.tmpl", "type": "registry:file", "target": "components/listbox.tmpl" },
-        { "path": "registry/phoenix/listbox.ex", "type": "registry:file", "target": "lib/my_app_web/components/listbox.ex" },
-        { "path": "registry/html/listbox.html", "type": "registry:file", "target": "snippets/listbox.html" }
+        {
+          "path": "registry/ui/listbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/listbox.tsx"
+        },
+        {
+          "path": "registry/elysiax/listbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/listbox.tsx"
+        },
+        {
+          "path": "registry/jinja2/listbox.html",
+          "type": "registry:file",
+          "target": "templates/components/listbox.html"
+        },
+        {
+          "path": "registry/go-templates/listbox.tmpl",
+          "type": "registry:file",
+          "target": "components/listbox.tmpl"
+        },
+        {
+          "path": "registry/phoenix/listbox.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/listbox.ex"
+        },
+        {
+          "path": "registry/html/listbox.html",
+          "type": "registry:file",
+          "target": "snippets/listbox.html"
+        }
       ]
     },
     {
@@ -706,13 +1381,40 @@
       "type": "registry:ui",
       "title": "Menubar",
       "description": "A visually-persistent, app-style horizontal bar of menus built on the native Popover API and the WAI-ARIA menu/menubar keyboard contract (roving tabindex, arrow navigation, type-ahead, ESC).",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/menubar.tsx", "type": "registry:ui", "target": "components/ui/menubar.tsx" },
-        { "path": "registry/jinja2/menubar.html", "type": "registry:file", "target": "templates/components/menubar.html" },
-        { "path": "registry/go-templates/menubar.tmpl", "type": "registry:file", "target": "components/menubar.tmpl" },
-        { "path": "registry/phoenix/menubar.ex", "type": "registry:file", "target": "lib/my_app_web/components/menubar.ex" },
-        { "path": "registry/html/menubar.html", "type": "registry:file", "target": "snippets/menubar.html" }
+        {
+          "path": "registry/ui/menubar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/menubar.tsx"
+        },
+        {
+          "path": "registry/elysiax/menubar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/menubar.tsx"
+        },
+        {
+          "path": "registry/jinja2/menubar.html",
+          "type": "registry:file",
+          "target": "templates/components/menubar.html"
+        },
+        {
+          "path": "registry/go-templates/menubar.tmpl",
+          "type": "registry:file",
+          "target": "components/menubar.tmpl"
+        },
+        {
+          "path": "registry/phoenix/menubar.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/menubar.ex"
+        },
+        {
+          "path": "registry/html/menubar.html",
+          "type": "registry:file",
+          "target": "snippets/menubar.html"
+        }
       ]
     },
     {
@@ -720,13 +1422,40 @@
       "type": "registry:ui",
       "title": "Tree",
       "description": "A hierarchical role=\"tree\" widget built from nested <ul>/<li> lists, where parent nodes carry aria-expanded and contain a nested role=\"group\". Ships Tree, TreeItem, and TreeGroup subcomponents with the full WAI-ARIA APG keyboard contract and roving tabindex wired in site.js.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/tree.tsx", "type": "registry:ui", "target": "components/ui/tree.tsx" },
-        { "path": "registry/jinja2/tree.html", "type": "registry:file", "target": "templates/components/tree.html" },
-        { "path": "registry/go-templates/tree.tmpl", "type": "registry:file", "target": "components/tree.tmpl" },
-        { "path": "registry/phoenix/tree.ex", "type": "registry:file", "target": "lib/my_app_web/components/tree.ex" },
-        { "path": "registry/html/tree.html", "type": "registry:file", "target": "snippets/tree.html" }
+        {
+          "path": "registry/ui/tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tree.tsx"
+        },
+        {
+          "path": "registry/elysiax/tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tree.tsx"
+        },
+        {
+          "path": "registry/jinja2/tree.html",
+          "type": "registry:file",
+          "target": "templates/components/tree.html"
+        },
+        {
+          "path": "registry/go-templates/tree.tmpl",
+          "type": "registry:file",
+          "target": "components/tree.tmpl"
+        },
+        {
+          "path": "registry/phoenix/tree.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/tree.ex"
+        },
+        {
+          "path": "registry/html/tree.html",
+          "type": "registry:file",
+          "target": "snippets/tree.html"
+        }
       ]
     },
     {
@@ -734,13 +1463,40 @@
       "type": "registry:ui",
       "title": "Carousel",
       "description": "A slideshow built on native CSS scroll-snap (snap-x mandatory; each slide snap-center). WAI-ARIA carousel/slide roles, real <button> prev/next that scroll by one slide; touch, trackpad and keyboard scrolling are the platform's.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/carousel.tsx", "type": "registry:ui", "target": "components/ui/carousel.tsx" },
-        { "path": "registry/jinja2/carousel.html", "type": "registry:file", "target": "templates/components/carousel.html" },
-        { "path": "registry/go-templates/carousel.tmpl", "type": "registry:file", "target": "components/carousel.tmpl" },
-        { "path": "registry/phoenix/carousel.ex", "type": "registry:file", "target": "lib/my_app_web/components/carousel.ex" },
-        { "path": "registry/html/carousel.html", "type": "registry:file", "target": "snippets/carousel.html" }
+        {
+          "path": "registry/ui/carousel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/carousel.tsx"
+        },
+        {
+          "path": "registry/elysiax/carousel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/carousel.tsx"
+        },
+        {
+          "path": "registry/jinja2/carousel.html",
+          "type": "registry:file",
+          "target": "templates/components/carousel.html"
+        },
+        {
+          "path": "registry/go-templates/carousel.tmpl",
+          "type": "registry:file",
+          "target": "components/carousel.tmpl"
+        },
+        {
+          "path": "registry/phoenix/carousel.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/carousel.ex"
+        },
+        {
+          "path": "registry/html/carousel.html",
+          "type": "registry:file",
+          "target": "snippets/carousel.html"
+        }
       ]
     },
     {
@@ -748,13 +1504,40 @@
       "type": "registry:ui",
       "title": "Feed",
       "description": "A role=\"feed\" container of <article> items that loads more as the user scrolls (htmx infinite scroll via hx-trigger=\"revealed\"), following the WAI-ARIA APG Feed pattern. A structure, not a widget — screen readers stay in reading mode.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/feed.tsx", "type": "registry:ui", "target": "components/ui/feed.tsx" },
-        { "path": "registry/jinja2/feed.html", "type": "registry:file", "target": "templates/components/feed.html" },
-        { "path": "registry/go-templates/feed.tmpl", "type": "registry:file", "target": "components/feed.tmpl" },
-        { "path": "registry/phoenix/feed.ex", "type": "registry:file", "target": "lib/my_app_web/components/feed.ex" },
-        { "path": "registry/html/feed.html", "type": "registry:file", "target": "snippets/feed.html" }
+        {
+          "path": "registry/ui/feed.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/feed.tsx"
+        },
+        {
+          "path": "registry/elysiax/feed.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/feed.tsx"
+        },
+        {
+          "path": "registry/jinja2/feed.html",
+          "type": "registry:file",
+          "target": "templates/components/feed.html"
+        },
+        {
+          "path": "registry/go-templates/feed.tmpl",
+          "type": "registry:file",
+          "target": "components/feed.tmpl"
+        },
+        {
+          "path": "registry/phoenix/feed.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/feed.ex"
+        },
+        {
+          "path": "registry/html/feed.html",
+          "type": "registry:file",
+          "target": "snippets/feed.html"
+        }
       ]
     },
     {
@@ -762,13 +1545,40 @@
       "type": "registry:ui",
       "title": "Grid",
       "description": "An interactive data grid built on a real <table role=\"grid\">: a single tab stop with 2-D arrow-key cell navigation (roving tabindex), Home/End to row ends, and Ctrl+Home/End to the grid corners.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/grid.tsx", "type": "registry:ui", "target": "components/ui/grid.tsx" },
-        { "path": "registry/jinja2/grid.html", "type": "registry:file", "target": "templates/components/grid.html" },
-        { "path": "registry/go-templates/grid.tmpl", "type": "registry:file", "target": "components/grid.tmpl" },
-        { "path": "registry/phoenix/grid.ex", "type": "registry:file", "target": "lib/my_app_web/components/grid.ex" },
-        { "path": "registry/html/grid.html", "type": "registry:file", "target": "snippets/grid.html" }
+        {
+          "path": "registry/ui/grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/grid.tsx"
+        },
+        {
+          "path": "registry/elysiax/grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/grid.tsx"
+        },
+        {
+          "path": "registry/jinja2/grid.html",
+          "type": "registry:file",
+          "target": "templates/components/grid.html"
+        },
+        {
+          "path": "registry/go-templates/grid.tmpl",
+          "type": "registry:file",
+          "target": "components/grid.tmpl"
+        },
+        {
+          "path": "registry/phoenix/grid.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/grid.ex"
+        },
+        {
+          "path": "registry/html/grid.html",
+          "type": "registry:file",
+          "target": "snippets/grid.html"
+        }
       ]
     },
     {
@@ -776,13 +1586,40 @@
       "type": "registry:ui",
       "title": "Treegrid",
       "description": "A hierarchical data grid: role=\"treegrid\" rows expand and collapse like a tree (aria-expanded + aria-level) while cells navigate like a grid with the arrow keys. Built on a native HTML table, following the WAI-ARIA APG Treegrid pattern.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/treegrid.tsx", "type": "registry:ui", "target": "components/ui/treegrid.tsx" },
-        { "path": "registry/jinja2/treegrid.html", "type": "registry:file", "target": "templates/components/treegrid.html" },
-        { "path": "registry/go-templates/treegrid.tmpl", "type": "registry:file", "target": "components/treegrid.tmpl" },
-        { "path": "registry/phoenix/treegrid.ex", "type": "registry:file", "target": "lib/my_app_web/components/treegrid.ex" },
-        { "path": "registry/html/treegrid.html", "type": "registry:file", "target": "snippets/treegrid.html" }
+        {
+          "path": "registry/ui/treegrid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/treegrid.tsx"
+        },
+        {
+          "path": "registry/elysiax/treegrid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/treegrid.tsx"
+        },
+        {
+          "path": "registry/jinja2/treegrid.html",
+          "type": "registry:file",
+          "target": "templates/components/treegrid.html"
+        },
+        {
+          "path": "registry/go-templates/treegrid.tmpl",
+          "type": "registry:file",
+          "target": "components/treegrid.tmpl"
+        },
+        {
+          "path": "registry/phoenix/treegrid.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/treegrid.ex"
+        },
+        {
+          "path": "registry/html/treegrid.html",
+          "type": "registry:file",
+          "target": "snippets/treegrid.html"
+        }
       ]
     },
     {
@@ -790,13 +1627,40 @@
       "type": "registry:ui",
       "title": "Splitter",
       "description": "A resizable two-pane split whose divider is a focusable role=\"separator\" widget — drag it or use the arrow keys — driving a single CSS variable (--split) that sizes a grid track.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/splitter.tsx", "type": "registry:ui", "target": "components/ui/splitter.tsx" },
-        { "path": "registry/jinja2/splitter.html", "type": "registry:file", "target": "templates/components/splitter.html" },
-        { "path": "registry/go-templates/splitter.tmpl", "type": "registry:file", "target": "components/splitter.tmpl" },
-        { "path": "registry/phoenix/splitter.ex", "type": "registry:file", "target": "lib/my_app_web/components/splitter.ex" },
-        { "path": "registry/html/splitter.html", "type": "registry:file", "target": "snippets/splitter.html" }
+        {
+          "path": "registry/ui/splitter.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/splitter.tsx"
+        },
+        {
+          "path": "registry/elysiax/splitter.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/splitter.tsx"
+        },
+        {
+          "path": "registry/jinja2/splitter.html",
+          "type": "registry:file",
+          "target": "templates/components/splitter.html"
+        },
+        {
+          "path": "registry/go-templates/splitter.tmpl",
+          "type": "registry:file",
+          "target": "components/splitter.tmpl"
+        },
+        {
+          "path": "registry/phoenix/splitter.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/splitter.ex"
+        },
+        {
+          "path": "registry/html/splitter.html",
+          "type": "registry:file",
+          "target": "snippets/splitter.html"
+        }
       ]
     },
     {
@@ -804,69 +1668,204 @@
       "type": "registry:ui",
       "title": "Landmarks",
       "description": "An accessible page-shell from the native HTML landmark elements (header, nav, search, main, aside, section, footer). Thin semantic wrappers that expose the matching ARIA landmark role, with aria-label/aria-labelledby where the APG Landmarks practice requires a unique name. Zero JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/landmarks.tsx", "type": "registry:ui", "target": "components/ui/landmarks.tsx" },
-        { "path": "registry/jinja2/landmarks.html", "type": "registry:file", "target": "templates/components/landmarks.html" },
-        { "path": "registry/go-templates/landmarks.tmpl", "type": "registry:file", "target": "components/landmarks.tmpl" },
-        { "path": "registry/phoenix/landmarks.ex", "type": "registry:file", "target": "lib/my_app_web/components/landmarks.ex" },
-        { "path": "registry/html/landmarks.html", "type": "registry:file", "target": "snippets/landmarks.html" }
+        {
+          "path": "registry/ui/landmarks.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/landmarks.tsx"
+        },
+        {
+          "path": "registry/elysiax/landmarks.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/landmarks.tsx"
+        },
+        {
+          "path": "registry/jinja2/landmarks.html",
+          "type": "registry:file",
+          "target": "templates/components/landmarks.html"
+        },
+        {
+          "path": "registry/go-templates/landmarks.tmpl",
+          "type": "registry:file",
+          "target": "components/landmarks.tmpl"
+        },
+        {
+          "path": "registry/phoenix/landmarks.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/landmarks.ex"
+        },
+        {
+          "path": "registry/html/landmarks.html",
+          "type": "registry:file",
+          "target": "snippets/landmarks.html"
+        }
       ]
     },
     {
       "name": "form-field",
       "type": "registry:ui",
       "title": "Form Field",
-      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in five flavours; zero JS.",
-      "registryDependencies": ["utils"],
+      "description": "Field-row wrapper composing label + control slot + description + error, auto-wiring aria-describedby and aria-invalid, with a native :user-invalid styling hook. Includes a fieldset/legend group variant. Ships in six flavours; zero JS.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/form-field.tsx", "type": "registry:ui", "target": "components/ui/form-field.tsx" },
-        { "path": "registry/jinja2/form-field.html", "type": "registry:file", "target": "templates/components/form-field.html" },
-        { "path": "registry/go-templates/form-field.tmpl", "type": "registry:file", "target": "components/form-field.tmpl" },
-        { "path": "registry/phoenix/form_field.ex", "type": "registry:file", "target": "lib/my_app_web/components/form_field.ex" },
-        { "path": "registry/html/form-field.html", "type": "registry:file", "target": "snippets/form-field.html" }
+        {
+          "path": "registry/ui/form-field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/form-field.tsx"
+        },
+        {
+          "path": "registry/elysiax/form-field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/form-field.tsx"
+        },
+        {
+          "path": "registry/jinja2/form-field.html",
+          "type": "registry:file",
+          "target": "templates/components/form-field.html"
+        },
+        {
+          "path": "registry/go-templates/form-field.tmpl",
+          "type": "registry:file",
+          "target": "components/form-field.tmpl"
+        },
+        {
+          "path": "registry/phoenix/form_field.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/form_field.ex"
+        },
+        {
+          "path": "registry/html/form-field.html",
+          "type": "registry:file",
+          "target": "snippets/form-field.html"
+        }
       ]
     },
     {
       "name": "file-upload",
       "type": "registry:ui",
       "title": "File Upload",
-      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in five flavours.",
-      "registryDependencies": ["utils"],
+      "description": "Styled label-wrapped native <input type=\"file\"> with drag-and-drop, a filename/preview list, and a native <progress> bar. Submits via standard multipart POST. Ships in six flavours.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/file-upload.tsx", "type": "registry:ui", "target": "components/ui/file-upload.tsx" },
-        { "path": "registry/jinja2/file-upload.html", "type": "registry:file", "target": "templates/components/file-upload.html" },
-        { "path": "registry/go-templates/file-upload.tmpl", "type": "registry:file", "target": "components/file-upload.tmpl" },
-        { "path": "registry/phoenix/file_upload.ex", "type": "registry:file", "target": "lib/my_app_web/components/file_upload.ex" },
-        { "path": "registry/html/file-upload.html", "type": "registry:file", "target": "snippets/file-upload.html" }
+        {
+          "path": "registry/ui/file-upload.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/file-upload.tsx"
+        },
+        {
+          "path": "registry/elysiax/file-upload.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/file-upload.tsx"
+        },
+        {
+          "path": "registry/jinja2/file-upload.html",
+          "type": "registry:file",
+          "target": "templates/components/file-upload.html"
+        },
+        {
+          "path": "registry/go-templates/file-upload.tmpl",
+          "type": "registry:file",
+          "target": "components/file-upload.tmpl"
+        },
+        {
+          "path": "registry/phoenix/file_upload.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/file_upload.ex"
+        },
+        {
+          "path": "registry/html/file-upload.html",
+          "type": "registry:file",
+          "target": "snippets/file-upload.html"
+        }
       ]
     },
     {
       "name": "copy-button",
       "type": "registry:ui",
       "title": "Copy Button",
-      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern.",
-      "registryDependencies": ["utils"],
+      "description": "A native <button> that writes an associated string (snippet, API key, URL) to the clipboard with the Async Clipboard API, then flips to a transient aria-live \"Copied\" state. Progressive-enhancement fallback for non-secure contexts. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button pattern.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/copy-button.tsx", "type": "registry:ui", "target": "components/ui/copy-button.tsx" },
-        { "path": "registry/jinja2/copy-button.html", "type": "registry:file", "target": "templates/components/copy-button.html" },
-        { "path": "registry/go-templates/copy-button.tmpl", "type": "registry:file", "target": "components/copy-button.tmpl" },
-        { "path": "registry/phoenix/copy_button.ex", "type": "registry:file", "target": "lib/my_app_web/components/copy_button.ex" },
-        { "path": "registry/html/copy-button.html", "type": "registry:file", "target": "snippets/copy-button.html" }
+        {
+          "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/copy-button.tsx"
+        },
+        {
+          "path": "registry/elysiax/copy-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/copy-button.tsx"
+        },
+        {
+          "path": "registry/jinja2/copy-button.html",
+          "type": "registry:file",
+          "target": "templates/components/copy-button.html"
+        },
+        {
+          "path": "registry/go-templates/copy-button.tmpl",
+          "type": "registry:file",
+          "target": "components/copy-button.tmpl"
+        },
+        {
+          "path": "registry/phoenix/copy_button.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/copy_button.ex"
+        },
+        {
+          "path": "registry/html/copy-button.html",
+          "type": "registry:file",
+          "target": "snippets/copy-button.html"
+        }
       ]
     },
     {
       "name": "date-time-picker",
       "type": "registry:ui",
       "title": "Date Time Picker",
-      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in five flavours.",
-      "registryDependencies": ["utils"],
+      "description": "Native <input type=\"date|time|datetime-local|month|week\"> family styled like Input, with min/max/step constraints and normalized machine-readable values. The browser supplies the calendar/clock picker, segment editing, locale-aware display and constraint validation — no JS calendar library. Ships in six flavours.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/date-time-picker.tsx", "type": "registry:ui", "target": "components/ui/date-time-picker.tsx" },
-        { "path": "registry/jinja2/date-time-picker.html", "type": "registry:file", "target": "templates/components/date-time-picker.html" },
-        { "path": "registry/go-templates/date-time-picker.tmpl", "type": "registry:file", "target": "components/date-time-picker.tmpl" },
-        { "path": "registry/phoenix/date_time_picker.ex", "type": "registry:file", "target": "lib/my_app_web/components/date_time_picker.ex" },
-        { "path": "registry/html/date-time-picker.html", "type": "registry:file", "target": "snippets/date-time-picker.html" }
+        {
+          "path": "registry/ui/date-time-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/date-time-picker.tsx"
+        },
+        {
+          "path": "registry/elysiax/date-time-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/date-time-picker.tsx"
+        },
+        {
+          "path": "registry/jinja2/date-time-picker.html",
+          "type": "registry:file",
+          "target": "templates/components/date-time-picker.html"
+        },
+        {
+          "path": "registry/go-templates/date-time-picker.tmpl",
+          "type": "registry:file",
+          "target": "components/date-time-picker.tmpl"
+        },
+        {
+          "path": "registry/phoenix/date_time_picker.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/date_time_picker.ex"
+        },
+        {
+          "path": "registry/html/date-time-picker.html",
+          "type": "registry:file",
+          "target": "snippets/date-time-picker.html"
+        }
       ]
     },
     {
@@ -874,13 +1873,40 @@
       "type": "registry:ui",
       "title": "Sheet",
       "description": "Edge-anchored slide-in drawer (left/right/top/bottom) built on the native <dialog> + showModal(): focus trap, ESC, ::backdrop and aria-modal from the platform. Light dismiss via the native closedby=\"any\" attribute. Reuses Dialog's trigger/close wiring — zero new JS — and can stream its body in via htmx.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/sheet.tsx", "type": "registry:ui", "target": "components/ui/sheet.tsx" },
-        { "path": "registry/jinja2/sheet.html", "type": "registry:file", "target": "templates/components/sheet.html" },
-        { "path": "registry/go-templates/sheet.tmpl", "type": "registry:file", "target": "components/sheet.tmpl" },
-        { "path": "registry/phoenix/sheet.ex", "type": "registry:file", "target": "lib/my_app_web/components/sheet.ex" },
-        { "path": "registry/html/sheet.html", "type": "registry:file", "target": "snippets/sheet.html" }
+        {
+          "path": "registry/ui/sheet.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sheet.tsx"
+        },
+        {
+          "path": "registry/elysiax/sheet.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sheet.tsx"
+        },
+        {
+          "path": "registry/jinja2/sheet.html",
+          "type": "registry:file",
+          "target": "templates/components/sheet.html"
+        },
+        {
+          "path": "registry/go-templates/sheet.tmpl",
+          "type": "registry:file",
+          "target": "components/sheet.tmpl"
+        },
+        {
+          "path": "registry/phoenix/sheet.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/sheet.ex"
+        },
+        {
+          "path": "registry/html/sheet.html",
+          "type": "registry:file",
+          "target": "snippets/sheet.html"
+        }
       ]
     },
     {
@@ -888,13 +1914,40 @@
       "type": "registry:ui",
       "title": "Hover Card",
       "description": "A rich interactive preview surface revealed when the user shows interest in a trigger (hover, keyboard focus, or long-press) — the interactive-content primitive Tooltip explicitly defers to. Built entirely on the native Popover API interest-invoker mechanism: the trigger carries interestfor and the card is popover=\"hint\", so the browser owns hover/focus reveal, ESC dismissal, and implicit-anchor positioning with zero JavaScript. Progressive enhancement: in browsers without interest invokers the trigger stays a working link/button and the card (falling back to popover=\"manual\") simply doesn't appear.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/hover-card.tsx", "type": "registry:ui", "target": "components/ui/hover-card.tsx" },
-        { "path": "registry/jinja2/hover-card.html", "type": "registry:file", "target": "templates/components/hover-card.html" },
-        { "path": "registry/go-templates/hover-card.tmpl", "type": "registry:file", "target": "components/hover-card.tmpl" },
-        { "path": "registry/phoenix/hover_card.ex", "type": "registry:file", "target": "lib/my_app_web/components/hover_card.ex" },
-        { "path": "registry/html/hover-card.html", "type": "registry:file", "target": "snippets/hover-card.html" }
+        {
+          "path": "registry/ui/hover-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/hover-card.tsx"
+        },
+        {
+          "path": "registry/elysiax/hover-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/hover-card.tsx"
+        },
+        {
+          "path": "registry/jinja2/hover-card.html",
+          "type": "registry:file",
+          "target": "templates/components/hover-card.html"
+        },
+        {
+          "path": "registry/go-templates/hover-card.tmpl",
+          "type": "registry:file",
+          "target": "components/hover-card.tmpl"
+        },
+        {
+          "path": "registry/phoenix/hover_card.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/hover_card.ex"
+        },
+        {
+          "path": "registry/html/hover-card.html",
+          "type": "registry:file",
+          "target": "snippets/hover-card.html"
+        }
       ]
     },
     {
@@ -902,13 +1955,40 @@
       "type": "registry:ui",
       "title": "Active Search",
       "description": "A debounced live-search box (native <form role=\"search\"> + <input type=\"search\">) that filters an external results list/table as you type, with an inline loading indicator and stale-request cancellation. Submits as a normal GET search on Enter with zero JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/active-search.tsx", "type": "registry:ui", "target": "components/ui/active-search.tsx" },
-        { "path": "registry/jinja2/active-search.html", "type": "registry:file", "target": "templates/components/active-search.html" },
-        { "path": "registry/go-templates/active-search.tmpl", "type": "registry:file", "target": "components/active-search.tmpl" },
-        { "path": "registry/phoenix/active_search.ex", "type": "registry:file", "target": "lib/my_app_web/components/active_search.ex" },
-        { "path": "registry/html/active-search.html", "type": "registry:file", "target": "snippets/active-search.html" }
+        {
+          "path": "registry/ui/active-search.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/active-search.tsx"
+        },
+        {
+          "path": "registry/elysiax/active-search.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/active-search.tsx"
+        },
+        {
+          "path": "registry/jinja2/active-search.html",
+          "type": "registry:file",
+          "target": "templates/components/active-search.html"
+        },
+        {
+          "path": "registry/go-templates/active-search.tmpl",
+          "type": "registry:file",
+          "target": "components/active-search.tmpl"
+        },
+        {
+          "path": "registry/phoenix/active_search.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/active_search.ex"
+        },
+        {
+          "path": "registry/html/active-search.html",
+          "type": "registry:file",
+          "target": "snippets/active-search.html"
+        }
       ]
     },
     {
@@ -916,13 +1996,40 @@
       "type": "registry:ui",
       "title": "Edit In Place",
       "description": "A read-only record view with an Edit affordance that swaps in a pre-filled form. Save issues a PUT and the server returns the updated view; Cancel re-fetches the view. The canonical htmx editable primitive — built entirely on outerHTML swaps over REST, no modal, no custom JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/edit-in-place.tsx", "type": "registry:ui", "target": "components/ui/edit-in-place.tsx" },
-        { "path": "registry/jinja2/edit-in-place.html", "type": "registry:file", "target": "templates/components/edit-in-place.html" },
-        { "path": "registry/go-templates/edit-in-place.tmpl", "type": "registry:file", "target": "components/edit-in-place.tmpl" },
-        { "path": "registry/phoenix/edit_in_place.ex", "type": "registry:file", "target": "lib/my_app_web/components/edit_in_place.ex" },
-        { "path": "registry/html/edit-in-place.html", "type": "registry:file", "target": "snippets/edit-in-place.html" }
+        {
+          "path": "registry/ui/edit-in-place.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/edit-in-place.tsx"
+        },
+        {
+          "path": "registry/elysiax/edit-in-place.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/edit-in-place.tsx"
+        },
+        {
+          "path": "registry/jinja2/edit-in-place.html",
+          "type": "registry:file",
+          "target": "templates/components/edit-in-place.html"
+        },
+        {
+          "path": "registry/go-templates/edit-in-place.tmpl",
+          "type": "registry:file",
+          "target": "components/edit-in-place.tmpl"
+        },
+        {
+          "path": "registry/phoenix/edit_in_place.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/edit_in_place.ex"
+        },
+        {
+          "path": "registry/html/edit-in-place.html",
+          "type": "registry:file",
+          "target": "snippets/edit-in-place.html"
+        }
       ]
     },
     {
@@ -930,41 +2037,122 @@
       "type": "registry:ui",
       "title": "Load More",
       "description": "A self-replacing pagination trigger. Click a button or scroll a sentinel into view; htmx appends the next page and swaps in a fresh trigger via hx-swap=\"outerHTML\". When the server omits the trigger, the chain ends. The click mode is a real <button> so it works without JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/load-more.tsx", "type": "registry:ui", "target": "components/ui/load-more.tsx" },
-        { "path": "registry/jinja2/load-more.html", "type": "registry:file", "target": "templates/components/load-more.html" },
-        { "path": "registry/go-templates/load-more.tmpl", "type": "registry:file", "target": "components/load-more.tmpl" },
-        { "path": "registry/phoenix/load_more.ex", "type": "registry:file", "target": "lib/my_app_web/components/load_more.ex" },
-        { "path": "registry/html/load-more.html", "type": "registry:file", "target": "snippets/load-more.html" }
+        {
+          "path": "registry/ui/load-more.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/load-more.tsx"
+        },
+        {
+          "path": "registry/elysiax/load-more.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/load-more.tsx"
+        },
+        {
+          "path": "registry/jinja2/load-more.html",
+          "type": "registry:file",
+          "target": "templates/components/load-more.html"
+        },
+        {
+          "path": "registry/go-templates/load-more.tmpl",
+          "type": "registry:file",
+          "target": "components/load-more.tmpl"
+        },
+        {
+          "path": "registry/phoenix/load_more.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/load_more.ex"
+        },
+        {
+          "path": "registry/html/load-more.html",
+          "type": "registry:file",
+          "target": "snippets/load-more.html"
+        }
       ]
     },
     {
       "name": "skip-link",
       "type": "registry:ui",
       "title": "Skip Link",
-      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice.",
-      "registryDependencies": ["utils"],
+      "description": "A \"Skip to main content\" link: the first focusable element on the page, visually hidden until a keyboard user tabs to it, that jumps focus past the repeated banner/nav to the main landmark. A native <a href=\"#main\"> with a CSS focus reveal — zero JavaScript. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Built on the WAI-ARIA APG Landmark Regions practice.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/skip-link.tsx", "type": "registry:ui", "target": "components/ui/skip-link.tsx" },
-        { "path": "registry/jinja2/skip-link.html", "type": "registry:file", "target": "templates/components/skip-link.html" },
-        { "path": "registry/go-templates/skip-link.tmpl", "type": "registry:file", "target": "components/skip-link.tmpl" },
-        { "path": "registry/phoenix/skip_link.ex", "type": "registry:file", "target": "lib/my_app_web/components/skip_link.ex" },
-        { "path": "registry/html/skip-link.html", "type": "registry:file", "target": "snippets/skip-link.html" }
+        {
+          "path": "registry/ui/skip-link.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/skip-link.tsx"
+        },
+        {
+          "path": "registry/elysiax/skip-link.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/skip-link.tsx"
+        },
+        {
+          "path": "registry/jinja2/skip-link.html",
+          "type": "registry:file",
+          "target": "templates/components/skip-link.html"
+        },
+        {
+          "path": "registry/go-templates/skip-link.tmpl",
+          "type": "registry:file",
+          "target": "components/skip-link.tmpl"
+        },
+        {
+          "path": "registry/phoenix/skip_link.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/skip_link.ex"
+        },
+        {
+          "path": "registry/html/skip-link.html",
+          "type": "registry:file",
+          "target": "snippets/skip-link.html"
+        }
       ]
     },
     {
       "name": "theme-toggle",
       "type": "registry:ui",
       "title": "Theme Toggle",
-      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern.",
-      "registryDependencies": ["utils"],
+      "description": "Light / dark / system colour-scheme switcher. Honours prefers-color-scheme by default and persists an explicit override in a cookie so the server re-renders the right theme with no flash. Rendered as a native radiogroup of three radios (system / light / dark). Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a self-contained HTML snippet. Built on the prefers-color-scheme media feature + color-scheme property + cookie persistence; follows the WAI-ARIA APG radio group pattern.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/theme-toggle.tsx", "type": "registry:ui", "target": "components/ui/theme-toggle.tsx" },
-        { "path": "registry/jinja2/theme-toggle.html", "type": "registry:file", "target": "templates/components/theme-toggle.html" },
-        { "path": "registry/go-templates/theme-toggle.tmpl", "type": "registry:file", "target": "components/theme-toggle.tmpl" },
-        { "path": "registry/phoenix/theme_toggle.ex", "type": "registry:file", "target": "lib/my_app_web/components/theme_toggle.ex" },
-        { "path": "registry/html/theme-toggle.html", "type": "registry:file", "target": "snippets/theme-toggle.html" }
+        {
+          "path": "registry/ui/theme-toggle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/theme-toggle.tsx"
+        },
+        {
+          "path": "registry/elysiax/theme-toggle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/theme-toggle.tsx"
+        },
+        {
+          "path": "registry/jinja2/theme-toggle.html",
+          "type": "registry:file",
+          "target": "templates/components/theme-toggle.html"
+        },
+        {
+          "path": "registry/go-templates/theme-toggle.tmpl",
+          "type": "registry:file",
+          "target": "components/theme-toggle.tmpl"
+        },
+        {
+          "path": "registry/phoenix/theme_toggle.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/theme_toggle.ex"
+        },
+        {
+          "path": "registry/html/theme-toggle.html",
+          "type": "registry:file",
+          "target": "snippets/theme-toggle.html"
+        }
       ]
     },
     {
@@ -972,27 +2160,81 @@
       "type": "registry:ui",
       "title": "Output",
       "description": "Live result region for the outcome of a calculation or server action. Renders the native <output> element (implicit role=\"status\", an aria-live=\"polite\" + aria-atomic=\"true\" region), tied to its inputs via the for attribute. htmx innerHTML swaps of its content are announced by assistive tech automatically — zero JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/output.tsx", "type": "registry:ui", "target": "components/ui/output.tsx" },
-        { "path": "registry/jinja2/output.html", "type": "registry:file", "target": "templates/components/output.html" },
-        { "path": "registry/go-templates/output.tmpl", "type": "registry:file", "target": "components/output.tmpl" },
-        { "path": "registry/phoenix/output.ex", "type": "registry:file", "target": "lib/my_app_web/components/output.ex" },
-        { "path": "registry/html/output.html", "type": "registry:file", "target": "snippets/output.html" }
+        {
+          "path": "registry/ui/output.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/output.tsx"
+        },
+        {
+          "path": "registry/elysiax/output.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/output.tsx"
+        },
+        {
+          "path": "registry/jinja2/output.html",
+          "type": "registry:file",
+          "target": "templates/components/output.html"
+        },
+        {
+          "path": "registry/go-templates/output.tmpl",
+          "type": "registry:file",
+          "target": "components/output.tmpl"
+        },
+        {
+          "path": "registry/phoenix/output.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/output.ex"
+        },
+        {
+          "path": "registry/html/output.html",
+          "type": "registry:file",
+          "target": "snippets/output.html"
+        }
       ]
     },
     {
       "name": "segmented-control",
       "type": "registry:ui",
       "title": "Segmented Control",
-      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet.",
-      "registryDependencies": ["utils"],
+      "description": "A compact, horizontally-joined set of mutually-exclusive options (List / Grid, Day / Week / Month) built on a native radio group — a <fieldset> wrapping <input type=\"radio\"> options that share a name, so arrow-key navigation and one-selected-at-a-time come from the platform with zero JS. Selects a value, not a panel. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/segmented-control.tsx", "type": "registry:ui", "target": "components/ui/segmented-control.tsx" },
-        { "path": "registry/jinja2/segmented-control.html", "type": "registry:file", "target": "templates/components/segmented-control.html" },
-        { "path": "registry/go-templates/segmented-control.tmpl", "type": "registry:file", "target": "components/segmented-control.tmpl" },
-        { "path": "registry/phoenix/segmented_control.ex", "type": "registry:file", "target": "lib/my_app_web/components/segmented_control.ex" },
-        { "path": "registry/html/segmented-control.html", "type": "registry:file", "target": "snippets/segmented-control.html" }
+        {
+          "path": "registry/ui/segmented-control.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/segmented-control.tsx"
+        },
+        {
+          "path": "registry/elysiax/segmented-control.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/segmented-control.tsx"
+        },
+        {
+          "path": "registry/jinja2/segmented-control.html",
+          "type": "registry:file",
+          "target": "templates/components/segmented-control.html"
+        },
+        {
+          "path": "registry/go-templates/segmented-control.tmpl",
+          "type": "registry:file",
+          "target": "components/segmented-control.tmpl"
+        },
+        {
+          "path": "registry/phoenix/segmented_control.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/segmented_control.ex"
+        },
+        {
+          "path": "registry/html/segmented-control.html",
+          "type": "registry:file",
+          "target": "snippets/segmented-control.html"
+        }
       ]
     },
     {
@@ -1000,13 +2242,40 @@
       "type": "registry:ui",
       "title": "Rating",
       "description": "A star/icon rating control built as a single-select radio group: one native <input type=\"radio\"> per star sharing a name, with per-star aria-label and a CSS-only hover preview. Submits a real value and works without JavaScript — the browser handles arrow-key navigation, focus, and one-at-a-time selection. Fill and hover preview come from rendering stars in reverse DOM order under flex-row-reverse so named-peer general-sibling selectors light the chosen star and every star to its visual left. Zero site.js.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/rating.tsx", "type": "registry:ui", "target": "components/ui/rating.tsx" },
-        { "path": "registry/jinja2/rating.html", "type": "registry:file", "target": "templates/components/rating.html" },
-        { "path": "registry/go-templates/rating.tmpl", "type": "registry:file", "target": "components/rating.tmpl" },
-        { "path": "registry/phoenix/rating.ex", "type": "registry:file", "target": "lib/my_app_web/components/rating.ex" },
-        { "path": "registry/html/rating.html", "type": "registry:file", "target": "snippets/rating.html" }
+        {
+          "path": "registry/ui/rating.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/rating.tsx"
+        },
+        {
+          "path": "registry/elysiax/rating.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/rating.tsx"
+        },
+        {
+          "path": "registry/jinja2/rating.html",
+          "type": "registry:file",
+          "target": "templates/components/rating.html"
+        },
+        {
+          "path": "registry/go-templates/rating.tmpl",
+          "type": "registry:file",
+          "target": "components/rating.tmpl"
+        },
+        {
+          "path": "registry/phoenix/rating.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/rating.ex"
+        },
+        {
+          "path": "registry/html/rating.html",
+          "type": "registry:file",
+          "target": "snippets/rating.html"
+        }
       ]
     },
     {
@@ -1014,13 +2283,40 @@
       "type": "registry:ui",
       "title": "Color Picker",
       "description": "A native <input type=\"color\"> styled as a shadcn swatch, with an optional live hex readout. The browser supplies the entire picker UI and guarantees a valid CSS color value — we only restyle the swatch and never parse colors ourselves.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/color-picker.tsx", "type": "registry:ui", "target": "components/ui/color-picker.tsx" },
-        { "path": "registry/jinja2/color-picker.html", "type": "registry:file", "target": "templates/components/color-picker.html" },
-        { "path": "registry/go-templates/color-picker.tmpl", "type": "registry:file", "target": "components/color-picker.tmpl" },
-        { "path": "registry/phoenix/color_picker.ex", "type": "registry:file", "target": "lib/my_app_web/components/color_picker.ex" },
-        { "path": "registry/html/color-picker.html", "type": "registry:file", "target": "snippets/color-picker.html" }
+        {
+          "path": "registry/ui/color-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/color-picker.tsx"
+        },
+        {
+          "path": "registry/elysiax/color-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/color-picker.tsx"
+        },
+        {
+          "path": "registry/jinja2/color-picker.html",
+          "type": "registry:file",
+          "target": "templates/components/color-picker.html"
+        },
+        {
+          "path": "registry/go-templates/color-picker.tmpl",
+          "type": "registry:file",
+          "target": "components/color-picker.tmpl"
+        },
+        {
+          "path": "registry/phoenix/color_picker.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/color_picker.ex"
+        },
+        {
+          "path": "registry/html/color-picker.html",
+          "type": "registry:file",
+          "target": "snippets/color-picker.html"
+        }
       ]
     },
     {
@@ -1028,13 +2324,40 @@
       "type": "registry:ui",
       "title": "Autosize Textarea",
       "description": "Native <textarea> that grows/shrinks to fit its content between min/max bounds via the single CSS rule field-sizing: content — no scrollHeight JS hack. Degrades to a plain fixed field where unsupported; autosize={false} opts out to field-sizing: fixed. htmx autosave demo.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/autosize-textarea.tsx", "type": "registry:ui", "target": "components/ui/autosize-textarea.tsx" },
-        { "path": "registry/jinja2/autosize-textarea.html", "type": "registry:file", "target": "templates/components/autosize-textarea.html" },
-        { "path": "registry/go-templates/autosize-textarea.tmpl", "type": "registry:file", "target": "components/autosize-textarea.tmpl" },
-        { "path": "registry/phoenix/autosize_textarea.ex", "type": "registry:file", "target": "lib/my_app_web/components/autosize_textarea.ex" },
-        { "path": "registry/html/autosize-textarea.html", "type": "registry:file", "target": "snippets/autosize-textarea.html" }
+        {
+          "path": "registry/ui/autosize-textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/autosize-textarea.tsx"
+        },
+        {
+          "path": "registry/elysiax/autosize-textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/autosize-textarea.tsx"
+        },
+        {
+          "path": "registry/jinja2/autosize-textarea.html",
+          "type": "registry:file",
+          "target": "templates/components/autosize-textarea.html"
+        },
+        {
+          "path": "registry/go-templates/autosize-textarea.tmpl",
+          "type": "registry:file",
+          "target": "components/autosize-textarea.tmpl"
+        },
+        {
+          "path": "registry/phoenix/autosize_textarea.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/autosize_textarea.ex"
+        },
+        {
+          "path": "registry/html/autosize-textarea.html",
+          "type": "registry:file",
+          "target": "snippets/autosize-textarea.html"
+        }
       ]
     },
     {
@@ -1042,13 +2365,40 @@
       "type": "registry:ui",
       "title": "Cascading Select",
       "description": "Two dependent native <select>s: choosing the parent reloads the child's <option>s — and an optional detail panel — from the server via an hx-swap-oob fragment. Cascade rides htmx's default `change` trigger on <select>; zero custom JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/cascading-select.tsx", "type": "registry:ui", "target": "components/ui/cascading-select.tsx" },
-        { "path": "registry/jinja2/cascading-select.html", "type": "registry:file", "target": "templates/components/cascading-select.html" },
-        { "path": "registry/go-templates/cascading-select.tmpl", "type": "registry:file", "target": "components/cascading-select.tmpl" },
-        { "path": "registry/phoenix/cascading_select.ex", "type": "registry:file", "target": "lib/my_app_web/components/cascading_select.ex" },
-        { "path": "registry/html/cascading-select.html", "type": "registry:file", "target": "snippets/cascading-select.html" }
+        {
+          "path": "registry/ui/cascading-select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/cascading-select.tsx"
+        },
+        {
+          "path": "registry/elysiax/cascading-select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/cascading-select.tsx"
+        },
+        {
+          "path": "registry/jinja2/cascading-select.html",
+          "type": "registry:file",
+          "target": "templates/components/cascading-select.html"
+        },
+        {
+          "path": "registry/go-templates/cascading-select.tmpl",
+          "type": "registry:file",
+          "target": "components/cascading-select.tmpl"
+        },
+        {
+          "path": "registry/phoenix/cascading_select.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/cascading_select.ex"
+        },
+        {
+          "path": "registry/html/cascading-select.html",
+          "type": "registry:file",
+          "target": "snippets/cascading-select.html"
+        }
       ]
     },
     {
@@ -1056,13 +2406,40 @@
       "type": "registry:ui",
       "title": "Selectable Table",
       "description": "A data table with row checkboxes, a header select-all, a live selection count, and a contextual bulk-action bar revealed purely in CSS via :has(:checked). Each row is a native name=\"selected\" checkbox; bulk-action buttons hx-post the checked values and re-render the whole form.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/selectable-table.tsx", "type": "registry:ui", "target": "components/ui/selectable-table.tsx" },
-        { "path": "registry/jinja2/selectable-table.html", "type": "registry:file", "target": "templates/components/selectable-table.html" },
-        { "path": "registry/go-templates/selectable-table.tmpl", "type": "registry:file", "target": "components/selectable-table.tmpl" },
-        { "path": "registry/phoenix/selectable_table.ex", "type": "registry:file", "target": "lib/my_app_web/components/selectable_table.ex" },
-        { "path": "registry/html/selectable-table.html", "type": "registry:file", "target": "snippets/selectable-table.html" }
+        {
+          "path": "registry/ui/selectable-table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/selectable-table.tsx"
+        },
+        {
+          "path": "registry/elysiax/selectable-table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/selectable-table.tsx"
+        },
+        {
+          "path": "registry/jinja2/selectable-table.html",
+          "type": "registry:file",
+          "target": "templates/components/selectable-table.html"
+        },
+        {
+          "path": "registry/go-templates/selectable-table.tmpl",
+          "type": "registry:file",
+          "target": "components/selectable-table.tmpl"
+        },
+        {
+          "path": "registry/phoenix/selectable_table.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/selectable_table.ex"
+        },
+        {
+          "path": "registry/html/selectable-table.html",
+          "type": "registry:file",
+          "target": "snippets/selectable-table.html"
+        }
       ]
     },
     {
@@ -1070,27 +2447,81 @@
       "type": "registry:ui",
       "title": "Delete Row",
       "description": "A row/item delete affordance that confirms, sends DELETE, then fades out in place. One inherited declaration on the list host (hx-confirm:inherited / hx-target:inherited / hx-swap:inherited) covers every row, so each Delete button only needs hx-delete — no per-row wiring and no client-side list state. The server replies 200 with an empty body and the row simply disappears after a CSS opacity fade. Zero custom JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/delete-row.tsx", "type": "registry:ui", "target": "components/ui/delete-row.tsx" },
-        { "path": "registry/jinja2/delete-row.html", "type": "registry:file", "target": "templates/components/delete-row.html" },
-        { "path": "registry/go-templates/delete-row.tmpl", "type": "registry:file", "target": "components/delete-row.tmpl" },
-        { "path": "registry/phoenix/delete_row.ex", "type": "registry:file", "target": "lib/my_app_web/components/delete_row.ex" },
-        { "path": "registry/html/delete-row.html", "type": "registry:file", "target": "snippets/delete-row.html" }
+        {
+          "path": "registry/ui/delete-row.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/delete-row.tsx"
+        },
+        {
+          "path": "registry/elysiax/delete-row.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/delete-row.tsx"
+        },
+        {
+          "path": "registry/jinja2/delete-row.html",
+          "type": "registry:file",
+          "target": "templates/components/delete-row.html"
+        },
+        {
+          "path": "registry/go-templates/delete-row.tmpl",
+          "type": "registry:file",
+          "target": "components/delete-row.tmpl"
+        },
+        {
+          "path": "registry/phoenix/delete_row.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/delete_row.ex"
+        },
+        {
+          "path": "registry/html/delete-row.html",
+          "type": "registry:file",
+          "target": "snippets/delete-row.html"
+        }
       ]
     },
     {
       "name": "optimistic-toggle",
       "type": "registry:ui",
       "title": "Optimistic Toggle",
-      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern.",
-      "registryDependencies": ["utils"],
+      "description": "A server-backed action toggle (like, star, follow, pin) that flips appearance instantly via a native <template> of the toggled state, then reconciles with the server's HTML response — rolling back automatically on error. Built on a real <button> with aria-pressed and the htmx v4 hx-optimistic extension. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet. Follows the WAI-ARIA APG button (toggle) pattern.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/optimistic-toggle.tsx", "type": "registry:ui", "target": "components/ui/optimistic-toggle.tsx" },
-        { "path": "registry/jinja2/optimistic-toggle.html", "type": "registry:file", "target": "templates/components/optimistic-toggle.html" },
-        { "path": "registry/go-templates/optimistic-toggle.tmpl", "type": "registry:file", "target": "components/optimistic-toggle.tmpl" },
-        { "path": "registry/phoenix/optimistic_toggle.ex", "type": "registry:file", "target": "lib/my_app_web/components/optimistic_toggle.ex" },
-        { "path": "registry/html/optimistic-toggle.html", "type": "registry:file", "target": "snippets/optimistic-toggle.html" }
+        {
+          "path": "registry/ui/optimistic-toggle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/optimistic-toggle.tsx"
+        },
+        {
+          "path": "registry/elysiax/optimistic-toggle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/optimistic-toggle.tsx"
+        },
+        {
+          "path": "registry/jinja2/optimistic-toggle.html",
+          "type": "registry:file",
+          "target": "templates/components/optimistic-toggle.html"
+        },
+        {
+          "path": "registry/go-templates/optimistic-toggle.tmpl",
+          "type": "registry:file",
+          "target": "components/optimistic-toggle.tmpl"
+        },
+        {
+          "path": "registry/phoenix/optimistic_toggle.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/optimistic_toggle.ex"
+        },
+        {
+          "path": "registry/html/optimistic-toggle.html",
+          "type": "registry:file",
+          "target": "snippets/optimistic-toggle.html"
+        }
       ]
     },
     {
@@ -1098,13 +2529,40 @@
       "type": "registry:ui",
       "title": "Status",
       "description": "A persistent polite live-region announcer (role=status / role=log, aria-live=polite, aria-atomic) for non-urgent updates like \"Saved\" or \"3 results\" — the non-interruptive counterpart to Alert and Toast. Render it once and swap text in; assistive tech announces the change when the user is idle, without moving focus.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/status.tsx", "type": "registry:ui", "target": "components/ui/status.tsx" },
-        { "path": "registry/jinja2/status.html", "type": "registry:file", "target": "templates/components/status.html" },
-        { "path": "registry/go-templates/status.tmpl", "type": "registry:file", "target": "components/status.tmpl" },
-        { "path": "registry/phoenix/status.ex", "type": "registry:file", "target": "lib/my_app_web/components/status.ex" },
-        { "path": "registry/html/status.html", "type": "registry:file", "target": "snippets/status.html" }
+        {
+          "path": "registry/ui/status.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/status.tsx"
+        },
+        {
+          "path": "registry/elysiax/status.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/status.tsx"
+        },
+        {
+          "path": "registry/jinja2/status.html",
+          "type": "registry:file",
+          "target": "templates/components/status.html"
+        },
+        {
+          "path": "registry/go-templates/status.tmpl",
+          "type": "registry:file",
+          "target": "components/status.tmpl"
+        },
+        {
+          "path": "registry/phoenix/status.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/status.ex"
+        },
+        {
+          "path": "registry/html/status.html",
+          "type": "registry:file",
+          "target": "snippets/status.html"
+        }
       ]
     },
     {
@@ -1112,13 +2570,40 @@
       "type": "registry:ui",
       "title": "Split Button",
       "description": "Primary action joined to a disclosure toggle that opens a popup of related secondary actions. Native Popover API + the APG menu keyboard contract (arrows, Home/End, type-to-find). Distinct from a dropdown menu — the main button has its own default action.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/split-button.tsx", "type": "registry:ui", "target": "components/ui/split-button.tsx" },
-        { "path": "registry/jinja2/split-button.html", "type": "registry:file", "target": "templates/components/split-button.html" },
-        { "path": "registry/go-templates/split-button.tmpl", "type": "registry:file", "target": "components/split-button.tmpl" },
-        { "path": "registry/phoenix/split_button.ex", "type": "registry:file", "target": "lib/my_app_web/components/split_button.ex" },
-        { "path": "registry/html/split-button.html", "type": "registry:file", "target": "snippets/split-button.html" }
+        {
+          "path": "registry/ui/split-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/split-button.tsx"
+        },
+        {
+          "path": "registry/elysiax/split-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/split-button.tsx"
+        },
+        {
+          "path": "registry/jinja2/split-button.html",
+          "type": "registry:file",
+          "target": "templates/components/split-button.html"
+        },
+        {
+          "path": "registry/go-templates/split-button.tmpl",
+          "type": "registry:file",
+          "target": "components/split-button.tmpl"
+        },
+        {
+          "path": "registry/phoenix/split_button.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/split_button.ex"
+        },
+        {
+          "path": "registry/html/split-button.html",
+          "type": "registry:file",
+          "target": "snippets/split-button.html"
+        }
       ]
     },
     {
@@ -1126,13 +2611,40 @@
       "type": "registry:ui",
       "title": "Lazy Load",
       "description": "A deferred-content container that fetches its own contents after the page paints (hx-trigger=\"load\") and swaps them in, with a reserved-space placeholder to prevent layout shift (CLS). Pairs with Skeleton for slow dashboard panels and per-tab content. Zero JS of its own — htmx owns the request and the IntersectionObserver.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/lazy-load.tsx", "type": "registry:ui", "target": "components/ui/lazy-load.tsx" },
-        { "path": "registry/jinja2/lazy-load.html", "type": "registry:file", "target": "templates/components/lazy-load.html" },
-        { "path": "registry/go-templates/lazy-load.tmpl", "type": "registry:file", "target": "components/lazy-load.tmpl" },
-        { "path": "registry/phoenix/lazy_load.ex", "type": "registry:file", "target": "lib/my_app_web/components/lazy_load.ex" },
-        { "path": "registry/html/lazy-load.html", "type": "registry:file", "target": "snippets/lazy-load.html" }
+        {
+          "path": "registry/ui/lazy-load.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/lazy-load.tsx"
+        },
+        {
+          "path": "registry/elysiax/lazy-load.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/lazy-load.tsx"
+        },
+        {
+          "path": "registry/jinja2/lazy-load.html",
+          "type": "registry:file",
+          "target": "templates/components/lazy-load.html"
+        },
+        {
+          "path": "registry/go-templates/lazy-load.tmpl",
+          "type": "registry:file",
+          "target": "components/lazy-load.tmpl"
+        },
+        {
+          "path": "registry/phoenix/lazy_load.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/lazy_load.ex"
+        },
+        {
+          "path": "registry/html/lazy-load.html",
+          "type": "registry:file",
+          "target": "snippets/lazy-load.html"
+        }
       ]
     },
     {
@@ -1140,13 +2652,40 @@
       "type": "registry:ui",
       "title": "Sidebar",
       "description": "A responsive app-navigation sidebar: a fixed rail on wide screens that collapses to an off-canvas drawer behind a labelled hamburger on narrow screens. Nav links are real <a href> anchors and the open/close works without JavaScript — layout is CSS grid (grid-template-columns: minmax() 1fr) and the drawer toggles on the CSS :target pseudo-class.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/sidebar.tsx", "type": "registry:ui", "target": "components/ui/sidebar.tsx" },
-        { "path": "registry/jinja2/sidebar.html", "type": "registry:file", "target": "templates/components/sidebar.html" },
-        { "path": "registry/go-templates/sidebar.tmpl", "type": "registry:file", "target": "components/sidebar.tmpl" },
-        { "path": "registry/phoenix/sidebar.ex", "type": "registry:file", "target": "lib/my_app_web/components/sidebar.ex" },
-        { "path": "registry/html/sidebar.html", "type": "registry:file", "target": "snippets/sidebar.html" }
+        {
+          "path": "registry/ui/sidebar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar.tsx"
+        },
+        {
+          "path": "registry/elysiax/sidebar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar.tsx"
+        },
+        {
+          "path": "registry/jinja2/sidebar.html",
+          "type": "registry:file",
+          "target": "templates/components/sidebar.html"
+        },
+        {
+          "path": "registry/go-templates/sidebar.tmpl",
+          "type": "registry:file",
+          "target": "components/sidebar.tmpl"
+        },
+        {
+          "path": "registry/phoenix/sidebar.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/sidebar.ex"
+        },
+        {
+          "path": "registry/html/sidebar.html",
+          "type": "registry:file",
+          "target": "snippets/sidebar.html"
+        }
       ]
     },
     {
@@ -1154,13 +2693,40 @@
       "type": "registry:ui",
       "title": "Aspect Ratio",
       "description": "A ratio-box wrapper that locks a child (image, video, iframe, embed, or chart slot) to a fixed width-to-height ratio while it resizes fluidly, eliminating layout shift. Built on the native CSS aspect-ratio property plus object-fit — one CSS declaration, zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/aspect-ratio.tsx", "type": "registry:ui", "target": "components/ui/aspect-ratio.tsx" },
-        { "path": "registry/jinja2/aspect-ratio.html", "type": "registry:file", "target": "templates/components/aspect-ratio.html" },
-        { "path": "registry/go-templates/aspect-ratio.tmpl", "type": "registry:file", "target": "components/aspect-ratio.tmpl" },
-        { "path": "registry/phoenix/aspect_ratio.ex", "type": "registry:file", "target": "lib/my_app_web/components/aspect_ratio.ex" },
-        { "path": "registry/html/aspect-ratio.html", "type": "registry:file", "target": "snippets/aspect-ratio.html" }
+        {
+          "path": "registry/ui/aspect-ratio.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/aspect-ratio.tsx"
+        },
+        {
+          "path": "registry/elysiax/aspect-ratio.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/aspect-ratio.tsx"
+        },
+        {
+          "path": "registry/jinja2/aspect-ratio.html",
+          "type": "registry:file",
+          "target": "templates/components/aspect-ratio.html"
+        },
+        {
+          "path": "registry/go-templates/aspect-ratio.tmpl",
+          "type": "registry:file",
+          "target": "components/aspect-ratio.tmpl"
+        },
+        {
+          "path": "registry/phoenix/aspect_ratio.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/aspect_ratio.ex"
+        },
+        {
+          "path": "registry/html/aspect-ratio.html",
+          "type": "registry:file",
+          "target": "snippets/aspect-ratio.html"
+        }
       ]
     },
     {
@@ -1168,13 +2734,40 @@
       "type": "registry:ui",
       "title": "Auto Grid",
       "description": "A responsive, intrinsically-wrapping grid of equal cells with no breakpoints. Children flow into as many columns as fit at a configurable minimum item width, then grow to share the leftover space — the card-grid recipe, built on CSS Grid's repeat(auto-fit, minmax()) (the RAM pattern). Pure CSS, zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/auto-grid.tsx", "type": "registry:ui", "target": "components/ui/auto-grid.tsx" },
-        { "path": "registry/jinja2/auto-grid.html", "type": "registry:file", "target": "templates/components/auto-grid.html" },
-        { "path": "registry/go-templates/auto-grid.tmpl", "type": "registry:file", "target": "components/auto-grid.tmpl" },
-        { "path": "registry/phoenix/auto_grid.ex", "type": "registry:file", "target": "lib/my_app_web/components/auto_grid.ex" },
-        { "path": "registry/html/auto-grid.html", "type": "registry:file", "target": "snippets/auto-grid.html" }
+        {
+          "path": "registry/ui/auto-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/auto-grid.tsx"
+        },
+        {
+          "path": "registry/elysiax/auto-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/auto-grid.tsx"
+        },
+        {
+          "path": "registry/jinja2/auto-grid.html",
+          "type": "registry:file",
+          "target": "templates/components/auto-grid.html"
+        },
+        {
+          "path": "registry/go-templates/auto-grid.tmpl",
+          "type": "registry:file",
+          "target": "components/auto-grid.tmpl"
+        },
+        {
+          "path": "registry/phoenix/auto_grid.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/auto_grid.ex"
+        },
+        {
+          "path": "registry/html/auto-grid.html",
+          "type": "registry:file",
+          "target": "snippets/auto-grid.html"
+        }
       ]
     },
     {
@@ -1182,13 +2775,40 @@
       "type": "registry:ui",
       "title": "Kbd",
       "description": "Inline keyboard-key badge — renders a native <kbd> for a single key, or nests one <kbd> per key inside an outer one for a shortcut like Ctrl + Shift + R. Zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/kbd.tsx", "type": "registry:ui", "target": "components/ui/kbd.tsx" },
-        { "path": "registry/jinja2/kbd.html", "type": "registry:file", "target": "templates/components/kbd.html" },
-        { "path": "registry/go-templates/kbd.tmpl", "type": "registry:file", "target": "components/kbd.tmpl" },
-        { "path": "registry/phoenix/kbd.ex", "type": "registry:file", "target": "lib/my_app_web/components/kbd.ex" },
-        { "path": "registry/html/kbd.html", "type": "registry:file", "target": "snippets/kbd.html" }
+        {
+          "path": "registry/ui/kbd.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/kbd.tsx"
+        },
+        {
+          "path": "registry/elysiax/kbd.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/kbd.tsx"
+        },
+        {
+          "path": "registry/jinja2/kbd.html",
+          "type": "registry:file",
+          "target": "templates/components/kbd.html"
+        },
+        {
+          "path": "registry/go-templates/kbd.tmpl",
+          "type": "registry:file",
+          "target": "components/kbd.tmpl"
+        },
+        {
+          "path": "registry/phoenix/kbd.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/kbd.ex"
+        },
+        {
+          "path": "registry/html/kbd.html",
+          "type": "registry:file",
+          "target": "snippets/kbd.html"
+        }
       ]
     },
     {
@@ -1196,13 +2816,40 @@
       "type": "registry:ui",
       "title": "Highlight",
       "description": "Semantic marker that wraps the words matching a search query in a native <mark>, the HTML element for text relevant to the user's current activity. Rendered entirely on the server, styled with theme tokens, zero client JS — drop it inside the fragment htmx swaps into a results list.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/highlight.tsx", "type": "registry:ui", "target": "components/ui/highlight.tsx" },
-        { "path": "registry/jinja2/highlight.html", "type": "registry:file", "target": "templates/components/highlight.html" },
-        { "path": "registry/go-templates/highlight.tmpl", "type": "registry:file", "target": "components/highlight.tmpl" },
-        { "path": "registry/phoenix/highlight.ex", "type": "registry:file", "target": "lib/my_app_web/components/highlight.ex" },
-        { "path": "registry/html/highlight.html", "type": "registry:file", "target": "snippets/highlight.html" }
+        {
+          "path": "registry/ui/highlight.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/highlight.tsx"
+        },
+        {
+          "path": "registry/elysiax/highlight.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/highlight.tsx"
+        },
+        {
+          "path": "registry/jinja2/highlight.html",
+          "type": "registry:file",
+          "target": "templates/components/highlight.html"
+        },
+        {
+          "path": "registry/go-templates/highlight.tmpl",
+          "type": "registry:file",
+          "target": "components/highlight.tmpl"
+        },
+        {
+          "path": "registry/phoenix/highlight.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/highlight.ex"
+        },
+        {
+          "path": "registry/html/highlight.html",
+          "type": "registry:file",
+          "target": "snippets/highlight.html"
+        }
       ]
     },
     {
@@ -1210,13 +2857,40 @@
       "type": "registry:ui",
       "title": "Relative Time",
       "description": "A semantic timestamp built on the native <time> element. The server renders a machine-readable instant in the datetime attribute and a human-readable label as the text; a tiny optional script re-localises the label to the visitor's locale and timezone via the Intl APIs and degrades to the server value with no JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/relative-time.tsx", "type": "registry:ui", "target": "components/ui/relative-time.tsx" },
-        { "path": "registry/jinja2/relative-time.html", "type": "registry:file", "target": "templates/components/relative-time.html" },
-        { "path": "registry/go-templates/relative-time.tmpl", "type": "registry:file", "target": "components/relative-time.tmpl" },
-        { "path": "registry/phoenix/relative_time.ex", "type": "registry:file", "target": "lib/my_app_web/components/relative_time.ex" },
-        { "path": "registry/html/relative-time.html", "type": "registry:file", "target": "snippets/relative-time.html" }
+        {
+          "path": "registry/ui/relative-time.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/relative-time.tsx"
+        },
+        {
+          "path": "registry/elysiax/relative-time.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/relative-time.tsx"
+        },
+        {
+          "path": "registry/jinja2/relative-time.html",
+          "type": "registry:file",
+          "target": "templates/components/relative-time.html"
+        },
+        {
+          "path": "registry/go-templates/relative-time.tmpl",
+          "type": "registry:file",
+          "target": "components/relative-time.tmpl"
+        },
+        {
+          "path": "registry/phoenix/relative_time.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/relative_time.ex"
+        },
+        {
+          "path": "registry/html/relative-time.html",
+          "type": "registry:file",
+          "target": "snippets/relative-time.html"
+        }
       ]
     },
     {
@@ -1224,13 +2898,40 @@
       "type": "registry:ui",
       "title": "Figure",
       "description": "Self-contained, referenced content — an image, diagram, code block, or quotation — wrapped in a native <figure> whose <figcaption> supplies its accessible name. Distinct from a Card's generic surface: a figure stands apart from the main flow and can be moved without breaking it, and its caption is semantically tied to the content. Built on native <figure> + <figcaption>, zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/figure.tsx", "type": "registry:ui", "target": "components/ui/figure.tsx" },
-        { "path": "registry/jinja2/figure.html", "type": "registry:file", "target": "templates/components/figure.html" },
-        { "path": "registry/go-templates/figure.tmpl", "type": "registry:file", "target": "components/figure.tmpl" },
-        { "path": "registry/phoenix/figure.ex", "type": "registry:file", "target": "lib/my_app_web/components/figure.ex" },
-        { "path": "registry/html/figure.html", "type": "registry:file", "target": "snippets/figure.html" }
+        {
+          "path": "registry/ui/figure.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/figure.tsx"
+        },
+        {
+          "path": "registry/elysiax/figure.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/figure.tsx"
+        },
+        {
+          "path": "registry/jinja2/figure.html",
+          "type": "registry:file",
+          "target": "templates/components/figure.html"
+        },
+        {
+          "path": "registry/go-templates/figure.tmpl",
+          "type": "registry:file",
+          "target": "components/figure.tmpl"
+        },
+        {
+          "path": "registry/phoenix/figure.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/figure.ex"
+        },
+        {
+          "path": "registry/html/figure.html",
+          "type": "registry:file",
+          "target": "snippets/figure.html"
+        }
       ]
     },
     {
@@ -1238,13 +2939,40 @@
       "type": "registry:ui",
       "title": "Responsive Image",
       "description": "Art-directed, format-switching image built on native <picture> + <source> + a fallback <img>. The browser selects the best candidate by media and type queries (light/dark, AVIF/WebP/JPEG, viewport crops) and falls back to the <img> when none match — all natively, zero JS.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/responsive-image.tsx", "type": "registry:ui", "target": "components/ui/responsive-image.tsx" },
-        { "path": "registry/jinja2/responsive-image.html", "type": "registry:file", "target": "templates/components/responsive-image.html" },
-        { "path": "registry/go-templates/responsive-image.tmpl", "type": "registry:file", "target": "components/responsive-image.tmpl" },
-        { "path": "registry/phoenix/responsive_image.ex", "type": "registry:file", "target": "lib/my_app_web/components/responsive_image.ex" },
-        { "path": "registry/html/responsive-image.html", "type": "registry:file", "target": "snippets/responsive-image.html" }
+        {
+          "path": "registry/ui/responsive-image.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/responsive-image.tsx"
+        },
+        {
+          "path": "registry/elysiax/responsive-image.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/responsive-image.tsx"
+        },
+        {
+          "path": "registry/jinja2/responsive-image.html",
+          "type": "registry:file",
+          "target": "templates/components/responsive-image.html"
+        },
+        {
+          "path": "registry/go-templates/responsive-image.tmpl",
+          "type": "registry:file",
+          "target": "components/responsive-image.tmpl"
+        },
+        {
+          "path": "registry/phoenix/responsive_image.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/responsive_image.ex"
+        },
+        {
+          "path": "registry/html/responsive-image.html",
+          "type": "registry:file",
+          "target": "snippets/responsive-image.html"
+        }
       ]
     },
     {
@@ -1252,13 +2980,40 @@
       "type": "registry:ui",
       "title": "Media Player",
       "description": "A styled native <video controls> / <audio controls> with multiple <source> formats, <track> captions, a poster, and aspect-ratio framing. The browser ships the entire accessible playback UI — play, scrub, volume, captions, fullscreen, Picture-in-Picture — so there are no custom controls and zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/media-player.tsx", "type": "registry:ui", "target": "components/ui/media-player.tsx" },
-        { "path": "registry/jinja2/media-player.html", "type": "registry:file", "target": "templates/components/media-player.html" },
-        { "path": "registry/go-templates/media-player.tmpl", "type": "registry:file", "target": "components/media-player.tmpl" },
-        { "path": "registry/phoenix/media_player.ex", "type": "registry:file", "target": "lib/my_app_web/components/media_player.ex" },
-        { "path": "registry/html/media-player.html", "type": "registry:file", "target": "snippets/media-player.html" }
+        {
+          "path": "registry/ui/media-player.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/media-player.tsx"
+        },
+        {
+          "path": "registry/elysiax/media-player.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/media-player.tsx"
+        },
+        {
+          "path": "registry/jinja2/media-player.html",
+          "type": "registry:file",
+          "target": "templates/components/media-player.html"
+        },
+        {
+          "path": "registry/go-templates/media-player.tmpl",
+          "type": "registry:file",
+          "target": "components/media-player.tmpl"
+        },
+        {
+          "path": "registry/phoenix/media_player.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/media_player.ex"
+        },
+        {
+          "path": "registry/html/media-player.html",
+          "type": "registry:file",
+          "target": "snippets/media-player.html"
+        }
       ]
     },
     {
@@ -1266,27 +3021,81 @@
       "type": "registry:ui",
       "title": "Autocomplete",
       "description": "Free-text input with native typeahead suggestions: <input list> bound to a <datalist>. The browser owns the dropdown, filtering, and selection; htmx can stream a fresh <option> set in on input. The light native sibling of the APG combobox — it suggests, it does not constrain.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/autocomplete.tsx", "type": "registry:ui", "target": "components/ui/autocomplete.tsx" },
-        { "path": "registry/jinja2/autocomplete.html", "type": "registry:file", "target": "templates/components/autocomplete.html" },
-        { "path": "registry/go-templates/autocomplete.tmpl", "type": "registry:file", "target": "components/autocomplete.tmpl" },
-        { "path": "registry/phoenix/autocomplete.ex", "type": "registry:file", "target": "lib/my_app_web/components/autocomplete.ex" },
-        { "path": "registry/html/autocomplete.html", "type": "registry:file", "target": "snippets/autocomplete.html" }
+        {
+          "path": "registry/ui/autocomplete.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/autocomplete.tsx"
+        },
+        {
+          "path": "registry/elysiax/autocomplete.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/autocomplete.tsx"
+        },
+        {
+          "path": "registry/jinja2/autocomplete.html",
+          "type": "registry:file",
+          "target": "templates/components/autocomplete.html"
+        },
+        {
+          "path": "registry/go-templates/autocomplete.tmpl",
+          "type": "registry:file",
+          "target": "components/autocomplete.tmpl"
+        },
+        {
+          "path": "registry/phoenix/autocomplete.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/autocomplete.ex"
+        },
+        {
+          "path": "registry/html/autocomplete.html",
+          "type": "registry:file",
+          "target": "snippets/autocomplete.html"
+        }
       ]
     },
     {
       "name": "exclusive-accordion",
       "type": "registry:ui",
       "title": "Exclusive Accordion",
-      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in five flavours: Hono JSX (TypeScript), Jinja2 macros, Go html/template, Phoenix function component, and a raw HTML snippet.",
-      "registryDependencies": ["utils"],
+      "description": "Scriptless single-open accordion: multiple native <details> elements share one `name` attribute so opening one auto-closes the others — the pure-HTML exclusive variant of the APG-scripted accordion. Zero JavaScript; the exclusivity survives with JS disabled. Ships in six flavours: Hono JSX (TypeScript), Elysia + @kitajs/html (TypeScript), Jinja2 macro, Go html/template, Phoenix function component, and a raw HTML snippet.",
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/exclusive-accordion.tsx", "type": "registry:ui", "target": "components/ui/exclusive-accordion.tsx" },
-        { "path": "registry/jinja2/exclusive-accordion.html", "type": "registry:file", "target": "templates/components/exclusive-accordion.html" },
-        { "path": "registry/go-templates/exclusive-accordion.tmpl", "type": "registry:file", "target": "components/exclusive-accordion.tmpl" },
-        { "path": "registry/phoenix/exclusive_accordion.ex", "type": "registry:file", "target": "lib/my_app_web/components/exclusive_accordion.ex" },
-        { "path": "registry/html/exclusive-accordion.html", "type": "registry:file", "target": "snippets/exclusive-accordion.html" }
+        {
+          "path": "registry/ui/exclusive-accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/exclusive-accordion.tsx"
+        },
+        {
+          "path": "registry/elysiax/exclusive-accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/exclusive-accordion.tsx"
+        },
+        {
+          "path": "registry/jinja2/exclusive-accordion.html",
+          "type": "registry:file",
+          "target": "templates/components/exclusive-accordion.html"
+        },
+        {
+          "path": "registry/go-templates/exclusive-accordion.tmpl",
+          "type": "registry:file",
+          "target": "components/exclusive-accordion.tmpl"
+        },
+        {
+          "path": "registry/phoenix/exclusive_accordion.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/exclusive_accordion.ex"
+        },
+        {
+          "path": "registry/html/exclusive-accordion.html",
+          "type": "registry:file",
+          "target": "snippets/exclusive-accordion.html"
+        }
       ]
     },
     {
@@ -1294,13 +3103,40 @@
       "type": "registry:ui",
       "title": "Scroll Area",
       "description": "A constrained-overflow region with a themed native scrollbar and optional fade masks that appear only while more content can scroll into view. Scrolling is fully native (keyboard, wheel, trackpad, touch) with zero JavaScript — no Radix-style scrollbar reimplementation. The fade masks are driven purely by CSS @container scroll-state().",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/scroll-area.tsx", "type": "registry:ui", "target": "components/ui/scroll-area.tsx" },
-        { "path": "registry/jinja2/scroll-area.html", "type": "registry:file", "target": "templates/components/scroll-area.html" },
-        { "path": "registry/go-templates/scroll-area.tmpl", "type": "registry:file", "target": "components/scroll-area.tmpl" },
-        { "path": "registry/phoenix/scroll_area.ex", "type": "registry:file", "target": "lib/my_app_web/components/scroll_area.ex" },
-        { "path": "registry/html/scroll-area.html", "type": "registry:file", "target": "snippets/scroll-area.html" }
+        {
+          "path": "registry/ui/scroll-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/scroll-area.tsx"
+        },
+        {
+          "path": "registry/elysiax/scroll-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/scroll-area.tsx"
+        },
+        {
+          "path": "registry/jinja2/scroll-area.html",
+          "type": "registry:file",
+          "target": "templates/components/scroll-area.html"
+        },
+        {
+          "path": "registry/go-templates/scroll-area.tmpl",
+          "type": "registry:file",
+          "target": "components/scroll-area.tmpl"
+        },
+        {
+          "path": "registry/phoenix/scroll_area.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/scroll_area.ex"
+        },
+        {
+          "path": "registry/html/scroll-area.html",
+          "type": "registry:file",
+          "target": "snippets/scroll-area.html"
+        }
       ]
     },
     {
@@ -1308,13 +3144,40 @@
       "type": "registry:ui",
       "title": "Snap List",
       "description": "The bare, reusable CSS scroll-snapping rail (gallery strip, chip row, media shelf, date rail) — zero JavaScript. A real <ul role=\"list\"> scroll container with snap-x/snap-y + snap-mandatory/snap-proximity, and <li> children carrying scroll-snap-align (snap-start/center/end) and optional scroll-snap-stop:always. It is the un-opinionated scroller the Carousel dresses up with Prev/Next controls; the platform owns the scrolling and snapping.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/snap-list.tsx", "type": "registry:ui", "target": "components/ui/snap-list.tsx" },
-        { "path": "registry/jinja2/snap-list.html", "type": "registry:file", "target": "templates/components/snap-list.html" },
-        { "path": "registry/go-templates/snap-list.tmpl", "type": "registry:file", "target": "components/snap-list.tmpl" },
-        { "path": "registry/phoenix/snap_list.ex", "type": "registry:file", "target": "lib/my_app_web/components/snap_list.ex" },
-        { "path": "registry/html/snap-list.html", "type": "registry:file", "target": "snippets/snap-list.html" }
+        {
+          "path": "registry/ui/snap-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/snap-list.tsx"
+        },
+        {
+          "path": "registry/elysiax/snap-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/snap-list.tsx"
+        },
+        {
+          "path": "registry/jinja2/snap-list.html",
+          "type": "registry:file",
+          "target": "templates/components/snap-list.html"
+        },
+        {
+          "path": "registry/go-templates/snap-list.tmpl",
+          "type": "registry:file",
+          "target": "components/snap-list.tmpl"
+        },
+        {
+          "path": "registry/phoenix/snap_list.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/snap_list.ex"
+        },
+        {
+          "path": "registry/html/snap-list.html",
+          "type": "registry:file",
+          "target": "snippets/snap-list.html"
+        }
       ]
     },
     {
@@ -1322,13 +3185,40 @@
       "type": "registry:ui",
       "title": "Container Card",
       "description": "A self-adapting card that restyles based on its own inline width, not the viewport. The same markup stacks media above text in a narrow column or sidebar and lays them side-by-side in a wide column or grid cell — built on CSS container queries (container-type: inline-size + @container). Pure CSS, zero JavaScript.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/container-card.tsx", "type": "registry:ui", "target": "components/ui/container-card.tsx" },
-        { "path": "registry/jinja2/container-card.html", "type": "registry:file", "target": "templates/components/container-card.html" },
-        { "path": "registry/go-templates/container-card.tmpl", "type": "registry:file", "target": "components/container-card.tmpl" },
-        { "path": "registry/phoenix/container_card.ex", "type": "registry:file", "target": "lib/my_app_web/components/container_card.ex" },
-        { "path": "registry/html/container-card.html", "type": "registry:file", "target": "snippets/container-card.html" }
+        {
+          "path": "registry/ui/container-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/container-card.tsx"
+        },
+        {
+          "path": "registry/elysiax/container-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/container-card.tsx"
+        },
+        {
+          "path": "registry/jinja2/container-card.html",
+          "type": "registry:file",
+          "target": "templates/components/container-card.html"
+        },
+        {
+          "path": "registry/go-templates/container-card.tmpl",
+          "type": "registry:file",
+          "target": "components/container-card.tmpl"
+        },
+        {
+          "path": "registry/phoenix/container_card.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/container_card.ex"
+        },
+        {
+          "path": "registry/html/container-card.html",
+          "type": "registry:file",
+          "target": "snippets/container-card.html"
+        }
       ]
     },
     {
@@ -1336,13 +3226,40 @@
       "type": "registry:ui",
       "title": "Sticky Header",
       "description": "A page/section/table header that pins on scroll via position: sticky and visually reacts (shadow + solid background) the moment it becomes stuck, using a @container scroll-state(stuck: top) query — no IntersectionObserver sentinel, zero JS. The root is both the sticky element and the scroll-state query container; descendants opt into the stuck styling with data-sticky-revealed.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/sticky-header.tsx", "type": "registry:ui", "target": "components/ui/sticky-header.tsx" },
-        { "path": "registry/jinja2/sticky-header.html", "type": "registry:file", "target": "templates/components/sticky-header.html" },
-        { "path": "registry/go-templates/sticky-header.tmpl", "type": "registry:file", "target": "components/sticky-header.tmpl" },
-        { "path": "registry/phoenix/sticky_header.ex", "type": "registry:file", "target": "lib/my_app_web/components/sticky_header.ex" },
-        { "path": "registry/html/sticky-header.html", "type": "registry:file", "target": "snippets/sticky-header.html" }
+        {
+          "path": "registry/ui/sticky-header.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sticky-header.tsx"
+        },
+        {
+          "path": "registry/elysiax/sticky-header.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sticky-header.tsx"
+        },
+        {
+          "path": "registry/jinja2/sticky-header.html",
+          "type": "registry:file",
+          "target": "templates/components/sticky-header.html"
+        },
+        {
+          "path": "registry/go-templates/sticky-header.tmpl",
+          "type": "registry:file",
+          "target": "components/sticky-header.tmpl"
+        },
+        {
+          "path": "registry/phoenix/sticky_header.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/sticky_header.ex"
+        },
+        {
+          "path": "registry/html/sticky-header.html",
+          "type": "registry:file",
+          "target": "snippets/sticky-header.html"
+        }
       ]
     },
     {
@@ -1350,13 +3267,40 @@
       "type": "registry:ui",
       "title": "Scroll Progress",
       "description": "A reading-position bar whose fill tracks how far the user has scrolled the page (or a named scroller). Pure CSS scroll-driven animation (animation-timeline: scroll()) — zero JavaScript, no scroll listeners. Distinct from value-driven Progress.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": [
+        "utils"
+      ],
       "files": [
-        { "path": "registry/ui/scroll-progress.tsx", "type": "registry:ui", "target": "components/ui/scroll-progress.tsx" },
-        { "path": "registry/jinja2/scroll-progress.html", "type": "registry:file", "target": "templates/components/scroll-progress.html" },
-        { "path": "registry/go-templates/scroll-progress.tmpl", "type": "registry:file", "target": "components/scroll-progress.tmpl" },
-        { "path": "registry/phoenix/scroll_progress.ex", "type": "registry:file", "target": "lib/my_app_web/components/scroll_progress.ex" },
-        { "path": "registry/html/scroll-progress.html", "type": "registry:file", "target": "snippets/scroll-progress.html" }
+        {
+          "path": "registry/ui/scroll-progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/scroll-progress.tsx"
+        },
+        {
+          "path": "registry/elysiax/scroll-progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/scroll-progress.tsx"
+        },
+        {
+          "path": "registry/jinja2/scroll-progress.html",
+          "type": "registry:file",
+          "target": "templates/components/scroll-progress.html"
+        },
+        {
+          "path": "registry/go-templates/scroll-progress.tmpl",
+          "type": "registry:file",
+          "target": "components/scroll-progress.tmpl"
+        },
+        {
+          "path": "registry/phoenix/scroll_progress.ex",
+          "type": "registry:file",
+          "target": "lib/my_app_web/components/scroll_progress.ex"
+        },
+        {
+          "path": "registry/html/scroll-progress.html",
+          "type": "registry:file",
+          "target": "snippets/scroll-progress.html"
+        }
       ]
     }
   ]

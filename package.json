@@ -1,7 +1,7 @@
 {
   "name": "shadcn-htmx",
   "version": "0.0.2",
-  "description": "shadcn-style UI components for htmx v4 + Tailwind v4 — 82 web-standards components in five flavours, with a flavour-aware CLI.",
+  "description": "shadcn-style UI components for htmx v4 + Tailwind v4 — 82 web-standards components in six flavours, with a flavour-aware CLI.",
   "license": "MIT",
   "author": "productdevbook",
   "type": "module",
@@ -19,6 +19,8 @@
     "go-templates",
     "phoenix",
     "hono",
+    "kitajs",
+    "elysia",
     "cli",
     "registry",
     "web-standards"
@@ -65,6 +67,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
+    "@kitajs/html": "^4.2.13",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/cli": "^4.3.0",
     "@types/bun": "latest",

@@ -80,6 +80,22 @@ test("jsx flavour writes the .tsx AND resolves the utils lib dependency", () => 
   rmSync(out, { recursive: true, force: true })
 })
 
+test("elysiax flavour writes the kitajs .tsx AND resolves the utils lib dependency", () => {
+  const out = tmp()
+  const r = run(["add", "button", "-f", "elysiax"], out)
+  expect(r.code).toBe(0)
+  const f = join(out, "components/ui/button.tsx")
+  expect(existsSync(f)).toBe(true)
+  const src = readFileSync(f, "utf8")
+  expect(src).toContain("@kitajs/html")
+  expect(src).not.toContain("hono/jsx")
+  // button depends on "utils" → cn.ts should be pulled in for the TS flavours
+  expect(existsSync(join(out, "lib/cn.ts"))).toBe(true)
+  // must NOT have pulled the template/snippet files
+  expect(existsSync(join(out, "templates/components/button.html"))).toBe(false)
+  rmSync(out, { recursive: true, force: true })
+})
+
 test("multiple components in one call", () => {
   const out = tmp()
   const r = run(["add", "input", "label", "-f", "html"], out)
